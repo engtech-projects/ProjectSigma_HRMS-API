@@ -13,11 +13,11 @@ return new class extends Migration
     {
         //
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('type', ['Administrator', 'Employee']);
+            $table->enum('type', ['Administrator', 'Employee'])->after('remember_token');
         });
     }
     
-    /**
+    /**s
      * Reverse the migrations.
      */
     public function down(): void
