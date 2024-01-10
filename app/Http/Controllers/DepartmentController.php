@@ -60,7 +60,6 @@ class DepartmentController extends Controller
      */
     public function update(UpdateDepartmentRequest $request, Department $department)
     {
-        //
         $department->fill($request->validated());
         if($department->save()){
             return response()->json($department);

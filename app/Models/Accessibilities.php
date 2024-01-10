@@ -14,7 +14,7 @@ class Accessibilities extends Model
 
     protected $fillable = [
         'id',
-        'department_name',
+        'accessibilities_name',
         'updated_at',
         'created_at',
     ];

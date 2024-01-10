@@ -41,9 +41,10 @@ class AccessibilitiesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Accessibilities $accessibilities)
+    public function show($id)
     {
         //
+        $accessibilities = Accessibilities::find($id);
         return response()->json($accessibilities);
     }
 
@@ -58,8 +59,9 @@ class AccessibilitiesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAccessibilitiesRequest $request, Accessibilities $accessibilities)
+    public function update(UpdateAccessibilitiesRequest $request, $id)
     {
+        $accessibilities = Accessibilities::find($id);
         $accessibilities->fill($request->validated());
         if($accessibilities->save()){
             return response()->json($accessibilities);
@@ -70,8 +72,9 @@ class AccessibilitiesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Accessibilities $accessibilities)
+    public function destroy($id)
     {
+        $accessibilities = Accessibilities::find($id);
         if($accessibilities->delete()){
             return response()->json($accessibilities);
         }
