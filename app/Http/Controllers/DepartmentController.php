@@ -13,7 +13,6 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        //
         $department = Department::simplePaginate(15);      
         return response()->json($department);
     }
@@ -31,7 +30,6 @@ class DepartmentController extends Controller
      */
     public function store(StoreDepartmentRequest $request)
     {
-        //
         $department = new Department;
         $department->fill($request->validated());
         if(!$department->save()){
@@ -45,8 +43,6 @@ class DepartmentController extends Controller
      */
     public function show(Department $department)
     {
-        //
-        // $department = Department::find();      
         return response()->json($department);
     }
 
