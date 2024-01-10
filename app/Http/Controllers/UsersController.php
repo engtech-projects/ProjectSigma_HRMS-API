@@ -6,6 +6,7 @@ use App\Models\Users;
 use App\Models\User;
 use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUsersRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -33,6 +34,7 @@ class UsersController extends Controller
     {
         $users = new Users;
         $users->fill($request->validated());
+        $users->password = Hash::make($request->password);
         if(!$users->save()){
             return response()->json(["msg"=>"error"], 400);
         }
