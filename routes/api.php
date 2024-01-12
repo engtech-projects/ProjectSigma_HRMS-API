@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\softDeletes;
 use App\Http\Controllers\AccessibilitiesController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\UserAccessibilitiesController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +26,8 @@ Route::middleware('auth:sanctum')->group(function(){
 });
 
 Route::resource('departments', DepartmentController::class);
-Route::resource('useraccess', AccessibilitiesController::class);
+Route::resource('user_accessibilities', UserAccessibilitiesController::class);
+Route::resource('accessibilities', AccessibilitiesController::class);
 Route::resource('users', UsersController::class);
        
 

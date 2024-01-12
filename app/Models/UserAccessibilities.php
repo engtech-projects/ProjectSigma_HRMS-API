@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\softDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-class Accessibilities extends Model
+class UserAccessibilities extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
-
+    use HasApiTokens, HasFactory, Notifiable,softDeletes;
+    
     protected $fillable = [
         'id',
-        'accessibilities_name',
+        'user_id',
+        'options',
         'updated_at',
         'created_at',
     ];
