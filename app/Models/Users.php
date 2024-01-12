@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\softDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
 class Users extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,softDeletes;
+    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
 
     protected $primaryKey = 'id';
 
