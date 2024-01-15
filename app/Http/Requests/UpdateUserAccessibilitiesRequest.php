@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserAccessibilitiesRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,12 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'=>"nullable|integer|exists:users,id",
+            'user_id'=>[
+                "nullable",
+                "integer",
+                "exists:users,id",
+                Rule::unique("user_accessibilities","user_id")->ignore($this->route("user_id"),'id')->whereNull('deleted_at')
+            ],
             'options'=>"nullable|array|exists:accessibilities,id",
         ];
     }

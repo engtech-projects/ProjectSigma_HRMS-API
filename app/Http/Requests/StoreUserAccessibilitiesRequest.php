@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreUserAccessibilitiesRequest extends FormRequest
 {
@@ -22,7 +23,13 @@ class StoreUserAccessibilitiesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'=>"required|integer|exists:users,id",
+            'user_id'=>
+            [
+                "required",
+                "integer",
+                "exists:users,id",
+                Rule::unique("user_accessibilities","user_id")
+            ],
             'options'=>"required|array|exists:accessibilities,id",
         ];
     }
