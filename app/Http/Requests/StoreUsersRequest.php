@@ -26,7 +26,6 @@ class StoreUsersRequest extends FormRequest
             'email' => "required|string|max:35",
             'email_verified_at' => "nullable|date_format:Y-m-d H:i:s",
             'password' => "required|string|max:255",
-            'remember_token' => "required|string|max:100",
             'type' => "required|in:Administrator,Employee",
         ];
     }
