@@ -22,7 +22,7 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'=>"nullable|integer|exists:User,id",
+            'user_id'=>"nullable|integer|exists:users,id",
             'options'=>"nullable|array|exists:accessibilities,id",
         ];
     }

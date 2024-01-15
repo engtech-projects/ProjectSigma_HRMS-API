@@ -22,7 +22,7 @@ class StoreUserAccessibilitiesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'=>"required|integer|max:20",
+            'user_id'=>"required|integer|exists:users,id",
             'options'=>"required|array|exists:accessibilities,id",
         ];
     }
