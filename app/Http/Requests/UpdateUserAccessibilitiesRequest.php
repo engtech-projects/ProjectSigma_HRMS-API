@@ -27,7 +27,7 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:users,id",
-                Rule::unique("user_accessibilities","user_id")->ignore($this->route("user_id"),'id')->whereNull('deleted_at')
+                Rule::unique("user_accessibilities","user_id")->ignore($this->route("user_accessibility"),'id')->whereNull('deleted_at')
             ],
             'options'=>"nullable|array|exists:accessibilities,id",
         ];
