@@ -13,9 +13,6 @@ class AccessibilitiesSeeder extends Seeder
      */
     public function run(): void
     {
-<<<<<<< Updated upstream
-        //
-=======
         DB::table('accessibilities')->insert(
             [
                 [
@@ -230,6 +227,5 @@ class AccessibilitiesSeeder extends Seeder
                 ],
             ]
         );
->>>>>>> Stashed changes
     }
 }
