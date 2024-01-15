@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreAccessibilitiesRequest extends FormRequest
 {
@@ -22,7 +23,13 @@ class StoreAccessibilitiesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'accessibilities_name' => "required|string|max:35",
+            'accessibilities_name' => 
+            [
+                "required",
+                "string",
+                "max:35",
+                Rule::unique("accessibilities","accessibilities_name")
+            ]
         ];
     }
 }
