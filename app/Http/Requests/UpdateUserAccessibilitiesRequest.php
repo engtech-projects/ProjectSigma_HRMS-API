@@ -23,7 +23,7 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
     {
         return [
             'user_id'=>"nullable|integer|exists:User,id",
-            'options'=>"nullable|array|exists:Accessibilities,id",
+            'options'=>"nullable|array|exists:accessibilities,id",
         ];
     }
 }
