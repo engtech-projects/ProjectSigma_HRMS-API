@@ -8,6 +8,7 @@ use App\Http\Controllers\AccessibilitiesController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UserAccessibilitiesController;
 use App\Http\Controllers\SSSContributionController;
+use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function(){
 });
 
 Route::resource('sss', SSSContributionController::class);
+Route::resource('philhealth', PhilhealthContributionController::class);
 Route::resource('departments', DepartmentController::class);
 Route::resource('user_accessibilities', UserAccessibilitiesController::class);
 Route::resource('accessibilities', AccessibilitiesController::class);
