@@ -13,8 +13,13 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $department = Department::simplePaginate(15);      
-        return response()->json($department);
+        $department = Department::simplePaginate(15);
+        $data = json_decode('{}'); 
+        $data->message = "successfully fetch all";
+        $data->success = true;
+        $data->data = $department;
+        return response()->json($data);
+        // dd($department);     
     }
 
     /**
@@ -32,10 +37,16 @@ class DepartmentController extends Controller
     {
         $department = new Department;
         $department->fill($request->validated());
+        $data = json_decode('{}'); 
         if(!$department->save()){
-            return response()->json(["msg"=>"error"], 400);
+            $data->message = "failed to store data";
+            $data->success = false;
+            return response()->json($data, 400);
         }
-        return response()->json($department);
+        $data->message = "successfully store data";
+        $data->success = true;
+        $data->data = $department;
+        return response()->json($data);
     }
 
     /**
@@ -43,7 +54,11 @@ class DepartmentController extends Controller
      */
     public function show(Department $department)
     {
-        return response()->json($department);
+        $data = json_decode('{}'); 
+        $data->message = "successfully show data";
+        $data->success = true;
+        $data->data = $department;
+        return response()->json($data);
     }
 
     /**
@@ -58,13 +73,20 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDepartmentRequest $request, Department $department)
+    public function update(UpdateDepartmentRequest $request, $id)
     {
+        $department = Department::find($id);
         $department->fill($request->validated());
+        $data = json_decode('{}'); 
         if($department->save()){
-            return response()->json($department);
+            $data->message = "successfully update data";
+            $data->success = true;
+            $data->data = $department;
+            return response()->json($data);
         }
-        return response()->json(["msg"=>"error"], 400);
+        $data->message = "failed update data";
+        $data->success = false;
+        return response()->json($data, 400);
     }
 
     /**
@@ -72,9 +94,15 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
+        $data = json_decode('{}'); 
         if($department->delete()){
-            return response()->json($department);
+            $data->message = "successfully update data";
+            $data->success = true;
+            $data->data = $department;
+            return response()->json($data);
         }
-        return response()->json(["msg"=>"error"],400); 
+        $data->message = "failed delete data";
+        $data->success = false;
+        return response()->json($data,400); 
     }
 }

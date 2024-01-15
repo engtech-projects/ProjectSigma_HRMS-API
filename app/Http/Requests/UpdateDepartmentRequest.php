@@ -22,8 +22,7 @@ class UpdateDepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-            'department_name' => "nullable|string|max:35",
+            'department_name' => "nullable|string|max:35|unique:departments,department_name",
         ];
     }
 }

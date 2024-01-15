@@ -22,8 +22,13 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
     public function rules(): array
     {
         return [
+<<<<<<< Updated upstream
             'user_id'=>"nullable|integer|max:20",
             'options'=>"nullable|json|max:255",
+=======
+            'user_id'=>"nullable|integer|exists:User,id",
+            'options'=>"nullable|array|exists:Accessibilities,id",
+>>>>>>> Stashed changes
         ];
     }
 }
