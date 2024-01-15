@@ -11,7 +11,7 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,7 @@ class UpdateUserAccessibilitiesRequest extends FormRequest
     {
         return [
             'user_id'=>"nullable|integer|max:20",
-            'options'=>"nullable|json|max:255",
+            'options'=>"nullable|array|exists:Accessibilities,id",
         ];
     }
 }

@@ -30,8 +30,10 @@ class UserAccessibilitiesController extends Controller
      */
     public function store(StoreUserAccessibilitiesRequest $request)
     {
+        // dd($request);
         $user_accessibilities = new UserAccessibilities;
         $user_accessibilities->fill($request->validated());
+        $user_accessibilities->options = json_encode($request->options);
         if(!$user_accessibilities->save()){
             return response()->json(["msg"=>"error"], 400);
         }
@@ -61,8 +63,10 @@ class UserAccessibilitiesController extends Controller
      */
     public function update(UpdateUserAccessibilitiesRequest $request, $id)
     {
+        // dd($user_accessibilities);
         $user_accessibilities = UserAccessibilities::find($id);
         $user_accessibilities->fill($request->validated());
+        $user_accessibilities->options = json_encode($request->options);
         if($user_accessibilities->save()){
             return response()->json($user_accessibilities);
         }

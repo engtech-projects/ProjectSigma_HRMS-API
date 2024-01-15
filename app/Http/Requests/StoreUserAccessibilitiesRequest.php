@@ -23,7 +23,7 @@ class StoreUserAccessibilitiesRequest extends FormRequest
     {
         return [
             'user_id'=>"required|integer|max:20",
-            'abilities '=>"required|json|max:255",
+            'options'=>"required|array|exists:Accessibilities,id",
         ];
     }
 }
