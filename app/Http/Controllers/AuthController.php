@@ -14,16 +14,17 @@ class AuthController extends Controller
 
     public function login(AuthUserRequest $request)
     {
+        // dd($request);   
         $creds = $request->validated();
-        $user = new Users;
+        
         $check_user = Users::where(
-            ['name'=>$creds['username'], 'password'=>password_verify($creds["password"], $user->password)]
+            ['name'=>$creds['username']]
         )->first();
         
-        if(!$check_user) {
+        if(!$check_user || !password_verify($creds["password"], $check_user->password)) {
             return response()->json([ 'message' => 'Invalid login details'  ], 401);
         }
-        
+
         $token = $check_user->createToken('auth_token:'.$check_user->id)->plainTextToken;
         return response()->json([
             'mesage' => 'Sign in successful.',
