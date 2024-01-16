@@ -11,6 +11,7 @@ use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\WitholdingTaxContributionController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\PagibigContributionController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::resource('sss', SSSContributionController::class);
 Route::resource('philhealth', PhilhealthContributionController::class);
 Route::resource('witholdingtax', WitholdingTaxContributionController::class);
 Route::resource('leave', LeaveController::class);
+Route::resource('pagibig', PagibigContributionController::class);
 Route::resource('departments', DepartmentController::class);
 Route::resource('user_accessibilities', UserAccessibilitiesController::class);
 Route::resource('accessibilities', AccessibilitiesController::class);
