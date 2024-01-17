@@ -33,10 +33,6 @@ class StoreLeaveRequest extends FormRequest
             'employment_type'=>[
                 "required",
                 "array",
-            ],
-            'employment_type.data'=>[
-                "required",
-                "array",
                 'in:Probationary,Regular/FullTime,Part Time,Project Based,Contractual'
             ],
         ];
