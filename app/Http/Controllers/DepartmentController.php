@@ -101,7 +101,7 @@ class DepartmentController extends Controller
             $data->data = $department;
             return response()->json($data);
         }
-        $data->message = "Deleted unsuccessfull.";
+        $data->message = "Delete unsuccessfull.";
         $data->success = false;
         return response()->json($data,400); 
     }
