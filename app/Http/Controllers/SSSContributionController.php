@@ -15,7 +15,7 @@ class SSSContributionController extends Controller
     {
         $sss = SSSContribution::paginate(15);
         $data = json_decode('{}'); 
-        $data->message = "successfully fetch all";
+        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $sss;
         return response()->json($data);
@@ -38,11 +38,11 @@ class SSSContributionController extends Controller
         $sss->fill($request->validated());
         $data = json_decode('{}'); 
         if(!$sss->save()){
-            $data->message = "failed to store data";
+            $data->message = "Save unsuccessfull.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "successfully store data";
+        $data->message = "Successfully save.";
         $data->success = true;
         $data->data = $sss;
         return response()->json($data);
@@ -55,11 +55,11 @@ class SSSContributionController extends Controller
     {
         $sss = SSSContribution::find($id);
         $data = json_decode('{}'); 
-        $data->message = "successfully show data";
+        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $sss;
         if($data->data==null){
-            $data->message = "no data found";
+            $data->message = "No data found.";
             $data->success = false;
         }
         return response()->json($data);
@@ -82,12 +82,12 @@ class SSSContributionController extends Controller
         $sss->fill($request->validated());
         $data = json_decode('{}'); 
         if($sss->save()){
-            $data->message = "successfully update data";
+            $data->message = "Successfully update.";
             $data->success = true;
             $data->data = $sss;
             return response()->json($data);
         }
-        $data->message = "failed update data";
+        $data->message = "Update unsuccessfull.";
         $data->success = false;
         return response()->json($data, 400);
     }
@@ -100,12 +100,12 @@ class SSSContributionController extends Controller
         $sss = SSSContribution::find($id);
         $data = json_decode('{}'); 
         if($sss->delete()){
-            $data->message = "successfully update data";
+            $data->message = "Successfully deleted.";
             $data->success = true;
             $data->data = $sss;
             return response()->json($data);
         }
-        $data->message = "failed delete data";
+        $data->message = "Delete unsuccessfull.";
         $data->success = false;
         return response()->json($data,400); 
     }
