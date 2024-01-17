@@ -34,7 +34,7 @@ class StorePhilhealthContributionRequest extends FormRequest
                 "required",
                 "numeric",
             ],
-            'employer_share'=>[
+            'share_type'=>[
                 "required",
                 "in:Amount,Percentage",
             ],            

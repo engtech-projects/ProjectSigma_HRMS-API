@@ -35,7 +35,7 @@ class UpdatePhilhealthContributionRequest extends FormRequest
                 "nullable",
                 "numeric",
             ],
-            'employer_share'=>[
+            'share_type'=>[
                 "nullable",
                 "in:Amount,Percentage",
             ],           

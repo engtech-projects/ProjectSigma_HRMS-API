@@ -15,7 +15,7 @@ class PhilhealthContributionController extends Controller
     {
         $sss = PhilhealthContribution::paginate(15);
         $data = json_decode('{}'); 
-        $data->message = "successfully fetch all";
+        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $sss;
         return response()->json($data);
@@ -38,11 +38,11 @@ class PhilhealthContributionController extends Controller
         $philhealth->fill($request->validated());
         $data = json_decode('{}'); 
         if(!$philhealth->save()){
-            $data->message = "failed to store data";
+            $data->message = "Save unsuccessfull.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "successfully store data";
+        $data->message = "Successfully save.";
         $data->success = true;
         $data->data = $philhealth;
         return response()->json($data);
@@ -55,12 +55,13 @@ class PhilhealthContributionController extends Controller
     {
         $philhealth = PhilhealthContribution::find($id);
         $data = json_decode('{}'); 
-        $data->message = "successfully show data";
+        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $philhealth;
         if($data->data==null){
-            $data->message = "no data found";
+            $data->message = "No data found.";
             $data->success = false;
+            return response()->json($data, 404);
         }
         return response()->json($data);
     }
@@ -78,18 +79,26 @@ class PhilhealthContributionController extends Controller
      */
     public function update(UpdatePhilhealthContributionRequest $request, $id)
     {
+
         $philhealth = PhilhealthContribution::find($id);
-        $philhealth->fill($request->validated());
         $data = json_decode('{}'); 
-        if($philhealth->save()){
-            $data->message = "successfully update data";
-            $data->success = true;
-            $data->data = $philhealth;
-            return response()->json($data);
+        if (!is_null($philhealth) ) {
+            $philhealth->fill($request->validated());
+    
+            if($philhealth->save()){
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $philhealth;
+                return response()->json($data);
+            }
+            $data->message = "Update unsuccessfull.";
+            $data->success = false;
+            return response()->json($data, 404);
         }
-        $data->message = "failed update data";
+
+        $data->message = "Update unsuccessfull.";
         $data->success = false;
-        return response()->json($data, 400);
+        return response()->json($data, 404);
     }
 
     /**
@@ -100,12 +109,12 @@ class PhilhealthContributionController extends Controller
         $philhealth = PhilhealthContribution::find($id);
         $data = json_decode('{}'); 
         if($philhealth->delete()){
-            $data->message = "successfully update data";
+            $data->message = "Successfully deleted.";
             $data->success = true;
             $data->data = $philhealth;
             return response()->json($data);
         }
-        $data->message = "failed delete data";
+        $data->message = "Delete unsuccessfull.";
         $data->success = false;
         return response()->json($data,400); 
     }
