@@ -15,7 +15,7 @@ class DepartmentController extends Controller
     {
         $department = Department::paginate(15);
         $data = json_decode('{}'); 
-        $data->message = "Successfully Fetch";
+        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $department;
         return response()->json($data);
@@ -39,11 +39,11 @@ class DepartmentController extends Controller
         $department->fill($request->validated());
         $data = json_decode('{}'); 
         if(!$department->save()){
-            $data->message = "Save unsuccessfull";
+            $data->message = "Save unsuccessfull.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "Successfully Save";
+        $data->message = "Successfully save.";
         $data->success = true;
         $data->data = $department;
         return response()->json($data);
@@ -55,7 +55,7 @@ class DepartmentController extends Controller
     public function show(Department $department)
     {
         $data = json_decode('{}'); 
-        $data->message = "Successfully Fetch";
+        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $department;
         return response()->json($data);
@@ -79,12 +79,12 @@ class DepartmentController extends Controller
         $department->fill($request->validated());
         $data = json_decode('{}'); 
         if($department->save()){
-            $data->message = "Successfully Update";
+            $data->message = "Successfully update.";
             $data->success = true;
             $data->data = $department;
             return response()->json($data);
         }
-        $data->message = "Update unsuccessfull";
+        $data->message = "Update unsuccessfull.";
         $data->success = false;
         return response()->json($data, 400);
     }
@@ -96,12 +96,12 @@ class DepartmentController extends Controller
     {
         $data = json_decode('{}'); 
         if($department->delete()){
-            $data->message = "Successfully Deleted";
+            $data->message = "Successfully deleted.";
             $data->success = true;
             $data->data = $department;
             return response()->json($data);
         }
-        $data->message = "Deleted unsuccessfull";
+        $data->message = "Deleted unsuccessfull.";
         $data->success = false;
         return response()->json($data,400); 
     }
