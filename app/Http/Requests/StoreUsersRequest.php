@@ -27,6 +27,7 @@ class StoreUsersRequest extends FormRequest
             'email_verified_at' => "nullable|date_format:Y-m-d H:i:s",
             'password' => "required|string|max:255",
             'type' => "required|in:Administrator,Employee",
+            'options'=>"required|array|exists:accessibilities,id",
         ];
     }
 }

@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\softDeletes;
 use App\Http\Controllers\AccessibilitiesController;
 use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\UserAccessibilitiesController;
 use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\WitholdingTaxContributionController;
@@ -36,7 +35,6 @@ Route::resource('witholdingtax', WitholdingTaxContributionController::class);
 Route::resource('leave', LeaveController::class);
 Route::resource('pagibig', PagibigContributionController::class);
 Route::resource('departments', DepartmentController::class);
-Route::resource('user_accessibilities', UserAccessibilitiesController::class);
 Route::resource('accessibilities', AccessibilitiesController::class);
 Route::resource('users', UsersController::class);
        

@@ -15,8 +15,12 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = Users::simplePaginate(15);      
-        return response()->json($users);
+        $users = Users::simplePaginate(15); 
+        $data = json_decode('{}'); 
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $users;     
+        return response()->json($data);
     }
 
     /**
@@ -35,10 +39,18 @@ class UsersController extends Controller
         $users = new Users;
         $users->fill($request->validated());
         $users->password = Hash::make($request->password);
+        $users->options = json_encode($request->options);
+        $data = json_decode('{}'); 
+        
         if(!$users->save()){
-            return response()->json(["msg"=>"error"], 400);
+            $data->message = "Save failed.";
+            $data->success = false;
+            return response()->json($data, 400);
         }
-        return response()->json($users);
+        $data->message = "Successfully save.";
+        $data->success = true;
+        $data->data = $users;
+        return response()->json($data);
     }
 
     /**
@@ -47,7 +59,16 @@ class UsersController extends Controller
     public function show($id)
     {
         $users = Users::find($id);
-        return response()->json($users);
+        $data = json_decode('{}');
+        if (!is_null($users) ) {
+            $data->message = "Successfully fetch.";
+            $data->success = true;
+            $data->data = $users;
+            return response()->json($data);
+        }
+        $data->message = "No data found.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**
@@ -64,11 +85,24 @@ class UsersController extends Controller
     public function update(UpdateUsersRequest $request, $id)
     {   
         $users = Users::find($id);
-        $users->fill($request->validated());
-        if($users->save()){
-            return response()->json($users);
+        $data = json_decode('{}');
+        if (!is_null($users) ) {
+            $users->fill($request->validated());
+            $users->options = json_encode($request->options);
+            if($users->save()){
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $users;
+                return response()->json($data);
+            }
+            $data->message = "Update failed.";
+            $data->success = false;
+            return response()->json($data, 400);
         }
-        return response()->json(["msg"=>"error"], 400);
+
+        $data->message = "Failed update.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**
@@ -77,9 +111,20 @@ class UsersController extends Controller
     public function destroy($id)
     {
         $users = Users::find($id);
-        if($users->delete()){
-            return response()->json($users);
+        $data = json_decode('{}');
+        if (!is_null($users) ) {
+            if($users->delete()){
+                $data->message = "Successfully delete.";
+                $data->success = true;
+                $data->data = $users;
+                return response()->json($data);
+            }
+            $data->message = "Failed delete.";
+            $data->success = false;
+            return response()->json($data,400);
         }
-        return response()->json(["msg"=>"error"],400); 
+        $data->message = "Failed delete.";
+        $data->success = false;
+        return response()->json($data,404);
     }
 }

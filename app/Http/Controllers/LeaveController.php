@@ -82,10 +82,10 @@ class LeaveController extends Controller
     public function update(UpdateLeaveRequest $request,  $id)
     {
         $leave = Leave::find($id);
-        $leave->employment_type = json_encode($request->employment_type);
         $data = json_decode('{}'); 
         if (!is_null($leave) ) {
             $leave->fill($request->validated());
+            $leave->employment_type = json_encode($request->employment_type);
             if($leave->save()){
                 $data->message = "Successfully update.";
                 $data->success = true;
