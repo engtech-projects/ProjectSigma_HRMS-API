@@ -42,6 +42,14 @@ class StorePagibigContributionRequest extends FormRequest
                 "required",
                 "numeric",
             ],
+            'employee_maximum_contribution'=>[
+                "required",
+                "numeric",
+            ],
+            'employer_maximum_contribution'=>[
+                "required",
+                "numeric",
+            ],
         ];
     }
 }
