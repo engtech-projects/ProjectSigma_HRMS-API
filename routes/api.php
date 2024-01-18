@@ -11,6 +11,7 @@ use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\WitholdingTaxContributionController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PagibigContributionController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,7 @@ Route::resource('leave', LeaveController::class);
 Route::resource('pagibig', PagibigContributionController::class);
 Route::resource('departments', DepartmentController::class);
 Route::resource('accessibilities', AccessibilitiesController::class);
+Route::resource('settings', SettingsController::class);
 Route::resource('users', UsersController::class);
        
 
