@@ -15,7 +15,7 @@ class WitholdingTaxContributionController extends Controller
     {
         $witholdingtax = WitholdingTaxContribution::paginate(15);
         $data = json_decode('{}'); 
-        $data->message = "successfully fetch all";
+        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $witholdingtax;
         return response()->json($data);
@@ -38,11 +38,11 @@ class WitholdingTaxContributionController extends Controller
         $witholdingtax->fill($request->validated());
         $data = json_decode('{}'); 
         if(!$witholdingtax->save()){
-            $data->message = "failed to store data";
+            $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "successfully store data";
+        $data->message = "Successfully save.";
         $data->success = true;
         $data->data = $witholdingtax;
         return response()->json($data);
@@ -55,14 +55,15 @@ class WitholdingTaxContributionController extends Controller
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
         $data = json_decode('{}'); 
-        $data->message = "successfully show data";
-        $data->success = true;
-        $data->data = $witholdingtax;
-        if($data->data==null){
-            $data->message = "no data found";
-            $data->success = false;
+        if (!is_null($witholdingtax) ) {
+            $data->message = "Successfully fetch.";
+            $data->success = true;
+            $data->data = $witholdingtax;
+            return response()->json($data);
         }
-        return response()->json($data);
+        $data->message = "No data found.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**
@@ -81,15 +82,20 @@ class WitholdingTaxContributionController extends Controller
         $witholdingtax = WitholdingTaxContribution::find($id);
         $witholdingtax->fill($request->validated());
         $data = json_decode('{}'); 
-        if($witholdingtax->save()){
-            $data->message = "successfully update data";
-            $data->success = true;
-            $data->data = $witholdingtax;
-            return response()->json($data);
+        if (!is_null($witholdingtax) ) {
+            if($witholdingtax->save()){
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $witholdingtax;
+                return response()->json($data);
+            }
+            $data->message = "Failed update.";
+            $data->success = false;
+            return response()->json($data, 400);
         }
-        $data->message = "failed update data";
+        $data->message = "Failed update.";
         $data->success = false;
-        return response()->json($data, 400);
+        return response()->json($data, 404);
     }
 
     /**
@@ -99,14 +105,19 @@ class WitholdingTaxContributionController extends Controller
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
         $data = json_decode('{}'); 
-        if($witholdingtax->delete()){
-            $data->message = "successfully update data";
-            $data->success = true;
-            $data->data = $witholdingtax;
-            return response()->json($data);
+        if (!is_null($witholdingtax) ) {
+            if($witholdingtax->delete()){
+                $data->message = "Successfully delete.";
+                $data->success = true;
+                $data->data = $witholdingtax;
+                return response()->json($data);
+            }
+            $data->message = "Failed delete.";
+            $data->success = false;
+            return response()->json($data,400); 
         }
-        $data->message = "failed delete data";
+        $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,400); 
+        return response()->json($data, 404);
     }
 }

@@ -38,7 +38,7 @@ class SSSContributionController extends Controller
         $sss->fill($request->validated());
         $data = json_decode('{}'); 
         if(!$sss->save()){
-            $data->message = "Save unsuccessfull.";
+            $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
@@ -54,15 +54,16 @@ class SSSContributionController extends Controller
     public function show($id)
     {
         $sss = SSSContribution::find($id);
-        $data = json_decode('{}'); 
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $sss;
-        if($data->data==null){
-            $data->message = "No data found.";
-            $data->success = false;
-        }
-        return response()->json($data);
+        $data = json_decode('{}');
+        if (!is_null($sss) ) {
+            $data->message = "Successfully fetch.";
+            $data->success = true;
+            $data->data = $sss;
+            return response()->json($data);
+        } 
+        $data->message = "No data found.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**
@@ -79,17 +80,23 @@ class SSSContributionController extends Controller
     public function update(UpdateSSSContributionRequest $request, $id)
     {
         $sss = SSSContribution::find($id);
-        $sss->fill($request->validated());
         $data = json_decode('{}'); 
-        if($sss->save()){
-            $data->message = "Successfully update.";
-            $data->success = true;
-            $data->data = $sss;
-            return response()->json($data);
+        if (!is_null($sss) ) {
+            $sss->fill($request->validated());
+            if($sss->save()){
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $sss;
+                return response()->json($data);
+            }
+            $data->message = "Update failed.";
+            $data->success = false;
+            return response()->json($data, 400);
         }
-        $data->message = "Update unsuccessfull.";
+
+        $data->message = "Failed update.";
         $data->success = false;
-        return response()->json($data, 400);
+        return response()->json($data, 404);
     }
 
     /**
@@ -98,15 +105,20 @@ class SSSContributionController extends Controller
     public function destroy($id)
     {
         $sss = SSSContribution::find($id);
-        $data = json_decode('{}'); 
-        if($sss->delete()){
-            $data->message = "Successfully deleted.";
-            $data->success = true;
-            $data->data = $sss;
-            return response()->json($data);
-        }
-        $data->message = "Delete unsuccessfull.";
+        $data = json_decode('{}');
+        if (!is_null($sss) ) {
+            if($sss->delete()){
+                $data->message = "Successfully delete.";
+                $data->success = true;
+                $data->data = $sss;
+                return response()->json($data);
+            }
+            $data->message = "Failed delete.";
+            $data->success = false;
+            return response()->json($data,400); 
+        } 
+        $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,400); 
+        return response()->json($data, 404);
     }
 }

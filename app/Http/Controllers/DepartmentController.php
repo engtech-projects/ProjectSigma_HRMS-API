@@ -39,7 +39,7 @@ class DepartmentController extends Controller
         $department->fill($request->validated());
         $data = json_decode('{}'); 
         if(!$department->save()){
-            $data->message = "Save unsuccessfull.";
+            $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
@@ -52,13 +52,19 @@ class DepartmentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Department $department)
+    public function show($id)
     {
+        $department = Department::find($id);
         $data = json_decode('{}'); 
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $department;
-        return response()->json($data);
+        if (!is_null($department) ) {
+            $data->message = "Successfully fetch.";
+            $data->success = true;
+            $data->data = $department;
+            return response()->json($data);
+        }
+        $data->message = "No data found.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**
@@ -76,33 +82,44 @@ class DepartmentController extends Controller
     public function update(UpdateDepartmentRequest $request, $id)
     {
         $department = Department::find($id);
-        $department->fill($request->validated());
         $data = json_decode('{}'); 
-        if($department->save()){
-            $data->message = "Successfully update.";
-            $data->success = true;
-            $data->data = $department;
-            return response()->json($data);
+        if (!is_null($department) ) {
+            $department->fill($request->validated());
+            if($department->save()){
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $department;
+                return response()->json($data);
+            }
+            $data->message = "Failed update.";
+            $data->success = false;
+            return response()->json($data, 400);
         }
-        $data->message = "Update unsuccessfull.";
+        $data->message = "Failed update.";
         $data->success = false;
-        return response()->json($data, 400);
+        return response()->json($data, 404);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Department $department)
+    public function destroy($id)
     {
+        $department = Department::find($id);
         $data = json_decode('{}'); 
-        if($department->delete()){
-            $data->message = "Successfully deleted.";
-            $data->success = true;
-            $data->data = $department;
-            return response()->json($data);
+        if (!is_null($department) ) {
+            if($department->delete()){
+                $data->message = "Successfully delete.";
+                $data->success = true;
+                $data->data = $department;
+                return response()->json($data);
+            }
+            $data->message = "Failed delete.";
+            $data->success = false;
+            return response()->json($data,400); 
         }
-        $data->message = "Delete unsuccessfull.";
+        $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,400); 
+        return response()->json($data, 404);
     }
 }

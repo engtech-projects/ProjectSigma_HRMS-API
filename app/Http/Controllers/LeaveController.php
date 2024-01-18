@@ -40,7 +40,7 @@ class LeaveController extends Controller
         $leave->employment_type = json_encode($request->employment_type);
         $data = json_decode('{}'); 
         if(!$leave->save()){
-            $data->message = "Save unsuccessfull.";
+            $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
@@ -57,14 +57,15 @@ class LeaveController extends Controller
     {
         $leave = Leave::find($id);
         $data = json_decode('{}'); 
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $leave;
-        if($data->data==null){
-            $data->message = "No data found.";
-            $data->success = false;
+        if (!is_null($leave) ) {
+            $data->message = "Successfully fetch.";
+            $data->success = true;
+            $data->data = $leave;
+            return response()->json($data);
         }
-        return response()->json($data);
+        $data->message = "No data found.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**
@@ -81,18 +82,23 @@ class LeaveController extends Controller
     public function update(UpdateLeaveRequest $request,  $id)
     {
         $leave = Leave::find($id);
-        $leave->fill($request->validated());
         $leave->employment_type = json_encode($request->employment_type);
         $data = json_decode('{}'); 
-        if($leave->save()){
-            $data->message = "Successfully update.";
-            $data->success = true;
-            $data->data = $leave;
-            return response()->json($data);
+        if (!is_null($leave) ) {
+            $leave->fill($request->validated());
+            if($leave->save()){
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $leave;
+                return response()->json($data);
+            }
+            $data->message = "Failed update.";
+            $data->success = false;
+            return response()->json($data, 400);
         }
-        $data->message = "Update unsuccessfull.";
+        $data->message = "Failed update.";
         $data->success = false;
-        return response()->json($data, 400);
+        return response()->json($data, 404);
     }
 
     /**
@@ -102,14 +108,19 @@ class LeaveController extends Controller
     {
         $leave = Leave::find($id);
         $data = json_decode('{}'); 
-        if($leave->delete()){
-            $data->message = "Successfully deleted.";
-            $data->success = true;
-            $data->data = $leave;
-            return response()->json($data);
+        if (!is_null($leave) ) {
+            if($leave->delete()){
+                $data->message = "Successfully delete.";
+                $data->success = true;
+                $data->data = $leave;
+                return response()->json($data);
+            }
+            $data->message = "Failed delete.";
+            $data->success = false;
+            return response()->json($data,400); 
         }
-        $data->message = "Delete unsuccessfull.";
+        $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,400); 
+        return response()->json($data,404); 
     }
 }

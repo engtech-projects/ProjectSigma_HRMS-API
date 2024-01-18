@@ -34,12 +34,8 @@ class UpdateLeaveRequest extends FormRequest
             'employment_type'=>[
                 "nullable",
                 "array",
-            ],
-            'employment_type.data'=>[
-                "nullable",
-                "array",
                 'in:Probationary,Regular/FullTime,Part Time,Project Based,Contractual'
-            ],
+            ]
         ];
     }
 }
