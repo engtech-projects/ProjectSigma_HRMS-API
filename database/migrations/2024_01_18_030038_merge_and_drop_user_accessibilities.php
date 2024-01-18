@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //
         Schema::table('users', function (Blueprint $table) {
-            $table->json('options');
+            $table->json('accessibilities');
         });        
         Schema::dropIfExists('user_accessibilities');
     }
@@ -25,7 +25,7 @@ return new class extends Migration
     {
         //
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('options');
+            $table->dropColumn('accessibilities');
         });
     }
 };
