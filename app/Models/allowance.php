@@ -8,14 +8,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-class position extends Model
+class allowance extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
-    
-    protected $table = 'positions';
 
     protected $fillable = [
         'id',
-        'name',
+        'position_id',
+        'amount',
     ];    
 }

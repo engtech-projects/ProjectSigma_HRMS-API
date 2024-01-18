@@ -12,6 +12,7 @@ use App\Http\Controllers\WitholdingTaxContributionController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PagibigContributionController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\UsersController;
 /*
@@ -40,6 +41,7 @@ Route::resource('departments', DepartmentController::class);
 Route::resource('accessibilities', AccessibilitiesController::class);
 Route::resource('settings', SettingsController::class);
 Route::resource('position', PositionController::class);
+Route::resource('allowance', AllowanceController::class);
 Route::resource('users', UsersController::class);
        
 
