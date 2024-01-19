@@ -38,10 +38,6 @@ class UpdatePagibigContributionRequest extends FormRequest
                 "nullable",
                 "numeric",
             ],
-            'max_contribution'=>[
-                "nullable",
-                "numeric",
-            ],
             'employee_maximum_contribution'=>[
                 "nullable",
                 "numeric",
