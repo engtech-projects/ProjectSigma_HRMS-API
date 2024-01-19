@@ -38,10 +38,6 @@ class StorePagibigContributionRequest extends FormRequest
                 "required",
                 "numeric",
             ],
-            'max_contribution'=>[
-                "required",
-                "numeric",
-            ],
             'employee_maximum_contribution'=>[
                 "required",
                 "numeric",
