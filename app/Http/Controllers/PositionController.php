@@ -22,6 +22,16 @@ class PositionController extends Controller
         return response()->json($data);
     }
 
+    public function get()
+    {
+        //
+        $main = position::get(); 
+        $data = json_decode('{}'); 
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;     
+        return response()->json($data);
+    }
     /**
      * Show the form for creating a new resource.
      */

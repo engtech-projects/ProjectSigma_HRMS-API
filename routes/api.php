@@ -43,5 +43,5 @@ Route::resource('settings', SettingsController::class);
 Route::resource('position', PositionController::class);
 Route::resource('allowance', AllowanceController::class);
 Route::resource('users', UsersController::class);
-       
+Route::get('position-list', [PositionController::class, 'get']);
 
