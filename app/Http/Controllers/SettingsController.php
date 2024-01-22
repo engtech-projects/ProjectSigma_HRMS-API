@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\settings;
+use App\Models\Settings;
 use App\Http\Requests\StoresettingsRequest;
 use App\Http\Requests\UpdatesettingsRequest;
 
@@ -13,7 +13,7 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        $settings = settings::simplePaginate(15); 
+        $settings = Settings::simplePaginate(15); 
         $data = json_decode('{}'); 
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -35,7 +35,7 @@ class SettingsController extends Controller
     public function store(StoresettingsRequest $request)
     {
         //
-        $settings = new settings;
+        $settings = new Settings;
         $settings->fill($request->validated());
         $data = json_decode('{}'); 
         
@@ -56,7 +56,7 @@ class SettingsController extends Controller
     public function show($id)
     {
         //
-        $settings = settings::find($id);
+        $settings = Settings::find($id);
         $data = json_decode('{}');
         if (!is_null($settings) ) {
             $data->message = "Successfully fetch.";
@@ -72,7 +72,7 @@ class SettingsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(settings $settings)
+    public function edit(Settings $settings)
     {
         //
     }
@@ -82,7 +82,7 @@ class SettingsController extends Controller
      */
     public function update(UpdatesettingsRequest $request, $id)
     {
-        $settings = settings::find($id);
+        $settings = Settings::find($id);
         $data = json_decode('{}');
         if (!is_null($settings) ) {
             $settings->fill($request->validated());
@@ -107,7 +107,7 @@ class SettingsController extends Controller
      */
     public function destroy($id)
     {
-        $settings = settings::find($id);
+        $settings = Settings::find($id);
         $data = json_decode('{}');
         if (!is_null($settings) ) {
             if($settings->delete()){

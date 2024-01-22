@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\allowance;
+use App\Models\Position;
+use App\Models\Allowance;
 use App\Http\Requests\StoreallowanceRequest;
 use App\Http\Requests\UpdateallowanceRequest;
+use Illuminate\Support\Facades\DB;
 
 class AllowanceController extends Controller
 {
@@ -14,7 +16,21 @@ class AllowanceController extends Controller
     public function index()
     {
         //
-        $main = allowance::simplePaginate(15); 
+        $main = Allowance::simplePaginate(15); 
+        $data = json_decode('{}'); 
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;     
+        return response()->json($data);
+    }
+
+    
+    public function get()
+    {
+        // $leagues = DB::table('positions')
+        // ->join('allowances', 'allowances.position_id', '=', 'allowances.id')
+        // ->get();
+        $main = Position::with('allowances')->get(); 
         $data = json_decode('{}'); 
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -36,7 +52,7 @@ class AllowanceController extends Controller
     public function store(StoreallowanceRequest $request)
     {
         //
-        $main = new allowance;
+        $main = new Allowance;
         $main->fill($request->validated());
         $data = json_decode('{}'); 
         
@@ -56,7 +72,7 @@ class AllowanceController extends Controller
      */
     public function show($id)
     {
-        $main = allowance::find($id);
+        $main = Allowance::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $data->message = "Successfully fetch.";
@@ -72,7 +88,7 @@ class AllowanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(allowance $allowance)
+    public function edit(Allowance $allowance)
     {
         //
     }
@@ -83,7 +99,7 @@ class AllowanceController extends Controller
     public function update(UpdateallowanceRequest $request, $id)
     {
         //
-        $main = allowance::find($id);
+        $main = Allowance::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $main->fill($request->validated());
@@ -108,7 +124,7 @@ class AllowanceController extends Controller
      */
     public function destroy($id)
     {
-        $main = allowance::find($id);
+        $main = Allowance::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             if($main->delete()){
