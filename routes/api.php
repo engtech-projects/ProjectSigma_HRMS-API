@@ -9,6 +9,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\WitholdingTaxContributionController;
+use App\Http\Controllers\EventsController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PagibigContributionController;
 use App\Http\Controllers\SettingsController;
@@ -43,6 +44,7 @@ Route::resource('settings', SettingsController::class);
 Route::resource('position', PositionController::class);
 Route::resource('allowance', AllowanceController::class);
 Route::resource('users', UsersController::class);
+Route::resource('events', EventsController::class);
 Route::get('position-list', [PositionController::class, 'get']);
 Route::get('allowance-list', [AllowanceController::class, 'get']);
 
