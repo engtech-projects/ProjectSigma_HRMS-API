@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Position;
 use App\Models\Allowance;
+use App\Models\Position;
 use App\Http\Requests\StoreallowanceRequest;
 use App\Http\Requests\UpdateallowanceRequest;
 use Illuminate\Support\Facades\DB;
@@ -27,9 +27,6 @@ class AllowanceController extends Controller
     
     public function get()
     {
-        // $leagues = DB::table('positions')
-        // ->join('allowances', 'allowances.position_id', '=', 'allowances.id')
-        // ->get();
         $main = Position::with('allowances')->get(); 
         $data = json_decode('{}'); 
         $data->message = "Successfully fetch.";
