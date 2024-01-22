@@ -22,7 +22,7 @@ class Position extends Model
 
     public function allowances(): HasMany
     {
-        return $this->hasMany(allowance::class,"id","position_id");
+        return $this->hasMany(Allowance::class);
     }
 }
     
