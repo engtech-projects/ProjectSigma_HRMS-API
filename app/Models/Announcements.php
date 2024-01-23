@@ -8,19 +8,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-class Events extends Model
+class Announcements extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
 
     protected $fillable = [
         'id',
         'title',
-        'event_type',
-        'repetition_type',
-        'with_pay',
-        'with_work',
+        'content',
         'start_date',
         'end_date',
-        'description',
     ];    
 }
