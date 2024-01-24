@@ -8,21 +8,21 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Position extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
-    
+
     protected $table = 'positions';
 
     protected $fillable = [
         'id',
         'name',
-    ];   
+    ];
 
-    public function allowances(): HasMany
+    public function allowances(): HasOne
     {
-        return $this->hasMany(Allowance::class);
+        return $this->hasOne(Allowance::class);
     }
 }
-    

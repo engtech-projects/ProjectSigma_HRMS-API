@@ -16,22 +16,22 @@ class AllowanceController extends Controller
     public function index()
     {
         //
-        $main = Allowance::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $main = Allowance::simplePaginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
         return response()->json($data);
     }
 
-    
+
     public function get()
     {
-        $main = Position::with('allowances')->get(); 
-        $data = json_decode('{}'); 
+        $main = Position::with('allowances')->get();
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
         return response()->json($data);
     }
 
@@ -51,8 +51,8 @@ class AllowanceController extends Controller
         //
         $main = new Allowance;
         $main->fill($request->validated());
-        $data = json_decode('{}'); 
-        
+        $data = json_decode('{}');
+
         if(!$main->save()){
             $data->message = "Save failed.";
             $data->success = false;
