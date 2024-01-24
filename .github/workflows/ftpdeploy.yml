@@ -1,4 +1,4 @@
-# Deploying to local staging server
+# Deploying to staging server
 name: Deploy ProjectSigma_HRMS-API to FTP SERVER
 
 on:
@@ -10,7 +10,7 @@ env:
   APP_NAME: "ProjectSigma_HRMS-API"
 
 concurrency:
-  group: "deployftp ProjectSigma_HRMS-API"
+  group: "deployftp ProjectSigma_HRMS-API ${{ github.event.workflow_run.head_branch }}"
   cancel-in-progress: true
 
 jobs:

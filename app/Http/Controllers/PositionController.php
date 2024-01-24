@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\position;
+use App\Models\Position;
 use App\Http\Requests\StorepositionRequest;
 use App\Http\Requests\UpdatepositionRequest;
 
@@ -14,7 +14,7 @@ class PositionController extends Controller
     public function index()
     {
         //
-        $main = position::simplePaginate(15); 
+        $main = Position::simplePaginate(15); 
         $data = json_decode('{}'); 
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -22,6 +22,16 @@ class PositionController extends Controller
         return response()->json($data);
     }
 
+    public function get()
+    {
+        //
+        $main = Position::get(); 
+        $data = json_decode('{}'); 
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;     
+        return response()->json($data);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -35,7 +45,7 @@ class PositionController extends Controller
      */
     public function store(StorepositionRequest $request)
     {
-        $main = new position;
+        $main = new Position;
         $main->fill($request->validated());
         $data = json_decode('{}'); 
         
@@ -56,7 +66,7 @@ class PositionController extends Controller
     public function show($id)
     {
         //
-        $main = position::find($id);
+        $main = Position::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $data->message = "Successfully fetch.";
@@ -83,7 +93,7 @@ class PositionController extends Controller
     public function update(UpdatepositionRequest $request,  $id)
     {
         //
-        $main = position::find($id);
+        $main = Position::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $main->fill($request->validated());
@@ -108,7 +118,7 @@ class PositionController extends Controller
      */
     public function destroy( $id)
     {
-        $main = position::find($id);
+        $main = Position::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             if($main->delete()){

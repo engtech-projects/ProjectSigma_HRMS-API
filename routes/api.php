@@ -9,11 +9,14 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\WitholdingTaxContributionController;
+use App\Http\Controllers\EventsController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PagibigContributionController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\AnnouncementsController;
+use App\Http\Controllers\ApprovalsController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -43,5 +46,9 @@ Route::resource('settings', SettingsController::class);
 Route::resource('position', PositionController::class);
 Route::resource('allowance', AllowanceController::class);
 Route::resource('users', UsersController::class);
-       
+Route::resource('events', EventsController::class);
+Route::resource('announcement', AnnouncementsController::class);
+Route::resource('approvals', ApprovalsController::class);
+Route::get('position-list', [PositionController::class, 'get']);
+Route::get('allowance-list', [AllowanceController::class, 'get']);
 

@@ -39,7 +39,7 @@ class UsersController extends Controller
         $users = new Users;
         $users->fill($request->validated());
         $users->password = Hash::make($request->password);
-        $users->options = json_encode($request->options);
+        $users->accessibilities = json_encode($request->accessibilities);
         $data = json_decode('{}'); 
         
         if(!$users->save()){
@@ -88,7 +88,7 @@ class UsersController extends Controller
         $data = json_decode('{}');
         if (!is_null($users) ) {
             $users->fill($request->validated());
-            $users->options = json_encode($request->options);
+            $users->accessibilities = json_encode($request->accessibilities);
             if($users->save()){
                 $data->message = "Successfully update.";
                 $data->success = true;
