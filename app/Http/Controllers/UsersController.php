@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserTypes;
 use App\Models\Users;
 use App\Models\User;
 use App\Http\Requests\StoreUsersRequest;
@@ -15,20 +16,25 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = Users::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $users = Users::simplePaginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $users;     
+        $data->data = $users;
         return response()->json($data);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function get()
     {
-        //
+        $users = Users::where('type', UserTypes::EMPLOYEE);
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $users;
+        return response()->json($data);
     }
 
     /**
@@ -40,8 +46,8 @@ class UsersController extends Controller
         $users->fill($request->validated());
         $users->password = Hash::make($request->password);
         $users->accessibilities = json_encode($request->accessibilities);
-        $data = json_decode('{}'); 
-        
+        $data = json_decode('{}');
+
         if(!$users->save()){
             $data->message = "Save failed.";
             $data->success = false;
@@ -83,7 +89,7 @@ class UsersController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateUsersRequest $request, $id)
-    {   
+    {
         $users = Users::find($id);
         $data = json_decode('{}');
         if (!is_null($users) ) {
