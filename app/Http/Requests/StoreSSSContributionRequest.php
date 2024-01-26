@@ -38,6 +38,14 @@ class StoreSSSContributionRequest extends FormRequest
                 "required",
                 "numeric",
             ],
+            'employee_contribution'=>[
+                "required",
+                "numeric",
+            ],
+            'employer_contribution'=>[
+                "required",
+                "numeric",
+            ],
         ];
     }
 }

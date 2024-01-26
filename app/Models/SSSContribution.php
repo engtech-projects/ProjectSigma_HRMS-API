@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class SSSContribution extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
-    
+
     protected $table = 'sss_contributions';
 
     protected $fillable = [
@@ -20,5 +20,7 @@ class SSSContribution extends Model
         'range_to',
         'employee_share',
         'employer_share',
+        'employee_contribution',
+        'employer_contribution',
     ];
 }

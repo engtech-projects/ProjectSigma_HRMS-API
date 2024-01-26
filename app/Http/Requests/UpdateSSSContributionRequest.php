@@ -38,6 +38,14 @@ class UpdateSSSContributionRequest extends FormRequest
                 "nullable",
                 "numeric",
             ],
+            'employee_contribution'=>[
+                "nullable",
+                "numeric",
+            ],
+            'employer_contribution'=>[
+                "nullable",
+                "numeric",
+            ],
         ];
     }
 }
