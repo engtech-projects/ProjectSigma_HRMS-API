@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcements;
 use App\Http\Requests\StoreAnnouncementsRequest;
 use App\Http\Requests\UpdateAnnouncementsRequest;
+use Carbon\Carbon;
 
 class AnnouncementsController extends Controller
 {
@@ -13,11 +14,21 @@ class AnnouncementsController extends Controller
      */
     public function index()
     {
-        $main = Announcements::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $main = Announcements::simplePaginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
+        return response()->json($data);
+    }
+
+    public function get()
+    {
+        $main = Announcements::where('start_date', '>=', date('Y-m-d'))->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
         return response()->json($data);
     }
 
@@ -36,8 +47,8 @@ class AnnouncementsController extends Controller
     {
         $main = new Announcements;
         $main->fill($request->validated());
-        $data = json_decode('{}'); 
-        
+        $data = json_decode('{}');
+
         if(!$main->save()){
             $data->message = "Save failed.";
             $data->success = false;

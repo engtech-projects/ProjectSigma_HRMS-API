@@ -52,4 +52,5 @@ Route::resource('announcement', AnnouncementsController::class);
 Route::resource('approvals', ApprovalsController::class);
 Route::get('position-list', [PositionController::class, 'get']);
 Route::get('allowance-list', [AllowanceController::class, 'get']);
+Route::get('announcement-list', [AnnouncementsController::class, 'get']);
 
