@@ -31,14 +31,18 @@ class UpdatePhilhealthContributionRequest extends FormRequest
                 "nullable",
                 "numeric",
             ],
-            'share'=>[
+            'employee_share'=>[
+                "nullable",
+                "numeric",
+            ],
+            'employer_share'=>[
                 "nullable",
                 "numeric",
             ],
             'share_type'=>[
                 "nullable",
                 "in:Amount,Percentage",
-            ],           
+            ],
         ];
     }
 }

@@ -27,17 +27,21 @@ class StorePhilhealthContributionRequest extends FormRequest
                 "numeric",
             ],
             'range_to'=>[
+                "nullable",
+                "numeric",
+            ],
+            'employee_share'=>[
                 "required",
                 "numeric",
             ],
-            'share'=>[
+            'employer_share'=>[
                 "required",
                 "numeric",
             ],
             'share_type'=>[
                 "required",
                 "in:Amount,Percentage",
-            ],            
+            ],
         ];
     }
 }

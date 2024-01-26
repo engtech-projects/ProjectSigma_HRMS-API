@@ -11,12 +11,13 @@ use Laravel\Sanctum\HasApiTokens;
 class PhilhealthContribution extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
-    
+
     protected $fillable = [
         'id',
         'range_from',
         'range_to',
-        'share',
+        'employee_share',
+        'employer_share',
         'share_type',
     ];
 }
