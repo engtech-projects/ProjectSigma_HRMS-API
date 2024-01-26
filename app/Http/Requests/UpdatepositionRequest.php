@@ -26,6 +26,15 @@ class UpdatepositionRequest extends FormRequest
                 "nullable",
                 "string",
             ],
+            'department_id'=> [
+                "nullable",
+                "integer",
+                "exists:positions,id",
+            ],
+            'position_type'=>[
+                "nullable",
+                "in:Head,Staff",
+            ],
         ];
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::table('pagibig_contributions', function (Blueprint $table) {
             $table->float('employee_maximum_contribution');
             $table->float('employer_maximum_contribution');
-        });        
+        });
     }
 
     /**

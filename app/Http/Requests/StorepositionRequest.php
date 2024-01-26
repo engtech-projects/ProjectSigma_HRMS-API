@@ -26,6 +26,15 @@ class StorepositionRequest extends FormRequest
                 "required",
                 "string",
             ],
+            'department_id'=> [
+                "required",
+                "integer",
+                "exists:departments,id",
+            ],
+            'position_type'=>[
+                "required",
+                "in:Head,Staff",
+            ],
         ];
     }
 }

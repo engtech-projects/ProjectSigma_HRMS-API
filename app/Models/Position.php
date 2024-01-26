@@ -12,17 +12,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Position extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
-    
+
     protected $table = 'positions';
 
     protected $fillable = [
         'id',
         'name',
-    ];   
+        'department_id',
+        'position_type',
+    ];
 
     public function allowances(): HasMany
     {
         return $this->hasMany(Allowance::class);
     }
 }
-    
