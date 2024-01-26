@@ -19,6 +19,8 @@ class Position extends Model
     protected $fillable = [
         'id',
         'name',
+        'department_id',
+        'position_type',
     ];
 
     public function allowances(): HasOne
