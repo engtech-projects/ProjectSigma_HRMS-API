@@ -18,6 +18,8 @@ class PagibigContribution extends Model
         'employee_share_percent',
         'employer_share_percent',
         'employer_maximum_contribution',
-        'employee_maximum_contribution'
+        'employee_maximum_contribution',
+        'employee_compensation',
+        'employer_compensation',
     ];
 }

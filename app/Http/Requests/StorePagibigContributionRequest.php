@@ -27,7 +27,7 @@ class StorePagibigContributionRequest extends FormRequest
                 "numeric",
             ],
             'range_to'=>[
-                "required",
+                "nullable",
                 "numeric",
             ],
             'employee_share_percent'=>[
@@ -43,6 +43,14 @@ class StorePagibigContributionRequest extends FormRequest
                 "numeric",
             ],
             'employer_maximum_contribution'=>[
+                "required",
+                "numeric",
+            ],
+            'employee_compensation'=>[
+                "required",
+                "numeric",
+            ],
+            'employer_compensation'=>[
                 "required",
                 "numeric",
             ],

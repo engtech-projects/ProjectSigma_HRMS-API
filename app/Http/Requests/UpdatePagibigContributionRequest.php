@@ -46,6 +46,14 @@ class UpdatePagibigContributionRequest extends FormRequest
                 "nullable",
                 "numeric",
             ],
+            'employee_compensation'=>[
+                "nullable",
+                "numeric",
+            ],
+            'employer_compensation'=>[
+                "nullable",
+                "numeric",
+            ],
         ];
     }
 }
