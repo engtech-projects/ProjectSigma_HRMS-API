@@ -14,12 +14,23 @@ class DepartmentController extends Controller
     public function index()
     {
         $department = Department::paginate(15);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $department;
         return response()->json($data);
-        // dd($department);     
+        // dd($department);
+    }
+
+    public function get()
+    {
+        //
+        $main = Department::get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
     }
 
     /**
@@ -28,7 +39,7 @@ class DepartmentController extends Controller
     public function create()
     {
         //
-    }   
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -37,7 +48,7 @@ class DepartmentController extends Controller
     {
         $department = new Department;
         $department->fill($request->validated());
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if(!$department->save()){
             $data->message = "Save failed.";
             $data->success = false;
@@ -55,7 +66,7 @@ class DepartmentController extends Controller
     public function show($id)
     {
         $department = Department::find($id);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if (!is_null($department) ) {
             $data->message = "Successfully fetch.";
             $data->success = true;
@@ -82,7 +93,7 @@ class DepartmentController extends Controller
     public function update(UpdateDepartmentRequest $request, $id)
     {
         $department = Department::find($id);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if (!is_null($department) ) {
             $department->fill($request->validated());
             if($department->save()){
@@ -106,7 +117,7 @@ class DepartmentController extends Controller
     public function destroy($id)
     {
         $department = Department::find($id);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if (!is_null($department) ) {
             if($department->delete()){
                 $data->message = "Successfully delete.";
@@ -116,7 +127,7 @@ class DepartmentController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400); 
+            return response()->json($data,400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
