@@ -28,19 +28,19 @@ class StoreApprovalsRequest extends FormRequest
                 "string",
             ],
             'approvals'=> [
-                "required",
+                "nullable",
                 "array",
             ],
-            'approvals.type'=> [
-                "required",
+            'approvals.*.type'=> [
+                "nullable",
                 "string",
             ],
-            'approvals.userselector'=> [
-                "required",
+            'approvals.*.userselector'=> [
+                "nullable",
                 "boolean",
             ],
-            'approvals.user_id'=> [
-                "required",
+            'approvals.*.user_id'=> [
+                "nullable",
                 "integer",
                 "exists:users,id",
                 Rule::notIn([1]),

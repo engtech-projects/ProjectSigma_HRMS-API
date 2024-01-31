@@ -13,11 +13,11 @@ class ApprovalsController extends Controller
      */
     public function index()
     {
-        $main = Approvals::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $main = Approvals::simplePaginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
         return response()->json($data);
     }
 
@@ -36,7 +36,7 @@ class ApprovalsController extends Controller
     {
         $main = new Approvals;
         $main->fill($request->validated());
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         $main->approvals = json_encode($request->approvals);
         if(!$main->save()){
             $data->message = "Save failed.";
