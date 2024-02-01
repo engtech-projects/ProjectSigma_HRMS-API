@@ -29,7 +29,7 @@ class UsersController extends Controller
      */
     public function get()
     {
-        $users = Users::where('type', UserTypes::EMPLOYEE);
+        $users = Users::where('type', UserTypes::EMPLOYEE)->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
