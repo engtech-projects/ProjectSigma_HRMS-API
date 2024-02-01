@@ -26,13 +26,14 @@ class StoreApprovalsRequest extends FormRequest
             'form'=> [
                 "required",
                 "string",
+                Rule::unique("approvals","form")
             ],
             'approvals'=> [
                 "nullable",
                 "array",
             ],
             'approvals.*.type'=> [
-                "nullable",
+                "required",
                 "string",
             ],
             'approvals.*.userselector'=> [
