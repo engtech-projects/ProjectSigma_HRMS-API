@@ -50,6 +50,7 @@ Route::resource('users', UsersController::class);
 Route::resource('events', EventsController::class);
 Route::resource('announcement', AnnouncementsController::class);
 Route::resource('approvals', ApprovalsController::class);
+Route::get('users-list', [UsersController::class, 'get']);
 Route::get('department-list', [DepartmentController::class, 'get']);
 Route::get('position-list', [PositionController::class, 'get']);
 Route::get('allowance-list', [AllowanceController::class, 'get']);
