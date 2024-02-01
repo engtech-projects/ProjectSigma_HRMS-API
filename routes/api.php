@@ -55,4 +55,5 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('announcement-list', [AnnouncementsController::class, 'get']);
 });
 
+Route::resource('manpower-requests', ManpowerRequestController::class);
 
