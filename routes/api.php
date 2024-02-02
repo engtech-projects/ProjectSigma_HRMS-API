@@ -16,6 +16,7 @@ use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ApprovalsController;
+use App\Http\Controllers\ManpowerRequestController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('witholdingtax', WitholdingTaxContributionController::class);
     Route::resource('leave', LeaveController::class);
     Route::resource('pagibig', PagibigContributionController::class);
-    Route::resource('departments', DepartmentController::class);
     Route::resource('accessibilities', AccessibilitiesController::class);
     Route::resource('settings', SettingsController::class);
     Route::resource('position', PositionController::class);
@@ -53,7 +53,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('position-list', [PositionController::class, 'get']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::get('announcement-list', [AnnouncementsController::class, 'get']);
+    Route::resource('departments', DepartmentController::class);
+    Route::resource('manpower-requests', ManpowerRequestController::class);
 });
-
-Route::resource('manpower-requests', ManpowerRequestController::class);
-

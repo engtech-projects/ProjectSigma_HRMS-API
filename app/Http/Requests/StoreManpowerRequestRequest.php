@@ -25,6 +25,7 @@ class StoreManpowerRequestRequest extends FormRequest
             'requesting_department'=> [
                 "required",
                 "integer",
+                "exists:departments,id",
             ],
             'date_requested'=>[
                 "required",
@@ -41,11 +42,11 @@ class StoreManpowerRequestRequest extends FormRequest
             'employment_type'=>[
                 "required",
                 "string",
-                'in:Student Trainee,Project Hire,Contractual,Regular'
+                'in:Student Trainee, Project Hire, Contractual, Regular'
             ],
             'brief_description'=>[
                 "required",
-                "text",
+                "string",
             ],
             'job_description_attachment'=>[
                 "required",
@@ -54,7 +55,7 @@ class StoreManpowerRequestRequest extends FormRequest
             'nature_of_request'=>[
                 "required",
                 "string",
-                'in:Student New/Addition,Replacement'
+                'in:New/Addition, Replacement'
             ],
             'age_range'=>[
                 "required",
@@ -63,7 +64,7 @@ class StoreManpowerRequestRequest extends FormRequest
             'status'=>[
                 "required",
                 "string",
-                'in:Single, Married,No Preference'
+                'in:Single, Married, No Preference'
             ],
             'gender'=>[
                 "required",
@@ -76,7 +77,7 @@ class StoreManpowerRequestRequest extends FormRequest
             ],
             'preferred_qualifications'=>[
                 "required",
-                "text",
+                "string",
             ],
             'approvals'=>[
                 "required",
@@ -84,23 +85,24 @@ class StoreManpowerRequestRequest extends FormRequest
             ],
             'approvals.*.label'=>[
                 "required",
-                "array",
+                "string",
             ],
             'approvals.*.user_id'=>[
                 "required",
-                "array",
+                "integer",
+                "exists:users,id",
             ],
             'approvals.*.status'=>[
                 "required",
-                "array",
+                "string",
             ],
             'approvals.*.date_approved'=>[
                 "required",
-                "array",
+                "date",
             ],
             'remarks'=>[
                 "required",
-                "text",
+                "string",
             ],
             'request_status'=>[
                 "required",
@@ -110,6 +112,7 @@ class StoreManpowerRequestRequest extends FormRequest
             'charged_to'=>[
                 "required",
                 "integer",
+                "exists:departments,id",
             ],
             'breakdown_details'=>[
                 "required",

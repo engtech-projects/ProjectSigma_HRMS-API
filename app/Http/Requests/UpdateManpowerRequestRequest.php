@@ -25,12 +25,13 @@ class UpdateManpowerRequestRequest extends FormRequest
             'requesting_department'=> [
                 "nullable",
                 "integer",
+                "exists:departments,id",
             ],
             'date_requested'=>[
                 "nullable",
                 "date",
             ],
-            'date_required'=>[
+            'date_nullable'=>[
                 "nullable",
                 "date",
             ],
@@ -41,11 +42,11 @@ class UpdateManpowerRequestRequest extends FormRequest
             'employment_type'=>[
                 "nullable",
                 "string",
-                'in:Student Trainee,Project Hire,Contractual,Regular'
+                'in:Student Trainee, Project Hire, Contractual, Regular'
             ],
             'brief_description'=>[
                 "nullable",
-                "text",
+                "string",
             ],
             'job_description_attachment'=>[
                 "nullable",
@@ -54,7 +55,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'nature_of_request'=>[
                 "nullable",
                 "string",
-                'in:Student New/Addition,Replacement'
+                'in:New/Addition, Replacement'
             ],
             'age_range'=>[
                 "nullable",
@@ -63,7 +64,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'status'=>[
                 "nullable",
                 "string",
-                'in:Single, Married,No Preference'
+                'in:Single, Married, No Preference'
             ],
             'gender'=>[
                 "nullable",
@@ -76,7 +77,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             ],
             'preferred_qualifications'=>[
                 "nullable",
-                "text",
+                "string",
             ],
             'approvals'=>[
                 "nullable",
@@ -84,23 +85,24 @@ class UpdateManpowerRequestRequest extends FormRequest
             ],
             'approvals.*.label'=>[
                 "nullable",
-                "array",
+                "string",
             ],
             'approvals.*.user_id'=>[
                 "nullable",
-                "array",
+                "integer",
+                "exists:users,id",
             ],
             'approvals.*.status'=>[
                 "nullable",
-                "array",
+                "string",
             ],
             'approvals.*.date_approved'=>[
                 "nullable",
-                "array",
+                "date",
             ],
             'remarks'=>[
                 "nullable",
-                "text",
+                "string",
             ],
             'request_status'=>[
                 "nullable",
@@ -110,6 +112,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'charged_to'=>[
                 "nullable",
                 "integer",
+                "exists:departments,id",
             ],
             'breakdown_details'=>[
                 "nullable",
