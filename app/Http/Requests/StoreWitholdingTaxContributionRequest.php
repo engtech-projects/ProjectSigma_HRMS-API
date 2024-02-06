@@ -25,27 +25,37 @@ class StoreWitholdingTaxContributionRequest extends FormRequest
             'range_from'=> [
                 "required",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'range_to'=>[
                 "required",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'term'=>[
                 "required",
                 "in:Daily,Weekly,Semi-Monthly,Monthly",
-            ],       
+            ],
             'tax_base'=>[
                 "required",
                 "numeric",
-            ], 
+                'digits_between:1,8',
+                'decimal:0,2',
+            ],
             'tax_amount'=>[
                 "required",
                 "numeric",
-            ], 
+                'digits_between:1,8',
+                'decimal:0,2',
+            ],
             'tax_percent_over_base'=>[
                 "required",
                 "numeric",
-            ], 
+                'digits_between:1,8',
+                'decimal:0,2',
+            ],
         ];
     }
 }

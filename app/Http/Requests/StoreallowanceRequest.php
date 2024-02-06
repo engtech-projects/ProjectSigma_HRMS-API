@@ -30,6 +30,8 @@ class StoreallowanceRequest extends FormRequest
             'amount'=>[
                 "required",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
         ];
     }

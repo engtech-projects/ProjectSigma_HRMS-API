@@ -25,34 +25,50 @@ class UpdatePagibigContributionRequest extends FormRequest
             'range_from'=> [
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'range_to'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'employee_share_percent'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'employer_share_percent'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'employee_maximum_contribution'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'employer_maximum_contribution'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'employee_compensation'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'employer_compensation'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
         ];
     }

@@ -25,27 +25,37 @@ class UpdateWitholdingTaxContributionRequest extends FormRequest
             'range_from'=> [
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'range_to'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'term'=>[
                 "nullable",
                 "in:Daily,Weekly,Semi-Monthly,Monthly",
-            ],       
+            ],
             'tax_base'=>[
                 "nullable",
                 "numeric",
-            ], 
+                'digits_between:1,8',
+                'decimal:0,2',
+            ],
             'tax_amount'=>[
                 "nullable",
                 "numeric",
-            ], 
+                'digits_between:1,8',
+                'decimal:0,2',
+            ],
             'tax_percent_over_base'=>[
                 "nullable",
                 "numeric",
-            ],       
+                'digits_between:1,8',
+                'decimal:0,2',
+            ],
         ];
     }
 }
