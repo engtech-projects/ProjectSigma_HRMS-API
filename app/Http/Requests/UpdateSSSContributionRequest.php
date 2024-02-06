@@ -24,32 +24,38 @@ class UpdateSSSContributionRequest extends FormRequest
         return [
             'range_from'=> [
                 "nullable",
-                'decimal:8,2',
+                'digits_between:1,8',
+                'decimal:0,2',
                 "numeric",
             ],
             'range_to'=>[
                 "nullable",
-                'decimal:8,2',
+                'digits_between:1,8',
+                'decimal:0,2',
                 "numeric",
             ],
             'employee_share'=>[
                 "nullable",
-                'decimal:8,2',
+                'digits_between:1,8',
+                'decimal:0,2',
                 "numeric",
             ],
             'employer_share'=>[
                 "nullable",
-                'decimal:8,2',
+                'digits_between:1,8',
+                'decimal:0,2',
                 "numeric",
             ],
             'employee_contribution'=>[
                 "nullable",
-                'decimal:8,2',
+                'digits_between:1,8',
+                'decimal:0,2',
                 "numeric",
             ],
             'employer_contribution'=>[
                 "nullable",
-                'decimal:8,2',
+                'digits_between:1,8',
+                'decimal:0,2',
                 "numeric",
             ],
         ];
