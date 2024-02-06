@@ -15,15 +15,17 @@ class SettingsSeeder extends Seeder
     {
         DB::table('settings')->insert(
             [
-                'id' => 1,
-                'setting_name' => "Late_allowance_min",
-                'value' => '15',
+                [
+                    'id' => 1,
+                    'setting_name' => "Late_allowance_min",
+                    'value' => '15',
+                ],
+                [
+                    'id' => 2,
+                    'setting_name' => "Late_halfday_min",
+                    'value' => '30',
+                ]
             ],
-            [
-                'id' => 2,
-                'setting_name' => "Late_halfday_min",
-                'value' => '30',
-            ]
         );
     }
 }
