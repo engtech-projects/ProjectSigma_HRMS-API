@@ -14,22 +14,23 @@ class PositionController extends Controller
     public function index()
     {
         //
-        $main = Position::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $main = Position::simplePaginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
         return response()->json($data);
     }
 
     public function get()
     {
         //
-        $main = Position::get(); 
-        $data = json_decode('{}'); 
+        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
         return response()->json($data);
     }
     /**
@@ -47,8 +48,8 @@ class PositionController extends Controller
     {
         $main = new Position;
         $main->fill($request->validated());
-        $data = json_decode('{}'); 
-        
+        $data = json_decode('{}');
+
         if(!$main->save()){
             $data->message = "Save failed.";
             $data->success = false;
