@@ -32,5 +32,6 @@ class ManpowerRequest extends Model
         'request_status',
         'charged_to',
         'breakdown_details',
+        'requested_by',
     ];
 }

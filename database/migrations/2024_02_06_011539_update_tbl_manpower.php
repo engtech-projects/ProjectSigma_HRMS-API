@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('manpower_requests', function (Blueprint $table) {
+            $table->unsignedBigInteger('requested_by');
+            $table->foreign('requested_by')->references('id')->on('users');
             $table->text("preferred_qualifications")->nullable()->change();
             $table->text("remarks")->nullable()->change();
             $table->integer("charged_to")->nullable()->change();
@@ -24,7 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+
         Schema::table('manpower_requests', function (Blueprint $table) {
+            $table->dropForeign(['requested_by']);
+            $table->dropColumn(['requested_by']);
             $table->text("preferred_qualifications")->change();
             $table->text("remarks")->change();
             $table->integer("charged_to")->change();
