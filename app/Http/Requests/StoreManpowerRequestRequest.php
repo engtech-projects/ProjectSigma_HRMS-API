@@ -80,43 +80,34 @@ class StoreManpowerRequestRequest extends FormRequest
                 "string",
             ],
             'approvals'=>[
-                "required",
+                "nullable",
                 "array",
             ],
             'approvals.*.label'=>[
-                "required",
+                "nullable",
                 "string",
             ],
             'approvals.*.user_id'=>[
-                "required",
+                "nullable",
                 "integer",
                 "exists:users,id",
             ],
             'approvals.*.status'=>[
-                "required",
+                "nullable",
                 "string",
             ],
             'approvals.*.date_approved'=>[
-                "required",
+                "nullable",
                 "date",
             ],
-            'remarks'=>[
-                "required",
+            'approvals.*.remarks'=>[
+                "nullable",
                 "string",
             ],
-            'request_status'=>[
-                "required",
-                "string",
-                'in:Pending, Approved, Filled, Hold, Cancelled, Disapproved'
-            ],
-            'charged_to'=>[
+            'requested_by'=>[
                 "required",
                 "integer",
-                "exists:departments,id",
-            ],
-            'breakdown_details'=>[
-                "required",
-                "string",
+                "exists:users,id",
             ],
         ];
     }

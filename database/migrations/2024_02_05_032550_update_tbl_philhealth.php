@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
         Schema::table('philhealth_contributions', function (Blueprint $table) {
             $table->dropColumn('share');
         });
@@ -22,7 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
         Schema::table('philhealth_contributions', function (Blueprint $table) {
             $table->float('share');
         });
