@@ -14,7 +14,8 @@ class PositionController extends Controller
     public function index()
     {
         //
-        $main = Position::simplePaginate(15);
+        // $main = Position::simplePaginate(15);
+        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->simplePaginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
