@@ -36,13 +36,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/session', [AuthController::class, 'session']);
     Route::get('user-list', [UsersController::class, 'get']);
     Route::resource('sss', SSSContributionController::class);
-    Route::resource('philhealth', PhilhealthContributionController::class);
     Route::resource('witholdingtax', WitholdingTaxContributionController::class);
     Route::resource('leave', LeaveController::class);
     Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('accessibilities', AccessibilitiesController::class);
     Route::resource('settings', SettingsController::class);
-    Route::resource('position', PositionController::class);
     Route::resource('allowance', AllowanceController::class);
     Route::resource('users', UsersController::class);
     Route::resource('events', EventsController::class);
@@ -50,9 +48,12 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('approvals', ApprovalsController::class);
     Route::get('users-employees-list', [UsersController::class, 'get']);
     Route::get('department-list', [DepartmentController::class, 'get']);
-    Route::get('position-list', [PositionController::class, 'get']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::get('announcement-list', [AnnouncementsController::class, 'get']);
+    Route::resource('philhealth', PhilhealthContributionController::class);
+    Route::resource('position', PositionController::class);
+    Route::get('position-list', [PositionController::class, 'get']);
+    Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::resource('departments', DepartmentController::class);
     Route::resource('manpower-requests', ManpowerRequestController::class);
 });
