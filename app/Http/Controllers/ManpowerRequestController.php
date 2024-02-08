@@ -42,7 +42,6 @@ class ManpowerRequestController extends Controller
         $data = json_decode('{}');
         $main->approvals = json_encode($request->approvals);
         $file = $request->file('job_description_attachment');
-        // $extension = $file->extension(); // Determine the file's extension based on the file's MIME type...
         $hashmake = Hash::make('secret');
         $hashname = hash('sha256',$hashmake); // Generate a unique, random name...
         $name = $file->getClientOriginalName();
@@ -92,8 +91,19 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
+
         if (!is_null($main) ) {
             $main->fill($request->validated());
+            if($request->hasFile("job_description_attachment")){
+                $check = ManpowerRequest::find($id);
+                $file = $request->file('job_description_attachment');
+                $hashname = explode("/",$check->job_description_attachment);
+                $hashcode = $hashname[0];
+                $name = $file->getClientOriginalName();
+                $path = Storage::putFileAs('public/job_description/'.$hashcode, $file, $name);
+                $main->job_description_attachment = $hashcode."/".$name;
+            }
+
             if($main->save()){
                 $data->message = "Successfully update.";
                 $data->success = true;
@@ -105,9 +115,9 @@ class ManpowerRequestController extends Controller
             return response()->json($data, 400);
         }
 
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404);
+        // $data->message = "Failed update.";
+        // $data->success = false;
+        // return response()->json($data, 404);
     }
 
     /**
