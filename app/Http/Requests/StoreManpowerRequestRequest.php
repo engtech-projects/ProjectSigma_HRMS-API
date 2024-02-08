@@ -50,7 +50,8 @@ class StoreManpowerRequestRequest extends FormRequest
             ],
             'job_description_attachment'=>[
                 "required",
-                "string",
+                "max:10000",
+                "mimes:doc,docx,pdf",
             ],
             'nature_of_request'=>[
                 "required",

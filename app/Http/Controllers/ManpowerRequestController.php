@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\ManpowerRequest;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Hash;
 
 class ManpowerRequestController extends Controller
 {
@@ -34,11 +37,17 @@ class ManpowerRequestController extends Controller
      */
     public function store(StoreManpowerRequestRequest $request)
     {
-        //
         $main = new ManpowerRequest;
         $main->fill($request->validated());
         $data = json_decode('{}');
         $main->approvals = json_encode($request->approvals);
+        $file = $request->file('job_description_attachment');
+        // $extension = $file->extension(); // Determine the file's extension based on the file's MIME type...
+        // $hashname = $file->hashName(); // Generate a unique, random name...
+        $hashname = trim(Hash::make('secret'));
+        $name = $file->getClientOriginalName();
+        $path = Storage::putFileAs('public/job_description/'.$hashname, $file, $name);
+        $main->job_description_attachment = $hashname."/".$name;
         if(!$main->save()){
             $data->message = "Save failed.";
             $data->success = false;
