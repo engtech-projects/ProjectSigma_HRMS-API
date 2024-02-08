@@ -42,7 +42,7 @@ class StoreManpowerRequestRequest extends FormRequest
             'employment_type'=>[
                 "required",
                 "string",
-                'in:Student Trainee, Project Hire, Contractual, Regular'
+                'in:Student Trainee,Project Hire,Contractual,Regular'
             ],
             'brief_description'=>[
                 "required",
@@ -56,7 +56,7 @@ class StoreManpowerRequestRequest extends FormRequest
             'nature_of_request'=>[
                 "required",
                 "string",
-                'in:New/Addition, Replacement'
+                'in:New/Addition,Replacement'
             ],
             'age_range'=>[
                 "required",
@@ -65,12 +65,12 @@ class StoreManpowerRequestRequest extends FormRequest
             'status'=>[
                 "required",
                 "string",
-                'in:Single, Married, No Preference'
+                'in:Single,Married,No Preference'
             ],
             'gender'=>[
                 "required",
                 "string",
-                'in:Male, Female, No Preference'
+                'in:Male,Female,No Preference'
             ],
             'educational_requirement'=>[
                 "required",

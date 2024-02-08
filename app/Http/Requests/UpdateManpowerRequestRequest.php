@@ -42,7 +42,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'employment_type'=>[
                 "nullable",
                 "string",
-                'in:Student Trainee, Project Hire, Contractual, Regular'
+                'in:Student Trainee,Project Hire,Contractual,Regular'
             ],
             'brief_description'=>[
                 "nullable",
@@ -55,7 +55,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'nature_of_request'=>[
                 "nullable",
                 "string",
-                'in:New/Addition, Replacement'
+                'in:New/Addition,Replacement'
             ],
             'age_range'=>[
                 "nullable",
@@ -64,12 +64,12 @@ class UpdateManpowerRequestRequest extends FormRequest
             'status'=>[
                 "nullable",
                 "string",
-                'in:Single, Married, No Preference'
+                'in:Single,Married,No Preference'
             ],
             'gender'=>[
                 "nullable",
                 "string",
-                'in:Male, Female, No Preference'
+                'in:Male,Female,No Preference'
             ],
             'educational_requirement'=>[
                 "nullable",
@@ -107,7 +107,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'request_status'=>[
                 "nullable",
                 "string",
-                'in:Pending, Approved, Filled, Hold, Cancelled, Disapproved'
+                'in:Pending,Approved,Filled,Hold,Cancelled,Disapproved'
             ],
             'charged_to'=>[
                 "nullable",

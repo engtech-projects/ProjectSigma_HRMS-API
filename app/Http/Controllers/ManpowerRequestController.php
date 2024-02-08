@@ -43,8 +43,8 @@ class ManpowerRequestController extends Controller
         $main->approvals = json_encode($request->approvals);
         $file = $request->file('job_description_attachment');
         // $extension = $file->extension(); // Determine the file's extension based on the file's MIME type...
-        // $hashname = $file->hashName(); // Generate a unique, random name...
-        $hashname = trim(Hash::make('secret'));
+        $hashmake = Hash::make('secret');
+        $hashname = hash('sha256',$hashmake); // Generate a unique, random name...
         $name = $file->getClientOriginalName();
         $path = Storage::putFileAs('public/job_description/'.$hashname, $file, $name);
         $main->job_description_attachment = $hashname."/".$name;
