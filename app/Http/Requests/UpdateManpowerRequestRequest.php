@@ -28,7 +28,7 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "exists:departments,id",
             ],
             'date_requested'=>[
-                "nullable",
+                "required",
                 "date",
             ],
             'date_required'=>[
@@ -50,7 +50,8 @@ class UpdateManpowerRequestRequest extends FormRequest
             ],
             'job_description_attachment'=>[
                 "nullable",
-                "string",
+                "max:10000",
+                "mimes:doc,docx,pdf",
             ],
             'nature_of_request'=>[
                 "nullable",
