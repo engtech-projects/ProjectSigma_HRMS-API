@@ -31,7 +31,7 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "nullable",
                 "date",
             ],
-            'date_nullable'=>[
+            'date_required'=>[
                 "nullable",
                 "date",
             ],
