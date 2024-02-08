@@ -17,6 +17,7 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ApprovalsController;
 use App\Http\Controllers\ManpowerRequestController;
+use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -56,4 +57,5 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::resource('departments', DepartmentController::class);
     Route::resource('manpower-requests', ManpowerRequestController::class);
+    Route::resource('job-applicants', JobApplicantsController::class);
 });

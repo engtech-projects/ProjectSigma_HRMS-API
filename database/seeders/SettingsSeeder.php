@@ -17,12 +17,12 @@ class SettingsSeeder extends Seeder
             [
                 [
                     'id' => 1,
-                    'setting_name' => "Late_allowance_min",
+                    'setting_name' => "Late allowance min",
                     'value' => '15',
                 ],
                 [
                     'id' => 2,
-                    'setting_name' => "Late_halfday_min",
+                    'setting_name' => "Late halfday min",
                     'value' => '30',
                 ]
             ],
