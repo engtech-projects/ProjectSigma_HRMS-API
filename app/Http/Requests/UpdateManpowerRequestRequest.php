@@ -28,7 +28,7 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "exists:departments,id",
             ],
             'date_requested'=>[
-                "required",
+                "nullable",
                 "date",
             ],
             'date_required'=>[
