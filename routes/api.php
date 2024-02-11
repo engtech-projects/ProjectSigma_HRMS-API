@@ -59,3 +59,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::resource('job-applicants', JobApplicantsController::class);
 });
+// Route::get('get-approvalname', [ApprovalsController::class, 'get']);
+Route::get('linkstorage', function () {
+    Artisan::call('storage:link');
+});
