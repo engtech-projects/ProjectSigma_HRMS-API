@@ -60,6 +60,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('job-applicants', JobApplicantsController::class);
 });
 // Route::get('get-approvalname', [ApprovalsController::class, 'get']);
-Route::get('linkstorage', function () {
-    Artisan::call('storage:link');
-});
+// Route::get('linkstorage', function () {
+//     Artisan::call('storage:link');
+// });
