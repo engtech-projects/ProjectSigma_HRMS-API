@@ -103,16 +103,17 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
-
         if (!is_null($main) ) {
+            $a = explode("/", $main->job_description_attachment);
             $main->fill($request->validated());
             if($request->hasFile("job_description_attachment")){
                 $check = ManpowerRequest::find($id);
                 $file = $request->file('job_description_attachment');
-                $hashname = explode("/",$check->job_description_attachment);
-                $hashcode = $hashname[0];
+                $hashmake = Hash::make('secret');
+                $hashname = hash('sha256',$hashmake);
                 $name = $file->getClientOriginalName();
                 $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR.$hashname, $name,'public');
+                Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
                 $main->job_description_attachment = ManpowerRequestController::JDDIR.$hashname."/".$name;
             }
 
@@ -127,9 +128,9 @@ class ManpowerRequestController extends Controller
             return response()->json($data, 400);
         }
 
-        // $data->message = "Failed update.";
-        // $data->success = false;
-        // return response()->json($data, 404);
+        $data->message = "Failed update.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**
@@ -138,6 +139,8 @@ class ManpowerRequestController extends Controller
     public function destroy($id)
     {
         $main = ManpowerRequest::find($id);
+        $a = explode("/", $main->job_description_attachment);
+        Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             if($main->delete()){

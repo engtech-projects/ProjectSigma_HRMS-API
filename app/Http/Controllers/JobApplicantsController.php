@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Hash;
 
 class JobApplicantsController extends Controller
 {
+    const ALADIR = "application_letter_attachment/";
+    const RADIR = "resume_attachment/";
+
     /**
      * Display a listing of the resource.
      */
@@ -45,17 +48,17 @@ class JobApplicantsController extends Controller
         $application_letter_attachmentfile = $request->file('application_letter_attachment');
         $resume_attachment = $request->file('resume_attachment');
 
-        $hashmake = Hash::make('secret'); // Generate a unique, random name...
-        $hashname = hash('sha256',$hashmake); // Remove slashes and periods
+        $hashmake = Hash::make('secret');
+        $hashname = hash('sha256',$hashmake);
 
         $name1 = $resume_attachment->getClientOriginalName();
         $name2 = $application_letter_attachmentfile->getClientOriginalName();
 
-        $path1 = Storage::putFileAs('public/application_letter_attachment/'.$hashname, $application_letter_attachmentfile, $name2);
-        $path2 = Storage::putFileAs('public/resume_attachment/'.$hashname, $resume_attachment, $name1);
+        $application_letter_attachmentfile->storePubliclyAs(JobApplicantsController::ALADIR.$hashname, $name1,'public');
+        $resume_attachment->storePubliclyAs(JobApplicantsController::RADIR.$hashname, $name2,'public');
 
-        $main->resume_attachment = $hashname."/".$name1;
-        $main->application_letter_attachment = $hashname."/".$name2;
+        $main->application_letter_attachment = JobApplicantsController::ALADIR.$hashname."/".$name1;
+        $main->resume_attachment = JobApplicantsController::RADIR.$hashname."/".$name2;
 
         if(!$main->save()){
             $data->message = "Save failed.";
@@ -103,26 +106,28 @@ class JobApplicantsController extends Controller
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
-            $main->fill($request->validated());
+            $a1 = explode("/", $main->application_letter_attachment);
+            $a2 = explode("/", $main->resume_attachment);
 
+            $main->fill($request->validated());
+            $hashmake = Hash::make('secret');
+            $hashname = hash('sha256',$hashmake);
             if($request->hasFile("application_letter_attachment")){
                 $check = JobApplicants::find($id);
                 $file = $request->file('application_letter_attachment');
-                $hashname = explode("/",$check->application_letter_attachment);
-                $hashcode = $hashname[0];
                 $name = $file->getClientOriginalName();
-                $path = Storage::putFileAs('public/application_letter_attachment/'.$hashcode, $file, $name);
-                $main->application_letter_attachment = $hashcode."/".$name;
+                $file->storePubliclyAs(JobApplicantsController::ALADIR.$hashname, $name,'public');
+                Storage::deleteDirectory("public/".$a1[0]."/".$a1[1]);
+                $main->application_letter_attachment = JobApplicantsController::ALADIR.$hashname."/".$name;
             }
 
             if($request->hasFile("resume_attachment")){
                 $check = JobApplicants::find($id);
                 $file = $request->file('resume_attachment');
-                $hashname = explode("/",$check->resume_attachment);
-                $hashcode = $hashname[0];
                 $name = $file->getClientOriginalName();
-                $path = Storage::putFileAs('public/resume_attachment/'.$hashcode, $file, $name);
-                $main->resume_attachment = $hashcode."/".$name;
+                $file->storePubliclyAs(JobApplicantsController::RADIR.$hashname, $name,'public');
+                Storage::deleteDirectory("public/".$a2[0]."/".$a2[1]);
+                $main->resume_attachment = JobApplicantsController::RADIR.$hashname."/".$name;
             }
 
             if($main->save()){
@@ -150,7 +155,9 @@ class JobApplicantsController extends Controller
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
+            $a = explode("/", $main->application_letter_attachment);
             if($main->delete()){
+                Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
