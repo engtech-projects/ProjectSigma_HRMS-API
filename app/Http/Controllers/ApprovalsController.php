@@ -37,6 +37,7 @@ class ApprovalsController extends Controller
                     $data = json_decode('{}');
                     $data->message = "Failed fetch.";
                     $data->success = false;
+                    $data->data = $main;
                     return response()->json($data);
                     break;
                 }
