@@ -45,7 +45,7 @@ class ManpowerRequestController extends Controller
         $hashmake = Hash::make('secret');
         $hashname = hash('sha256',$hashmake); // Generate a unique, random name...
         $name = $file->getClientOriginalName();
-        $path = Storage::putFileAs('public/job_description/'.$hashname, $file, $name);
+        $path = Storage::putFileAs('public/job_description/'.$hashname, $file, $name)->setVisibility('public/job_description/'.$hashname);
         $main->job_description_attachment = $hashname."/".$name;
         if(!$main->save()){
             $data->message = "Save failed.";
