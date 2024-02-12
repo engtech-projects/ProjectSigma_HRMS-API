@@ -35,7 +35,6 @@ Route::middleware('auth:sanctum')->group(function(){
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/session', [AuthController::class, 'session']);
-    Route::get('user-list', [UsersController::class, 'get']);
     Route::resource('sss', SSSContributionController::class);
     Route::resource('witholdingtax', WitholdingTaxContributionController::class);
     Route::resource('leave', LeaveController::class);
@@ -43,12 +42,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('accessibilities', AccessibilitiesController::class);
     Route::resource('settings', SettingsController::class);
     Route::resource('allowance', AllowanceController::class);
-    Route::resource('users', UsersController::class);
     Route::resource('events', EventsController::class);
     Route::resource('announcement', AnnouncementsController::class);
-    Route::resource('approvals', ApprovalsController::class);
     Route::get('users-employees-list', [UsersController::class, 'get']);
     Route::get('department-list', [DepartmentController::class, 'get']);
+    Route::get('user-list', [UsersController::class, 'get']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::get('announcement-list', [AnnouncementsController::class, 'get']);
     Route::resource('philhealth', PhilhealthContributionController::class);
@@ -58,8 +56,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('departments', DepartmentController::class);
     Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::resource('job-applicants', JobApplicantsController::class);
+    Route::resource('approvals', ApprovalsController::class);
+    Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
+    Route::resource('users', UsersController::class);
 });
-// Route::get('get-approvalname', [ApprovalsController::class, 'get']);
-// Route::get('linkstorage', function () {
-//     Artisan::call('storage:link');
-// });

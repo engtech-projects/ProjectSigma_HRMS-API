@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Approvals;
+use App\Models\Users;
 use App\Http\Requests\StoreApprovalsRequest;
 use App\Http\Requests\UpdateApprovalsRequest;
+use Illuminate\Http\Request;
 
 class ApprovalsController extends Controller
 {
@@ -14,6 +16,29 @@ class ApprovalsController extends Controller
     public function index()
     {
         $main = Approvals::simplePaginate(15);
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
+
+    public function get($request)
+    {
+        $main = Approvals::where("form","=",$request)->first();
+        if(!is_null($main)){
+            $fetchdata = $main->approvals;
+            $a = json_decode($fetchdata);
+            $c = 0;
+            foreach($a as $x){
+                $fetchuser = Users::find($x->user_id);
+                $a[$c]->name = $fetchuser->name;
+                $c+=1;
+            }
+            $fetchdata = $a;
+        }
+        $main->approvals = $fetchdata;
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
