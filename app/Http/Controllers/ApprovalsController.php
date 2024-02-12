@@ -32,6 +32,15 @@ class ApprovalsController extends Controller
             $a = json_decode($fetchdata);
             $c = 0;
             foreach($a as $x){
+
+                if($x->user_id==null){
+                    $data = json_decode('{}');
+                    $data->message = "Failed fetch.";
+                    $data->success = false;
+                    return response()->json($data);
+                    break;
+                }
+
                 $fetchuser = Users::find($x->user_id);
                 $a[$c]->name = $fetchuser->name;
                 $c+=1;
