@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ManpowerRequestController extends Controller
 {
+    const JDDIR = "job_description/";
     /**
      * Display a listing of the resource.
      */
@@ -23,6 +24,17 @@ class ManpowerRequestController extends Controller
         $data->data = $main;
         return response()->json($data);
     }
+
+    public function get()
+    {
+        $main = ManpowerRequest::get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -43,11 +55,10 @@ class ManpowerRequestController extends Controller
         $main->approvals = json_encode($request->approvals);
         $file = $request->file('job_description_attachment');
         $hashmake = Hash::make('secret');
-        $hashname = hash('sha256',$hashmake); // Generate a unique, random name...
+        $hashname = hash('sha256',$hashmake);
         $name = $file->getClientOriginalName();
-        // $path = Storage::putFileAs(, $file, $name);
-        $path = $file->storePubliclyAs('job_description/'.$hashname, $name,'public');
-        $main->job_description_attachment = $hashname."/".$name;
+        $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR.$hashname, $name,'public');
+        $main->job_description_attachment = ManpowerRequestController::JDDIR.$hashname."/".$name;
         if(!$main->save()){
             $data->message = "Save failed.";
             $data->success = false;
@@ -101,8 +112,8 @@ class ManpowerRequestController extends Controller
                 $hashname = explode("/",$check->job_description_attachment);
                 $hashcode = $hashname[0];
                 $name = $file->getClientOriginalName();
-                $path = Storage::putFileAs('public/job_description/'.$hashcode, $file, $name);
-                $main->job_description_attachment = $hashcode."/".$name;
+                $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR.$hashname, $name,'public');
+                $main->job_description_attachment = ManpowerRequestController::JDDIR.$hashname."/".$name;
             }
 
             if($main->save()){
