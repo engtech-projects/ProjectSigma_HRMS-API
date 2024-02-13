@@ -33,10 +33,10 @@ class ApprovalsController extends Controller
             $c = 0;
             foreach($a as $x){
 
-                if($x->user_id==null){
+                if($x->user_id==null || $x->userselector=="true"){
                     $data = json_decode('{}');
-                    $data->message = "Failed fetch.";
-                    $data->success = false;
+                    $data->message = "Successfully fetch.";
+                    $data->success = true;
                     $data->data = $main;
                     return response()->json($data);
                     break;
