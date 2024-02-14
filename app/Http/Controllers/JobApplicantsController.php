@@ -157,7 +157,8 @@ class JobApplicantsController extends Controller
         if (!is_null($main) ) {
             $a = explode("/", $main->application_letter_attachment);
             if($main->delete()){
-                Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
+                Storage::deleteDirectory("public/".JobApplicantsController::ALADIR."/".$a[0]."/".$a[1]);
+                Storage::deleteDirectory("public/".JobApplicantsController::RADIR."/".$a[0]."/".$a[1]);
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
