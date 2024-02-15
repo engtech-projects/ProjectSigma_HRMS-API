@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeBulkUploadController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('position', PositionController::class);
     Route::get('position-list', [PositionController::class, 'get']);
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
+    Route::post('employee-bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
+    Route::post('employee-bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
     Route::resource('departments', DepartmentController::class);
     Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::resource('job-applicants', JobApplicantsController::class);
