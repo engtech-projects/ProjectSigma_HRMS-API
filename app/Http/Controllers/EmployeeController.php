@@ -22,6 +22,15 @@ class EmployeeController extends Controller
         return response()->json($data);
     }
 
+    public function get()
+    {
+        $main = Employee::with("company_employments","employment_records")->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
     /**
      * Show the form for creating a new resource.
      */

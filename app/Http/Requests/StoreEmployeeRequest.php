@@ -67,12 +67,12 @@ class StoreEmployeeRequest extends FormRequest
             ],
             'telephone_number'=>[
                 "required",
-                "integer",
+                "string",
                 "max:15"
             ],
             'mobile_number'=>[
                 "required",
-                "integer",
+                "string",
                 "min:11",
                 "max:11"
             ],
@@ -116,7 +116,7 @@ class StoreEmployeeRequest extends FormRequest
             ],
             'spouse_contact_no'=>[
                 "required",
-                "integer",
+                "string",
                 "min:11",
                 "max:11"
             ],

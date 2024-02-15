@@ -65,5 +65,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('employee', EmployeeController::class);
     Route::resource('company-employee', CompanyEmployeeController::class);
     Route::resource('employee-records', EmployeeRecordController::class);
+    Route::get('employee-list', [EmployeeController::class, 'get']);
 });
 

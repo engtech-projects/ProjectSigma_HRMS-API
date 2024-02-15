@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string("citizenship");
             $table->string("blood_type");
             $table->string("civil_status");
-            $table->bigInteger("telephone_number");
-            $table->bigInteger("mobile_number");
+            $table->string("telephone_number");
+            $table->string("mobile_number");
             $table->string("email");
             $table->string("religion");
             $table->string("curr_address");
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string("mother_name");
             $table->string("spouse_datebirth");
             $table->string("spouse_occupation");
-            $table->bigInteger("spouse_contact_no");
+            $table->string("spouse_contact_no");
             $table->softDeletes();
             $table->timestamps();
         });

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Employee extends Model
 {
@@ -37,4 +38,14 @@ class Employee extends Model
         'spouse_occupation',
         'spouse_contact_no',
     ];
+
+    public function company_employments(): HasOne
+    {
+        return $this->hasOne(CompanyEmployee::class);
+    }
+
+    public function employment_records(): HasMany
+    {
+        return $this->hasMany(EmployeeRecord::class);
+    }
 }

@@ -67,12 +67,12 @@ class UpdateEmployeeRequest extends FormRequest
             ],
             'telephone_number'=>[
                 "nullable",
-                "integer",
+                "string",
                 "max:15"
             ],
             'mobile_number'=>[
                 "nullable",
-                "integer",
+                "string",
                 "min:11",
                 "max:11"
             ],
@@ -116,7 +116,7 @@ class UpdateEmployeeRequest extends FormRequest
             ],
             'spouse_contact_no'=>[
                 "nullable",
-                "integer",
+                "string",
                 "min:11",
                 "max:11"
             ],
