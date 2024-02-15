@@ -30,7 +30,7 @@ class UpdateallowanceRequest extends FormRequest
             'amount'=>[
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                'digits_between:1,6',
                 'decimal:0,2',
             ],
         ];
