@@ -37,27 +37,7 @@ class StoreCompanyEmployeeRequest extends FormRequest
             ],
             'date_hired'=>[
                 "required",
-                "string",
-            ],
-            'employment_status'=>[
-                "required",
-                "string",
-            ],
-            'position'=>[
-                "required",
-                "string",
-            ],
-            'section_program'=>[
-                "required",
-                "string",
-            ],
-            'department'=>[
-                "required",
-                "string",
-            ],
-            'division'=>[
-                "required",
-                "string",
+                "date",
             ],
             'imidiate_supervisor'=>[
                 "required",

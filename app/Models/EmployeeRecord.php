@@ -9,22 +9,19 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-class CompanyEmployee extends Model
+class EmployeeRecord extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
 
-    protected $table = 'company_employments';
+    protected $table = 'employment_records';
 
     protected $fillable = [
         'id',
         'employee_id',
-        'employeedisplay_id',
-        'company',
-        'date_hired',
-        'imidiate_supervisor',
-        'phic_number',
-        'sss_number',
-        'tin_number',
-        'pagibig_number',
+        'employment_status',
+        'position',
+        'department',
+        'division',
+        'section_program',
     ];
 }

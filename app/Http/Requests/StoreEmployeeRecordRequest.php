@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCompanyEmployeeRequest extends FormRequest
+class StoreEmployeeRecordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,40 +23,28 @@ class UpdateCompanyEmployeeRequest extends FormRequest
     {
         return [
             'employee_id'=> [
-                "nullable",
+                "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'employeedisplay_id'=> [
-                "nullable",
+            'employment_status'=>[
+                "required",
                 "string",
             ],
-            'company'=>[
-                "nullable",
+            'position'=>[
+                "required",
                 "string",
             ],
-            'date_hired'=>[
-                "nullable",
-                "date",
-            ],
-            'imidiate_supervisor'=>[
-                "nullable",
+            'department'=>[
+                "required",
                 "string",
             ],
-            'phic_number'=>[
-                "nullable",
+            'division'=>[
+                "required",
                 "string",
             ],
-            'sss_number'=>[
-                "nullable",
-                "string",
-            ],
-            'tin_number'=>[
-                "nullable",
-                "string",
-            ],
-            'pagibig_number'=>[
-                "nullable",
+            'section_program'=>[
+                "required",
                 "string",
             ],
         ];
