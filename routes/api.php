@@ -20,6 +20,7 @@ use App\Http\Controllers\ManpowerRequestController;
 use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CompanyEmployeeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -61,5 +62,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::resource('job-applicants', JobApplicantsController::class);
     Route::resource('employee', EmployeeController::class);
+    Route::resource('company-employee', CompanyEmployeeController::class);
 });
 
