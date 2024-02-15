@@ -31,11 +31,11 @@ class Position extends Model
 
     public function departments(): HasOne
     {
-        return $this->hasOne(Position::class,'department_id');
+        return $this->hasOne(Department::class,'id');
     }
 
-    public function departmentsdata(): BelongsTo
-    {
-        return $this->belongsTo(Department::class);
-    }
+    // public function departmentsdata(): BelongsTo
+    // {
+    //     return $this->belongsTo(Department::class);
+    // }
 }
