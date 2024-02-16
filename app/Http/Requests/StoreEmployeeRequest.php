@@ -86,15 +86,45 @@ class StoreEmployeeRequest extends FormRequest
                 "string",
                 "max:35"
             ],
-            'curr_address'=>[
+            'pre_street'=>[
                 "required",
                 "string",
-                "max:35"
             ],
-            'perm_address'=>[
+            'pre_brgy'=>[
                 "required",
                 "string",
-                "max:35"
+            ],
+            'pre_city'=>[
+                "required",
+                "string",
+            ],
+            'pre_zip'=>[
+                "required",
+                "string",
+            ],
+            'pre_province'=>[
+                "required",
+                "string",
+            ],
+            'per_street'=>[
+                "required",
+                "string",
+            ],
+            'per_brgy'=>[
+                "required",
+                "string",
+            ],
+            'per_city'=>[
+                "required",
+                "string",
+            ],
+            'per_zip'=>[
+                "required",
+                "string",
+            ],
+            'per_province'=>[
+                "required",
+                "string",
             ],
             'father_name'=>[
                 "required",
@@ -102,6 +132,11 @@ class StoreEmployeeRequest extends FormRequest
                 "max:35"
             ],
             'mother_name'=>[
+                "required",
+                "string",
+                "max:35"
+            ],
+            'spouse_name'=>[
                 "required",
                 "string",
                 "max:35"
@@ -119,6 +154,44 @@ class StoreEmployeeRequest extends FormRequest
                 "string",
                 "min:11",
                 "max:11"
+            ],
+            'childrens'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_contact_name'=>[
+                "required",
+                "string",
+            ],
+            'person_to_contact_street'=>[
+                "required",
+                "string",
+            ],
+            'person_to_contact_brgy'=>[
+                "required",
+                "string",
+            ],
+            'person_to_contact_city'=>[
+                "required",
+                "string",
+            ],
+            'person_to_contact_zip'=>[
+                "required",
+                "string",
+            ],
+            'person_to_province'=>[
+                "required",
+                "string",
+            ],
+            'person_to_contact_no'=>[
+                "required",
+                "string",
+                "min:11",
+                "max:11"
+            ],
+            'person_to_contact_relationship'=>[
+                "required",
+                "string",
             ],
         ];
     }

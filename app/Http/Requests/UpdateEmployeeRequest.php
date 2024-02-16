@@ -86,15 +86,45 @@ class UpdateEmployeeRequest extends FormRequest
                 "string",
                 "max:35"
             ],
-            'curr_address'=>[
+            'pre_street'=>[
                 "nullable",
                 "string",
-                "max:35"
             ],
-            'perm_address'=>[
+            'pre_brgy'=>[
                 "nullable",
                 "string",
-                "max:35"
+            ],
+            'pre_city'=>[
+                "nullable",
+                "string",
+            ],
+            'pre_zip'=>[
+                "nullable",
+                "string",
+            ],
+            'pre_province'=>[
+                "nullable",
+                "string",
+            ],
+            'per_street'=>[
+                "nullable",
+                "string",
+            ],
+            'per_brgy'=>[
+                "nullable",
+                "string",
+            ],
+            'per_city'=>[
+                "nullable",
+                "string",
+            ],
+            'per_zip'=>[
+                "nullable",
+                "string",
+            ],
+            'per_province'=>[
+                "nullable",
+                "string",
             ],
             'father_name'=>[
                 "nullable",
@@ -102,6 +132,11 @@ class UpdateEmployeeRequest extends FormRequest
                 "max:35"
             ],
             'mother_name'=>[
+                "nullable",
+                "string",
+                "max:35"
+            ],
+            'spouse_name'=>[
                 "nullable",
                 "string",
                 "max:35"
@@ -119,6 +154,44 @@ class UpdateEmployeeRequest extends FormRequest
                 "string",
                 "min:11",
                 "max:11"
+            ],
+            'childrens'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_contact_name'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_contact_street'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_contact_brgy'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_contact_city'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_contact_zip'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_province'=>[
+                "nullable",
+                "string",
+            ],
+            'person_to_contact_no'=>[
+                "nullable",
+                "string",
+                "min:11",
+                "max:11"
+            ],
+            'person_to_contact_relationship'=>[
+                "nullable",
+                "string",
             ],
         ];
     }
