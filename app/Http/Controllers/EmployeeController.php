@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\SearchStudentRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
@@ -15,6 +17,22 @@ class EmployeeController extends Controller
     {
         //
         $main = Employee::simplePaginate(15);
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
+    public function search(SearchStudentRequest $request){
+        $validatedData = $request->validated();
+        $searchKey = $validatedData["key"];
+        $main = Employee::where(function ($q) use ($searchKey) {
+            $q->orWhere('first_name', 'like', "{$searchKey}%")
+                ->orWhere('family_name', 'like', "{$searchKey}%")
+                ->orWhere('middle_name', 'like', "{$searchKey}%");
+        })->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ' ', middle_name)"), 'LIKE', $searchKey."%")
+        ->limit(25)->orderBy('family_name')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
