@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->string("first_name");
-            $table->string("middle_name");
+            $table->string("middle_name")->nullable();
             $table->string("family_name");
-            $table->string("name_suffix");
+            $table->string("name_suffix")->nullable();
             $table->string("nick_name");
             $table->string("gender");
             $table->date("date_of_birth");
@@ -49,7 +49,6 @@ return new class extends Migration
             $table->string("person_to_contact_name");
             $table->string("person_to_contact_address");
             $table->string("person_to_contact_no");
-            $table->string("person_to_contact_relationship");
             $table->string("person_to_contact_relationship");
             $table->softDeletes();
             $table->timestamps();

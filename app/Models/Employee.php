@@ -29,6 +29,7 @@ class Employee extends Model
         'civil_status',
         'date_of_marriage',
         'telephone_number',
+        'curr_address',
         'mobile_number',
         'email',
         'religion',
