@@ -38,13 +38,12 @@ class ApprovalsController extends Controller
                     $data->message = "Successfully fetch.";
                     $data->success = true;
                     $data->data = $main;
-                    return response()->json($data);
-                    break;
+                }else{
+                    $fetchuser = Users::find($x->user_id);
+                    $a[$c]->name = $fetchuser->name;
                 }
-
-                $fetchuser = Users::find($x->user_id);
-                $a[$c]->name = $fetchuser->name;
                 $c+=1;
+
             }
             $fetchdata = $a;
         }

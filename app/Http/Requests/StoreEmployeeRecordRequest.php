@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreallowanceRequest extends FormRequest
+class StoreEmployeeRecordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,30 @@ class StoreallowanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'position_id'=> [
+            'employee_id'=> [
                 "required",
                 "integer",
-                "exists:positions,id",
+                "exists:employees,id",
             ],
-            'amount'=>[
+            'employment_status'=>[
                 "required",
-                "numeric",
-                'max:999999',
-                'decimal:0,2',
+                "string",
+            ],
+            'position'=>[
+                "required",
+                "string",
+            ],
+            'department'=>[
+                "required",
+                "string",
+            ],
+            'division'=>[
+                "required",
+                "string",
+            ],
+            'section_program'=>[
+                "required",
+                "string",
             ],
         ];
     }

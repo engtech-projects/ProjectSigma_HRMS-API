@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Allowance;
-use App\Models\Position;
-use App\Http\Requests\StoreallowanceRequest;
-use App\Http\Requests\UpdateallowanceRequest;
-use Illuminate\Support\Facades\DB;
+use App\Models\EmployeeRecord;
+use App\Http\Requests\StoreEmployeeRecordRequest;
+use App\Http\Requests\UpdateEmployeeRecordRequest;
 
-class AllowanceController extends Controller
+class EmployeeRecordController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,18 +14,7 @@ class AllowanceController extends Controller
     public function index()
     {
         //
-        $main = Allowance::simplePaginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
-    }
-
-
-    public function get()
-    {
-        $main = Position::with('allowances','departments')->get();
+        $main = EmployeeRecord::simplePaginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -46,10 +33,10 @@ class AllowanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreallowanceRequest $request)
+    public function store(StoreEmployeeRecordRequest $request)
     {
         //
-        $main = new Allowance;
+        $main = new EmployeeRecord;
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -69,7 +56,8 @@ class AllowanceController extends Controller
      */
     public function show($id)
     {
-        $main = Allowance::find($id);
+        //
+        $main = EmployeeRecord::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $data->message = "Successfully fetch.";
@@ -85,7 +73,7 @@ class AllowanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Allowance $allowance)
+    public function edit(EmployeeRecord $employeeRecord)
     {
         //
     }
@@ -93,10 +81,10 @@ class AllowanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateallowanceRequest $request, $id)
+    public function update(UpdateEmployeeRecordRequest $request, $id)
     {
         //
-        $main = Allowance::find($id);
+        $main = EmployeeRecord::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $main->fill($request->validated());
@@ -121,7 +109,7 @@ class AllowanceController extends Controller
      */
     public function destroy($id)
     {
-        $main = Allowance::find($id);
+        $main = EmployeeRecord::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             if($main->delete()){

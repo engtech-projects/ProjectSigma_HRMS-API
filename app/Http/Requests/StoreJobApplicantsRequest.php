@@ -84,7 +84,8 @@ class StoreJobApplicantsRequest extends FormRequest
             'contact_info'=>[
                 "required",
                 "string",
-                "max:11"
+                "min:11",
+                "max:11",
             ],
             'email'=>[
                 "required",
@@ -107,7 +108,7 @@ class StoreJobApplicantsRequest extends FormRequest
             'name_of_spouse'=>[
                 "nullable",
                 "string",
-                "max:35"
+                "max:55"
             ],
             'date_of_birth_spouse'=>[
                 "nullable",
@@ -120,18 +121,19 @@ class StoreJobApplicantsRequest extends FormRequest
             'telephone_spouse'=>[
                 "nullable",
                 "string",
-                "max:11"
+                "min:11",
+                "max:11",
             ],
             'children'=>[
                 "nullable",
                 "json",
             ],
             'children.*.name'=>[
-                "required",
+                "required_with:children.*.birthdate",
                 "string",
             ],
             'children.*.birthdate'=>[
-                'required_if:children.*.name,null',
+                "required_with:children.*.name",
                 "date",
             ],
             'icoe_name'=>[
@@ -149,6 +151,8 @@ class StoreJobApplicantsRequest extends FormRequest
             'telephone_icoe'=>[
                 "required",
                 "string",
+                "min:11",
+                "max:11",
             ],
             'education'=>[
                 "required",

@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Allowance;
-use App\Models\Position;
-use App\Http\Requests\StoreallowanceRequest;
-use App\Http\Requests\UpdateallowanceRequest;
-use Illuminate\Support\Facades\DB;
+use App\Models\Employee;
+use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 
-class AllowanceController extends Controller
+class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,25 +14,23 @@ class AllowanceController extends Controller
     public function index()
     {
         //
-        $main = Allowance::simplePaginate(15);
+        $main = Employee::simplePaginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
     }
-
 
     public function get()
     {
-        $main = Position::with('allowances','departments')->get();
+        $main = Employee::with("company_employments","employment_records")->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -46,10 +42,10 @@ class AllowanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreallowanceRequest $request)
+    public function store(StoreEmployeeRequest $request)
     {
         //
-        $main = new Allowance;
+        $main = new Employee;
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -69,7 +65,8 @@ class AllowanceController extends Controller
      */
     public function show($id)
     {
-        $main = Allowance::find($id);
+        //
+        $main = Employee::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $data->message = "Successfully fetch.";
@@ -85,7 +82,7 @@ class AllowanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Allowance $allowance)
+    public function edit(Employee $employee)
     {
         //
     }
@@ -93,10 +90,10 @@ class AllowanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateallowanceRequest $request, $id)
+    public function update(UpdateEmployeeRequest $request,  $id)
     {
         //
-        $main = Allowance::find($id);
+        $main = Employee::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $main->fill($request->validated());
@@ -121,7 +118,8 @@ class AllowanceController extends Controller
      */
     public function destroy($id)
     {
-        $main = Allowance::find($id);
+        //
+        $main = Employee::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             if($main->delete()){
