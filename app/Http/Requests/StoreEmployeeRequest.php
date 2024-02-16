@@ -141,24 +141,24 @@ class StoreEmployeeRequest extends FormRequest
                 "max:35"
             ],
             'date_of_marriage'=>[
-                "required",
+                "nullable",
                 "date",
             ],
             'spouse_name'=>[
-                "required",
+                "nullable",
                 "string",
                 "max:35"
             ],
             'spouse_datebirth'=>[
-                "required",
+                "nullable",
                 "date",
             ],
             'spouse_occupation'=>[
-                "required",
+                "nullable",
                 "string",
             ],
             'spouse_contact_no'=>[
-                "required",
+                "nullable",
                 "string",
                 "min:11",
                 "max:11"
