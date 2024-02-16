@@ -47,7 +47,12 @@ return new class extends Migration
             $table->string("spouse_contact_no");
             $table->string("childrens");
             $table->string("person_to_contact_name");
-            $table->string("person_to_contact_address");
+            // $table->string("person_to_contact_address");
+            $table->string("person_to_contact_street");
+            $table->string("person_to_contact_brgy");
+            $table->string("person_to_contact_city");
+            $table->string("person_to_contact_zip");
+            $table->string("person_to_province");
             $table->string("person_to_contact_no");
             $table->string("person_to_contact_relationship");
             $table->softDeletes();
