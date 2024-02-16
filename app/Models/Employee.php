@@ -45,6 +45,7 @@ class Employee extends Model
         'father_name',
         'mother_name',
         'spouse_name',
+        'date_of_marriage',
         'spouse_datebirth',
         'spouse_occupation',
         'spouse_contact_no',

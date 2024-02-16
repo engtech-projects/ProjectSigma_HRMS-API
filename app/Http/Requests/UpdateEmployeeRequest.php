@@ -35,6 +35,10 @@ class UpdateEmployeeRequest extends FormRequest
                 "nullable",
                 "string",
             ],
+            'nick_name'=>[
+                "nullable",
+                "string",
+            ],
             'name_suffix'=>[
                 "nullable",
                 "string",
@@ -140,6 +144,10 @@ class UpdateEmployeeRequest extends FormRequest
                 "nullable",
                 "string",
                 "max:35"
+            ],
+            'date_of_marriage'=>[
+                "nullable",
+                "date",
             ],
             'spouse_datebirth'=>[
                 "nullable",

@@ -35,6 +35,10 @@ class StoreEmployeeRequest extends FormRequest
                 "required",
                 "string",
             ],
+            'nick_name'=>[
+                "required",
+                "string",
+            ],
             'name_suffix'=>[
                 "nullable",
                 "string",
@@ -135,6 +139,10 @@ class StoreEmployeeRequest extends FormRequest
                 "required",
                 "string",
                 "max:35"
+            ],
+            'date_of_marriage'=>[
+                "required",
+                "date",
             ],
             'spouse_name'=>[
                 "required",
