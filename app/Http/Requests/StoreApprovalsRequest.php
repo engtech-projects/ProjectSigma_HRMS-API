@@ -26,21 +26,22 @@ class StoreApprovalsRequest extends FormRequest
             'form'=> [
                 "required",
                 "string",
+                Rule::unique("approvals","form")
             ],
             'approvals'=> [
-                "required",
+                "nullable",
                 "array",
             ],
-            'approvals.type'=> [
+            'approvals.*.type'=> [
                 "required",
                 "string",
             ],
-            'approvals.userselector'=> [
-                "required",
+            'approvals.*.userselector'=> [
+                "nullable",
                 "boolean",
             ],
-            'approvals.user_id'=> [
-                "required",
+            'approvals.*.user_id'=> [
+                "nullable",
                 "integer",
                 "exists:users,id",
                 Rule::notIn([1]),

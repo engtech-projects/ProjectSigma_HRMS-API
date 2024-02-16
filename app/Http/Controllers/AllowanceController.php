@@ -27,7 +27,7 @@ class AllowanceController extends Controller
 
     public function get()
     {
-        $main = Position::with('allowances')->get();
+        $main = Position::with('allowances','departments')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

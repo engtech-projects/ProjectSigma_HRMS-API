@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UsersSeeder::class,
             SettingsSeeder::class,
-            AccessibilitiesSeeder::class
+            AccessibilitiesSeeder::class,
+            ApprovalsSeeder::class
         ]
         );
         // \App\Models\User::factory(10)->create();

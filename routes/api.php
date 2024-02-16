@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\EmployeeBulkUploadController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Database\Eloquent\softDeletes;
 use App\Http\Controllers\AccessibilitiesController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SSSContributionController;
@@ -17,7 +17,12 @@ use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ApprovalsController;
+use App\Http\Controllers\ManpowerRequestController;
+use App\Http\Controllers\JobApplicantsController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CompanyEmployeeController;
+use App\Http\Controllers\EmployeeRecordController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,24 +36,39 @@ use App\Http\Controllers\UsersController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function(){
+    // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/session', [AuthController::class, 'session']);
+    Route::resource('sss', SSSContributionController::class);
+    Route::resource('witholdingtax', WitholdingTaxContributionController::class);
+    Route::resource('leave', LeaveController::class);
+    Route::resource('pagibig', PagibigContributionController::class);
+    Route::resource('accessibilities', AccessibilitiesController::class);
+    Route::resource('settings', SettingsController::class);
+    Route::resource('allowance', AllowanceController::class);
+    Route::resource('events', EventsController::class);
+    Route::resource('announcement', AnnouncementsController::class);
+    Route::get('users-employees-list', [UsersController::class, 'get']);
+    Route::get('department-list', [DepartmentController::class, 'get']);
+    Route::get('user-list', [UsersController::class, 'get']);
+    Route::get('allowance-list', [AllowanceController::class, 'get']);
+    Route::get('announcement-list', [AnnouncementsController::class, 'get']);
+    Route::resource('philhealth', PhilhealthContributionController::class);
+    Route::resource('position', PositionController::class);
+    Route::get('position-list', [PositionController::class, 'get']);
+    Route::put('update-settings', [SettingsController::class, 'updateSettings']);
+    Route::resource('users', UsersController::class);
+    Route::resource('approvals', ApprovalsController::class);
+    Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
+    Route::post('employee-bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
+    Route::post('employee-bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
+    Route::resource('departments', DepartmentController::class);
+    Route::resource('manpower-requests', ManpowerRequestController::class);
+    Route::resource('job-applicants', JobApplicantsController::class);
+    Route::resource('company-employee', CompanyEmployeeController::class);
+    Route::resource('employee-records', EmployeeRecordController::class);
+    Route::get('employee-list', [EmployeeController::class, 'get']);
+    Route::resource('employee', EmployeeController::class);
+    Route::post('employee-search', [EmployeeController::class, 'search']);
 });
-
-Route::resource('sss', SSSContributionController::class);
-Route::resource('philhealth', PhilhealthContributionController::class);
-Route::resource('witholdingtax', WitholdingTaxContributionController::class);
-Route::resource('leave', LeaveController::class);
-Route::resource('pagibig', PagibigContributionController::class);
-Route::resource('departments', DepartmentController::class);
-Route::resource('accessibilities', AccessibilitiesController::class);
-Route::resource('settings', SettingsController::class);
-Route::resource('position', PositionController::class);
-Route::resource('allowance', AllowanceController::class);
-Route::resource('users', UsersController::class);
-Route::resource('events', EventsController::class);
-Route::resource('announcement', AnnouncementsController::class);
-Route::resource('approvals', ApprovalsController::class);
-Route::get('position-list', [PositionController::class, 'get']);
-Route::get('allowance-list', [AllowanceController::class, 'get']);
 

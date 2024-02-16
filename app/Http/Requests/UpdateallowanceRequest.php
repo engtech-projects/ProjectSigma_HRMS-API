@@ -30,6 +30,8 @@ class UpdateallowanceRequest extends FormRequest
             'amount'=>[
                 "nullable",
                 "numeric",
+                'max:999999',
+                'decimal:0,2',
             ],
         ];
     }

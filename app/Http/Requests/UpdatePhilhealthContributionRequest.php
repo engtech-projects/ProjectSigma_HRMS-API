@@ -26,19 +26,31 @@ class UpdatePhilhealthContributionRequest extends FormRequest
             'range_from'=> [
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'range_to'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
-            'share'=>[
+            'employee_share'=>[
                 "nullable",
                 "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
+            ],
+            'employer_share'=>[
+                "nullable",
+                "numeric",
+                'digits_between:1,8',
+                'decimal:0,2',
             ],
             'share_type'=>[
                 "nullable",
                 "in:Amount,Percentage",
-            ],           
+            ],
         ];
     }
 }
