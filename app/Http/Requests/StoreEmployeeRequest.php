@@ -28,7 +28,7 @@ class StoreEmployeeRequest extends FormRequest
                 "string",
             ],
             'middle_name'=>[
-                "required",
+                "nullable",
                 "string",
             ],
             'family_name'=>[
@@ -36,7 +36,7 @@ class StoreEmployeeRequest extends FormRequest
                 "string",
             ],
             'name_suffix'=>[
-                "required",
+                "nullable",
                 "string",
             ],
             'gender'=>[
