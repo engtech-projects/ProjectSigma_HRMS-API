@@ -25,7 +25,7 @@ class SearchStudentRequest extends FormRequest
             //
             'key' =>
             [
-                "nullable",
+                "required",
                 "string",
                 "max:35",
             ]
