@@ -34,12 +34,12 @@ class StoreJobApplicantsRequest extends FormRequest
             'application_letter_attachment'=>[
                 "required",
                 "max:10000",
-                "mimes:doc,docx,pdf,zip",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
             'resume_attachment'=>[
                 "required",
                 "max:10000",
-                "mimes:doc,docx,pdf,zip",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
             'status'=>[
                 "required",
