@@ -51,7 +51,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'job_description_attachment'=>[
                 "nullable",
                 "max:10000",
-                "mimes:doc,docx,pdf",
+                "mimes:doc,docx,pdf,zip",
             ],
             'nature_of_request'=>[
                 "nullable",
