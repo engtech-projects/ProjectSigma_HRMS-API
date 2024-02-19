@@ -34,12 +34,12 @@ class UpdateJobApplicantsRequest extends FormRequest
             'application_letter_attachment'=>[
                 "nullable",
                 "max:10000",
-                "mimes:doc,docx,pdf",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
             'resume_attachment'=>[
                 "nullable",
                 "max:10000",
-                "mimes:doc,docx,pdf",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
             'status'=>[
                 "nullable",

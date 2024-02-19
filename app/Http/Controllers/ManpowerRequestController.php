@@ -17,7 +17,7 @@ class ManpowerRequestController extends Controller
      */
     public function index()
     {
-        $main = ManpowerRequest::simplePaginate(15);
+        $main = ManpowerRequest::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
