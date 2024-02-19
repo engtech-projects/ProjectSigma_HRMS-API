@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Http\Requests\StoreEmployeeBulkUpload;
 use App\Models\Employee;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Str;
@@ -41,21 +42,35 @@ class EmployeeBulkUploadController extends Controller
             {
                 if($data[0])
                 {
-                    if(Employee::where('family_name',$data[0])->where('middle_name',$data[0])->where('first_name',$data[0])->count())
+                    $employeeRecord = Employee::orWhere([
+                        [
+                            'family_name','=', $data[0]
+                        ],
+                        [
+                            'middle_name','=', $data[1]
+                        ],
+                        [
+                            'first_name','=', $data[2]
+                        ],
+                    ])->first();
+
+                    if($employeeRecord)
                     {
                         $tempData['status'] = 'duplicate';
                     }else{
                         $tempData['status'] = 'unduplicate';
                     }
+
                     foreach(Self::HEADER_KEYS as $index => $value)
                     {
-                        $tempData[$value] = $data[$index] ?? 'N/A';
+                        $tempData[$value] = $data[$index] ?? null;
                     }
+                    $tempData['date_of_birth'] = !$tempData['date_of_birth'] || $tempData['date_of_birth'] === 'N/A' ? null :  $tempData['date_of_birth'];
+                    $tempData['date_of_marriage'] = !$tempData['date_of_marriage'] || $tempData['date_of_marriage'] === 'N/A' ? null : $tempData['date_of_marriage'];
+                    $tempData['spouse_datebirth'] = !$tempData['spouse_datebirth'] || $tempData['spouse_datebirth'] === 'N/A' ? null : $tempData['spouse_datebirth'];
                     $extractedData[] = $tempData;
                 }
-
             }
-
         }
         return response()->json([
             'message' => 'Done extract data',
@@ -63,18 +78,19 @@ class EmployeeBulkUploadController extends Controller
         ]);
     }
     public function bulkSave(StoreEmployeeBulkUpload $request){
-        $employeeField = ['id','first_name','middle_name','family_name','name_suffix','nick_name','gender','date_of_birth','place_of_birth','citizenship','blood_type','civil_status','date_of_marriage','telephone_number','mobile_number','email','religion','pre_street','pre_brgy','pre_city','pre_zip','pre_province','per_street','per_brgy','per_city','per_zip','per_province','father_name','mother_name','spouse_name','date_of_marriage','spouse_datebirth','spouse_occupation','spouse_contact_no','childrens','person_to_contact_name','person_to_contact_street','person_to_contact_brgy','person_to_contact_city','person_to_contact_zip','person_to_province','person_to_contact_no','person_to_contact_relationship','width','height'];
         $validatedData = $request->validated();
-        // $temp = [];
         foreach(json_decode($validatedData['employees_data'], true) as $data)
         {
-            $employee = new Employee;
-            $employee->fill($data);
-            $employee->save();
-            return $employee;
-            // $employeeData->company_employments->insert($data);
-            // $employeeData->employment_records->insert($data);
+            if($data['status'] == 'unduplicate')
+            {
+                $employee = new Employee;
+                $employee->fill($data);
+                $employee->save();
+            }
         }
-
+        return response()->json([
+            'message' => 'Done save data',
+            'data' => [],
+        ]);
     }
 }

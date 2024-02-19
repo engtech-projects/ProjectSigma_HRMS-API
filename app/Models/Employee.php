@@ -14,9 +14,9 @@ class Employee extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
     protected $casts = [
-        'date_of_birth' => 'date',
-        'date_of_marriage' => 'date',
-        'spouse_datebirth' => 'date',
+        'date_of_birth' => 'datetime:Y-m-d',
+        'date_of_marriage' => 'datetime:Y-m-d',
+        'spouse_datebirth' => 'datetime:Y-m-d',
     ];
     protected $fillable = [
         'id',
