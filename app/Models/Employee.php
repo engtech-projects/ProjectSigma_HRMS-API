@@ -13,7 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Employee extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
-
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'date_of_marriage' => 'date',
+        'spouse_datebirth' => 'date',
+    ];
     protected $fillable = [
         'id',
         'first_name',
@@ -45,7 +49,6 @@ class Employee extends Model
         'father_name',
         'mother_name',
         'spouse_name',
-        'date_of_marriage',
         'spouse_datebirth',
         'spouse_occupation',
         'spouse_contact_no',

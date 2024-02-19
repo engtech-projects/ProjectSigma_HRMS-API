@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Http\Requests\StoreEmployeeBulkUpload;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -48,7 +49,7 @@ class EmployeeBulkUploadController extends Controller
                     }
                     foreach(Self::HEADER_KEYS as $index => $value)
                     {
-                        $tempData[$value] = $data[$index];
+                        $tempData[$value] = $data[$index] ?? 'N/A';
                     }
                     $extractedData[] = $tempData;
                 }
@@ -61,7 +62,19 @@ class EmployeeBulkUploadController extends Controller
             'data' => $extractedData,
         ]);
     }
-    public function bulkSave(Request $request){
-        //save
+    public function bulkSave(StoreEmployeeBulkUpload $request){
+        $employeeField = ['id','first_name','middle_name','family_name','name_suffix','nick_name','gender','date_of_birth','place_of_birth','citizenship','blood_type','civil_status','date_of_marriage','telephone_number','mobile_number','email','religion','pre_street','pre_brgy','pre_city','pre_zip','pre_province','per_street','per_brgy','per_city','per_zip','per_province','father_name','mother_name','spouse_name','date_of_marriage','spouse_datebirth','spouse_occupation','spouse_contact_no','childrens','person_to_contact_name','person_to_contact_street','person_to_contact_brgy','person_to_contact_city','person_to_contact_zip','person_to_province','person_to_contact_no','person_to_contact_relationship','width','height'];
+        $validatedData = $request->validated();
+        // $temp = [];
+        foreach(json_decode($validatedData['employees_data'], true) as $data)
+        {
+            $employee = new Employee;
+            $employee->fill($data);
+            $employee->save();
+            return $employee;
+            // $employeeData->company_employments->insert($data);
+            // $employeeData->employment_records->insert($data);
+        }
+
     }
 }
