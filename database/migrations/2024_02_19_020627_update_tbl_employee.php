@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::table('employees', function (Blueprint $table) {
             $table->date('date_of_birth')->nullable()->change();
             $table->date('spouse_datebirth')->nullable()->change();
-            $table->date('email')->nullable()->change();
             $table->date('date_of_marriage')->nullable()->change();
+            $table->string('email')->nullable()->change();
             $table->string('weight')->nullable();
             $table->string('height')->nullable();
         });
