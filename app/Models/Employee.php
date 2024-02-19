@@ -59,7 +59,8 @@ class Employee extends Model
         'person_to_province',
         'person_to_contact_no',
         'person_to_contact_relationship',
-        'person_to_contact_relationship',
+        'width',
+        'height',
     ];
 
     public function company_employments(): HasOne

@@ -201,6 +201,14 @@ class StoreEmployeeRequest extends FormRequest
                 "required",
                 "string",
             ],
+            'width'=>[
+                "required",
+                "string",
+            ],
+            'height'=>[
+                "required",
+                "string",
+            ],
         ];
     }
 }

@@ -201,6 +201,14 @@ class UpdateEmployeeRequest extends FormRequest
                 "nullable",
                 "string",
             ],
+            'width'=>[
+                "nullable",
+                "string",
+            ],
+            'height'=>[
+                "nullable",
+                "string",
+            ],
         ];
     }
 }
