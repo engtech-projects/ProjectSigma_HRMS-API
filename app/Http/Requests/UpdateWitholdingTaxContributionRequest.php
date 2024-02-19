@@ -25,13 +25,13 @@ class UpdateWitholdingTaxContributionRequest extends FormRequest
             'range_from'=> [
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
             'range_to'=>[
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
             'term'=>[
@@ -41,19 +41,19 @@ class UpdateWitholdingTaxContributionRequest extends FormRequest
             'tax_base'=>[
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
             'tax_amount'=>[
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
             'tax_percent_over_base'=>[
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
         ];
