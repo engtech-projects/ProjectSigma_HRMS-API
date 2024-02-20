@@ -62,7 +62,7 @@ class Employee extends Model
         'person_to_province',
         'person_to_contact_no',
         'person_to_contact_relationship',
-        'width',
+        'weight',
         'height',
     ];
 

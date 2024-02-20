@@ -201,7 +201,7 @@ class UpdateEmployeeRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'width'=>[
+            'weight'=>[
                 "nullable",
                 "string",
             ],
