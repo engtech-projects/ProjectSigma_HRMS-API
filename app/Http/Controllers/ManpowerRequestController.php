@@ -6,6 +6,7 @@ use App\Models\ManpowerRequest;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Models\Users;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Auth;
@@ -57,7 +58,6 @@ class ManpowerRequestController extends Controller
         $id = Auth::user()->id;
         $main = ManpowerRequest::where("requested_by",'=',$id)->get();
         $newdata = json_decode('{}');
-        $c = 0;
         foreach ($main as $key => $x) {
             $new_approvals = [];
             foreach(json_decode($x->approvals) as $data){
@@ -79,11 +79,11 @@ class ManpowerRequestController extends Controller
                     foreach($many_approval as $one_approval){
                         $approval_id = $one_approval->user_id;
                         $approval_status = $one_approval->status;
-                        if($approval_id==$id && $approval_status=="Pending"){
-                            array_push($new_approvals,$one_approval);
+                        if($approval_status=="Denied"){
                             break;
                         }
-                        if($approval_status=="Denied"){
+                        if($approval_id==$id && $approval_status=="Pending"){
+                            array_push($new_approvals,$one_approval);
                             break;
                         }
                     }
@@ -91,11 +91,79 @@ class ManpowerRequestController extends Controller
             }
             $main[$key]->approvals = $new_approvals;
         }
-        // dd($new_approvals);
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
         return response()->json($newdata);
+    }
+
+    public function approve_approval($request)
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where([
+            ["requested_by",'=',$id],
+            ["id",'=',$request]
+        ])->get();
+        $approval = json_decode($main->approvals);
+        $newdata = json_decode('{}');
+        $newdata->success = false;
+        $newdata->message = "Failed approved.";
+        foreach($approval as $index => $key){
+            $approval_id = $key->user_id;
+            $approval_status = $key->status;
+
+            if($approval_status=="Denied"){
+                break;
+            }
+
+            if($approval_id!=$id && $approval_status=="Pending"){
+                break;
+            }
+
+            if($approval_id==$id && $approval_status=="Pending"){
+                $approval[$index]->status = "Approved";
+                $approval[$index]->date_approved = Carbon::now();
+                $newdata->success = true;
+                $newdata->message = "Successfully approved.";
+                break;
+            }
+        }
+        $main->approvals = $approval;
+        $newdata->data = $main;
+    }
+
+    public function deny_approval($request)
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where([
+            ["requested_by",'=',$id],
+            ["id",'=',$request]
+        ])->get();
+        $approval = json_decode($main->approvals);
+        $newdata = json_decode('{}');
+        $newdata->success = false;
+        $newdata->message = "Failed denied.";
+        foreach($approval as $index => $key){
+            $approval_id = $key->user_id;
+            $approval_status = $key->status;
+
+            if($approval_status=="Denied"){
+                break;
+            }
+
+            if($approval_id!=$id && $approval_status=="Pending"){
+                break;
+            }
+
+            if($approval_id==$id && $approval_status=="Pending"){
+                $approval[$index]->status = "Denied";
+                $newdata->success = true;
+                $newdata->message = "Successfully denied.";
+                break;
+            }
+        }
+        $main->approvals = $approval;
+        $newdata->data = $main;
     }
 
     /**
