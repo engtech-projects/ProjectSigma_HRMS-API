@@ -201,7 +201,7 @@ class StoreEmployeeRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'width'=>[
+            'weight'=>[
                 "required",
                 "string",
             ],
