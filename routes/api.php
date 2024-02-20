@@ -42,7 +42,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('sss', SSSContributionController::class);
     Route::resource('witholdingtax', WitholdingTaxContributionController::class);
     Route::resource('leave', LeaveController::class);
-    Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('accessibilities', AccessibilitiesController::class);
     Route::resource('settings', SettingsController::class);
     Route::resource('allowance', AllowanceController::class);
@@ -63,12 +62,14 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('employee-bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
     Route::post('employee-bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
     Route::resource('departments', DepartmentController::class);
-    Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::resource('job-applicants', JobApplicantsController::class);
     Route::resource('company-employee', CompanyEmployeeController::class);
     Route::resource('employee-records', EmployeeRecordController::class);
     Route::get('employee-list', [EmployeeController::class, 'get']);
     Route::resource('employee', EmployeeController::class);
     Route::post('employee-search', [EmployeeController::class, 'search']);
+    Route::resource('pagibig', PagibigContributionController::class);
+    Route::resource('manpower-requests', ManpowerRequestController::class);
+    Route::get('get-request', [ManpowerRequestController::class, 'get']);
+    Route::get('get-approve-request', [ManpowerRequestController::class, 'get_approve']);
 });
-

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\ManpowerRequest;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use App\Models\Users;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class ManpowerRequestController extends Controller
@@ -31,6 +33,69 @@ class ManpowerRequestController extends Controller
     public function create()
     {
         //
+    }
+
+    /**
+     * Show all requests made by current user.
+     */
+    public function get()
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where("requested_by",'=',$id)->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
+    /**
+     * Show all requests to be approved/reviewed by current user
+     */
+    public function get_approve()
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where("requested_by",'=',$id)->get();
+        $newdata = json_decode('{}');
+        $c = 0;
+        foreach ($main as $key => $x) {
+            $new_approvals = [];
+            foreach(json_decode($x->approvals) as $data){
+                $type =  gettype(json_decode($data));
+                // array_push($new_approvals,$type);
+                if($type=="object"){
+                    $one_approval = json_decode($data);
+                    $approval_id = $one_approval->user_id;
+                    $approval_status = $one_approval->status;
+                    if($approval_id==$id && $approval_status=="Pending"){
+                        array_push($new_approvals,$one_approval);
+                        break;
+                    }
+                    if($approval_status=="Denied"){
+                        break;
+                    }
+                }else if($type=="array"){
+                    $many_approval=json_decode($data);
+                    foreach($many_approval as $one_approval){
+                        $approval_id = $one_approval->user_id;
+                        $approval_status = $one_approval->status;
+                        if($approval_id==$id && $approval_status=="Pending"){
+                            array_push($new_approvals,$one_approval);
+                            break;
+                        }
+                        if($approval_status=="Denied"){
+                            break;
+                        }
+                    }
+                }
+            }
+            $main[$key]->approvals = $new_approvals;
+        }
+        // dd($new_approvals);
+        $newdata->message = "Successfully fetch.";
+        $newdata->success = true;
+        $newdata->data = $main;
+        return response()->json($newdata);
     }
 
     /**
