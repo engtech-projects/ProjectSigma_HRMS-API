@@ -103,14 +103,23 @@ class ManpowerRequestController extends Controller
         $main = ManpowerRequest::where([
             ["requested_by",'=',$id],
             ["id",'=',$request]
-        ])->get();
-        $approval = json_decode($main->approvals);
+        ])->first();
+
         $newdata = json_decode('{}');
         $newdata->success = false;
         $newdata->message = "Failed approved.";
+
+        if(!$main){
+            $newdata->message = "No data found.";
+            return response()->json($newdata);
+        }
+
+        $approval = json_decode($main->approvals);
         foreach($approval as $index => $key){
-            $approval_id = $key->user_id;
-            $approval_status = $key->status;
+            $data = json_decode($key);
+
+            $approval_id = $data->user_id;
+            $approval_status = $data->status;
 
             if($approval_status=="Denied"){
                 break;
@@ -121,15 +130,27 @@ class ManpowerRequestController extends Controller
             }
 
             if($approval_id==$id && $approval_status=="Pending"){
-                $approval[$index]->status = "Approved";
-                $approval[$index]->date_approved = Carbon::now();
+                $data->date_approved = Carbon::now();
+                $data->status = "Approved";
+                $approval[$index] = json_encode($data);
                 $newdata->success = true;
                 $newdata->message = "Successfully approved.";
                 break;
             }
         }
-        $main->approvals = $approval;
+
+        if($newdata->success){
+            $main->approvals = json_encode($approval);
+            if($main->save()){
+                $newdata->data = $main;
+                return response()->json($newdata);
+            }
+        }else{
+            $main->approvals = [];
+        }
+
         $newdata->data = $main;
+        return response()->json($newdata);
     }
 
     public function deny_approval($request)
@@ -138,14 +159,23 @@ class ManpowerRequestController extends Controller
         $main = ManpowerRequest::where([
             ["requested_by",'=',$id],
             ["id",'=',$request]
-        ])->get();
-        $approval = json_decode($main->approvals);
+        ])->first();
+
         $newdata = json_decode('{}');
         $newdata->success = false;
         $newdata->message = "Failed denied.";
+
+        if(!$main){
+            $newdata->message = "No data found.";
+            return response()->json($newdata);
+        }
+
+        $approval = json_decode($main->approvals);
         foreach($approval as $index => $key){
-            $approval_id = $key->user_id;
-            $approval_status = $key->status;
+            $data = json_decode($key);
+
+            $approval_id = $data->user_id;
+            $approval_status = $data->status;
 
             if($approval_status=="Denied"){
                 break;
@@ -156,14 +186,27 @@ class ManpowerRequestController extends Controller
             }
 
             if($approval_id==$id && $approval_status=="Pending"){
-                $approval[$index]->status = "Denied";
+                // $data->date_approved = Carbon::now();
+                $data->status = "Denied";
+                $approval[$index] = json_encode($data);
                 $newdata->success = true;
                 $newdata->message = "Successfully denied.";
                 break;
             }
         }
-        $main->approvals = $approval;
+
+        if($newdata->success){
+            $main->approvals = json_encode($approval);
+            if($main->save()){
+                $newdata->data = $main;
+                return response()->json($newdata);
+            }
+        }else{
+            $main->approvals = [];
+        }
+
         $newdata->data = $main;
+        return response()->json($newdata);
     }
 
     /**
