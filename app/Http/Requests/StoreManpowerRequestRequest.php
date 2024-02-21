@@ -81,11 +81,11 @@ class StoreManpowerRequestRequest extends FormRequest
                 "string",
             ],
             'approvals'=>[
-                "nullable",
+                "required",
                 "array",
             ],
             'approvals.*.label'=>[
-                "nullable",
+                "required",
                 "string",
             ],
             'approvals.*.user_id'=>[
@@ -94,7 +94,7 @@ class StoreManpowerRequestRequest extends FormRequest
                 "exists:users,id",
             ],
             'approvals.*.status'=>[
-                "nullable",
+                "required",
                 "string",
             ],
             'approvals.*.date_approved'=>[
