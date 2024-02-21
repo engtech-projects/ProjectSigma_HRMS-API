@@ -117,9 +117,17 @@ class ManpowerRequestController extends Controller
         $approval = json_decode($main->approvals);
         foreach($approval as $index => $key){
             $data = json_decode($key);
+            $type =  gettype($data);
+            $approval_id = 0;
+            $approval_status = "";
 
-            $approval_id = $data->user_id;
-            $approval_status = $data->status;
+            if($type=="object"){
+                $approval_id = $data->user_id;
+                $approval_status = $data->status;
+            }elseif($type=="array"){
+                $approval_id = $data[$index]->user_id;
+                $approval_status = $data[$index]->status;
+            }
 
             if($approval_status=="Denied"){
                 break;
@@ -130,8 +138,13 @@ class ManpowerRequestController extends Controller
             }
 
             if($approval_id==$id && $approval_status=="Pending"){
-                $data->date_approved = Carbon::now();
-                $data->status = "Approved";
+                if($type=="object"){
+                    $data->date_approved = Carbon::now();
+                    $data->status = "Approved";
+                }elseif($type=="array"){
+                    $data[$index]->date_approved = Carbon::now();
+                    $data[$index]->status = "Approved";
+                }
                 $approval[$index] = json_encode($data);
                 $newdata->success = true;
                 $newdata->message = "Successfully approved.";
@@ -173,9 +186,17 @@ class ManpowerRequestController extends Controller
         $approval = json_decode($main->approvals);
         foreach($approval as $index => $key){
             $data = json_decode($key);
+            $type =  gettype($data);
+            $approval_id = 0;
+            $approval_status = "";
 
-            $approval_id = $data->user_id;
-            $approval_status = $data->status;
+            if($type=="object"){
+                $approval_id = $data->user_id;
+                $approval_status = $data->status;
+            }elseif($type=="array"){
+                $approval_id = $data[$index]->user_id;
+                $approval_status = $data[$index]->status;
+            }
 
             if($approval_status=="Denied"){
                 break;
@@ -187,7 +208,11 @@ class ManpowerRequestController extends Controller
 
             if($approval_id==$id && $approval_status=="Pending"){
                 // $data->date_approved = Carbon::now();
-                $data->status = "Denied";
+                if($type=="object"){
+                    $data->status = "Denied";
+                }elseif($type=="array"){
+                    $data[$index]->status = "Denied";
+                }
                 $approval[$index] = json_encode($data);
                 $newdata->success = true;
                 $newdata->message = "Successfully denied.";
