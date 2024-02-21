@@ -84,7 +84,7 @@ class StoreManpowerRequestRequest extends FormRequest
                 "required",
                 "array",
             ],
-            'approvals.*.label'=>[
+            'approvals.*.type'=>[
                 "required",
                 "string",
             ],

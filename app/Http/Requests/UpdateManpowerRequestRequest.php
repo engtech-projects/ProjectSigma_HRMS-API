@@ -84,7 +84,7 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "nullable",
                 "array",
             ],
-            'approvals.*.label'=>[
+            'approvals.*.type'=>[
                 "nullable",
                 "string",
             ],
