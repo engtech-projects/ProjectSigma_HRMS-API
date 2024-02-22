@@ -61,10 +61,9 @@ class ManpowerRequestController extends Controller
         foreach ($main as $key => $x) {
             $new_approvals = [];
             foreach(json_decode($x->approvals) as $data){
-                $type =  gettype(json_decode($data));
-                // array_push($new_approvals,$type);
+                $type =  gettype($data);
                 if($type=="object"){
-                    $one_approval = json_decode($data);
+                    $one_approval = $data;
                     $approval_id = $one_approval->user_id;
                     $approval_status = $one_approval->status;
                     if($approval_id==$id && $approval_status=="Pending"){
