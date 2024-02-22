@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JobApplicants;
-use App\Http\Requests\StoreJobApplicantsRequest;
-use App\Http\Requests\UpdateJobApplicantsRequest;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\File;
+use App\Models\EmployeeUploads;
+use App\Http\Requests\StoreEmployeeUploadsRequest;
+use App\Http\Requests\UpdateEmployeeUploadsRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
-class JobApplicantsController extends Controller
+class EmployeeUploadsController extends Controller
 {
-    const RADIR = "resume_attachment/";
-    const ALADIR = "application_letter_attachment/";
+    const EMPLOYEEDIR = "employee_folder/";
 
     /**
      * Display a listing of the resource.
@@ -20,7 +18,7 @@ class JobApplicantsController extends Controller
     public function index()
     {
         //
-        $main = JobApplicants::simplePaginate(15);
+        $main = EmployeeUploads::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -39,26 +37,22 @@ class JobApplicantsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreJobApplicantsRequest $request)
+    public function store(StoreEmployeeUploadsRequest $request)
     {
-        $main = new JobApplicants;
+        $main = new EmployeeUploads;
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        $resume_attachment = $request->file('resume_attachment');
-        $application_letter_attachmentfile = $request->file('application_letter_attachment');
+        $file_location = $request->file('file');
 
         $hashmake = Hash::make('secret');
         $hashname = hash('sha256',$hashmake);
 
-        $name1 = $resume_attachment->getClientOriginalName();
-        $name2 = $application_letter_attachmentfile->getClientOriginalName();
+        $name = $file_location->getClientOriginalName();
 
-        $resume_attachment->storePubliclyAs(JobApplicantsController::RADIR.$hashname, $name1,'public');
-        $application_letter_attachmentfile->storePubliclyAs(JobApplicantsController::ALADIR.$hashname, $name2,'public');
+        $file_location->storePubliclyAs(EmployeeUploadsController::EMPLOYEEDIR.$hashname, $name,'public');
 
-        $main->resume_attachment = JobApplicantsController::RADIR.$hashname."/".$name1;
-        $main->application_letter_attachment = JobApplicantsController::ALADIR.$hashname."/".$name2;
+        $main->file_location = EmployeeUploadsController::EMPLOYEEDIR.$hashname."/".$name;
 
         if(!$main->save()){
             $data->message = "Save failed.";
@@ -77,7 +71,7 @@ class JobApplicantsController extends Controller
      */
     public function show($id)
     {
-        $main = JobApplicants::find($id);
+        $main = EmployeeUploads::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $data->message = "Successfully fetch.";
@@ -93,7 +87,7 @@ class JobApplicantsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JobApplicants $jobApplicants)
+    public function edit(EmployeeUploads $employeeUploads)
     {
         //
     }
@@ -101,33 +95,21 @@ class JobApplicantsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateJobApplicantsRequest $request, $id)
+    public function update(UpdateEmployeeUploadsRequest $request,  $id)
     {
-        $main = JobApplicants::find($id);
+        $main = EmployeeUploads::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
-            $a1 = explode("/", $main->application_letter_attachment);
-            $a2 = explode("/", $main->resume_attachment);
-
+            $a = explode("/", $main->file_location);
             $main->fill($request->validated());
             $hashmake = Hash::make('secret');
             $hashname = hash('sha256',$hashmake);
-            if($request->hasFile("application_letter_attachment")){
-                $check = JobApplicants::find($id);
-                $file = $request->file('application_letter_attachment');
-                $name = $file->getClientOriginalName();
-                $file->storePubliclyAs(JobApplicantsController::ALADIR.$hashname, $name,'public');
-                Storage::deleteDirectory("public/".$a1[0]."/".$a1[1]);
-                $main->application_letter_attachment = JobApplicantsController::ALADIR.$hashname."/".$name;
-            }
-
-            if($request->hasFile("resume_attachment")){
-                $check = JobApplicants::find($id);
+            if($request->hasFile("file")){
                 $file = $request->file('resume_attachment');
                 $name = $file->getClientOriginalName();
-                $file->storePubliclyAs(JobApplicantsController::RADIR.$hashname, $name,'public');
-                Storage::deleteDirectory("public/".$a2[0]."/".$a2[1]);
-                $main->resume_attachment = JobApplicantsController::RADIR.$hashname."/".$name;
+                $file->storePubliclyAs(EmployeeUploadsController::EMPLOYEEDIR.$hashname, $name,'public');
+                Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
+                $main->file_location = EmployeeUploadsController::EMPLOYEEDIR.$hashname."/".$name;
             }
 
             if($main->save()){
@@ -152,13 +134,12 @@ class JobApplicantsController extends Controller
     public function destroy($id)
     {
         //
-        $main = JobApplicants::find($id);
+        $main = EmployeeUploads::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
-            $a = explode("/", $main->application_letter_attachment);
+            $a = explode("/", $main->file_location);
             if($main->delete()){
-                Storage::deleteDirectory("public/".JobApplicantsController::ALADIR."/".$a[0]."/".$a[1]);
-                Storage::deleteDirectory("public/".JobApplicantsController::RADIR."/".$a[0]."/".$a[1]);
+                Storage::deleteDirectory("public/".EmployeeUploadsController::EMPLOYEEDIR."/".$a[0]."/".$a[1]);
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
