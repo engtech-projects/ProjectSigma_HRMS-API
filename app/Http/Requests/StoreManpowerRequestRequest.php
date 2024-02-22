@@ -82,7 +82,7 @@ class StoreManpowerRequestRequest extends FormRequest
             ],
             'approvals'=>[
                 "required",
-                "array",
+                "json",
             ],
             'approvals.*.type'=>[
                 "required",
