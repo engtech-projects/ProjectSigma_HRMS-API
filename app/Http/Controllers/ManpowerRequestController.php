@@ -39,6 +39,16 @@ class ManpowerRequestController extends Controller
     /**
      * Show all requests made by current user.
      */
+    public function get_hiring()
+    {
+        $main = ManpowerRequest::where("request_status",'=','Approved')->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
     public function get()
     {
         $id = Auth::user()->id;

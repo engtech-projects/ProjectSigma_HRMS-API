@@ -82,7 +82,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             ],
             'approvals'=>[
                 "nullable",
-                "array",
+                "json",
             ],
             'approvals.*.type'=>[
                 "nullable",

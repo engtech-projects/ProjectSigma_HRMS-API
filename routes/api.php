@@ -76,4 +76,5 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('get-approve-request', [ManpowerRequestController::class, 'get_approve']);
     Route::put('approve-approval-form/{formid}', [ManpowerRequestController::class, 'approve_approval']);
     Route::put('deny-approval-form/{formid}', [ManpowerRequestController::class, 'deny_approval']);
+    Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
 });
