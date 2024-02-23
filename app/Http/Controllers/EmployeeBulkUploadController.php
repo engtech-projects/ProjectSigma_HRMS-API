@@ -48,10 +48,10 @@ class EmployeeBulkUploadController extends Controller
                             'family_name','=', $data[0]
                         ],
                         [
-                            'middle_name','=', $data[1]
+                            'middle_name','=', $data[2]
                         ],
                         [
-                            'first_name','=', $data[2]
+                            'first_name','=', $data[1]
                         ],
                     ])->first();
 
