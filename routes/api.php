@@ -22,6 +22,7 @@ use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CompanyEmployeeController;
+use App\Http\Controllers\EmployeeUploadsController;
 use App\Http\Controllers\EmployeeRecordController;
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('employee-search', [EmployeeController::class, 'search']);
     Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('manpower-requests', ManpowerRequestController::class);
+    Route::resource('employee-uploads', EmployeeUploadsController::class);
     Route::get('get-request', [ManpowerRequestController::class, 'get']);
     Route::get('get-approve-request', [ManpowerRequestController::class, 'get_approve']);
     Route::put('approve-approval-form/{formid}', [ManpowerRequestController::class, 'approve_approval']);
