@@ -14,7 +14,7 @@ class EmployeeBulkUploadController extends Controller
 {
     const START_ROW = 3;
     const HEADER_KEYS = ['family_name', 'first_name', 'middle_name', 'name_suffix', 'nick_name', 'pre_street', 'pre_brgy', 'pre_city', 'pre_zip', 'pre_province', 'telephone_number', 'mobile_number', 'per_street', 'per_brgy', 'per_city', 'per_zip', 'per_province', 'date_of_birth', 'place_of_birth', 'citizenship', 'blood_type', 'gender', 'religion', 'civil_status', 'date_of_marriage', 'height', 'weight', 'phic_number', 'pagibig_number', 'tin_number', 'sss_number', 'father_name', 'mother_name', 'spouse_name', 'spouse_datebirth', 'spouse_occupation', 'spouse_contact_no', 'childrens', 'childrens_date_of_birth', 'person_to_contact_name', 'person_to_contact_street', 'person_to_contact_brgy', 'person_to_contact_city', 'person_to_contact_zip', 'person_to_province', 'person_to_contact_no', 'person_to_contact_relationship', 'previous_hospitalization', 'previous_operation', 'current_undergoing_treatment', 'convicted_crime', 'dismissed_resigned', 'pending_administrative', 'name_of_relative_working_with', 'relationship_of_relative_working_with', 'position_of_relative_working_with', 'elementary', 'name_of_school_elementary', 'degree_earned_of_school_elementary', 'dates_of_school_elementary', 'honor_of_school_elementary', 'highschool', 'name_of_school_highschool', 'degree_earned_of_school_highschool', 'dates_of_school_highschool', 'honor_of_school_highschool', 'college', 'name_of_school_college', 'degree_earned_of_school_college', 'dates_of_school_college', 'honor_of_school_college', 'vocational', 'name_of_school_vocational', 'degree_earned_of_school_vocational', 'dates_of_school_vocational', 'honor_of_school_vocational', 'master_thesis_name', 'master_thesis_date', 'doctorate_desertation_name', 'doctorate_desertation_date', 'professional_license_name', 'professional_license_date', 'reference_name', 'reference_address', 'reference_posiiton', 'reference_contact_no', 'employee_id', 'company', 'date_hired', 'employment_status', 'position', 'section_program', 'department', 'division', 'imidiate_supervisor'];
-    public function bulkUpload (BulkValidationRequest $request) {
+    public function bulkUpload (Request $request) {
         // if file is not chosen, redirect back
         if(!request()->hasFile('employees-data')) {
             return response()->json([ 'message' => 'no excel file'], 422);
@@ -79,7 +79,7 @@ class EmployeeBulkUploadController extends Controller
             'data' => $extractedData,
         ]);
     }
-    public function bulkSave(StoreEmployeeBulkUpload $request){
+    public function bulkSave(BulkValidationRequest $request){
         $validatedData = $request->validated();
         foreach(json_decode($validatedData['employees_data'], true) as $data)
         {
