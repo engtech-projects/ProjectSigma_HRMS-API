@@ -72,10 +72,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::resource('employee-uploads', EmployeeUploadsController::class);
+
     Route::get('get-request', [ManpowerRequestController::class, 'get']);
     Route::get('get-approve-request', [ManpowerRequestController::class, 'get_approve']);
     Route::put('approve-approval-form/{formid}', [ManpowerRequestController::class, 'approve_approval']);
     Route::put('deny-approval-form/{formid}', [ManpowerRequestController::class, 'deny_approval']);
     Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
     Route::get('manpower-with-applicant', [ManpowerRequestController::class, 'get_manpower_with_applicant']);
+    Route::get('job-applicants-get', [JobApplicantsController::class, 'get']);
 });
+

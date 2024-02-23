@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -48,6 +50,11 @@ class JobApplicants extends Model
 
     public function manpower(): BelongsTo
     {
-        return $this->belongsTo(ManpowerRequest::class);
+        return $this->belongsTo(ManpowerRequest::class,'manpowerrequests_id','id');
     }
+
+    // public function onmanpower(): HasOne
+    // {
+    //     return $this->hasOne(ManpowerRequest::class,'manpowerrequests_id','id');
+    // }
 }

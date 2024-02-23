@@ -36,6 +36,20 @@ class JobApplicantsController extends Controller
         //
     }
 
+
+    /**
+     * Show View Applicant Details
+     */
+    public function get()
+    {
+        $main = JobApplicants::with("manpower")->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

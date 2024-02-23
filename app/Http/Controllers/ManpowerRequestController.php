@@ -53,7 +53,7 @@ class ManpowerRequestController extends Controller
     }
 
     /**
-     * Show View Complete details of Manpower Request with applicant
+     * Show View Complete details of Manpower Request with applicant || View Applicants list per Manpower Request
      */
     public function get_manpower_with_applicant()
     {
