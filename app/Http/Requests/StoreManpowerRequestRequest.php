@@ -16,7 +16,7 @@ class StoreManpowerRequestRequest extends FormRequest
 
     protected function prepareForValidation() {
         $this->merge([
-            "approvals" => json_decode($this->approvals)
+            "approvals" => json_decode($this->approvals,true)
         ]);
     }
 
