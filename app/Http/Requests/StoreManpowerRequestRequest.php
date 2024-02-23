@@ -86,7 +86,7 @@ class StoreManpowerRequestRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals'=>[
+            'approvals.*'=>[
                 "required",
                 "array",
                 "required_array_keys:type,user_id,status,date_approved,remarks",
