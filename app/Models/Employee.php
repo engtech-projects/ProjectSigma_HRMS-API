@@ -18,6 +18,8 @@ class Employee extends Model
         'date_of_marriage' => 'datetime:Y-m-d',
         'spouse_datebirth' => 'datetime:Y-m-d',
     ];
+    const EMPLOYEE_BULK_STATUS_DUPLICATE = 'duplicate';
+    const EMPLOYEE_BULK_STATUS_UNDUPLICATE = 'unduplicate';
     protected $fillable = [
         'id',
         'first_name',
