@@ -14,6 +14,12 @@ class StoreManpowerRequestRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation() {
+        $this->merge([
+            "approvals" => json_decode($this->approvals)
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -82,7 +88,7 @@ class StoreManpowerRequestRequest extends FormRequest
             ],
             'approvals'=>[
                 "required",
-                "json",
+                "array",
             ],
             'approvals.*.type'=>[
                 "required",
