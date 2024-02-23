@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
-use App\Http\Requests\StoreEmployeeRequest;
-use App\Http\Requests\SearchStudentRequest;
-use App\Http\Requests\UpdateEmployeeRequest;
-use Illuminate\Support\Facades\DB;
+use App\Models\EmployeeEligibility;
+use App\Http\Requests\StoreEmployeeEligibilityRequest;
+use App\Http\Requests\UpdateEmployeeEligibilityRequest;
 
-class EmployeeController extends Controller
+class EmployeeEligibilityController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-        $main = Employee::simplePaginate(15);
+        $main = EmployeeEligibility::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -24,33 +21,6 @@ class EmployeeController extends Controller
         return response()->json($data);
     }
 
-    public function search(SearchStudentRequest $request){
-        $validatedData = $request->validated();
-        $searchKey = $validatedData["key"];
-        $main =
-        Employee::where(function ($q) use ($searchKey) {
-            // $q->orWhere('first_name', 'like', "%{$searchKey}%")
-            //     ->orWhere('family_name', 'like', "%{$searchKey}%")
-            //     ->orWhere('middle_name', 'like', "%{$searchKey}%");
-        })->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey."%")
-        ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey."%")
-        ->limit(25)->orderBy('family_name')->get();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
-    }
-
-    public function get()
-    {
-        $main = Employee::with("company_employments","employment_records")->get();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
-    }
     /**
      * Show the form for creating a new resource.
      */
@@ -62,10 +32,10 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEmployeeRequest $request)
+    public function store(StoreEmployeeEligibilityRequest $request)
     {
         //
-        $main = new Employee;
+        $main = new EmployeeEligibility;
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -86,7 +56,7 @@ class EmployeeController extends Controller
     public function show($id)
     {
         //
-        $main = Employee::with("company_employments","employment_records","employee_address","employee_affiliation","employee_education","employee_eligibility","employee_seminartraining")->get()->find($id);
+        $main = EmployeeEligibility::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $data->message = "Successfully fetch.";
@@ -102,7 +72,7 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Employee $employee)
+    public function edit(EmployeeEligibility $employeeEligibility)
     {
         //
     }
@@ -110,10 +80,10 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeRequest $request,  $id)
+    public function update(UpdateEmployeeEligibilityRequest $request, $id)
     {
         //
-        $main = Employee::find($id);
+        $main = EmployeeEligibility::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $main->fill($request->validated());
@@ -138,8 +108,7 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
-        $main = Employee::find($id);
+        $main = EmployeeEligibility::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
             if($main->delete()){
