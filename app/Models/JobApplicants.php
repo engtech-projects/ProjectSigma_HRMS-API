@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -45,4 +46,8 @@ class JobApplicants extends Model
         'education'
     ];
 
+    public function manpower(): BelongsTo
+    {
+        return $this->belongsTo(ManpowerRequest::class);
+    }
 }

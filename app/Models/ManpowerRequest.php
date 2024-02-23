@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -34,4 +36,9 @@ class ManpowerRequest extends Model
         'breakdown_details',
         'requested_by',
     ];
+
+    public function job_applicants(): HasMany
+    {
+        return $this->hasMany(JobApplicants::class,'manpowerrequests_id','id');
+    }
 }

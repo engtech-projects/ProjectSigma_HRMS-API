@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreEmployeeEducationRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'employee_id'=> [
+                "required",
+                "integer",
+                "exists:employees,id",
+            ],
+            'elementary_name'=>[
+                "required",
+                "string",
+            ],
+            'elementary_education'=>[
+                "required",
+                "string",
+            ],
+            'elementary_period_attendance_to'=>[
+                "required",
+                "string",
+            ],
+            'elementary_period_attendance_from'=>[
+                "required",
+                "string",
+            ],
+            'elementary_year_graduated'=>[
+                "required",
+                "string",
+            ],
+            'secondary_name'=>[
+                "required",
+                "string",
+            ],
+            'secondary_education'=>[
+                "required",
+                "string",
+            ],
+            'secondary_period_attendance_to'=>[
+                "required",
+                "string",
+            ],
+            'secondary_period_attendance_from'=>[
+                "required",
+                "string",
+            ],
+            'secondary_year_graduated'=>[
+                "required",
+                "string",
+            ],
+            'vocationalcourse_name'=>[
+                "required",
+                "string",
+            ],
+            'vocationalcourse_education'=>[
+                "required",
+                "string",
+            ],
+            'vocationalcourse_period_attendance_to'=>[
+                "required",
+                "string",
+            ],
+            'vocationalcourse_period_attendance_from'=>[
+                "required",
+                "string",
+            ],
+            'vocationalcourse_year_graduated'=>[
+                "required",
+                "string",
+            ],
+            'college_name'=>[
+                "required",
+                "string",
+            ],
+            'college_education'=>[
+                "required",
+                "string",
+            ],
+            'college_period_attendance_to'=>[
+                "required",
+                "string",
+            ],
+            'college_period_attendance_from'=>[
+                "required",
+                "string",
+            ],
+            'college_year_graduated'=>[
+                "required",
+                "string",
+            ],
+            'graduatestudies_name'=>[
+                "required",
+                "string",
+            ],
+            'graduatestudies_education'=>[
+                "required",
+                "string",
+            ],
+            'graduatestudies_period_attendance_to'=>[
+                "required",
+                "string",
+            ],
+            'graduatestudies_period_attendance_from'=>[
+                "required",
+                "string",
+            ],
+            'graduatestudies_year_graduated'=>[
+                "required",
+                "string",
+            ],
+        ];
+    }
+}

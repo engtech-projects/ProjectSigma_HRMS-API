@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateManpowerRequestRequest extends FormRequest
+class UpdateEmployeeEducationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,100 +22,109 @@ class UpdateManpowerRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'requesting_department'=> [
+            //
+            'employee_id'=> [
                 "nullable",
                 "integer",
-                "exists:departments,id",
+                "exists:employees,id",
             ],
-            'date_requested'=>[
-                "nullable",
-                "date",
-            ],
-            'date_required'=>[
-                "nullable",
-                "date",
-            ],
-            'position'=>[
+            'elementary_name'=>[
                 "nullable",
                 "string",
             ],
-            'employment_type'=>[
-                "nullable",
-                "string",
-                'in:Student Trainee,Project Hire,Contractual,Regular'
-            ],
-            'brief_description'=>[
+            'elementary_education'=>[
                 "nullable",
                 "string",
             ],
-            'job_description_attachment'=>[
-                "nullable",
-                "max:10000",
-                "mimes:application/msword,doc,docx,pdf,zip",
-            ],
-            'nature_of_request'=>[
-                "nullable",
-                "string",
-                'in:New/Addition,Replacement'
-            ],
-            'age_range'=>[
+            'elementary_period_attendance_to'=>[
                 "nullable",
                 "string",
             ],
-            'status'=>[
-                "nullable",
-                "string",
-                'in:Single,Married,No Preference'
-            ],
-            'gender'=>[
-                "nullable",
-                "string",
-                'in:Male,Female,No Preference'
-            ],
-            'educational_requirement'=>[
+            'elementary_period_attendance_from'=>[
                 "nullable",
                 "string",
             ],
-            'preferred_qualifications'=>[
+            'elementary_year_graduated'=>[
                 "nullable",
                 "string",
             ],
-            'approvals'=>[
-                "nullable",
-                "json",
-            ],
-            'approvals.*.type'=>[
+            'secondary_name'=>[
                 "nullable",
                 "string",
             ],
-            'approvals.*.user_id'=>[
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status'=>[
+            'secondary_education'=>[
                 "nullable",
                 "string",
             ],
-            'approvals.*.date_approved'=>[
-                "nullable",
-                "date",
-            ],
-            'remarks'=>[
+            'secondary_period_attendance_to'=>[
                 "nullable",
                 "string",
             ],
-            'request_status'=>[
+            'secondary_period_attendance_from'=>[
                 "nullable",
                 "string",
-                'in:Pending,Approved,Filled,Hold,Cancelled,Disapproved'
             ],
-            'charged_to'=>[
+            'secondary_year_graduated'=>[
                 "nullable",
-                "integer",
-                "exists:departments,id",
+                "string",
             ],
-            'breakdown_details'=>[
+            'vocationalcourse_name'=>[
+                "nullable",
+                "string",
+            ],
+            'vocationalcourse_education'=>[
+                "nullable",
+                "string",
+            ],
+            'vocationalcourse_period_attendance_to'=>[
+                "nullable",
+                "string",
+            ],
+            'vocationalcourse_period_attendance_from'=>[
+                "nullable",
+                "string",
+            ],
+            'vocationalcourse_year_graduated'=>[
+                "nullable",
+                "string",
+            ],
+            'college_name'=>[
+                "nullable",
+                "string",
+            ],
+            'college_education'=>[
+                "nullable",
+                "string",
+            ],
+            'college_period_attendance_to'=>[
+                "nullable",
+                "string",
+            ],
+            'college_period_attendance_from'=>[
+                "nullable",
+                "string",
+            ],
+            'college_year_graduated'=>[
+                "nullable",
+                "string",
+            ],
+            'graduatestudies_name'=>[
+                "nullable",
+                "string",
+            ],
+            'graduatestudies_education'=>[
+                "nullable",
+                "string",
+            ],
+            'graduatestudies_period_attendance_to'=>[
+                "nullable",
+                "string",
+            ],
+            'graduatestudies_period_attendance_from'=>[
+                "nullable",
+                "string",
+            ],
+            'graduatestudies_year_graduated'=>[
                 "nullable",
                 "string",
             ],

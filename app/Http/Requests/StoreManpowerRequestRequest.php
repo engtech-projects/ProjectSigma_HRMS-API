@@ -14,6 +14,12 @@ class StoreManpowerRequestRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation() {
+        $this->merge([
+            "approvals" => json_decode($this->approvals,true)
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -49,7 +55,7 @@ class StoreManpowerRequestRequest extends FormRequest
                 "string",
             ],
             'job_description_attachment'=>[
-                "required",
+                "nullable",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
@@ -80,9 +86,10 @@ class StoreManpowerRequestRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals'=>[
+            'approvals.*'=>[
                 "required",
                 "array",
+                "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
             'approvals.*.type'=>[
                 "required",
