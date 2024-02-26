@@ -102,4 +102,9 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeSeminartraining::class);
     }
+
+    public function employee_related(): HasMany
+    {
+        return $this->hasMany(EmployeeRelatedperson::class);
+    }
 }
