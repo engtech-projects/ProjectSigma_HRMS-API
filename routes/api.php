@@ -24,6 +24,12 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CompanyEmployeeController;
 use App\Http\Controllers\EmployeeUploadsController;
 use App\Http\Controllers\EmployeeRecordController;
+use App\Http\Controllers\EmployeeAddressController;
+use App\Http\Controllers\EmployeeAffiliationController;
+use App\Http\Controllers\EmployeeEducationController;
+use App\Http\Controllers\EmployeeEligibilityController;
+use App\Http\Controllers\EmployeeRelatedpersonController;
+use App\Http\Controllers\EmployeeSeminartrainingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -72,6 +78,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::resource('employee-uploads', EmployeeUploadsController::class);
+
+    Route::resource('employee-address', EmployeeAddressController::class);
+    Route::resource('employee-affiliation', EmployeeAffiliationController::class);
+    Route::resource('employee-education', EmployeeEducationController::class);
+    Route::resource('employee-eligibility', EmployeeEligibilityController::class);
+    Route::resource('employee-relatedperson', EmployeeRelatedpersonController::class);
+    Route::resource('employee-seminartraining', EmployeeSeminartrainingController::class);
 
     Route::get('get-request', [ManpowerRequestController::class, 'get']);
     Route::get('get-approve-request', [ManpowerRequestController::class, 'get_approve']);
