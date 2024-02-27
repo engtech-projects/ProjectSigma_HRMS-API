@@ -55,7 +55,7 @@ class StoreManpowerRequestRequest extends FormRequest
                 "string",
             ],
             'job_description_attachment'=>[
-                "nullable",
+                "required",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],

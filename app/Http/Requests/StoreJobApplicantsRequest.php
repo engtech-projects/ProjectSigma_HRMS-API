@@ -14,6 +14,14 @@ class StoreJobApplicantsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation() {
+        $this->merge([
+                "workexperience" => json_decode($this->workexperience,true),
+                "education" => json_decode($this->education,true),
+                "children" => json_decode($this->children,true),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -124,16 +132,17 @@ class StoreJobApplicantsRequest extends FormRequest
                 "min:11",
                 "max:11",
             ],
-            'children'=>[
+            'children.*'=>[
                 "nullable",
-                "json",
+                "array",
+                "required_array_keys:name,birthdate"
             ],
             'children.*.name'=>[
-                "required_with:children.*.birthdate",
+                "required",
                 "string",
             ],
             'children.*.birthdate'=>[
-                "required_with:children.*.name",
+                "required",
                 "date",
             ],
             'icoe_name'=>[
@@ -154,9 +163,10 @@ class StoreJobApplicantsRequest extends FormRequest
                 "min:11",
                 "max:11",
             ],
-            'education'=>[
+            'education.*'=>[
                 "required",
-                "json",
+                "array",
+                "required_array_keys:elementary_name,elementary_education,elementary_period_attendance_to,elementary_period_attendance_from,elementary_year_graduated,secondary_name,secondary_education,secondary_period_attendance_to,secondary_period_attendance_from,secondary_year_graduated,vocationalcourse_name,vocationalcourse_education,vocationalcourse_period_attendance_to,vocationalcourse_period_attendance_from,vocationalcourse_year_graduated,college_name,college_education,college_period_attendance_to,college_period_attendance_from,college_year_graduated,graduatestudies_name,graduatestudies_education,graduatestudies_period_attendance_to,graduatestudies_period_attendance_from,graduatestudies_year_graduated"
             ],
             'education.*.elementary_name'=>[
                 "required",
@@ -168,15 +178,15 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'education.*.elementary_period_attendance_to'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.elementary_period_attendance_from'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.elementary_year_graduated'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.secondary_name'=>[
                 "required",
@@ -188,15 +198,15 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'education.*.secondary_period_attendance_to'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.secondary_period_attendance_from'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.secondary_year_graduated'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.vocationalcourse_name'=>[
                 "required",
@@ -208,15 +218,15 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'education.*.vocationalcourse_period_attendance_to'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.vocationalcourse_period_attendance_from'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.vocationalcourse_year_graduated'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.college_name'=>[
                 "required",
@@ -228,15 +238,15 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'education.*.college_period_attendance_to'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.college_period_attendance_from'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.college_year_graduated'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.graduatestudies_name'=>[
                 "required",
@@ -248,19 +258,20 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'education.*.graduatestudies_period_attendance_to'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.graduatestudies_period_attendance_from'=>[
                 "required",
-                "date",
+                "string",
             ],
             'education.*.graduatestudies_year_graduated'=>[
                 "required",
-                "date",
+                "string",
             ],
-            'workexperience'=>[
+            'workexperience.*'=>[
                 "nullable",
-                "json",
+                "array",
+                "required_array_keys:inclusive_dates_from,inclusive_dates_to,position_title,dpt_agency_office_company,monthly_salary,status_of_appointment"
             ],
             'workexperience.*.inclusive_dates_from'=>[
                 "nullable",
@@ -280,7 +291,7 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'workexperience.*.monthly_salary'=>[
                 "nullable",
-                "float",
+                "string",
             ],
             'workexperience.*.status_of_appointment'=>[
                 "nullable",
