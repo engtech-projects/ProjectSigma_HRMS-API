@@ -55,6 +55,10 @@ class UpdateEmployeeRequest extends FormRequest
                 "nullable",
                 "date",
             ],
+            'date_of_marriage'=>[
+                "nullable",
+                "date",
+            ],
             'citizenship'=>[
                 "nullable",
                 "string",
