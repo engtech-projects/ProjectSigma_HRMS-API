@@ -27,23 +27,27 @@ class StoreEmployeeRecordRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
-            'employment_status'=>[
+            'date_to'=>[
+                "required",
+                "date",
+            ],
+            'date_from'=>[
+                "required",
+                "date",
+            ],
+            'position_title'=>[
                 "required",
                 "string",
             ],
-            'position'=>[
+            'company_name'=>[
                 "required",
                 "string",
             ],
-            'department'=>[
+            'monthly_salary'=>[
                 "required",
                 "string",
             ],
-            'division'=>[
-                "required",
-                "string",
-            ],
-            'section_program'=>[
+            'status_of_appointment'=>[
                 "required",
                 "string",
             ],

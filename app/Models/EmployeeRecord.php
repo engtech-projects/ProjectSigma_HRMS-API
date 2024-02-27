@@ -18,11 +18,12 @@ class EmployeeRecord extends Model
     protected $fillable = [
         'id',
         'employee_id',
-        'employment_status',
-        'position',
-        'department',
-        'division',
-        'section_program',
+        'date_to',
+        'date_from',
+        'position_title',
+        'company_name',
+        'monthly_salary',
+        'status_of_appointment',
     ];
 
     public function employee(): BelongsTo

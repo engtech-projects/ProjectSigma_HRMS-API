@@ -43,7 +43,7 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::with('job_applicants')->where("request_status",'=','Approved')->get();
         // $main = ManpowerRequest::with('job_applicants', function($query){
-        //     return $query->where("request_status",'=','Approved');
+        //     return $query->where("request_status",'=',$var);
         // })->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";

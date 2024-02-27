@@ -35,7 +35,7 @@ class UpdateEmployeeRelatedpersonRequest extends FormRequest
             'type'=>[
                 "nullable",
                 "string",
-                'in:contact person,dependent/children,father,mother,spouse,reference'
+                'in:contact person,dependent/children,father,mother,spouse,reference,guardian'
             ],
             'name'=>[
                 "nullable",
