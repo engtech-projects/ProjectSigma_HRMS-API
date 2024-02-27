@@ -53,6 +53,10 @@ class StoreEmployeeRequest extends FormRequest
             ],
             'place_of_birth'=>[
                 "required",
+                "string",
+            ],
+            'date_of_marriage'=>[
+                "nullable",
                 "date",
             ],
             'citizenship'=>[
