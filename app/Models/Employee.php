@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeRelatedPersonType;
+use App\Enums\EmployeeUploadType;
 
 class Employee extends Model
 {
@@ -104,38 +105,47 @@ class Employee extends Model
         return $this->hasMany(EmployeeSeminartraining::class);
     }
 
-    public function employee_related_mother(): HasOne
+    public function mother(): HasOne
     {
-        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);
     }
 
-    public function employee_related_father(): HasOne
+    public function father(): HasOne
     {
-        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::FATHER);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::FATHER);
     }
 
-    public function employee_related_contact_person(): HasOne
+    public function contact_person(): HasOne
     {
-        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CONTACT_PERSON);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CONTACT_PERSON);
     }
 
-    public function employee_related_spouse(): HasOne
+    public function spouse(): HasOne
     {
-        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::SPOUSE);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::SPOUSE);
     }
 
-    public function employee_related_reference(): HasOne
+    public function reference(): HasOne
     {
-        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::REFERENCE);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::REFERENCE);
     }
 
-    public function employee_related_guardian(): HasOne
+    public function guardian(): HasOne
     {
-        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::GUARDIAN);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::GUARDIAN);
     }
 
-    public function employee_related_child(): HasMany
+    public function child(): HasMany
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CHILD);
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CHILD);
+    }
+
+    public function memo(): HasMany
+    {
+        return $this->hasMany(EmployeeUploads::class)->where('upload_type',"=",EmployeeUploadType::MEMO);
+    }
+    public function docs(): HasMany
+    {
+        return $this->hasMany(EmployeeUploads::class)->where('upload_type',"=",EmployeeUploadType::DOCUMENTS);
     }
 }

@@ -34,7 +34,7 @@ class StoreEmployeeRelatedpersonRequest extends FormRequest
             'type'=>[
                 "required",
                 "string",
-                'in:contact person,dependent/children,father,mother,spouse,reference'
+                'in:contact person,dependent/children,father,mother,spouse,reference,guardian'
             ],
             'name'=>[
                 "required",
