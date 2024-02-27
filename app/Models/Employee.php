@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Enums\EmployeeRelatedPersonType;
 
 class Employee extends Model
 {
@@ -103,8 +104,38 @@ class Employee extends Model
         return $this->hasMany(EmployeeSeminartraining::class);
     }
 
-    public function employee_related(): HasMany
+    public function employee_related_mother(): HasOne
     {
-        return $this->hasMany(EmployeeRelatedperson::class);
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);
+    }
+
+    public function employee_related_father(): HasOne
+    {
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::FATHER);
+    }
+
+    public function employee_related_contact_person(): HasOne
+    {
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CONTACT_PERSON);
+    }
+
+    public function employee_related_spouse(): HasOne
+    {
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::SPOUSE);
+    }
+
+    public function employee_related_reference(): HasOne
+    {
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::REFERENCE);
+    }
+
+    public function employee_related_guardian(): HasOne
+    {
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::GUARDIAN);
+    }
+
+    public function employee_related_child(): HasMany
+    {
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CHILD);
     }
 }

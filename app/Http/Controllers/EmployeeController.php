@@ -86,7 +86,12 @@ class EmployeeController extends Controller
     public function show($id)
     {
         //
-        $main = Employee::with("company_employments","employment_records","employee_related","employee_address","employee_affiliation","employee_education","employee_eligibility","employee_seminartraining")->get()->find($id);
+        $main = Employee::with("company_employments","employment_records","employee_address",
+        "employee_affiliation","employee_education","employee_related_contact_person",
+        "employee_related_father","employee_related_spouse","employee_related_reference",
+        "employee_related_mother","employee_related_guardian","employee_related_child",
+        "employee_eligibility","employee_seminartraining")->get()->find($id);
+
         $data = json_decode('{}');
         if (!is_null($main) ) {
             $data->message = "Successfully fetch.";
