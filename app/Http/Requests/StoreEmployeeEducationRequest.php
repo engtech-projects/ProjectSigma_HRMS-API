@@ -127,6 +127,38 @@ class StoreEmployeeEducationRequest extends FormRequest
                 "required",
                 "string",
             ],
+            'elementary_degree_earned_of_school'=>[
+                "required",
+                "string",
+            ],
+            'elementary_honors_received'=>[
+                "required",
+                "string",
+            ],
+            'secondary_degree_earned_of_school'=>[
+                "required",
+                "string",
+            ],
+            'secondary_honors_received'=>[
+                "required",
+                "string",
+            ],
+            'college_degree_earned_of_school'=>[
+                "required",
+                "string",
+            ],
+            'college_honors_received'=>[
+                "required",
+                "string",
+            ],
+            'vocationalcourse_degree_earned_of_school'=>[
+                "required",
+                "string",
+            ],
+            'vocationalcourse_honors_received'=>[
+                "required",
+                "string",
+            ],
         ];
     }
 }

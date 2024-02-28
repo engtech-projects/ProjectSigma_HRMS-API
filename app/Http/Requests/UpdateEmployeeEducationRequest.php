@@ -128,6 +128,38 @@ class UpdateEmployeeEducationRequest extends FormRequest
                 "nullable",
                 "string",
             ],
+            'elementary_degree_earned_of_school'=>[
+                "nullable",
+                "string",
+            ],
+            'elementary_honors_received'=>[
+                "nullable",
+                "string",
+            ],
+            'secondary_degree_earned_of_school'=>[
+                "nullable",
+                "string",
+            ],
+            'secondary_honors_received'=>[
+                "nullable",
+                "string",
+            ],
+            'college_degree_earned_of_school'=>[
+                "nullable",
+                "string",
+            ],
+            'college_honors_received'=>[
+                "nullable",
+                "string",
+            ],
+            'vocationalcourse_degree_earned_of_school'=>[
+                "nullable",
+                "string",
+            ],
+            'vocationalcourse_honors_received'=>[
+                "nullable",
+                "string",
+            ],
         ];
     }
 }
