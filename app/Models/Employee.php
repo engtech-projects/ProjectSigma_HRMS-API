@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeRelatedPersonType;
+use App\Enums\EmployeeStudiesType;
 use App\Enums\EmployeeUploadType;
 
 class Employee extends Model
@@ -105,6 +106,11 @@ class Employee extends Model
         return $this->hasMany(EmployeeSeminartraining::class);
     }
 
+    public function employee_related_person(): HasMany
+    {
+        return $this->hasMany(EmployeeRelatedperson::class);
+    }
+
     public function mother(): HasOne
     {
         return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);
@@ -130,9 +136,24 @@ class Employee extends Model
         return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::REFERENCE);
     }
 
-    public function guardian(): HasOne
+    public function employee_studies(): HasMany
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::GUARDIAN);
+        return $this->hasMany(EmployeeStudies::class);
+    }
+
+    public function masterstudies(): HasOne
+    {
+        return $this->hasOne(EmployeeStudies::class)->where('type',"=",EmployeeStudiesType::MASTER);
+    }
+
+    public function doctorstudies(): HasOne
+    {
+        return $this->hasOne(EmployeeStudies::class)->where('type',"=",EmployeeStudiesType::DOCTOR);
+    }
+
+    public function professionalstudies(): HasOne
+    {
+        return $this->hasOne(EmployeeStudies::class)->where('type',"=",EmployeeStudiesType::PROFESSIONAL);
     }
 
     public function child(): HasMany
