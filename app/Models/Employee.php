@@ -99,7 +99,10 @@ class Employee extends Model
     {
         return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CONTACT_PERSON);
     }
-
+    public function guardian(): HasOne
+    {
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::GUARDIAN);
+    }
     public function spouse(): HasOne
     {
         return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::SPOUSE);

@@ -190,14 +190,18 @@ class EmployeeBulkUploadController extends Controller
         {
             if($data['status'] == 'unduplicate' || $data['status'] == 'duplicate' )
             {
+                //insert
+                $employee = new Employee;
+                $employee->fill($data)->save();
+
                 if($data['dates_of_school_elementary'])
                 {
                     $elementaryDates = explode('-',$data['dates_of_school_elementary']);
                     if($elementaryDates && count($elementaryDates) > 1)
                     {
-                        $education['elementary_period_attendance_from'] = $elementaryDates[0];
-                        $education['elementary_period_attendance_to'] = $elementaryDates[1];
-                        $education['elementary_year_graduated'] = $elementaryDates[1];
+                        $education['elementary_period_attendance_from'] = $elementaryDates[0] ?? 'N/A';
+                        $education['elementary_period_attendance_to'] = $elementaryDates[1] ?? 'N/A';
+                        $education['elementary_year_graduated'] = $elementaryDates[1] ?? 'N/A';
                     }
                 }
                 if($data['dates_of_school_highschool'])
@@ -205,9 +209,9 @@ class EmployeeBulkUploadController extends Controller
                     $highSchoolDates = explode('-',$data['dates_of_school_highschool']);
                     if($highSchoolDates && count($highSchoolDates) > 1)
                     {
-                        $education['secondary_period_attendance_from'] = $highSchoolDates[0];
-                        $education['secondary_period_attendance_to'] = $highSchoolDates[1];
-                        $education['secondary_year_graduated'] = $highSchoolDates[1];
+                        $education['secondary_period_attendance_from'] = $highSchoolDates[0] ?? 'N/A';
+                        $education['secondary_period_attendance_to'] = $highSchoolDates[1] ?? 'N/A';
+                        $education['secondary_year_graduated'] = $highSchoolDates[1] ?? 'N/A';
                     }
                 }
                 if($data['dates_of_school_college'])
@@ -215,9 +219,9 @@ class EmployeeBulkUploadController extends Controller
                     $collegeDates = explode('-',$data['dates_of_school_college']);
                     if($collegeDates && count($collegeDates) > 1)
                     {
-                        $education['college_period_attendance_from'] = $collegeDates[0];
-                        $education['college_period_attendance_to'] = $collegeDates[1];
-                        $education['college_year_graduated'] = $collegeDates[1];
+                        $education['college_period_attendance_from'] = $collegeDates[0] ?? 'N/A';
+                        $education['college_period_attendance_to'] = $collegeDates[1] ?? 'N/A';
+                        $education['college_year_graduated'] = $collegeDates[1] ?? 'N/A';
                     }
                 }
                 if($data['dates_of_school_vocational'])
@@ -225,12 +229,12 @@ class EmployeeBulkUploadController extends Controller
                     $vocationalDates = explode('-',$data['dates_of_school_vocational']);
                     if($vocationalDates && count($vocationalDates) > 1)
                     {
-                        $education['vocationalcourse_period_attendance_from'] = $vocationalDates[0];
-                        $education['vocationalcourse_period_attendance_to'] = $vocationalDates[1];
-                        $education['vocationalcourse_year_graduated'] = $vocationalDates[1];
+                        $education['vocationalcourse_period_attendance_from'] = $vocationalDates[0] ?? 'N/A';
+                        $education['vocationalcourse_period_attendance_to'] = $vocationalDates[1] ?? 'N/A';
+                        $education['vocationalcourse_year_graduated'] = $vocationalDates[1] ?? 'N/A';
                     }
                 }
-                if($data['childrens'])
+                if($data['childrens'] && $data['childrens'] != 'N/A')
                 {
                     $children = explode(',',$data['childrens']);
                     if($children)
@@ -241,8 +245,9 @@ class EmployeeBulkUploadController extends Controller
                             $employeeRelatedPerson[] = [
                                 'relationship',
                                 'type' => EmployeeRelatedPersonType::CHILD,
-                                'name' => $childrenInformation[0],
-                                'date_of_birth' => $childrenInformation[1],
+                                'relationship' => EmployeeRelatedPersonType::CHILD,
+                                'name' => $childrenInformation[0] ?? 'N/A',
+                                'date_of_birth' => $childrenInformation[1] ?? null,
                                 'street' => 'N/A',
                                 'brgy' => 'N/A',
                                 'city' => 'N/A',
@@ -256,23 +261,21 @@ class EmployeeBulkUploadController extends Controller
                 }
 
                  //permanenet address
-                $address[] = [
-                    [
-                        'street' => $data['pre_street'] ?? 'N/A',
-                        'brgy' => $data['pre_brgy'] ?? 'N/A',
-                        'city' => $data['pre_city'] ?? 'N/A',
-                        'zip' => $data['pre_zip'] ?? 'N/A',
-                        'province' => $data['pre_province'] ?? 'N/A',
-                        'type' => EmployeeAddressType::PRESENT,
-                    ],
-                    [
-                        'street' => $data['per_street'] ?? 'N/A',
-                        'brgy' => $data['per_brgy'] ?? 'N/A',
-                        'city' => $data['per_city'] ?? 'N/A',
-                        'zip' => $data['per_zip'] ?? 'N/A',
-                        'province' => $data['per_province'] ?? 'N/A',
-                        'type' => EmployeeAddressType::PERMANENT,
-                    ]
+                $address_pre = [
+                    'street' => $data['pre_street'] ?? 'N/A',
+                    'brgy' => $data['pre_brgy'] ?? 'N/A',
+                    'city' => $data['pre_city'] ?? 'N/A',
+                    'zip' => $data['pre_zip'] ?? 'N/A',
+                    'province' => $data['pre_province'] ?? 'N/A',
+                    'type' => EmployeeAddressType::PRESENT,
+                ];
+                $address_per =  [
+                    'street' => $data['per_street'] ?? 'N/A',
+                    'brgy' => $data['per_brgy'] ?? 'N/A',
+                    'city' => $data['per_city'] ?? 'N/A',
+                    'zip' => $data['per_zip'] ?? 'N/A',
+                    'province' => $data['per_province'] ?? 'N/A',
+                    'type' => EmployeeAddressType::PERMANENT,
                 ];
 
                 //affiliation information
@@ -280,7 +283,7 @@ class EmployeeBulkUploadController extends Controller
                     'club_organization_name' => 'N/A',
                     'membership_type' => 'N/A',
                     'status' => 'N/A',
-                    'membership_exp_date' => 'N/A',
+                    'membership_exp_date' => null,
                 ];
 
                 //employee record information
@@ -295,40 +298,40 @@ class EmployeeBulkUploadController extends Controller
 
                 //education
                 $education = [
-                    'elementary_name' => $data['elementary_name'],
-                    'elementary_education' => $data['elementary_education'],
-                    'elementary_degree_earned_of_school' => $data['elementary_degree_earned_of_school'],
+                    'elementary_name' => $data['elementary_name'] ?? 'N/A',
+                    'elementary_education' => $data['elementary_education'] ?? 'N/A',
+                    'elementary_degree_earned_of_school' => $data['elementary_degree_earned_of_school'] ?? 'N/A',
                     'elementary_period_attendance_to' => 'N/A',
                     'elementary_period_attendance_from' => 'N/A',
                     'elementary_year_graduated' => 'N/A',
-                    'elementary_honors_received' => $data['honor_of_school_elementary'],
+                    'elementary_honors_received' => $data['honor_of_school_elementary'] ?? 'N/A',
 
                     //seconday studies
-                    'secondary_name' => $data['secondary_name'],
-                    'secondary_education' => $data['secondary_education'],
-                    'secondary_degree_earned_of_school' => $data['secondary_degree_earned_of_school'],
+                    'secondary_name' => $data['secondary_name'] ?? 'N/A',
+                    'secondary_education' => $data['secondary_education'] ?? 'N/A',
+                    'secondary_degree_earned_of_school' => $data['secondary_degree_earned_of_school'] ?? 'N/A',
                     'secondary_period_attendance_to' => 'N/A',
                     'secondary_period_attendance_from' => 'N/A',
                     'secondary_year_graduated' => 'N/A',
-                    'secondary_honors_received' => $data['honor_of_school_highschool'],
+                    'secondary_honors_received' => $data['honor_of_school_highschool'] ?? 'N/A',
 
                      //college studies
-                    'college_name' => $data['college_name'],
-                    'college_education' => $data['college_education'],
-                    'college_degree_earned_of_school' => $data['college_degree_earned_of_school'],
+                    'college_name' => $data['college_name'] ?? 'N/A',
+                    'college_education' => $data['college_education'] ?? 'N/A',
+                    'college_degree_earned_of_school' => $data['college_degree_earned_of_school'] ?? 'N/A',
                     'college_period_attendance_to' => 'N/A',
                     'college_period_attendance_from' => 'N/A',
                     'college_year_graduated' => 'N/A',
-                    'college_honors_received' => $data['honor_of_school_college'],
+                    'college_honors_received' => $data['honor_of_school_college'] ?? 'N/A',
 
                     //vocational studies
-                    'vocationalcourse_name' => $data['vocationalcourse_name'],
-                    'vocationalcourse_education' => $data['vocationalcourse_education'],
-                    'vocationalcourse_degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school'],
+                    'vocationalcourse_name' => $data['vocationalcourse_name'] ?? 'N/A',
+                    'vocationalcourse_education' => $data['vocationalcourse_education'] ?? 'N/A',
+                    'vocationalcourse_degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school'] ?? 'N/A',
                     'vocationalcourse_period_attendance_to' => 'N/A',
                     'vocationalcourse_period_attendance_from' => 'N/A',
                     'vocationalcourse_year_graduated' => 'N/A',
-                    'vocationalcourse_honors_received' => $data['honor_of_school_vocational'],
+                    'vocationalcourse_honors_received' => $data['honor_of_school_vocational'] ?? 'N/A',
 
                     //graduate studies (need to remove out of excel)
                     'graduatestudies_name' => 'N/A',
@@ -344,8 +347,9 @@ class EmployeeBulkUploadController extends Controller
                 $employeeRelatedPerson[] = [
                     'relationship',
                     'type' => EmployeeRelatedPersonType::FATHER,
-                    'name' => $data['father_name'],
-                    'date_of_birth' => 'N/A',
+                    'relationship' => EmployeeRelatedPersonType::FATHER,
+                    'name' => $data['father_name'] ?? 'N/A',
+                    'date_of_birth' => null,
                     'street' => 'N/A',
                     'brgy' => 'N/A',
                     'city' => 'N/A',
@@ -358,8 +362,9 @@ class EmployeeBulkUploadController extends Controller
                 $employeeRelatedPerson[] = [
                     'relationship',
                     'type' => EmployeeRelatedPersonType::MOTHER,
-                    'name' => $data['father_name'],
-                    'date_of_birth' => 'N/A',
+                    'relationship' => EmployeeRelatedPersonType::MOTHER,
+                    'name' => $data['father_name'] ?? 'N/A',
+                    'date_of_birth' => null,
                     'street' => 'N/A',
                     'brgy' => 'N/A',
                     'city' => 'N/A',
@@ -373,47 +378,59 @@ class EmployeeBulkUploadController extends Controller
                 $employeeRelatedPerson[] = [
                     'relationship',
                     'type' => EmployeeRelatedPersonType::SPOUSE,
-                    'name' => $data['spouse_name'],
+                    'relationship' => EmployeeRelatedPersonType::SPOUSE,
+                    'name' => $data['spouse_name'] ?? 'N/A',
                     'date_of_birth' => $data['spouse_datebirth'],
                     'street' => 'N/A',
                     'brgy' => 'N/A',
                     'city' => 'N/A',
                     'zip' => 'N/A',
                     'province' => 'N/A',
-                    'occupation' => $data['spouse_occupation'],
-                    'contact_no' => $data['spouse_contact_no'],
+                    'occupation' => $data['spouse_occupation'] ?? 'N/A',
+                    'contact_no' => $data['spouse_contact_no'] ?? 'N/A',
                 ];
 
                 //master studies
                 $studies[] = [
-                    'title' => $data['master_thesis_name'],
+                    'title' => $data['master_thesis_name'] ?? 'N/A',
                     'date' =>  $data['master_thesis_date'],
                     'type' => EmployeeStudiesType::MASTER,
                 ];
                 //doctorate studies
                 $studies[] = [
-                    'title' => $data['doctorate_desertation_name'],
+                    'title' => $data['doctorate_desertation_name'] ?? 'N/A',
                     'date' => $data['doctorate_desertation_date'],
                     'type' => EmployeeStudiesType::DOCTOR,
                 ];
                 //professional studies
                 $studies[] = [
-                    'title' => $data['professional_license_name'],
+                    'title' => $data['professional_license_name'] ?? 'N/A',
                     'date' => $data['professional_license_date'],
                     'type' => EmployeeStudiesType::PROFESSIONAL,
                 ];
-                //insert
-                $employee = new Employee;
-                $employee->fill($data)->save();
+                //eligibility
+                $eligibility = [
+                    'program_module' => 'N/A',
+                    'certificate_lvl' => 'N/A',
+                    'status' => 'N/A',
+                    'cert_exp_date' => 'N/A',
+                ];
                 $employee->company_employments()->create($data);
-                // $employee->employment_records()->create($employeeRecord);
-                $employee->employee_address()->create($address);
+                //$employee->employment_records()->create($employeeRecord);
+                $employee->employee_address()->create($address_pre);
+                $employee->employee_address()->create($address_per);
                 $employee->employee_affiliation()->create($affiliation);
                 $employee->employee_education()->create($education);
-                $employee->employee_eligibility()->create();
-                $employee->employee_related_person()->create($employeeRelatedPerson);
+                //$employee->employee_eligibility()->create($eligibility);
+                foreach($employeeRelatedPerson as $data)
+                {
+                    $employee->employee_related_person()->create($data);
+                }
+                foreach($studies as $data)
+                {
+                    $employee->employee_studies()->create($data);
+                }
             }
-            break;
         }
         return response()->json([
             'message' => 'Done save data',
