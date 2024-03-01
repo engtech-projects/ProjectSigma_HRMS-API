@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class EmployeeStudies extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
     protected $fillable = [
         'id',
         'employee_id',

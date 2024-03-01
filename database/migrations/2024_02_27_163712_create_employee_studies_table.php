@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string("date");
             $table->enum('type', ['master thesis','doctor dissertation', 'professional license']);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
