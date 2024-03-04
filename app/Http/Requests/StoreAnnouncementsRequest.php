@@ -37,7 +37,7 @@ class StoreAnnouncementsRequest extends FormRequest
             'end_date'=>[
                 "nullable",
                 "date",
-                "gt:start_date"
+                "gte:start_date"
             ],
         ];
     }
