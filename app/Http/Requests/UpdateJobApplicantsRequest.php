@@ -44,7 +44,7 @@ class UpdateJobApplicantsRequest extends FormRequest
             'status'=>[
                 "nullable",
                 "string",
-                'in:Pending,Interviewed,Rejected,Hired'
+                'in:Contract Extended,Contact Extended,Pending,Interviewed,Rejected,Hired,For Hiring,Test,Interview,Reference Checking,Medical Examination'
             ],
             'lastname'=>[
                 "nullable",
