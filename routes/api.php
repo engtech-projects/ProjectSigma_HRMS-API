@@ -60,7 +60,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('department-list', [DepartmentController::class, 'get']);
     Route::get('user-list', [UsersController::class, 'get']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
-    Route::get('announcement-list', [AnnouncementsController::class, 'get']);
+    Route::get('announcement-list', [AnnouncementsController::class, 'currentAnnouncements']);
     Route::resource('philhealth', PhilhealthContributionController::class);
     Route::resource('position', PositionController::class);
     Route::get('position-list', [PositionController::class, 'get']);
