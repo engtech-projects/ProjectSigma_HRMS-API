@@ -29,8 +29,8 @@ class AnnouncementsController extends Controller
         ->where(function(Builder $query) {
             $query->whereDate("end_date", ">=", date("Y-m-d"));
             $query->orWhereNull("end_date");
-
         })
+        ->orderBy("start_date", "desc")
         ->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
