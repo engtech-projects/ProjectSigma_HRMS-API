@@ -69,15 +69,43 @@ class UpdateJobApplicantsRequest extends FormRequest
                 "nullable",
                 "date",
             ],
-            'address_street'=>[
+            'pre_address_street'=>[
                 "nullable",
                 "string",
             ],
-            'address_city'=>[
+            'pre_address_brgy'=>[
                 "nullable",
                 "string",
             ],
-            'address_zip'=>[
+            'pre_address_city'=>[
+                "nullable",
+                "string",
+            ],
+            'pre_address_zip'=>[
+                "nullable",
+                "string",
+            ],
+            'pre_address_province'=>[
+                "nullable",
+                "string",
+            ],
+            'per_address_street'=>[
+                "nullable",
+                "string",
+            ],
+            'per_address_brgy'=>[
+                "nullable",
+                "string",
+            ],
+            'per_address_city'=>[
+                "nullable",
+                "string",
+            ],
+            'per_address_zip'=>[
+                "nullable",
+                "string",
+            ],
+            'per_address_province'=>[
                 "nullable",
                 "string",
             ],

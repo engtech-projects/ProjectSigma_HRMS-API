@@ -27,9 +27,16 @@ class JobApplicants extends Model
         'middlename',
         'date_of_application',
         'date_of_birth',
-        'address_street',
-        'address_city',
-        'address_zip',
+        'pre_address_street',
+        'pre_address_brgy',
+        'pre_address_city',
+        'pre_address_zip',
+        'pre_address_province',
+        'per_address_street',
+        'per_address_brgy',
+        'per_address_city',
+        'per_address_zip',
+        'per_address_province',
         'contact_info',
         'email',
         'how_did_u_learn_about_our_company',
@@ -53,8 +60,4 @@ class JobApplicants extends Model
         return $this->belongsTo(ManpowerRequest::class,'manpowerrequests_id','id');
     }
 
-    // public function onmanpower(): HasOne
-    // {
-    //     return $this->hasOne(ManpowerRequest::class,'manpowerrequests_id','id');
-    // }
 }

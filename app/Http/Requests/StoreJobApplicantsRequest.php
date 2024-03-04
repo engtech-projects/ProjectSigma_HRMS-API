@@ -77,15 +77,43 @@ class StoreJobApplicantsRequest extends FormRequest
                 "required",
                 "date",
             ],
-            'address_street'=>[
+            'pre_address_street'=>[
                 "required",
                 "string",
             ],
-            'address_city'=>[
+            'pre_address_brgy'=>[
                 "required",
                 "string",
             ],
-            'address_zip'=>[
+            'pre_address_city'=>[
+                "required",
+                "string",
+            ],
+            'pre_address_zip'=>[
+                "required",
+                "string",
+            ],
+            'pre_address_province'=>[
+                "required",
+                "string",
+            ],
+            'per_address_street'=>[
+                "required",
+                "string",
+            ],
+            'per_address_brgy'=>[
+                "required",
+                "string",
+            ],
+            'per_address_city'=>[
+                "required",
+                "string",
+            ],
+            'per_address_zip'=>[
+                "required",
+                "string",
+            ],
+            'per_address_province'=>[
                 "required",
                 "string",
             ],

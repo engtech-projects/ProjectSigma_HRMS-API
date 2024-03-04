@@ -30,6 +30,8 @@ use App\Http\Controllers\EmployeeEducationController;
 use App\Http\Controllers\EmployeeEligibilityController;
 use App\Http\Controllers\EmployeeRelatedpersonController;
 use App\Http\Controllers\EmployeeSeminartrainingController;
+use App\Http\Controllers\InternalWorkExperienceController;
+use App\Http\Controllers\TerminationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -93,5 +95,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
     Route::get('manpower-with-applicant', [ManpowerRequestController::class, 'get_manpower_with_applicant']);
     Route::get('job-applicants-get', [JobApplicantsController::class, 'get']);
+
+    Route::resource('internalwork-experience', InternalWorkExperienceController::class);
+    Route::resource('termination', TerminationController::class);
 });
 
