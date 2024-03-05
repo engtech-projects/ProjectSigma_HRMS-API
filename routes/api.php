@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmployeeBulkUploadController;
+use App\Http\Controllers\SalaryGradeLevelController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -98,5 +99,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::resource('internalwork-experience', InternalWorkExperienceController::class);
     Route::resource('termination', TerminationController::class);
+
+    Route::resource('salary-grade-level',SalaryGradeLevelController::class);
 });
 
