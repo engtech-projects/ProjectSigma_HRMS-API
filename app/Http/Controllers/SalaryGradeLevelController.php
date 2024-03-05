@@ -53,8 +53,9 @@ class SalaryGradeLevelController extends Controller
         $attributes = $request->validated();
         DB::transaction(function () use ($attributes, $salaryGradeLevel) {
             $salaryGradeLevel->fill($attributes);
-            $salaryGradeLevel->salary_grade_step()->createMany($attributes['salary_grade_step']);
-            $salaryGradeLevel->update();
+            $salaryGradeLevel->upsert($attributes['salary_grade_step'], $salaryGradeLevel->id);
+/*             $salaryGradeLevel->update(); */
+
         });
 
         return new JsonResponse(["message" => "Salary grade level updated."], JsonResponse::HTTP_OK);
