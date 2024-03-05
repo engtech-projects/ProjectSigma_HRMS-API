@@ -33,6 +33,7 @@ use App\Http\Controllers\EmployeeRelatedpersonController;
 use App\Http\Controllers\EmployeeSeminartrainingController;
 use App\Http\Controllers\InternalWorkExperienceController;
 use App\Http\Controllers\TerminationController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -45,7 +46,7 @@ use App\Http\Controllers\TerminationController;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware('auth:sanctum')->group(function () {
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/session', [AuthController::class, 'session']);
@@ -100,6 +101,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('internalwork-experience', InternalWorkExperienceController::class);
     Route::resource('termination', TerminationController::class);
 
-    Route::resource('salary-grade-level',SalaryGradeLevelController::class);
+    Route::resource('salary-grade-level', SalaryGradeLevelController::class);
 });
 
