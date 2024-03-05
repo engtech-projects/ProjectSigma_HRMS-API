@@ -61,7 +61,7 @@ class EmployeeBulkUploadController extends Controller
         'person_to_contact_brgy',
         'person_to_contact_city',
         'person_to_contact_zip',
-        'person_to_province',
+        'person_to_contact_province',
         'person_to_contact_no',
         'person_to_contact_relationship',
         'previous_hospitalization',
@@ -358,12 +358,27 @@ class EmployeeBulkUploadController extends Controller
                     'occupation' => 'N/A',
                     'contact_no' => 'N/A',
                 ];
-                //mother information
+                //contact related information
+                $employeeRelatedPerson[] = [
+                    'relationship',
+                    'type' => EmployeeRelatedPersonType::CONTACT_PERSON,
+                    'relationship' => $data['person_to_contact_relationship'],
+                    'name' => $data['person_to_contact_name'] ?? 'N/A',
+                    'date_of_birth' => null,
+                    'street' => $data['person_to_contact_street'] ?? 'N/A',
+                    'brgy' => $data['person_to_contact_brgy' ?? 'N/A'] ?? 'N/A',
+                    'city' => $data['person_to_contact_city'] ?? 'N/A',
+                    'zip' => $data['person_to_contact_zip'] ?? 'N/A',
+                    'province' => $data['person_to_contact_province'] ?? 'N/A',
+                    'occupation' => $data['person_to_contact_no'] ?? 'N/A',
+                    'contact_no' => 'N/A',
+                ];
+                 //mother information
                 $employeeRelatedPerson[] = [
                     'relationship',
                     'type' => EmployeeRelatedPersonType::MOTHER,
                     'relationship' => EmployeeRelatedPersonType::MOTHER,
-                    'name' => $data['father_name'] ?? 'N/A',
+                    'name' => $data['mother_name'] ?? 'N/A',
                     'date_of_birth' => null,
                     'street' => 'N/A',
                     'brgy' => 'N/A',
@@ -373,7 +388,6 @@ class EmployeeBulkUploadController extends Controller
                     'occupation' => 'N/A',
                     'contact_no' => 'N/A',
                 ];
-
                 //spouse information
                 $employeeRelatedPerson[] = [
                     'relationship',
