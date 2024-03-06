@@ -38,7 +38,7 @@ class SalaryGradeLevelController extends Controller
                 $salaryGradeLevel->salary_grade_step()->createMany($attributes['salary_grade_step']);
             });
         } catch (Exception $e) {
-            throw new TransactionFailedException("Create");
+            throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
 
 
@@ -78,7 +78,7 @@ class SalaryGradeLevelController extends Controller
                 }
             });
         } catch (Exception $e) {
-            throw new TransactionFailedException("Update");
+            throw new TransactionFailedException("Update transaction failed.", 400, $e);
         }
 
         return new JsonResponse(["message" => "Salary grade level updated."], JsonResponse::HTTP_OK);
@@ -92,7 +92,7 @@ class SalaryGradeLevelController extends Controller
         try {
             $salaryGradeLevel->delete();
         } catch (Exception $e) {
-            throw new TransactionFailedException("Delete");
+            throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
 
         return new JsonResponse(["message" => "Salary grade level deleted."], JsonResponse::HTTP_OK);
