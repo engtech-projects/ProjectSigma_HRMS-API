@@ -114,6 +114,15 @@ class Employee extends Model
         return $this->hasMany(EmployeeRelatedperson::class);
     }
 
+    public function getmotherage($value)
+    {
+        if ($this->title === 'Garage') {
+            return 'blue';
+        }
+
+        return 'unknown';
+    }
+
     public function mother(): HasOne
     {
         return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);

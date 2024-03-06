@@ -11,7 +11,7 @@ class UpdateEmployeePersonnelActionNoticeRequestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +23,121 @@ class UpdateEmployeePersonnelActionNoticeRequestRequest extends FormRequest
     {
         return [
             //
+            'employee_id'=> [
+                "nullable",
+                "integer",
+                "exists:employees,id",
+            ],
+            'type'=>[
+                "nullable",
+                "string",
+                'in:New Hire,Termination,Transfer,Promotion'
+            ],
+            'date_of_effictivity'=>[
+                "nullable",
+                "date",
+            ],
+            'section_department'=>[
+                "nullable",
+                "string"
+            ],
+            'designation_position'=>[
+                "nullable",
+                "string"
+            ],
+            'salary_grade'=>[
+                "nullable",
+                "string"
+            ],
+            'salary_grade_step'=>[
+                "nullable",
+                "string"
+            ],
+            'salary_type'=>[
+                "nullable",
+                "string",
+                'in:Fixed Rate,Non Fixed,Monthly,Weekly'
+            ],
+            'hire_source'=>[
+                "nullable",
+                "string",
+                'in:Internal,External'
+            ],
+            'work_location'=>[
+                "nullable",
+                "string",
+            ],
+            'new_section'=>[
+                "nullable",
+                "string",
+            ],
+            'new_location'=>[
+                "nullable",
+                "string",
+            ],
+            'new_employment_status'=>[
+                "nullable",
+                "string",
+            ],
+            'new_position'=>[
+                "nullable",
+                "string",
+            ],
+            'new_salary_grade'=>[
+                "nullable",
+                "string",
+            ],
+            'new_salary_grade_step'=>[
+                "nullable",
+                "string",
+            ],
+            'type_of_termination'=>[
+                "nullable",
+                "string",
+            ],
+            'reasons_for_termination'=>[
+                "nullable",
+                "string",
+            ],
+            'eligible_for_rehire'=>[
+                "nullable",
+                "string",
+            ],
+            'last_day_worked'=>[
+                "nullable",
+                "string",
+            ],
+            'approvals.*'=>[
+                "nullable",
+                "array",
+                "nullable_array_keys:type,user_id,status,date_approved,remarks",
+            ],
+            'approvals.*.type'=>[
+                "nullable",
+                "string",
+            ],
+            'approvals.*.user_id'=>[
+                "nullable",
+                "integer",
+                "exists:users,id",
+            ],
+            'approvals.*.status'=>[
+                "nullable",
+                "string",
+            ],
+            'approvals.*.date_approved'=>[
+                "nullable",
+                "date",
+            ],
+            'approvals.*.remarks'=>[
+                "nullable",
+                "string",
+            ],
+            'created_by'=> [
+                "nullable",
+                "integer",
+                "exists:users,id",
+            ],
         ];
     }
 }
