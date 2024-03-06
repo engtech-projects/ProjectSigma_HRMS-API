@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SalaryGradeLevelResource;
+use App\Exceptions\TransactionFailedException;
+use Exception;
+use App\Models\SalaryGradeStep;
 use App\Models\SalaryGradeLevel;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\SalaryGradeLevelResource;
 use App\Http\Requests\StoreSalaryGradeLevelRequest;
 use App\Http\Requests\UpdateSalaryGradeLevelRequest;
 
@@ -28,12 +32,17 @@ class SalaryGradeLevelController extends Controller
     public function store(StoreSalaryGradeLevelRequest $request)
     {
         $attributes = $request->validated();
-        DB::transaction(function () use ($attributes) {
-            $salaryGradeLevel = SalaryGradeLevel::create($attributes);
-            $salaryGradeLevel->salary_grade_step()->createMany($attributes['salary_grade_step']);
-        });
+        try {
+            DB::transaction(function () use ($attributes) {
+                $salaryGradeLevel = SalaryGradeLevel::create($attributes);
+                $salaryGradeLevel->salary_grade_step()->createMany($attributes['salary_grade_step']);
+            });
+        } catch (Exception $e) {
+            throw new TransactionFailedException("Create");
+        }
 
-        return new JsonResponse(["message" => "Salary grade level created."], JsonResponse::HTTP_CREATED);
+
+        return new JsonResponse(["message" => "Salary grade level and steps created."], JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -51,11 +60,26 @@ class SalaryGradeLevelController extends Controller
     public function update(UpdateSalaryGradeLevelRequest $request, SalaryGradeLevel $salaryGradeLevel)
     {
         $attributes = $request->validated();
-        DB::transaction(function () use ($attributes, $salaryGradeLevel) {
-            $salaryGradeLevel->fill($attributes);
-            $salaryGradeLevel->salary_grade_step()->createMany($attributes['salary_grade_step']);
-            $salaryGradeLevel->update();
-        });
+        try {
+            DB::transaction(function () use ($attributes, $salaryGradeLevel) {
+                $salaryGradeLevel = $salaryGradeLevel->fill($attributes);
+                $salaryGradeLevel->update();
+
+                $salaryGradeStep = $salaryGradeLevel->salary_grade_step;
+                foreach ($salaryGradeStep as $value) {
+                    foreach ($attributes["salary_grade_step"] as $attribute) {
+                        if ($attribute['id'] == $value->id) {
+                            $salaryGradeStep = SalaryGradeStep::find($value->id);
+                            $salaryGradeStep->update([
+                                "step_name" => $attribute["step_name"]
+                            ]);
+                        }
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw new TransactionFailedException("Update");
+        }
 
         return new JsonResponse(["message" => "Salary grade level updated."], JsonResponse::HTTP_OK);
     }
@@ -65,6 +89,12 @@ class SalaryGradeLevelController extends Controller
      */
     public function destroy(SalaryGradeLevel $salaryGradeLevel)
     {
-        //
+        try {
+            $salaryGradeLevel->delete();
+        } catch (Exception $e) {
+            throw new TransactionFailedException("Delete");
+        }
+
+        return new JsonResponse(["message" => "Salary grade level deleted."], JsonResponse::HTTP_OK);
     }
 }
