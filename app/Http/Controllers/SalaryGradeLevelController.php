@@ -38,7 +38,7 @@ class SalaryGradeLevelController extends Controller
                 $salaryGradeLevel->salary_grade_step()->createMany($attributes['salary_grade_step']);
             });
         } catch (Exception $e) {
-            throw new TransactionFailedException("Delete transaction failed.", 400, $e);
+            throw new TransactionFailedException("Create transaction failed.", 400, $e);
         }
 
 
