@@ -29,6 +29,7 @@ use App\Http\Controllers\EmployeeAddressController;
 use App\Http\Controllers\EmployeeAffiliationController;
 use App\Http\Controllers\EmployeeEducationController;
 use App\Http\Controllers\EmployeeEligibilityController;
+use App\Http\Controllers\EmployeePersonnelActionNoticeRequestController;
 use App\Http\Controllers\EmployeeRelatedpersonController;
 use App\Http\Controllers\EmployeeSeminartrainingController;
 use App\Http\Controllers\InternalWorkExperienceController;
@@ -102,5 +103,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('termination', TerminationController::class);
 
     Route::resource('salary-grade-level', SalaryGradeLevelController::class);
+    Route::get('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
+    Route::resource('employee-panrequest', EmployeePersonnelActionNoticeRequestController::class);
+    Route::get('get-panrequest', [EmployeePersonnelActionNoticeRequestController::class, 'get_panrequest']);
+    Route::post('hire_approved', [EmployeePersonnelActionNoticeRequestController::class, 'hire_approved']);
+
 });
+
 

@@ -114,6 +114,7 @@ class EmployeeController extends Controller
 
         $data = json_decode('{}');
         if (!is_null($main) ) {
+            $main["age"] = $main->age;
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;

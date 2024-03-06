@@ -14,6 +14,12 @@ class UpdateManpowerRequestRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation() {
+        $this->merge([
+            "approvals" => json_decode($this->approvals,true)
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -80,9 +86,10 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'approvals'=>[
+            'approvals.*'=>[
                 "nullable",
-                "json",
+                "array",
+                "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
             'approvals.*.type'=>[
                 "nullable",

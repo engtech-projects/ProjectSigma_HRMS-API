@@ -12,10 +12,20 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\EmployeeStudiesType;
 use App\Enums\EmployeeUploadType;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Employee extends Model
 {
     use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+
+    protected function age(): Attribute
+    {
+        return new Attribute(
+            get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
+        );
+    }
+
     protected $casts = [
         'date_of_birth' => 'datetime:Y-m-d',
         'date_of_marriage' => 'datetime:Y-m-d',
@@ -116,7 +126,8 @@ class Employee extends Model
 
     public function mother(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);
+        $a = $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);
+        return $a;
     }
 
     public function father(): HasOne

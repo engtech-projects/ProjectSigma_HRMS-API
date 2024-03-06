@@ -36,6 +36,18 @@ class JobApplicantsController extends Controller
         //
     }
 
+    /**
+     * Show For Hiring status
+     */
+    public function get_for_hiring()
+    {
+        $main = JobApplicants::where("status","=","For Hiring")->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
 
     /**
      * Show View Applicant Details
