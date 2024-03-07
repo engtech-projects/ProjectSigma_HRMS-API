@@ -23,7 +23,7 @@ class StoreSalaryGradeLevelRequest extends FormRequest
     {
         return [
             'salary_grade_level' => 'required|string|unique:salary_grade_levels,salary_grade_level',
-            'salary_grade_step' => 'required|array',
+            'salary_grade_step' => 'required|array|min:6',
             'salary_grade_step.*.step_name' => 'required|numeric',
         ];
     }
