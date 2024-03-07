@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Enums\EmployeeAddressType;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\EmployeeStudiesType;
@@ -15,8 +17,8 @@ use Illuminate\Support\Str;
 
 class EmployeeBulkUploadController extends Controller
 {
-    const START_ROW = 3;
-    const HEADER_KEYS = [
+    public const START_ROW = 3;
+    public const HEADER_KEYS = [
         'family_name',
         'first_name',
         'middle_name',
@@ -111,63 +113,69 @@ class EmployeeBulkUploadController extends Controller
         'section_program',
         'department',
         'division',
-        'imidiate_supervisor'];
-    public function bulkUpload (Request $request) {
+        'imidiate_supervisor'
+    ];
+    public function bulkUpload(Request $request)
+    {
         // if file is not chosen, redirect back
-        if(!request()->hasFile('employees-data')) {
-            return response()->json([ 'message' => 'no excel file'], 422);
+        if (!request()->hasFile('employees-data')) {
+            return response()->json(['message' => 'no excel file'], 422);
         }
 
         $file = $request->file('employees-data');
         $extension = strtolower($file->getClientOriginalExtension());
         // check extensions
-        if (!in_array($extension, ['xls', 'xlsx']))
-        {
-            return response()->json([ 'message' => 'invalid file'], 422);
+        if (!in_array($extension, ['xls', 'xlsx'])) {
+            return response()->json(['message' => 'invalid file'], 422);
         }
         $extractedData = [];
         $spreadsheet = IOFactory::load($file->getRealPath());
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $totalData = $worksheet->getHighestDataRow('A') - Self::START_ROW;
-        $headerColumnKey = 'A'.(Self::START_ROW - 1).':CQ'.(Self::START_ROW - 1);
+        $totalData = $worksheet->getHighestDataRow('A') - self::START_ROW;
+        $headerColumnKey = 'A' . (self::START_ROW - 1) . ':CQ' . (self::START_ROW - 1);
         $header = $worksheet->rangeToArray($headerColumnKey, null, true, true);
-        for($x = 0; $x < $totalData; $x++) {
-
+        for ($x = 0; $x < $totalData; $x++) {
             $tempData = [];
-            $columnKey = 'A'.(Self::START_ROW + $x).':CQ'.(Self::START_ROW + $x);
+            $columnKey = 'A' . (self::START_ROW + $x) . ':CQ' . (self::START_ROW + $x);
             $extractData = $worksheet->rangeToArray($columnKey, null, true, true);
 
-            foreach($extractData as $data)
-            {
-                if($data[0])
-                {
+            foreach ($extractData as $data) {
+                if ($data[0]) {
                     $employeeRecord = Employee::orWhere([
                         [
-                            'family_name','=', $data[0]
+                            'family_name',
+                            '=',
+                            $data[0]
                         ],
                         [
-                            'middle_name','=', $data[2]
+                            'middle_name',
+                            '=',
+                            $data[2]
                         ],
                         [
-                            'first_name','=', $data[1]
+                            'first_name',
+                            '=',
+                            $data[1]
                         ],
                     ])->first();
-
-                    if($employeeRecord)
-                    {
+                    if ($employeeRecord) {
                         $tempData['status'] = 'duplicate';
-                    }else{
+                    } else {
                         $tempData['status'] = 'unduplicate';
                     }
-
-                    foreach(Self::HEADER_KEYS as $index => $value)
-                    {
+                    foreach (self::HEADER_KEYS as $index => $value) {
                         $tempData[$value] = $data[$index];
                     }
-                    $tempData['date_of_birth'] = !$tempData['date_of_birth'] || $tempData['date_of_birth'] === 'N/A' ? null :  $tempData['date_of_birth'];
-                    $tempData['date_of_marriage'] = !$tempData['date_of_marriage'] || $tempData['date_of_marriage'] === 'N/A' ? null : $tempData['date_of_marriage'];
-                    $tempData['spouse_datebirth'] = !$tempData['spouse_datebirth'] || $tempData['spouse_datebirth'] === 'N/A' ? null : $tempData['spouse_datebirth'];
+                    $tempData['date_of_birth'] = !$tempData['date_of_birth'] ||
+                        $tempData['date_of_birth'] === 'N/A' ?
+                        null : $tempData['date_of_birth'];
+                    $tempData['date_of_marriage'] = !$tempData['date_of_marriage'] ||
+                        $tempData['date_of_marriage'] === 'N/A' ?
+                        null : $tempData['date_of_marriage'];
+                    $tempData['spouse_datebirth'] = !$tempData['spouse_datebirth'] ||
+                        $tempData['spouse_datebirth'] === 'N/A' ?
+                        null : $tempData['spouse_datebirth'];
                     $extractedData[] = $tempData;
                 }
             }
@@ -177,7 +185,8 @@ class EmployeeBulkUploadController extends Controller
             'data' => $extractedData,
         ]);
     }
-    public function bulkSave(BulkValidationRequest $request){
+    public function bulkSave(BulkValidationRequest $request)
+    {
         $validatedData = $request->validated();
         $elementaryDates = [];
         $highSchoolDates = [];
@@ -186,61 +195,48 @@ class EmployeeBulkUploadController extends Controller
         $vocationalDates = [];
         $studies = [];
         $employeeRelatedPerson = [];
-        foreach(json_decode($validatedData['employees_data'], true) as $data)
-        {
-            if($data['status'] == 'unduplicate' || $data['status'] == 'duplicate' )
-            {
+        foreach (json_decode($validatedData['employees_data'], true) as $data) {
+            if ($data['status'] == 'unduplicate' || $data['status'] == 'duplicate') {
                 //insert
-                $employee = new Employee;
+                $employee = new Employee();
                 $employee->fill($data)->save();
 
-                if($data['dates_of_school_elementary'])
-                {
-                    $elementaryDates = explode('-',$data['dates_of_school_elementary']);
-                    if($elementaryDates && count($elementaryDates) > 1)
-                    {
+                if ($data['dates_of_school_elementary']) {
+                    $elementaryDates = explode('-', $data['dates_of_school_elementary']);
+                    if ($elementaryDates && count($elementaryDates) > 1) {
                         $education['elementary_period_attendance_from'] = $elementaryDates[0] ?? 'N/A';
                         $education['elementary_period_attendance_to'] = $elementaryDates[1] ?? 'N/A';
                         $education['elementary_year_graduated'] = $elementaryDates[1] ?? 'N/A';
                     }
                 }
-                if($data['dates_of_school_highschool'])
-                {
-                    $highSchoolDates = explode('-',$data['dates_of_school_highschool']);
-                    if($highSchoolDates && count($highSchoolDates) > 1)
-                    {
+                if ($data['dates_of_school_highschool']) {
+                    $highSchoolDates = explode('-', $data['dates_of_school_highschool']);
+                    if ($highSchoolDates && count($highSchoolDates) > 1) {
                         $education['secondary_period_attendance_from'] = $highSchoolDates[0] ?? 'N/A';
                         $education['secondary_period_attendance_to'] = $highSchoolDates[1] ?? 'N/A';
                         $education['secondary_year_graduated'] = $highSchoolDates[1] ?? 'N/A';
                     }
                 }
-                if($data['dates_of_school_college'])
-                {
-                    $collegeDates = explode('-',$data['dates_of_school_college']);
-                    if($collegeDates && count($collegeDates) > 1)
-                    {
+                if ($data['dates_of_school_college']) {
+                    $collegeDates = explode('-', $data['dates_of_school_college']);
+                    if ($collegeDates && count($collegeDates) > 1) {
                         $education['college_period_attendance_from'] = $collegeDates[0] ?? 'N/A';
                         $education['college_period_attendance_to'] = $collegeDates[1] ?? 'N/A';
                         $education['college_year_graduated'] = $collegeDates[1] ?? 'N/A';
                     }
                 }
-                if($data['dates_of_school_vocational'])
-                {
-                    $vocationalDates = explode('-',$data['dates_of_school_vocational']);
-                    if($vocationalDates && count($vocationalDates) > 1)
-                    {
+                if ($data['dates_of_school_vocational']) {
+                    $vocationalDates = explode('-', $data['dates_of_school_vocational']);
+                    if ($vocationalDates && count($vocationalDates) > 1) {
                         $education['vocationalcourse_period_attendance_from'] = $vocationalDates[0] ?? 'N/A';
                         $education['vocationalcourse_period_attendance_to'] = $vocationalDates[1] ?? 'N/A';
                         $education['vocationalcourse_year_graduated'] = $vocationalDates[1] ?? 'N/A';
                     }
                 }
-                if($data['childrens'] && $data['childrens'] != 'N/A')
-                {
-                    $children = explode(',',$data['childrens']);
-                    if($children)
-                    {
-                        foreach($children as $child)
-                        {
+                if ($data['childrens'] && $data['childrens'] != 'N/A') {
+                    $children = explode(',', $data['childrens']);
+                    if ($children) {
+                        foreach ($children as $child) {
                             $childrenInformation = explode('/', $child);
                             $employeeRelatedPerson[] = [
                                 'relationship',
@@ -260,7 +256,7 @@ class EmployeeBulkUploadController extends Controller
                     }
                 }
 
-                 //permanenet address
+                //permanenet address
                 $address_pre = [
                     'street' => $data['pre_street'] ?? 'N/A',
                     'brgy' => $data['pre_brgy'] ?? 'N/A',
@@ -269,7 +265,7 @@ class EmployeeBulkUploadController extends Controller
                     'province' => $data['pre_province'] ?? 'N/A',
                     'type' => EmployeeAddressType::PRESENT,
                 ];
-                $address_per =  [
+                $address_per = [
                     'street' => $data['per_street'] ?? 'N/A',
                     'brgy' => $data['per_brgy'] ?? 'N/A',
                     'city' => $data['per_city'] ?? 'N/A',
@@ -315,7 +311,7 @@ class EmployeeBulkUploadController extends Controller
                     'secondary_year_graduated' => 'N/A',
                     'secondary_honors_received' => $data['honor_of_school_highschool'] ?? 'N/A',
 
-                     //college studies
+                    //college studies
                     'college_name' => $data['college_name'] ?? 'N/A',
                     'college_education' => $data['college_education'] ?? 'N/A',
                     'college_degree_earned_of_school' => $data['college_degree_earned_of_school'] ?? 'N/A',
@@ -327,7 +323,9 @@ class EmployeeBulkUploadController extends Controller
                     //vocational studies
                     'vocationalcourse_name' => $data['vocationalcourse_name'] ?? 'N/A',
                     'vocationalcourse_education' => $data['vocationalcourse_education'] ?? 'N/A',
-                    'vocationalcourse_degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school'] ?? 'N/A',
+                    'vocationalcourse_degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school']
+                        ??
+                        'N/A',
                     'vocationalcourse_period_attendance_to' => 'N/A',
                     'vocationalcourse_period_attendance_from' => 'N/A',
                     'vocationalcourse_year_graduated' => 'N/A',
@@ -337,7 +335,7 @@ class EmployeeBulkUploadController extends Controller
                     'graduatestudies_name' => 'N/A',
                     'graduatestudies_education' => 'N/A',
                     'graduatestudies_degree_earned_of_school' => 'N/A',
-                    'graduatestudies_period_attendance_to' =>'N/A',
+                    'graduatestudies_period_attendance_to' => 'N/A',
                     'graduatestudies_period_attendance_from' => 'N/A',
                     'graduatestudies_year_graduated' => 'N/A',
                     'graduatestudies_honors_received' => 'N/A',
@@ -373,7 +371,7 @@ class EmployeeBulkUploadController extends Controller
                     'occupation' => $data['person_to_contact_no'] ?? 'N/A',
                     'contact_no' => 'N/A',
                 ];
-                 //mother information
+                //mother information
                 $employeeRelatedPerson[] = [
                     'relationship',
                     'type' => EmployeeRelatedPersonType::MOTHER,
@@ -407,7 +405,7 @@ class EmployeeBulkUploadController extends Controller
                 //master studies
                 $studies[] = [
                     'title' => $data['master_thesis_name'] ?? 'N/A',
-                    'date' =>  $data['master_thesis_date'],
+                    'date' => $data['master_thesis_date'],
                     'type' => EmployeeStudiesType::MASTER,
                 ];
                 //doctorate studies
@@ -436,12 +434,10 @@ class EmployeeBulkUploadController extends Controller
                 $employee->employee_affiliation()->create($affiliation);
                 $employee->employee_education()->create($education);
                 //$employee->employee_eligibility()->create($eligibility);
-                foreach($employeeRelatedPerson as $data)
-                {
+                foreach ($employeeRelatedPerson as $data) {
                     $employee->employee_related_person()->create($data);
                 }
-                foreach($studies as $data)
-                {
+                foreach ($studies as $data) {
                     $employee->employee_studies()->create($data);
                 }
             }
