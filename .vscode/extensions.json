@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "higoka.php-cs-fixer",
         "editorconfig.editorconfig",
         "bmewburn.vscode-intelephense-client",
         "shevaua.phpcs"
