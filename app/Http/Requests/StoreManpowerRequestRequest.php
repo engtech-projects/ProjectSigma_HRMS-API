@@ -14,9 +14,10 @@ class StoreManpowerRequestRequest extends FormRequest
         return true;
     }
 
-    protected function prepareForValidation() {
+    protected function prepareForValidation()
+    {
         $this->merge([
-            "approvals" => json_decode($this->approvals,true)
+            "approvals" => json_decode($this->approvals, true)
         ]);
     }
 
@@ -28,91 +29,95 @@ class StoreManpowerRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'requesting_department'=> [
+            'requesting_department' => [
                 "required",
                 "integer",
                 "exists:departments,id",
             ],
-            'date_requested'=>[
+            'date_requested' => [
                 "required",
                 "date",
             ],
-            'date_required'=>[
+            'date_required' => [
                 "required",
                 "date",
             ],
-            'position'=>[
+            'position' => [
                 "required",
                 "string",
             ],
-            'employment_type'=>[
+            'employment_type' => [
                 "required",
                 "string",
                 'in:Student Trainee,Project Hire,Contractual,Regular'
             ],
-            'brief_description'=>[
+            'brief_description' => [
                 "required",
                 "string",
             ],
-            'job_description_attachment'=>[
+            'job_description_attachment' => [
                 "required",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'nature_of_request'=>[
+            'nature_of_request' => [
                 "required",
                 "string",
                 'in:New/Addition,Replacement'
             ],
-            'age_range'=>[
+            'age_range' => [
                 "required",
                 "string",
             ],
-            'status'=>[
+            'status' => [
                 "required",
                 "string",
                 'in:Single,Married,No Preference'
             ],
-            'gender'=>[
+            'gender' => [
                 "required",
                 "string",
                 'in:Male,Female,No Preference'
             ],
-            'educational_requirement'=>[
+            'educational_requirement' => [
                 "required",
                 "string",
             ],
-            'preferred_qualifications'=>[
+            'preferred_qualifications' => [
                 "required",
                 "string",
             ],
-            'approvals.*'=>[
+            'approvals' => [
+                "required",
+                "array",
+            ],
+            'approvals.*' => [
                 "required",
                 "array",
                 "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
-            'approvals.*.type'=>[
+            'approvals.*.type' => [
                 "required",
                 "string",
             ],
-            'approvals.*.user_id'=>[
+            'approvals.*.user_id' => [
                 "nullable",
                 "integer",
                 "exists:users,id",
             ],
-            'approvals.*.status'=>[
+            'approvals.*.status' => [
                 "required",
                 "string",
             ],
-            'approvals.*.date_approved'=>[
+            'approvals.*.date_approved' => [
                 "nullable",
                 "date",
             ],
-            'approvals.*.remarks'=>[
+            'approvals.*.remarks' => [
                 "nullable",
                 "string",
             ],
-            'requested_by'=>[
+            'requested_by' => [
                 "required",
                 "integer",
                 "exists:users,id",

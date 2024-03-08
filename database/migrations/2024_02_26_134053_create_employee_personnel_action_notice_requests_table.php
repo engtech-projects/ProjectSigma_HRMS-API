@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string("designation_position");
             $table->string("salary_grade");
             $table->string("salary_grade_step");
-            $table->enum("salary_type",["Fixed Rate","Non Fixed","Monthly","Weekly"]);
-            $table->enum("hire_source",["Internal","External"]);
+            $table->enum("salary_type", ["Fixed Rate","Non Fixed","Monthly","Weekly"]);
+            $table->enum("hire_source", ["Internal","External"]);
             $table->string("work_location");
             $table->string("new_section");
             $table->string("new_location");

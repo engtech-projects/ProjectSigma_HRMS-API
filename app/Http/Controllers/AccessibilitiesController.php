@@ -13,7 +13,7 @@ class AccessibilitiesController extends Controller
      */
     public function index()
     {
-        $access = Accessibilities::simplePaginate(15);      
+        $access = Accessibilities::simplePaginate(15);
         return response()->json($access);
     }
 
@@ -32,8 +32,8 @@ class AccessibilitiesController extends Controller
     {
         $access = new Accessibilities;
         $access->fill($request->validated());
-        if(!$access->save()){
-            return response()->json(["msg"=>"error"], 400);
+        if (!$access->save()) {
+            return response()->json(["msg" => "error"], 400);
         }
         return response()->json($access);
     }
@@ -63,10 +63,10 @@ class AccessibilitiesController extends Controller
     {
         $accessibilities = Accessibilities::find($id);
         $accessibilities->fill($request->validated());
-        if($accessibilities->save()){
+        if ($accessibilities->save()) {
             return response()->json($accessibilities);
         }
-        return response()->json(["msg"=>"error"], 400);
+        return response()->json(["msg" => "error"], 400);
     }
 
     /**
@@ -75,9 +75,9 @@ class AccessibilitiesController extends Controller
     public function destroy($id)
     {
         $accessibilities = Accessibilities::find($id);
-        if($accessibilities->delete()){
+        if ($accessibilities->delete()) {
             return response()->json($accessibilities);
         }
-        return response()->json(["msg"=>"error"],400); 
+        return response()->json(["msg" => "error"], 400);
     }
 }

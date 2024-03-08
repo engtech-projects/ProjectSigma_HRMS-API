@@ -107,7 +107,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('employee-panrequest', EmployeePersonnelActionNoticeRequestController::class);
     Route::get('get-panrequest', [EmployeePersonnelActionNoticeRequestController::class, 'get_panrequest']);
     Route::post('hire_approved', [EmployeePersonnelActionNoticeRequestController::class, 'hire_approved']);
-
 });
-
-

@@ -22,118 +22,115 @@ class UpdateEmployeePersonnelActionNoticeRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'type'=>[
+            'type' => [
                 "nullable",
                 "string",
                 'in:New Hire,Termination,Transfer,Promotion'
             ],
-            'date_of_effictivity'=>[
+            'date_of_effictivity' => [
                 "nullable",
                 "date",
             ],
-            'section_department'=>[
+            'section_department' => [
                 "nullable",
                 "string"
             ],
-            'designation_position'=>[
+            'designation_position' => [
                 "nullable",
                 "string"
             ],
-            'salary_grade'=>[
+            'salary_grades' => [
                 "nullable",
-                "string"
+                "integer",
+                "exists:salary_grade_steps,id",
             ],
-            'salary_grade_step'=>[
+            'new_salary_grades' => [
                 "nullable",
-                "string"
+                "integer",
+                "exists:new_salary_grades,id",
             ],
-            'salary_type'=>[
+            'pan_job_applicant_id' => [
                 "nullable",
-                "string",
-                'in:Fixed Rate,Non Fixed,Monthly,Weekly'
+                "integer",
+                "exists:job_applicants,id",
             ],
-            'hire_source'=>[
+            'hire_source' => [
                 "nullable",
                 "string",
                 'in:Internal,External'
             ],
-            'work_location'=>[
+            'work_location' => [
                 "nullable",
                 "string",
             ],
-            'new_section'=>[
+            'new_section' => [
                 "nullable",
                 "string",
             ],
-            'new_location'=>[
+            'new_location' => [
                 "nullable",
                 "string",
             ],
-            'new_employment_status'=>[
+            'new_employment_status' => [
                 "nullable",
                 "string",
             ],
-            'new_position'=>[
+            'new_position' => [
                 "nullable",
                 "string",
             ],
-            'new_salary_grade'=>[
+            'type_of_termination' => [
                 "nullable",
                 "string",
             ],
-            'new_salary_grade_step'=>[
+            'reasons_for_termination' => [
                 "nullable",
                 "string",
             ],
-            'type_of_termination'=>[
+            'eligible_for_rehire' => [
                 "nullable",
                 "string",
             ],
-            'reasons_for_termination'=>[
+            'last_day_worked' => [
                 "nullable",
                 "string",
             ],
-            'eligible_for_rehire'=>[
+            'approvals' => [
                 "nullable",
-                "string",
+                "array",
             ],
-            'last_day_worked'=>[
-                "nullable",
-                "string",
-            ],
-            'approvals.*'=>[
+            'approvals.*' => [
                 "nullable",
                 "array",
                 "nullable_array_keys:type,user_id,status,date_approved,remarks",
             ],
-            'approvals.*.type'=>[
+            'approvals.*.type' => [
                 "nullable",
                 "string",
             ],
-            'approvals.*.user_id'=>[
+            'approvals.*.user_id' => [
                 "nullable",
                 "integer",
                 "exists:users,id",
             ],
-            'approvals.*.status'=>[
+            'approvals.*.status' => [
                 "nullable",
                 "string",
             ],
-            'approvals.*.date_approved'=>[
+            'approvals.*.date_approved' => [
                 "nullable",
                 "date",
             ],
-            'approvals.*.remarks'=>[
+            'approvals.*.remarks' => [
                 "nullable",
                 "string",
             ],
-            'created_by'=> [
+            'created_by' => [
                 "nullable",
                 "integer",
                 "exists:users,id",

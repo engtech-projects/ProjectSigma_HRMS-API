@@ -20,7 +20,7 @@ class ManpowerRequestController extends Controller
      */
     public function index()
     {
-        $main = ManpowerRequest::paginate(15);
+        $main = ManpowerRequest::with("user", "department")->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -41,10 +41,7 @@ class ManpowerRequestController extends Controller
      */
     public function get_hiring()
     {
-        $main = ManpowerRequest::with('job_applicants')->where("request_status",'=','Approved')->get();
-        // $main = ManpowerRequest::with('job_applicants', function($query){
-        //     return $query->where("request_status",'=',$var);
-        // })->get();
+        $main = ManpowerRequest::with('job_applicants')->where("request_status", '=', 'Approved')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -68,7 +65,7 @@ class ManpowerRequestController extends Controller
     public function get()
     {
         $id = Auth::user()->id;
-        $main = ManpowerRequest::where("requested_by",'=',$id)->get();
+        $main = ManpowerRequest::where("requested_by", '=', $id)->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -82,33 +79,33 @@ class ManpowerRequestController extends Controller
     public function get_approve()
     {
         $id = Auth::user()->id;
-        $main = ManpowerRequest::where("requested_by",'=',$id)->get();
+        $main = ManpowerRequest::where("requested_by", '=', $id)->get();
         $newdata = json_decode('{}');
         foreach ($main as $key => $x) {
             $new_approvals = [];
-            foreach(json_decode($x->approvals) as $data){
+            foreach (json_decode($x->approvals) as $data) {
                 $type =  gettype($data);
-                if($type=="object"){
+                if ($type == "object") {
                     $one_approval = $data;
                     $approval_id = $one_approval->user_id;
                     $approval_status = $one_approval->status;
-                    if($approval_id==$id && $approval_status=="Pending"){
-                        array_push($new_approvals,$one_approval);
+                    if ($approval_id == $id && $approval_status == "Pending") {
+                        array_push($new_approvals, $one_approval);
                         break;
                     }
-                    if($approval_status=="Denied"){
+                    if ($approval_status == "Denied") {
                         break;
                     }
-                }else if($type=="array"){
-                    $many_approval=json_decode($data);
-                    foreach($many_approval as $one_approval){
+                } else if ($type == "array") {
+                    $many_approval = json_decode($data);
+                    foreach ($many_approval as $one_approval) {
                         $approval_id = $one_approval->user_id;
                         $approval_status = $one_approval->status;
-                        if($approval_status=="Denied"){
+                        if ($approval_status == "Denied") {
                             break;
                         }
-                        if($approval_id==$id && $approval_status=="Pending"){
-                            array_push($new_approvals,$one_approval);
+                        if ($approval_id == $id && $approval_status == "Pending") {
+                            array_push($new_approvals, $one_approval);
                             break;
                         }
                     }
@@ -126,47 +123,47 @@ class ManpowerRequestController extends Controller
     {
         $id = Auth::user()->id;
         $main = ManpowerRequest::where([
-            ["requested_by",'=',$id],
-            ["id",'=',$request]
+            ["requested_by", '=', $id],
+            ["id", '=', $request]
         ])->first();
 
         $newdata = json_decode('{}');
         $newdata->success = false;
         $newdata->message = "Failed approved.";
 
-        if(!$main){
+        if (!$main) {
             $newdata->message = "No data found.";
             return response()->json($newdata);
         }
 
         $approval = json_decode($main->approvals);
-        foreach($approval as $index => $key){
+        foreach ($approval as $index => $key) {
             $data = json_decode($key);
             $type =  gettype($data);
             $approval_id = 0;
             $approval_status = "";
 
-            if($type=="object"){
+            if ($type == "object") {
                 $approval_id = $data->user_id;
                 $approval_status = $data->status;
-            }elseif($type=="array"){
+            } elseif ($type == "array") {
                 $approval_id = $data[$index]->user_id;
                 $approval_status = $data[$index]->status;
             }
 
-            if($approval_status=="Denied"){
+            if ($approval_status == "Denied") {
                 break;
             }
 
-            if($approval_id!=$id && $approval_status=="Pending"){
+            if ($approval_id != $id && $approval_status == "Pending") {
                 break;
             }
 
-            if($approval_id==$id && $approval_status=="Pending"){
-                if($type=="object"){
+            if ($approval_id == $id && $approval_status == "Pending") {
+                if ($type == "object") {
                     $data->date_approved = Carbon::now();
                     $data->status = "Approved";
-                }elseif($type=="array"){
+                } elseif ($type == "array") {
                     $data[$index]->date_approved = Carbon::now();
                     $data[$index]->status = "Approved";
                 }
@@ -177,13 +174,13 @@ class ManpowerRequestController extends Controller
             }
         }
 
-        if($newdata->success){
+        if ($newdata->success) {
             $main->approvals = json_encode($approval);
-            if($main->save()){
+            if ($main->save()) {
                 $newdata->data = $main;
                 return response()->json($newdata);
             }
-        }else{
+        } else {
             $main->approvals = [];
         }
 
@@ -195,47 +192,47 @@ class ManpowerRequestController extends Controller
     {
         $id = Auth::user()->id;
         $main = ManpowerRequest::where([
-            ["requested_by",'=',$id],
-            ["id",'=',$request]
+            ["requested_by", '=', $id],
+            ["id", '=', $request]
         ])->first();
 
         $newdata = json_decode('{}');
         $newdata->success = false;
         $newdata->message = "Failed denied.";
 
-        if(!$main){
+        if (!$main) {
             $newdata->message = "No data found.";
             return response()->json($newdata);
         }
 
         $approval = json_decode($main->approvals);
-        foreach($approval as $index => $key){
+        foreach ($approval as $index => $key) {
             $data = json_decode($key);
             $type =  gettype($data);
             $approval_id = 0;
             $approval_status = "";
 
-            if($type=="object"){
+            if ($type == "object") {
                 $approval_id = $data->user_id;
                 $approval_status = $data->status;
-            }elseif($type=="array"){
+            } elseif ($type == "array") {
                 $approval_id = $data[$index]->user_id;
                 $approval_status = $data[$index]->status;
             }
 
-            if($approval_status=="Denied"){
+            if ($approval_status == "Denied") {
                 break;
             }
 
-            if($approval_id!=$id && $approval_status=="Pending"){
+            if ($approval_id != $id && $approval_status == "Pending") {
                 break;
             }
 
-            if($approval_id==$id && $approval_status=="Pending"){
+            if ($approval_id == $id && $approval_status == "Pending") {
                 // $data->date_approved = Carbon::now();
-                if($type=="object"){
+                if ($type == "object") {
                     $data->status = "Denied";
-                }elseif($type=="array"){
+                } elseif ($type == "array") {
                     $data[$index]->status = "Denied";
                 }
                 $approval[$index] = json_encode($data);
@@ -245,13 +242,13 @@ class ManpowerRequestController extends Controller
             }
         }
 
-        if($newdata->success){
+        if ($newdata->success) {
             $main->approvals = json_encode($approval);
-            if($main->save()){
+            if ($main->save()) {
                 $newdata->data = $main;
                 return response()->json($newdata);
             }
-        }else{
+        } else {
             $main->approvals = [];
         }
 
@@ -270,11 +267,11 @@ class ManpowerRequestController extends Controller
         $main->approvals = json_encode($request->approvals);
         $file = $request->file('job_description_attachment');
         $hashmake = Hash::make('secret');
-        $hashname = hash('sha256',$hashmake);
+        $hashname = hash('sha256', $hashmake);
         $name = $file->getClientOriginalName();
-        $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR.$hashname, $name,'public');
-        $main->job_description_attachment = ManpowerRequestController::JDDIR.$hashname."/".$name;
-        if(!$main->save()){
+        $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR . $hashname, $name, 'public');
+        $main->job_description_attachment = ManpowerRequestController::JDDIR . $hashname . "/" . $name;
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -292,7 +289,7 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -318,21 +315,21 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $a = explode("/", $main->job_description_attachment);
             $main->fill($request->validated());
-            if($request->hasFile("job_description_attachment")){
+            if ($request->hasFile("job_description_attachment")) {
                 $check = ManpowerRequest::find($id);
                 $file = $request->file('job_description_attachment');
                 $hashmake = Hash::make('secret');
-                $hashname = hash('sha256',$hashmake);
+                $hashname = hash('sha256', $hashmake);
                 $name = $file->getClientOriginalName();
-                $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR.$hashname, $name,'public');
-                Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
-                $main->job_description_attachment = ManpowerRequestController::JDDIR.$hashname."/".$name;
+                $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR . $hashname, $name, 'public');
+                Storage::deleteDirectory("public/" . $a[0] . "/" . $a[1]);
+                $main->job_description_attachment = ManpowerRequestController::JDDIR . $hashname . "/" . $name;
             }
 
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -355,10 +352,10 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $a = explode("/", $main->job_description_attachment);
-        Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
+        Storage::deleteDirectory("public/" . $a[0] . "/" . $a[1]);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -366,10 +363,10 @@ class ManpowerRequestController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

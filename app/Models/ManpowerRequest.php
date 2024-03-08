@@ -37,6 +37,22 @@ class ManpowerRequest extends Model
         'requested_by',
     ];
 
+    public function user(): HasOne
+    {
+        return $this->hasOne(Users::class, "id", "requested_by");
+    }
+
+    public function department(): HasOne
+    {
+        return $this->hasOne(Department::class, "id", "requesting_department");
+    }
+
+    public function employee_address(): HasMany
+    {
+        return $this->hasMany(EmployeeAddress::class);
+    }
+
+
     public function job_applicants(): HasMany
     {
         return $this->hasMany(JobApplicants::class,'manpowerrequests_id','id');
