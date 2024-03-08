@@ -79,40 +79,9 @@ class ManpowerRequestController extends Controller
     public function get_approve()
     {
         $id = Auth::user()->id;
-        $main = ManpowerRequest::where("requested_by", '=', $id)->get();
+        $main = ManpowerRequest::where("request_status", "=", "Pending")
+        ->whereJsonContains('approvals', ["user_id" => strval($id),"status" => "Pending"])->first();
         $newdata = json_decode('{}');
-        foreach ($main as $key => $x) {
-            $new_approvals = [];
-            foreach (json_decode($x->approvals) as $data) {
-                $type =  gettype($data);
-                if ($type == "object") {
-                    $one_approval = $data;
-                    $approval_id = $one_approval->user_id;
-                    $approval_status = $one_approval->status;
-                    if ($approval_id == $id && $approval_status == "Pending") {
-                        array_push($new_approvals, $one_approval);
-                        break;
-                    }
-                    if ($approval_status == "Denied") {
-                        break;
-                    }
-                } else if ($type == "array") {
-                    $many_approval = json_decode($data);
-                    foreach ($many_approval as $one_approval) {
-                        $approval_id = $one_approval->user_id;
-                        $approval_status = $one_approval->status;
-                        if ($approval_status == "Denied") {
-                            break;
-                        }
-                        if ($approval_id == $id && $approval_status == "Pending") {
-                            array_push($new_approvals, $one_approval);
-                            break;
-                        }
-                    }
-                }
-            }
-            $main[$key]->approvals = $new_approvals;
-        }
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
