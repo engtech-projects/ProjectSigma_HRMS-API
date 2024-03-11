@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Rules\UniqueWithoutSoftDeleted;
 
 class UpdateSalaryGradeLevelRequest extends FormRequest
 {
@@ -23,7 +25,20 @@ class UpdateSalaryGradeLevelRequest extends FormRequest
     {
         $id = $this->route('salary_grade_level')->id;
         return [
-            'salary_grade_level' => 'required|string|unique:salary_grade_levels,salary_grade_level,' . $id . ',id',
+            //'salary_grade_level' => 'required|string|unique:salary_grade_levels,salary_grade_level,' . $id . ',id',
+            'salary_grade_level' => [
+                'required',
+                'string',
+                Rule::unique('salary_grade_levels')->where(function ($query) {
+                    $query->whereNull('deleted_at');
+                })->ignore($id)
+            ],
+            /*             'salary_grade_level' => [
+                'required',
+                'string',
+                'unique:salary_grade_levels,salary_grade_level,' . $id . ',id',
+                new UniqueWithoutSoftDeleted('salary_grade_levels', 'salary_grade_level')
+            ], */
             'salary_grade_step' => 'required|array',
             'salary_grade_step.*.id' => 'required|integer',
             'salary_grade_step.*.step_name' => 'required|numeric',
