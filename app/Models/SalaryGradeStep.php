@@ -12,7 +12,6 @@ class SalaryGradeStep extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = "salary_grade_steps";
     protected $fillable = [
         "step_name",
         "monthly_salary_amount",
@@ -23,5 +22,4 @@ class SalaryGradeStep extends Model
     {
         return $this->belongsTo(SalaryGradeLevel::class);
     }
-
 }

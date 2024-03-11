@@ -66,14 +66,13 @@ class SalaryGradeLevelController extends Controller
                 $salaryGradeLevel->update();
 
                 $salaryGradeStep = $salaryGradeLevel->salary_grade_step;
-                foreach ($salaryGradeStep as $value) {
-                    foreach ($attributes["salary_grade_step"] as $attribute) {
-                        if ($attribute['id'] == $value->id) {
-                            $salaryGradeStep = SalaryGradeStep::find($value->id);
-                            $salaryGradeStep->update([
-                                "step_name" => $attribute["step_name"]
-                            ]);
-                        }
+                foreach ($attributes["salary_grade_step"] as $attribute) {
+                    $salaryGradeStep = SalaryGradeStep::find($attribute["id"]);
+                    if ($salaryGradeStep) {
+                        $salaryGradeStep->update([
+                            "step_name" => $attribute["step_name"],
+                            "monthly_salary_amount" => $attribute["monthly_salary_amount"],
+                        ]);
                     }
                 }
             });
