@@ -5,20 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\ManpowerRequest;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use App\Http\Resources\ManpowerRequestResource;
+use App\Http\Services\ManpowerServices;
 
 class ManpowerRequestController extends Controller
 {
+
+    protected $manpowerServices;
+    public function __construct(ManpowerServices $manpowerServices)
+    {
+        $this->manpowerServices = $manpowerServices;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $main = ManpowerRequest::simplePaginate(15);
+
+        $manpowerRequest = $this->manpowerServices->getAll();
+
+        return ManpowerRequestResource::collection($manpowerRequest);
+
+        /* $main = ManpowerRequest::simplePaginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
-        return response()->json($data);
+        return response()->json($data); */
     }
 
     /**
@@ -39,7 +52,7 @@ class ManpowerRequestController extends Controller
         $main->fill($request->validated());
         $data = json_decode('{}');
         $main->approvals = json_encode($request->approvals);
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -57,7 +70,7 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -83,9 +96,9 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -108,8 +121,8 @@ class ManpowerRequestController extends Controller
     {
         $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -117,10 +130,10 @@ class ManpowerRequestController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }
