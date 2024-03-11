@@ -13,7 +13,7 @@ class AccessibilitiesController extends Controller
      */
     public function index()
     {
-        $access = Accessibilities::simplePaginate(15);      
+        $access = Accessibilities::simplePaginate(15);
         return response()->json($access);
     }
 
@@ -78,6 +78,6 @@ class AccessibilitiesController extends Controller
         if($accessibilities->delete()){
             return response()->json($accessibilities);
         }
-        return response()->json(["msg"=>"error"],400); 
+        return response()->json(["msg"=>"error"],400);
     }
 }

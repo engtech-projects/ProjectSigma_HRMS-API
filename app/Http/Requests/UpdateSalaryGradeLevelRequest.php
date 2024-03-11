@@ -27,6 +27,7 @@ class UpdateSalaryGradeLevelRequest extends FormRequest
             'salary_grade_step' => 'required|array',
             'salary_grade_step.*.id' => 'required|integer',
             'salary_grade_step.*.step_name' => 'required|numeric',
+            'salary_grade_step.*.monthly_salary_amount' => 'required|numeric',
         ];
     }
 }
