@@ -7,6 +7,8 @@ use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Http\Resources\ManpowerRequestResource;
 use App\Http\Services\ManpowerServices;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\Paginator;
 
 class ManpowerRequestController extends Controller
 {
@@ -23,8 +25,12 @@ class ManpowerRequestController extends Controller
     {
 
         $manpowerRequest = $this->manpowerServices->getAll();
+        $collection = ManpowerRequestResource::collection($manpowerRequest);
+        $page = request()->get('page', 1);
+        $paginatedCollection = new Paginator($collection->forPage($page, 10), 10, $page);
 
-        return ManpowerRequestResource::collection($manpowerRequest);
+        return new JsonResponse(['success' => true, 'message' => 'Manpower Request fetched.', 'data' => $paginatedCollection]);
+
 
         /* $main = ManpowerRequest::simplePaginate(15);
         $data = json_decode('{}');

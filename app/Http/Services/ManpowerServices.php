@@ -38,7 +38,6 @@ class ManpowerServices
             return empty($item['approvals']);
         });
 
-
         return $manpowerRequests;
     }
 }
