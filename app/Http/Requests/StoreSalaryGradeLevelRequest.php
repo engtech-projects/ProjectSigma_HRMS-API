@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Rules\UniqueWithoutSoftDeleted;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSalaryGradeLevelRequest extends FormRequest
@@ -22,7 +24,11 @@ class StoreSalaryGradeLevelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'salary_grade_level' => 'required|string|unique:salary_grade_levels,salary_grade_level',
+            /* 'salary_grade_level' => "required|string|unique:salary_grade_levels,salary_grade_level", */
+            'salary_grade_level' => [
+                'required',
+                new UniqueWithoutSoftDeleted('salary_grade_levels', 'salary_grade_level')
+            ],
             'salary_grade_step' => 'required|array|min:6',
             'salary_grade_step.*.monthly_salary_amount' => 'required|numeric',
             'salary_grade_step.*.step_name' => 'required|numeric',
