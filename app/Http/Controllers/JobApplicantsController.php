@@ -202,4 +202,9 @@ class JobApplicantsController extends Controller
         $data->success = false;
         return response()->json($data, 404);
     }
+
+    public function generatePDF(JobApplicants $application)
+    {
+        return view('reports.docs.application_form', ["application" => $application]);
+    }
 }
