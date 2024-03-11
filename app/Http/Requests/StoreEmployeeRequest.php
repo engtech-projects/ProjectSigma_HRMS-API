@@ -36,7 +36,7 @@ class StoreEmployeeRequest extends FormRequest
                 "string",
             ],
             'nick_name'=>[
-                "required",
+                "nullable",
                 "string",
             ],
             'name_suffix'=>[
@@ -74,7 +74,7 @@ class StoreEmployeeRequest extends FormRequest
                 "max:55"
             ],
             'telephone_number'=>[
-                "required",
+                "nullable",
                 "string",
                 "max:15"
             ],

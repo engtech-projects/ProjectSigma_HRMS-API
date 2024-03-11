@@ -38,10 +38,11 @@ class JobApplicantsController extends Controller
 
     /**
      * Show For Hiring status
+     * For Hiring Job Applicant
      */
     public function get_for_hiring()
     {
-        $main = JobApplicants::where("status","=","For Hiring")->get();
+        $main = JobApplicants::where("status", "=", "For Hiring")->with("manpower")->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -75,21 +76,21 @@ class JobApplicantsController extends Controller
         $application_letter_attachmentfile = $request->file('application_letter_attachment');
 
         $hashmake = Hash::make('secret');
-        $hashname = hash('sha256',$hashmake);
+        $hashname = hash('sha256', $hashmake);
 
         $name1 = $resume_attachment->getClientOriginalName();
         $name2 = $application_letter_attachmentfile->getClientOriginalName();
 
-        $resume_attachment->storePubliclyAs(JobApplicantsController::RADIR.$hashname, $name1,'public');
-        $application_letter_attachmentfile->storePubliclyAs(JobApplicantsController::ALADIR.$hashname, $name2,'public');
+        $resume_attachment->storePubliclyAs(JobApplicantsController::RADIR . $hashname, $name1, 'public');
+        $application_letter_attachmentfile->storePubliclyAs(JobApplicantsController::ALADIR . $hashname, $name2, 'public');
 
-        $main->resume_attachment = JobApplicantsController::RADIR.$hashname."/".$name1;
-        $main->application_letter_attachment = JobApplicantsController::ALADIR.$hashname."/".$name2;
+        $main->resume_attachment = JobApplicantsController::RADIR . $hashname . "/" . $name1;
+        $main->application_letter_attachment = JobApplicantsController::ALADIR . $hashname . "/" . $name2;
         $main->education = json_encode($request->education);
         $main->workexperience = json_encode($request->workexperience);
         $main->children = json_encode($request->children);
 
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -108,7 +109,7 @@ class JobApplicantsController extends Controller
     {
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -134,32 +135,32 @@ class JobApplicantsController extends Controller
     {
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $a1 = explode("/", $main->application_letter_attachment);
             $a2 = explode("/", $main->resume_attachment);
 
             $main->fill($request->validated());
             $hashmake = Hash::make('secret');
-            $hashname = hash('sha256',$hashmake);
-            if($request->hasFile("application_letter_attachment")){
+            $hashname = hash('sha256', $hashmake);
+            if ($request->hasFile("application_letter_attachment")) {
                 $check = JobApplicants::find($id);
                 $file = $request->file('application_letter_attachment');
                 $name = $file->getClientOriginalName();
-                $file->storePubliclyAs(JobApplicantsController::ALADIR.$hashname, $name,'public');
-                Storage::deleteDirectory("public/".$a1[0]."/".$a1[1]);
-                $main->application_letter_attachment = JobApplicantsController::ALADIR.$hashname."/".$name;
+                $file->storePubliclyAs(JobApplicantsController::ALADIR . $hashname, $name, 'public');
+                Storage::deleteDirectory("public/" . $a1[0] . "/" . $a1[1]);
+                $main->application_letter_attachment = JobApplicantsController::ALADIR . $hashname . "/" . $name;
             }
 
-            if($request->hasFile("resume_attachment")){
+            if ($request->hasFile("resume_attachment")) {
                 $check = JobApplicants::find($id);
                 $file = $request->file('resume_attachment');
                 $name = $file->getClientOriginalName();
-                $file->storePubliclyAs(JobApplicantsController::RADIR.$hashname, $name,'public');
-                Storage::deleteDirectory("public/".$a2[0]."/".$a2[1]);
-                $main->resume_attachment = JobApplicantsController::RADIR.$hashname."/".$name;
+                $file->storePubliclyAs(JobApplicantsController::RADIR . $hashname, $name, 'public');
+                Storage::deleteDirectory("public/" . $a2[0] . "/" . $a2[1]);
+                $main->resume_attachment = JobApplicantsController::RADIR . $hashname . "/" . $name;
             }
 
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -183,11 +184,11 @@ class JobApplicantsController extends Controller
         //
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $a = explode("/", $main->application_letter_attachment);
-            if($main->delete()){
-                Storage::deleteDirectory("public/".JobApplicantsController::ALADIR."/".$a[0]."/".$a[1]);
-                Storage::deleteDirectory("public/".JobApplicantsController::RADIR."/".$a[0]."/".$a[1]);
+            if ($main->delete()) {
+                Storage::deleteDirectory("public/" . JobApplicantsController::ALADIR . "/" . $a[0] . "/" . $a[1]);
+                Storage::deleteDirectory("public/" . JobApplicantsController::RADIR . "/" . $a[0] . "/" . $a[1]);
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -195,10 +196,10 @@ class JobApplicantsController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

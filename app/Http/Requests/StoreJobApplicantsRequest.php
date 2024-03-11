@@ -177,10 +177,6 @@ class StoreJobApplicantsRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'icoe_address'=>[
-                "required",
-                "string",
-            ],
             'icoe_relationship'=>[
                 "required",
                 "string",
@@ -323,6 +319,86 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'workexperience.*.status_of_appointment'=>[
                 "nullable",
+                "string",
+            ],
+            'place_of_birth'=>[
+                "required",
+                "string",
+            ],
+            'blood_type'=>[
+                "required",
+                "string",
+            ],
+            'date_of_marriage'=>[
+                "nullable",
+                "string",
+            ],
+            'sss'=>[
+                "nullable",
+                "string",
+            ],
+            'philhealth'=>[
+                "nullable",
+                "string",
+            ],
+            'pagibig'=>[
+                "nullable",
+                "string",
+            ],
+            'tin'=>[
+                "nullable",
+                "string",
+            ],
+            'citizenship'=>[
+                "required",
+                "string",
+            ],
+            'religion'=>[
+                "required",
+                "string",
+            ],
+            'height'=>[
+                "required",
+                "string",
+            ],
+            'weight'=>[
+                "required",
+                "string",
+            ],
+            'father_name'=>[
+                "required",
+                "string",
+            ],
+            'mother_name'=>[
+                "required",
+                "string",
+            ],
+            'gender'=>[
+                "required",
+                "string",
+            ],
+            'civil_status'=>[
+                "required",
+                "string",
+            ],
+            'icoe_street'=>[
+                "required",
+                "string",
+            ],
+            'icoe_brgy'=>[
+                "required",
+                "string",
+            ],
+            'icoe_city'=>[
+                "required",
+                "string",
+            ],
+            'icoe_zip'=>[
+                "required",
+                "string",
+            ],
+            'icoe_province'=>[
+                "required",
                 "string",
             ],
         ];

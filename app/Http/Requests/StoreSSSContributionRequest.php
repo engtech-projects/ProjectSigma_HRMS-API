@@ -24,36 +24,42 @@ class StoreSSSContributionRequest extends FormRequest
         return [
             'range_from'=> [
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
             'range_to'=>[
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
             'employee_share'=>[
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
             'employer_share'=>[
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
             'employee_contribution'=>[
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
             'employer_contribution'=>[
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",

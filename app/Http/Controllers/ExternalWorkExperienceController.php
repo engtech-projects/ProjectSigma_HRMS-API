@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\InternalWorkExperience;
-use App\Http\Requests\StoreInternalWorkExperienceRequest;
-use App\Http\Requests\UpdateInternalWorkExperienceRequest;
+use App\Models\ExternalWorkExperience;
+use App\Http\Requests\StoreExternalWorkExperienceRequest;
+use App\Http\Requests\UpdateExternalWorkExperienceRequest;
 
-class InternalWorkExperienceController extends Controller
+class ExternalWorkExperienceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $main = InternalWorkExperience::paginate(15);
+        $main = ExternalWorkExperience::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -24,9 +24,9 @@ class InternalWorkExperienceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreInternalWorkExperienceRequest $request)
+    public function store(StoreExternalWorkExperienceRequest $request)
     {
-        $main = new InternalWorkExperience();
+        $main = new ExternalWorkExperience();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -46,7 +46,7 @@ class InternalWorkExperienceController extends Controller
      */
     public function show($id)
     {
-        $main = InternalWorkExperience::find($id);
+        $main = ExternalWorkExperience::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -62,9 +62,9 @@ class InternalWorkExperienceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateInternalWorkExperienceRequest $request, $id)
+    public function update(UpdateExternalWorkExperienceRequest $request, $id)
     {
-        $main = InternalWorkExperience::find($id);
+        $main = ExternalWorkExperience::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
@@ -89,7 +89,7 @@ class InternalWorkExperienceController extends Controller
      */
     public function destroy($id)
     {
-        $main = InternalWorkExperience::find($id);
+        $main = ExternalWorkExperience::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             if ($main->delete()) {

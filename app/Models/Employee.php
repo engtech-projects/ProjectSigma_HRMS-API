@@ -124,6 +124,11 @@ class Employee extends Model
         return $this->hasMany(EmployeeRelatedperson::class);
     }
 
+    public function employee_externalwork(): HasMany
+    {
+        return $this->hasMany(ExternalWorkExperience::class);
+    }
+
     public function mother(): HasOne
     {
         $a = $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);

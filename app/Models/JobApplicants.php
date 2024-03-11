@@ -52,12 +52,32 @@ class JobApplicants extends Model
         'icoe_relationship',
         'telephone_icoe',
         'workexperience',
-        'education'
+        'education',
+        'place_of_birth',
+        'blood_type',
+        'date_of_marriage',
+        'sss',
+        'philhealth',
+        'pagibig',
+        'tin',
+        'citizenship',
+        'religion',
+        'height',
+        'weight',
+        'father_name',
+        'mother_name',
+        'gender',
+        'civil_status',
+        'icoe_street',
+        'icoe_brgy',
+        'icoe_city',
+        'icoe_zip',
+        'icoe_province',
     ];
 
     public function manpower(): BelongsTo
     {
-        return $this->belongsTo(ManpowerRequest::class,'manpowerrequests_id','id');
+        return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');
     }
 
 }

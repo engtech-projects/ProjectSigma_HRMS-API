@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EmployeeAddressType;
+use App\Enums\EmployeeRelatedPersonType;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
 use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
@@ -19,7 +21,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function index()
     {
-        //
         $main = EmployeePersonnelActionNoticeRequest::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
@@ -29,24 +30,16 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeePersonnelActionNoticeRequestRequest $request)
     {
-        //
-        $main = new EmployeePersonnelActionNoticeRequest;
-        $main->fill($request->validated());
+        $main = new EmployeePersonnelActionNoticeRequest();
+        $validData = $request->validated();
+        $main->fill($validData);
         $data = json_decode('{}');
-        $main->approvals = json_encode($request->approvals);
-        if(!$main->save()){
+        $main->approvals = json_encode($validData["approvals"]);
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -57,12 +50,13 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         return response()->json($data);
     }
 
-    public function get_panrequest()
+    // can view all pan request made by logged in user
+    public function getpanrequest()
     {
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::where("created_by","=",$id)->get();
+        $main = EmployeePersonnelActionNoticeRequest::where("created_by", "=", $id)->get();
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -76,43 +70,12 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
-    public function get_approve()
+    public function getApprovals()
     {
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::where("created_by",'=',$id)->get();
+        $main = EmployeePersonnelActionNoticeRequest::approval()
+            ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->get();
         $newdata = json_decode('{}');
-        foreach ($main as $key => $x) {
-            $new_approvals = [];
-            foreach(json_decode($x->approvals) as $data){
-                $type =  gettype($data);
-                if($type=="object"){
-                    $one_approval = $data;
-                    $approval_id = $one_approval->user_id;
-                    $approval_status = $one_approval->status;
-                    if($approval_id==$id && $approval_status=="Pending"){
-                        array_push($new_approvals,$one_approval);
-                        break;
-                    }
-                    if($approval_status=="Denied"){
-                        break;
-                    }
-                }else if($type=="array"){
-                    $many_approval=json_decode($data);
-                    foreach($many_approval as $one_approval){
-                        $approval_id = $one_approval->user_id;
-                        $approval_status = $one_approval->status;
-                        if($approval_status=="Denied"){
-                            break;
-                        }
-                        if($approval_id==$id && $approval_status=="Pending"){
-                            array_push($new_approvals,$one_approval);
-                            break;
-                        }
-                    }
-                }
-            }
-            $main[$key]->approvals = $new_approvals;
-        }
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
@@ -120,89 +83,194 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     }
 
     // logged in can approve pan request(if he is the current approval)
-    public function approve_approval($request)
+    public function approveApprovals($request)
     {
+        // $request = pan_id
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::where([
-            ["created_by",'=',$id],
-            ["id",'=',$request]
-        ])->first();
-
+        $main = EmployeePersonnelActionNoticeRequest::where("id", $request)->with("jobapplicant")->first();
         $newdata = json_decode('{}');
-        $newdata->success = false;
-        $newdata->message = "Failed approved.";
 
-        if(!$main){
+        if (!$main) {
+            $newdata->success = false;
             $newdata->message = "No data found.";
             return response()->json($newdata);
         }
 
-        $approval = json_decode($main->approvals);
-        foreach($approval as $index => $key){
-            $data = json_decode($key);
-            $type =  gettype($data);
-            $approval_id = 0;
-            $approval_status = "";
-
-            if($type=="object"){
-                $approval_id = $data->user_id;
-                $approval_status = $data->status;
-            }elseif($type=="array"){
-                $approval_id = $data[$index]->user_id;
-                $approval_status = $data[$index]->status;
-            }
-
-            if($approval_status=="Denied"){
-                break;
-            }
-
-            if($approval_id!=$id && $approval_status=="Pending"){
-                break;
-            }
-
-            if($approval_id==$id && $approval_status=="Pending"){
-                if($type=="object"){
-                    $data->date_approved = Carbon::now();
-                    $data->status = "Approved";
-                }elseif($type=="array"){
-                    $data[$index]->date_approved = Carbon::now();
-                    $data[$index]->status = "Approved";
-                }
-                $approval[$index] = json_encode($data);
-                $newdata->success = true;
-                $newdata->message = "Successfully approved.";
-                break;
-            }
+        $this->hireApproved($main->pan_job_applicant_id);
+        $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request)->approval()->first();
+        $get_approval = collect(json_decode($main->approvals))->where("status", "Pending")->first();
+        $next_approval = 0;
+        if ($get_approval) {
+            $next_approval = $get_approval->user_id;
+        }
+        $count_approves = collect(json_decode($main->approvals))->where("status", "Approved")->count();
+        $approve = 0;
+        if (!$panreq) {
+            $newdata->success = false;
+            $newdata->message = "No data found.";
+            return response()->json($newdata);
         }
 
-        if($newdata->success){
-            $main->approvals = json_encode($approval);
-            if($main->save()){
+        $count = count(json_decode($panreq->approvals));
+        if ($next_approval == strval($id)) {
+            $a = [];
+            foreach (json_decode($panreq->approvals) as $key) {
+                if ($key->user_id == strval($id) && $key->status == "Pending" && $approve == 0) {
+                    $key->status = "Approved";
+                    $key->date_approved = Carbon::now()->format('Y-m-d');
+                    $approve = 1;
+                    $count_approves += 1;
+                }
+
+                array_push($a, $key);
+            }
+
+            if ($count_approves >= $count) {
+                // Approved All on Panreq
+                if ($main->type == "New Hire") {
+                    $saveData = $this->hireApproved($main->pan_job_applicant_id);
+                    if ($saveData) {
+                        $main->jobapplicant->status = "Hired";
+                        JobApplicants::where("id", $main->pan_job_applicant_id)->update(["status" => "Hired"]);
+                        ManpowerRequest::where("id", $main->jobapplicant->manpower->id)->update(["request_status" => "Approved"]);
+                        $main->request_status = "Filled";
+                    } else {
+                        $newdata->success = false;
+                        $newdata->message = "Failed approved.";
+                        return response()->json($newdata);
+                    }
+                }
+
+                if ($main->type == "Transfer") {
+                    $this_internal = InternalWorkExperience::where("id", $main->employee_id)->first();
+                    $this_internal->status = "inactive";
+                }
+            }
+
+            $main->approvals = json_encode($a);
+            $main->save();
+
+            if ($main) {
+                $newdata->success = true;
+                $newdata->message = "Successfully approved.";
                 $newdata->data = $main;
                 return response()->json($newdata);
             }
-        }else{
-            $main->approvals = [];
         }
 
-        $newdata->data = $main;
+        $newdata->success = false;
+        $newdata->message = "Failed approved.";
         return response()->json($newdata);
     }
 
-    function hire_approved ($request) {
+    public function hireApproved($id)
+    {
+        $main = JobApplicants::where('id', '=', $id)->first();
         $employee = new Employee();
-        $employee_internalwork = new InternalWorkExperience();
-        $employee->fill($request)->save();
-        $employee->company_employments()->fill($request)->save();
-        // $employee->employment_records()->create($request);
-        $employee->employee_address()->fill($request)->save();
-        $employee->employee_address()->fill($request)->save();
-        $employee->employee_affiliation()->fill($request)->save();
-        $employee->employee_education()->fill($request)->save();
-        $employee_internalwork->fill($request)->save();
-        // $employee->employee_eligibility()->create($request);
-        // $ja = JobApplicants::where("")
-        // $manpower = ManpowerRequest::where("")
+        $arr = [];
+        $arr_workexperience = [];
+        $arr_related = [];
+
+        if (!$main) {
+            return false;
+        }
+        // Employee
+        $arr["family_name"] = $main->lastname;
+        $arr["first_name"] = $main->firstname;
+        $arr["middle_name"] = $main->middlename;
+        $arr["gender"] = $main->gender;
+        $arr["date_of_birth"] = $main->date_of_birth;
+        $arr["place_of_birth"] = $main->place_of_birth;
+        $arr["date_of_marriage"] = $main->date_of_marriage;
+        $arr["citizenship"] = $main->citizenship;
+        $arr["blood_type"] = $main->blood_type;
+        $arr["civil_status"] = $main->civil_status;
+        $arr["mobile_number"] = $main->contact_info;
+        $arr["email"] = $main->email;
+        $arr["religion"] = $main->religion;
+        $arr["weight"] = $main->weight;
+        $arr["height"] = $main->height;
+        $employee->fill($arr)->save();
+
+        // Employee Address
+        $arr["employee_id"] = $employee->id;
+        $arr["street"] = $main->pre_address_street;
+        $arr["brgy"] = $main->pre_address_brgy;
+        $arr["city"] = $main->pre_address_city;
+        $arr["zip"] = $main->pre_address_zip;
+        $arr["province"] = $main->pre_address_province;
+        $arr["type"] = EmployeeAddressType::PRESENT;
+        $employee->employee_address()->create($arr);
+        $arr["street"] = $main->per_address_street;
+        $arr["brgy"] = $main->per_address_brgy;
+        $arr["city"] = $main->per_address_city;
+        $arr["zip"] = $main->per_address_zip;
+        $arr["province"] = $main->per_address_province;
+        $arr["type"] = EmployeeAddressType::PERMANENT;
+        $employee->employee_address()->create($arr);
+
+        // Employee Spouse
+        if (property_exists("name_of_spouse", $main)) {
+            $arr_related["name"] = $main->name_of_spouse;
+            $arr_related["date_of_birth"] = $main->date_of_birth_spouse ?? null;
+            $arr_related["contact_no"] = $main->telephone_spouse ?? null;
+            $arr_related["occupation"] = $main->occupation_spouse ?? null;
+            $arr_related["type"] = EmployeeRelatedPersonType::SPOUSE;
+            $employee->employee_related_person()->create($arr_related);
+        }
+
+        // Employee Father
+        if (property_exists("father_name", $main)) {
+            $arr_related["name"] = $main->father_name;
+            $arr_related["type"] = EmployeeRelatedPersonType::FATHER;
+            $employee->employee_related_person()->create($arr_related);
+        }
+
+        // Employee Mother
+        if (property_exists("mother_name", $main)) {
+            $arr_related["name"] = $main->mother_name;
+            $arr_related["type"] = EmployeeRelatedPersonType::MOTHER;
+            $employee->employee_related_person()->create($arr_related);
+        }
+
+        // Employee In Case of Emergency
+        if (property_exists("icoe_name", $main)) {
+            $arr_related["name"] = $main->icoe_name ?? null;
+            $arr_related["street"] = $main->icoe_street ?? null;
+            $arr_related["brgy"] = $main->icoe_brgy ?? null;
+            $arr_related["city"] = $main->icoe_city ?? null;
+            $arr_related["zip"] = $main->icoe_zip ?? null;
+            $arr_related["province"] = $main->icoe_province ?? null;
+            $arr_related["relationship"] = $main->icoe_relationship ?? null;
+            $arr_related["contact_no"] = $main->telephone_icoe ?? null;
+            $arr_related["type"] = EmployeeRelatedPersonType::CONTACT_PERSON;
+            $employee->employee_related_person()->create($arr_related);
+        }
+
+        // Employee Children
+        if (property_exists("children", $main)) {
+            foreach (json_decode($main->children) as $key) {
+                $arr_related["name"] = $key->name;
+                $arr_related["date_of_birth"] = $key->birthdate ?? null;
+                $arr_related["type"] = EmployeeRelatedPersonType::CHILD;
+                $employee->employee_related_person()->create($arr_related);
+            }
+        }
+
+        // Employee Work Experience
+        if (property_exists("workexperience", $main)) {
+            foreach (json_decode($main->workexperience) as $key) {
+                $arr_workexperience["date_from"] = $key->inclusive_dates_from ?? null;
+                $arr_workexperience["date_to"] = $key->inclusive_dates_to ?? null;
+                $arr_workexperience["position_title"] = $key->position_title ?? null;
+                $arr_workexperience["company_name"] = $key->dpt_agency_office_company ?? null;
+                $arr_workexperience["salary"] = $key->monthly_salary ?? null;
+                $arr_workexperience["status_of_appointment"] = $key->status_of_appointment ?? null;
+                $employee->employee_externalwork()->create($arr_related);
+            }
+        }
+        return true;
+        // Employee Education
     }
 
     /**
@@ -210,10 +278,9 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function show($id)
     {
-        //
         $main = EmployeePersonnelActionNoticeRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -225,25 +292,16 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(EmployeePersonnelActionNoticeRequest $employeePersonnelActionNoticeRequest)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeePersonnelActionNoticeRequestRequest $request,  $id)
+    public function update(UpdateEmployeePersonnelActionNoticeRequestRequest $request, $id)
     {
-        //
         $main = EmployeePersonnelActionNoticeRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
             $main->approvals = json_encode($request->approvals);
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -262,13 +320,12 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy( $id)
+    public function destroy($id)
     {
-        //
         $main = EmployeePersonnelActionNoticeRequest::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -276,10 +333,10 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

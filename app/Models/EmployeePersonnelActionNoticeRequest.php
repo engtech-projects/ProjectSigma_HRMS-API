@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -35,4 +36,24 @@ class EmployeePersonnelActionNoticeRequest extends Model
         'pan_job_applicant_id',
         'salary_grades',
     ];
+
+    public function scopeApproval($query)
+    {
+        return $query->where("request_status", "=", "Pending");
+    }
+
+    public function jobapplicant(): HasOne
+    {
+        return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id")->with('manpower');
+    }
+
+    public function manpower(): HasOne
+    {
+        return $this->hasOne(ManpowerRequest::class, "id", "job_applicants.manpowerrequests_id");
+    }
+
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class);
+    }
 }

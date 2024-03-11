@@ -29,13 +29,13 @@ class EmployeeController extends Controller
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
         $main =
-        Employee::where(function ($q) use ($searchKey) {
-            $q->orWhere('first_name', 'like', "%{$searchKey}%")
-            ->orWhere('family_name', 'like', "%{$searchKey}%");
-            //     ->orWhere('middle_name', 'like', "%{$searchKey}%");
-        })->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey."%")
-        ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey."%")
-        ->limit(25)->orderBy('family_name')->get();
+            Employee::where(function ($q) use ($searchKey) {
+                $q->orWhere('first_name', 'like', "%{$searchKey}%")
+                    ->orWhere('family_name', 'like', "%{$searchKey}%");
+                //     ->orWhere('middle_name', 'like', "%{$searchKey}%");
+            })->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey . "%")
+            ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%")
+            ->limit(25)->orderBy('family_name')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -45,7 +45,7 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $main = Employee::with("company_employments","employment_records")->get();
+        $main = Employee::with("company_employments", "employment_records")->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -70,7 +70,7 @@ class EmployeeController extends Controller
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -88,33 +88,34 @@ class EmployeeController extends Controller
     {
         //
         $main = Employee::with(
-        "company_employments",
-        "employment_records",
-        "employee_address",
-        "employee_affiliation",
-        "employee_education",
-        "employee_education_elementary:employee_id,elementary_name,elementary_education,elementary_period_attendance_to,elementary_period_attendance_from,elementary_year_graduated,elementary_degree_earned_of_school,elementary_honors_received",
-        "employee_education_secondary:employee_id,secondary_name,secondary_education,secondary_period_attendance_to,secondary_period_attendance_from,secondary_year_graduated,secondary_degree_earned_of_school,secondary_honors_received",
-        "employee_education_vocationalcourse:employee_id,vocationalcourse_name,vocationalcourse_education,vocationalcourse_period_attendance_to,vocationalcourse_period_attendance_from,vocationalcourse_year_graduated,college_degree_earned_of_school,college_honors_received",
-        "employee_education_college:employee_id,college_name,college_education,college_period_attendance_to,college_period_attendance_from,college_year_graduated,vocationalcourse_degree_earned_of_school,vocationalcourse_honors_received",
-        "employee_education_graduatestudies:employee_id,graduatestudies_name,graduatestudies_education,graduatestudies_period_attendance_to,graduatestudies_period_attendance_from,graduatestudies_year_graduated",
-        "contact_person",
-        "father",
-        "spouse",
-        "reference",
-        "mother",
-        "guardian",
-        "child",
-        "memo",
-        "docs",
-        "employee_eligibility",
-        "masterstudies",
-        "doctorstudies",
-        "professionalstudies",
-        "employee_seminartraining")->get()->find($id);
+            "company_employments",
+            "employment_records",
+            "employee_address",
+            "employee_affiliation",
+            "employee_education",
+            "employee_education_elementary:employee_id,elementary_name,elementary_education,elementary_period_attendance_to,elementary_period_attendance_from,elementary_year_graduated,elementary_degree_earned_of_school,elementary_honors_received",
+            "employee_education_secondary:employee_id,secondary_name,secondary_education,secondary_period_attendance_to,secondary_period_attendance_from,secondary_year_graduated,secondary_degree_earned_of_school,secondary_honors_received",
+            "employee_education_vocationalcourse:employee_id,vocationalcourse_name,vocationalcourse_education,vocationalcourse_period_attendance_to,vocationalcourse_period_attendance_from,vocationalcourse_year_graduated,college_degree_earned_of_school,college_honors_received",
+            "employee_education_college:employee_id,college_name,college_education,college_period_attendance_to,college_period_attendance_from,college_year_graduated,vocationalcourse_degree_earned_of_school,vocationalcourse_honors_received",
+            "employee_education_graduatestudies:employee_id,graduatestudies_name,graduatestudies_education,graduatestudies_period_attendance_to,graduatestudies_period_attendance_from,graduatestudies_year_graduated",
+            "contact_person",
+            "father",
+            "spouse",
+            "reference",
+            "mother",
+            "guardian",
+            "child",
+            "memo",
+            "docs",
+            "employee_eligibility",
+            "masterstudies",
+            "doctorstudies",
+            "professionalstudies",
+            "employee_seminartraining"
+        )->get()->find($id);
 
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main["age"] = $main->age;
             $data->message = "Successfully fetch.";
             $data->success = true;
@@ -142,9 +143,9 @@ class EmployeeController extends Controller
         //
         $main = Employee::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -168,8 +169,8 @@ class EmployeeController extends Controller
         //
         $main = Employee::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -177,10 +178,10 @@ class EmployeeController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }
