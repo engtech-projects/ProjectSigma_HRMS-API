@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('salary_grade_levels', function (Blueprint $table) {
             $table->id();
-            $table->string('salary_grade_level')->unique();
+            $table->string('salary_grade_level');
             $table->softDeletes();
             $table->timestamps();
         });
