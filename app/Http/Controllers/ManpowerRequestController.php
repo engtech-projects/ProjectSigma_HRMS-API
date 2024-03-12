@@ -53,11 +53,199 @@ class ManpowerRequestController extends Controller
     }
 
     /**
+     * Show List Manpower requests that have status “For Hiring“ = Approve
+     */
+    public function get_hiring()
+    {
+        $main = ManpowerRequest::with('job_applicants')->where("request_status", '=', 'Approved')->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
+    /**
+     * Show View Complete details of Manpower Request with applicant || View Applicants list per Manpower Request
+     */
+    public function get_manpower_with_applicant()
+    {
+        $main = ManpowerRequest::with('job_applicants')->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
+    public function get()
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where("requested_by", '=', $id)->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
+    }
+
+    /**
+     * Show all requests to be approved/reviewed by current user
+     */
+    public function get_approve()
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where("request_status", "=", "Pending")
+        ->whereJsonContains('approvals', ["user_id" => strval($id),"status" => "Pending"])->first();
+        $newdata = json_decode('{}');
+        $newdata->message = "Successfully fetch.";
+        $newdata->success = true;
+        $newdata->data = $main;
+        return response()->json($newdata);
+    }
+
+    public function approve_approval($request)
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where([
+            ["requested_by", '=', $id],
+            ["id", '=', $request]
+        ])->first();
+
+        $newdata = json_decode('{}');
+        $newdata->success = false;
+        $newdata->message = "Failed approved.";
+
+        if (!$main) {
+            $newdata->message = "No data found.";
+            return response()->json($newdata);
+        }
+
+        $approval = json_decode($main->approvals);
+        foreach ($approval as $index => $key) {
+            $data = json_decode($key);
+            $type =  gettype($data);
+            $approval_id = 0;
+            $approval_status = "";
+
+            if ($type == "object") {
+                $approval_id = $data->user_id;
+                $approval_status = $data->status;
+            } elseif ($type == "array") {
+                $approval_id = $data[$index]->user_id;
+                $approval_status = $data[$index]->status;
+            }
+
+            if ($approval_status == "Denied") {
+                break;
+            }
+
+            if ($approval_id != $id && $approval_status == "Pending") {
+                break;
+            }
+
+            if ($approval_id == $id && $approval_status == "Pending") {
+                if ($type == "object") {
+                    $data->date_approved = Carbon::now();
+                    $data->status = "Approved";
+                } elseif ($type == "array") {
+                    $data[$index]->date_approved = Carbon::now();
+                    $data[$index]->status = "Approved";
+                }
+                $approval[$index] = json_encode($data);
+                $newdata->success = true;
+                $newdata->message = "Successfully approved.";
+                break;
+            }
+        }
+
+        if ($newdata->success) {
+            $main->approvals = json_encode($approval);
+            if ($main->save()) {
+                $newdata->data = $main;
+                return response()->json($newdata);
+            }
+        } else {
+            $main->approvals = [];
+        }
+
+        $newdata->data = $main;
+        return response()->json($newdata);
+    }
+
+    public function deny_approval($request)
+    {
+        $id = Auth::user()->id;
+        $main = ManpowerRequest::where([
+            ["requested_by", '=', $id],
+            ["id", '=', $request]
+        ])->first();
+
+        $newdata = json_decode('{}');
+        $newdata->success = false;
+        $newdata->message = "Failed denied.";
+
+        if (!$main) {
+            $newdata->message = "No data found.";
+            return response()->json($newdata);
+        }
+
+        $approval = json_decode($main->approvals);
+        foreach ($approval as $index => $key) {
+            $data = json_decode($key);
+            $type =  gettype($data);
+            $approval_id = 0;
+            $approval_status = "";
+
+            if ($type == "object") {
+                $approval_id = $data->user_id;
+                $approval_status = $data->status;
+            } elseif ($type == "array") {
+                $approval_id = $data[$index]->user_id;
+                $approval_status = $data[$index]->status;
+            }
+
+            if ($approval_status == "Denied") {
+                break;
+            }
+
+            if ($approval_id != $id && $approval_status == "Pending") {
+                break;
+            }
+
+            if ($approval_id == $id && $approval_status == "Pending") {
+                // $data->date_approved = Carbon::now();
+                if ($type == "object") {
+                    $data->status = "Denied";
+                } elseif ($type == "array") {
+                    $data[$index]->status = "Denied";
+                }
+                $approval[$index] = json_encode($data);
+                $newdata->success = true;
+                $newdata->message = "Successfully denied.";
+                break;
+            }
+        }
+
+        if ($newdata->success) {
+            $main->approvals = json_encode($approval);
+            if ($main->save()) {
+                $newdata->data = $main;
+                return response()->json($newdata);
+            }
+        } else {
+            $main->approvals = [];
+        }
+
+        $newdata->data = $main;
+        return response()->json($newdata);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreManpowerRequestRequest $request)
     {
-        //
         $main = new ManpowerRequest;
         $main->fill($request->validated());
         $data = json_decode('{}');
@@ -130,7 +318,11 @@ class ManpowerRequestController extends Controller
     public function destroy($id)
     {
         $main = ManpowerRequest::find($id);
+        $a = explode("/", $main->job_description_attachment);
+        Storage::deleteDirectory("public/" . $a[0] . "/" . $a[1]);
         $data = json_decode('{}');
+        if (!is_null($main)) {
+            if ($main->delete()) {
         if (!is_null($main)) {
             if ($main->delete()) {
                 $data->message = "Successfully delete.";
@@ -141,9 +333,11 @@ class ManpowerRequestController extends Controller
             $data->message = "Failed delete.";
             $data->success = false;
             return response()->json($data, 400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
+        return response()->json($data, 404);
         return response()->json($data, 404);
     }
 }

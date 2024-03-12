@@ -25,18 +25,30 @@ class StorePhilhealthContributionRequest extends FormRequest
             'range_from'=> [
                 "required",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'range_to'=>[
                 "nullable",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'employee_share'=>[
                 "required",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'employer_share'=>[
                 "required",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'share_type'=>[
                 "required",

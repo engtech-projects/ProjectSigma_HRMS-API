@@ -26,18 +26,30 @@ class UpdatePhilhealthContributionRequest extends FormRequest
             'range_from'=> [
                 "nullable",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'range_to'=>[
                 "nullable",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'employee_share'=>[
                 "nullable",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'employer_share'=>[
                 "nullable",
                 "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
             'share_type'=>[
                 "nullable",

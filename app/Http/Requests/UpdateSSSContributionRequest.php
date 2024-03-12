@@ -24,26 +24,44 @@ class UpdateSSSContributionRequest extends FormRequest
         return [
             'range_from'=> [
                 "nullable",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
                 "numeric",
             ],
             'range_to'=>[
                 "nullable",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
                 "numeric",
             ],
             'employee_share'=>[
                 "nullable",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
                 "numeric",
             ],
             'employer_share'=>[
                 "nullable",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
                 "numeric",
             ],
             'employee_contribution'=>[
                 "nullable",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
                 "numeric",
             ],
             'employer_contribution'=>[
                 "nullable",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
                 "numeric",
             ],
         ];

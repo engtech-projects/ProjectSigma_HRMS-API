@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Position extends Model
 {
@@ -27,4 +28,14 @@ class Position extends Model
     {
         return $this->hasOne(Allowance::class);
     }
+
+    public function departments(): HasOne
+    {
+        return $this->hasOne(Department::class,'id','department_id');
+    }
+
+    // public function departmentsdata(): BelongsTo
+    // {
+    //     return $this->belongsTo(Department::class);
+    // }
 }

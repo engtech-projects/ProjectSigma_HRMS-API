@@ -7,4 +7,3 @@ enum UserTypes:string
     case EMPLOYEE = 'Employee';
 }
 
-?>

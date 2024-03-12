@@ -19,7 +19,6 @@ class DepartmentController extends Controller
         $data->success = true;
         $data->data = $department;
         return response()->json($data);
-        // dd($department);
     }
 
     public function get()

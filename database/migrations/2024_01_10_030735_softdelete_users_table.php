@@ -21,6 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropColumn('deleted_at');
+        // Schema::dropColumn('deleted_at');
     }
 };

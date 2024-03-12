@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\JobApplicants;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $data = JobApplicants::findOrFail(1);
+    return view('reports.docs.application_form', ["application" => $data]);
 });

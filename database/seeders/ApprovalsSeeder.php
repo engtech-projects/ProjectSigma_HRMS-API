@@ -19,7 +19,7 @@ class ApprovalsSeeder extends Seeder
             [
                 [
                     'id' => 1,
-                    'form' => "Personel Action Notice",
+                    'form' => "Personnel Action Notice",
                     'approvals' => "[]",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),

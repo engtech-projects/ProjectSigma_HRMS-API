@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Settings;
 use App\Http\Requests\StoresettingsRequest;
 use App\Http\Requests\UpdatesettingsRequest;
+use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
@@ -13,11 +14,11 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        $settings = Settings::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $settings = Settings::simplePaginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $settings;     
+        $data->data = $settings;
         return response()->json($data);
     }
 
@@ -37,8 +38,8 @@ class SettingsController extends Controller
         //
         $settings = new Settings;
         $settings->fill($request->validated());
-        $data = json_decode('{}'); 
-        
+        $data = json_decode('{}');
+
         if(!$settings->save()){
             $data->message = "Save failed.";
             $data->success = false;
@@ -67,6 +68,31 @@ class SettingsController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $data = json_decode('{}');
+        try {
+            $a = array();
+            foreach(json_decode($request->getContent(), true) as $x){
+                array_push($a,$x);
+            }
+            $settings = Settings::upsert(
+                $a,
+                [
+                    'id'
+                ]
+            );
+            $data->message = "Successfully update.";
+            $data->success = true;
+            return response()->json($data);
+
+        } catch (\Throwable $th) {
+            $data->message = "Update failed.";
+            $data->success = false;
+            return response()->json($data, 400);
+        }
     }
 
     /**

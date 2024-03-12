@@ -6,6 +6,7 @@ use App\Models\Announcements;
 use App\Http\Requests\StoreAnnouncementsRequest;
 use App\Http\Requests\UpdateAnnouncementsRequest;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class AnnouncementsController extends Controller
 {
@@ -22,9 +23,15 @@ class AnnouncementsController extends Controller
         return response()->json($data);
     }
 
-    public function get()
+    public function currentAnnouncements()
     {
-        $main = Announcements::where('start_date', '>=', date('Y-m-d'))->get();
+        $main = Announcements::where('start_date', '<=', date('Y-m-d'))
+        ->where(function(Builder $query) {
+            $query->whereDate("end_date", ">=", date("Y-m-d"));
+            $query->orWhereNull("end_date");
+        })
+        ->orderBy("start_date", "desc")
+        ->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateEmployeeAffiliationRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            //
+            'employee_id'=> [
+                "nullable",
+                "integer",
+                "exists:employees,id",
+            ],
+            'club_organization_name'=>[
+                "nullable",
+                "string",
+            ],
+            'membership_type'=>[
+                "nullable",
+                "string",
+            ],
+            'membership_exp_date'=>[
+                "nullable",
+                "date",
+            ],
+        ];
+    }
+}

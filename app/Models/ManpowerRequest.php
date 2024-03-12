@@ -6,6 +6,8 @@ use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -38,6 +40,7 @@ class ManpowerRequest extends Model
         'request_status',
         'charged_to',
         'breakdown_details',
+        'requested_by',
     ];
 
     protected $casts = [

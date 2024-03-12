@@ -37,6 +37,7 @@ class StoreAnnouncementsRequest extends FormRequest
             'end_date'=>[
                 "nullable",
                 "date",
+                "after_or_equal:start_date"
             ],
         ];
     }

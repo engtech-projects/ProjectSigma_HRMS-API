@@ -14,6 +14,12 @@ class UpdateManpowerRequestRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation() {
+        $this->merge([
+            "approvals" => json_decode($this->approvals,true)
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -31,7 +37,7 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "nullable",
                 "date",
             ],
-            'date_nullable'=>[
+            'date_required'=>[
                 "nullable",
                 "date",
             ],
@@ -42,7 +48,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'employment_type'=>[
                 "nullable",
                 "string",
-                'in:Student Trainee, Project Hire, Contractual, Regular'
+                'in:Student Trainee,Project Hire,Contractual,Regular'
             ],
             'brief_description'=>[
                 "nullable",
@@ -50,12 +56,13 @@ class UpdateManpowerRequestRequest extends FormRequest
             ],
             'job_description_attachment'=>[
                 "nullable",
-                "string",
+                "max:10000",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
             'nature_of_request'=>[
                 "nullable",
                 "string",
-                'in:New/Addition, Replacement'
+                'in:New/Addition,Replacement'
             ],
             'age_range'=>[
                 "nullable",
@@ -64,12 +71,12 @@ class UpdateManpowerRequestRequest extends FormRequest
             'status'=>[
                 "nullable",
                 "string",
-                'in:Single, Married, No Preference'
+                'in:Single,Married,No Preference'
             ],
             'gender'=>[
                 "nullable",
                 "string",
-                'in:Male, Female, No Preference'
+                'in:Male,Female,No Preference'
             ],
             'educational_requirement'=>[
                 "nullable",
@@ -79,11 +86,12 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'approvals'=>[
+            'approvals.*'=>[
                 "nullable",
                 "array",
+                "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
-            'approvals.*.label'=>[
+            'approvals.*.type'=>[
                 "nullable",
                 "string",
             ],
@@ -107,7 +115,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'request_status'=>[
                 "nullable",
                 "string",
-                'in:Pending, Approved, Filled, Hold, Cancelled, Disapproved'
+                'in:Pending,Approved,Filled,Hold,Cancelled,Disapproved'
             ],
             'charged_to'=>[
                 "nullable",
