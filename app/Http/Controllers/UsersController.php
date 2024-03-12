@@ -48,7 +48,7 @@ class UsersController extends Controller
         $users->accessibilities = json_encode($request->accessibilities);
         $data = json_decode('{}');
 
-        if(!$users->save()){
+        if (!$users->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -66,7 +66,7 @@ class UsersController extends Controller
     {
         $users = Users::find($id);
         $data = json_decode('{}');
-        if (!is_null($users) ) {
+        if (!is_null($users)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $users;
@@ -92,10 +92,10 @@ class UsersController extends Controller
     {
         $users = Users::find($id);
         $data = json_decode('{}');
-        if (!is_null($users) ) {
+        if (!is_null($users)) {
             $users->fill($request->validated());
             $users->accessibilities = json_encode($request->accessibilities);
-            if($users->save()){
+            if ($users->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $users;
@@ -118,8 +118,8 @@ class UsersController extends Controller
     {
         $users = Users::find($id);
         $data = json_decode('{}');
-        if (!is_null($users) ) {
-            if($users->delete()){
+        if (!is_null($users)) {
+            if ($users->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $users;
@@ -127,10 +127,10 @@ class UsersController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

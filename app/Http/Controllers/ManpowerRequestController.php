@@ -17,7 +17,7 @@ class ManpowerRequestController extends Controller
     protected $manpowerServices;
     protected $manpowerRequestType = null;
 
-    public function __construct(ManpowerServices $manpowerServices,)
+    public function __construct(ManpowerServices $manpowerServices)
     {
         $this->manpowerRequestType = request()->get('type');
         $this->manpowerServices = $manpowerServices;
@@ -96,7 +96,7 @@ class ManpowerRequestController extends Controller
     {
         $id = Auth::user()->id;
         $main = ManpowerRequest::where("request_status", "=", "Pending")
-        ->whereJsonContains('approvals', ["user_id" => strval($id),"status" => "Pending"])->first();
+            ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->first();
         $newdata = json_decode('{}');
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
@@ -286,7 +286,6 @@ class ManpowerRequestController extends Controller
     {
         //
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -323,21 +322,23 @@ class ManpowerRequestController extends Controller
         $data = json_decode('{}');
         if (!is_null($main)) {
             if ($main->delete()) {
-        if (!is_null($main)) {
-            if ($main->delete()) {
-                $data->message = "Successfully delete.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
+                if (!is_null($main)) {
+                    if ($main->delete()) {
+                        $data->message = "Successfully delete.";
+                        $data->success = true;
+                        $data->data = $main;
+                        return response()->json($data);
+                    }
+                    $data->message = "Failed delete.";
+                    $data->success = false;
+                    return response()->json($data, 400);
+                    return response()->json($data, 400);
+                }
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data, 400);
-            return response()->json($data, 400);
+            return response()->json($data, 404);
+            return response()->json($data, 404);
         }
-        $data->message = "Failed delete.";
-        $data->success = false;
-        return response()->json($data, 404);
-        return response()->json($data, 404);
     }
 }
