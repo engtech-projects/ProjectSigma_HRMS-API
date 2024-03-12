@@ -16,7 +16,8 @@ class SalaryGradeStepResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "step_name" => $this->step_name
+            "step_name" => $this->step_name,
+            "monthly_salary_amount" => $this->monthly_salary_amount,
         ];
         //return parent::toArray($request);
     }
