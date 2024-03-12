@@ -47,11 +47,18 @@ class JobApplicantsController extends Controller
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
         $main = JobApplicants::where(function ($q) use ($searchKey) {
-            $q->orWhere('firstname', 'like', "%{$searchKey}%")
-                ->orWhere('lastname', 'like', "%{$searchKey}%");
-        })->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
-        ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%")
-        ->where("status", "=", "For Hiring")->with("manpower")->limit(25)->orderBy('lastname')->get();
+            $q->orWhere(
+                [
+                    ['firstname', 'like', "%{$searchKey}%"],
+                    ["status", "=", "For Hiring"],
+                ]
+            )->orWhere([
+                    ['lastname', 'like', "%{$searchKey}%"],
+                    ["status", "=", "For Hiring"],
+            ]);
+        })->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "% where status='For Hiring'")
+        ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "% where status='For Hiring'")
+        ->with("manpower")->limit(25)->orderBy('lastname')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
