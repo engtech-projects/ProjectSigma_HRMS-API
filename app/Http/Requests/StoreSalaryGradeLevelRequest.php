@@ -27,7 +27,9 @@ class StoreSalaryGradeLevelRequest extends FormRequest
             /* 'salary_grade_level' => "required|string|unique:salary_grade_levels,salary_grade_level", */
             'salary_grade_level' => [
                 'required',
-                new UniqueWithoutSoftDeleted('salary_grade_levels', 'salary_grade_level')
+                Rule::unique('salary_grade_levels')->where(function ($query) {
+                    $query->whereNull('deleted_at');
+                }),
             ],
             'salary_grade_step' => 'required|array|min:6',
             'salary_grade_step.*.monthly_salary_amount' => 'required|numeric',
