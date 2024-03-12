@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchStudentRequest;
 use App\Models\JobApplicants;
 use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class JobApplicantsController extends Controller
@@ -40,9 +42,16 @@ class JobApplicantsController extends Controller
      * Show For Hiring status
      * For Hiring Job Applicant
      */
-    public function get_for_hiring()
+    public function get_for_hiring(SearchStudentRequest $request)
     {
-        $main = JobApplicants::where("status", "=", "For Hiring")->with("manpower")->get();
+        $validatedData = $request->validated();
+        $searchKey = $validatedData["key"];
+        $main = JobApplicants::where(function ($q) use ($searchKey) {
+            $q->orWhere('firstname', 'like', "%{$searchKey}%")
+                ->orWhere('lastname', 'like', "%{$searchKey}%");
+        })->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
+        ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%")
+        ->where("status", "=", "For Hiring")->with("manpower")->limit(25)->orderBy('lastname')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
