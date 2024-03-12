@@ -103,7 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('termination', TerminationController::class);
 
     Route::resource('salary-grade-level', SalaryGradeLevelController::class);
-    Route::get('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
+    Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::resource('employee-panrequest', EmployeePersonnelActionNoticeRequestController::class);
     Route::get('get-panrequest', [EmployeePersonnelActionNoticeRequestController::class, 'get_panrequest']);
     Route::get('get-pan-approvals', [EmployeePersonnelActionNoticeRequestController::class, 'getApprovals']);
