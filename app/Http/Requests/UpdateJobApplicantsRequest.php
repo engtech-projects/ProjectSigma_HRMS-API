@@ -27,7 +27,7 @@ class UpdateJobApplicantsRequest extends FormRequest
                 "integer",
                 "exists:manpower_requests,id",
             ],
-            'application_name'=>[
+            'name_suffix'=>[
                 "nullable",
                 "string",
             ],

@@ -18,7 +18,7 @@ class JobApplicants extends Model
     protected $fillable = [
         'id',
         'manpowerrequests_id',
-        'application_name',
+        'name_suffix',
         'application_letter_attachment',
         'resume_attachment',
         'status',
