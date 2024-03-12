@@ -29,7 +29,7 @@ class EmployeeController extends Controller
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
         $main =
-            Employee::where(function ($q) use ($searchKey) {
+            Employee::select("id", "firstname", "middlename", "lastname")->where(function ($q) use ($searchKey) {
                 $q->orWhere('first_name', 'like', "%{$searchKey}%")
                     ->orWhere('family_name', 'like', "%{$searchKey}%");
                 //     ->orWhere('middle_name', 'like', "%{$searchKey}%");

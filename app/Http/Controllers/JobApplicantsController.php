@@ -46,7 +46,7 @@ class JobApplicantsController extends Controller
     {
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
-        $main = JobApplicants::where(function ($q) use ($searchKey) {
+        $main = JobApplicants::select("id", "firstname", "middlename", "lastname")->where(function ($q) use ($searchKey) {
             $q->orWhere(
                 [
                     ['firstname', 'like', "%{$searchKey}%"],
@@ -58,7 +58,7 @@ class JobApplicantsController extends Controller
             ]);
         })->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "% where status='For Hiring'")
         ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "% where status='For Hiring'")
-        ->with("manpower")->limit(25)->orderBy('lastname')->get();
+        ->limit(25)->orderBy('lastname')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
