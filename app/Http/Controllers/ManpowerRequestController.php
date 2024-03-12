@@ -7,6 +7,7 @@ use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Http\Resources\ManpowerRequestResource;
 use App\Http\Services\ManpowerServices;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\Paginator;
 
@@ -14,8 +15,11 @@ class ManpowerRequestController extends Controller
 {
 
     protected $manpowerServices;
-    public function __construct(ManpowerServices $manpowerServices)
+    protected $manpowerRequestType = null;
+
+    public function __construct(ManpowerServices $manpowerServices,)
     {
+        $this->manpowerRequestType = request()->get('type');
         $this->manpowerServices = $manpowerServices;
     }
     /**
@@ -23,21 +27,22 @@ class ManpowerRequestController extends Controller
      */
     public function index()
     {
+        if ($this->manpowerRequestType === $this->manpowerServices::REQUEST_BY_AUTH_USER) {
+            $manpowerRequests = $this->manpowerServices->getAllByAuthUser();
+        } else {
+            $manpowerRequests = $this->manpowerServices->getAll();
+        }
+/*         dd($manpowerRequests); */
 
-        $manpowerRequest = $this->manpowerServices->getAll();
-        $collection = ManpowerRequestResource::collection($manpowerRequest);
+        $collection =  ManpowerRequestResource::collection($manpowerRequests);
         $page = request()->get('page', 1);
         $paginatedCollection = new Paginator($collection->forPage($page, 10), 10, $page);
 
-        return new JsonResponse(['success' => true, 'message' => 'Manpower Request fetched.', 'data' => $paginatedCollection]);
-
-
-        /* $main = ManpowerRequest::simplePaginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data); */
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $paginatedCollection
+        ]);
     }
 
     /**

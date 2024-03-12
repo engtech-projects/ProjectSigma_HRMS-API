@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasUser;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -40,7 +40,7 @@ class ManpowerRequest extends Model
         'breakdown_details',
     ];
 
-    protected $cast = [
+    protected $casts = [
         'approvals' => 'array'
     ];
 
@@ -54,8 +54,8 @@ class ManpowerRequest extends Model
         return $this->belongsTo(User::class, 'requested_by');
     }
 
-    public function scopeApprovalStatusPendingAndApproved($query)
+    public function scopeRequestStatusPending(Builder $query): void
     {
-        $query->whereJsonContains('approvals', ['status' => ['Pending', 'Approved']]);
+        $query->where('request_status', 'Pending');
     }
 }

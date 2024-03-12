@@ -29,11 +29,6 @@ class ManpowerRequestResource extends JsonResource
             "gender" => $this->gender,
             "educational_requirement" => $this->educational_requirement,
             "preferred_qualifications" => $this->preferred_qualifications,
-            /*  "approvals" => $this->whenNotNull(json_decode($this->approvals, true), function ($value) {
-                return [
-                    "user_id" => $value["user_id"]
-                ];
-            }), */
             "approvals" => $this->approvals,
             "remarks" => $this->remarks,
             "request_status" => $this->request_status,
@@ -43,7 +38,6 @@ class ManpowerRequestResource extends JsonResource
                 return [
                     "id" => $this->user->id,
                     "name" => $this->user->name,
-                    "username" => $this->user->username,
                     "email" => $this->user->email,
                     "type" => $this->user->type,
                 ];

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class ManpowerServices
 {
     protected $manpowerRequest;
+    const REQUEST_BY_AUTH_USER = "manpower-request-by-auth-user";
     /**
      * Create a new service instance.
      *
@@ -19,25 +20,31 @@ class ManpowerServices
     }
     public function getAll()
     {
-        /* $manpowerRequests = ManpowerRequest::with(['user'])->whereJsonContains('approvals', ['user_id' => auth()->user()->id])->get(); */
+        return $this->manpowerRequest->all();
+    }
+    public function getAllByAuthUser()
+    {
         $userId = auth()->user()->id;
-        $result = ManpowerRequest::with(['user'])
+        $result = ManpowerRequest::requestStatusPending()
+            ->with(['user'])
             ->whereJsonLength('approvals', '>', 0)
             ->where(function ($query) use ($userId) {
-                $query->whereJsonContains('approvals', ['user_id' => $userId])
-                    ->orWhereJsonContains('approvals', ['user_id' => strval($userId)]);
-            })
-            ->get();
-
+                $query->whereJsonContains('approvals', ['user_id' => $userId]);
+            })->get();
         $manpowerRequests = $result->map(function ($item) use ($userId) {
-            $approvals = collect(json_decode($item['approvals']));
-            $manpowerRequests = $approvals->where('user_id', $userId)->whereIn('status', ['Pending', 'Approved'])->toArray();
-            $item->approvals = $manpowerRequests;
+            $approvals = collect($item['approvals']);
+            $deniedApproval = $approvals->where('status', 'Denied')->first();
+            if ($deniedApproval) {
+                $item->approvals = [];
+            } else {
+                $manpowerRequests = $approvals->where('user_id', $userId)
+                    ->where('status', 'Pending');
+                $item->approvals = $manpowerRequests;
+            }
             return $item;
         })->reject(function ($item) {
             return empty($item['approvals']);
         });
-
         return $manpowerRequests;
     }
 }
