@@ -21,8 +21,9 @@ class SalaryGradeLevelController extends Controller
      */
     public function index()
     {
-        $salaryGradeLevel = SalaryGradeLevel::with(['salary_grade_step'])->get();
-
+        $salaryGradeLevel = SalaryGradeLevel::with(['salary_grade_step' => function ($query) {
+            $query->orderBy('step_name');
+        }])->orderBy('salary_grade_level')->get();
         return SalaryGradeLevelResource::collection($salaryGradeLevel);
     }
 
