@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class ManpowerServices
 {
     protected $manpowerRequest;
-    const REQUEST_BY_AUTH_USER = "manpower-request-by-auth-user";
+    const REQUEST_BY_AUTH_USER = "manpower-approval-for-user";
     /**
      * Create a new service instance.
      *
@@ -22,24 +22,38 @@ class ManpowerServices
     {
         return $this->manpowerRequest->all();
     }
-    public function getAllByAuthUser()
+    public function getAllManpowerRequest()
     {
         $userId = auth()->user()->id;
-        $result = ManpowerRequest::requestStatusPending()
+        return ManpowerRequest::requestStatusPending()
             ->with(['user'])
             ->whereJsonLength('approvals', '>', 0)
             ->where(function ($query) use ($userId) {
-                $query->whereJsonContains('approvals', ['user_id' => $userId]);
+                $query->whereJsonContains('approvals', ['user_id' => $userId, 'status' => 'Pending']);
             })->get();
+    }
+
+    public function getAllByAuthUser()
+    {
+        $userId = auth()->user()->id;
+        $result = $this->getAllManpowerRequest();
         $manpowerRequests = $result->map(function ($item) use ($userId) {
             $approvals = collect($item['approvals']);
-            $deniedApproval = $approvals->where('status', 'Denied')->first();
-            if ($deniedApproval) {
+            $nextPendingApproval = $approvals->where('status', 'Pending')->first();
+            $userApprovals = $approvals->where('user_id', $userId)
+                ->where('status', 'Pending');
+            $nextUserApproval = $userApprovals->first();
+            /* dd([
+                "approvals" => $approvals,
+                "user_approvals" => $userApprovals,
+                "next_user_approval" => $nextPendingApproval
+            ]); */
+            $item->approvals = $userApprovals;
+            if ($nextUserApproval && $userId != $nextPendingApproval['user_id']) {
+                $item['approvals'] = [];
+            }
+            if (!$userApprovals) {
                 $item->approvals = [];
-            } else {
-                $manpowerRequests = $approvals->where('user_id', $userId)
-                    ->where('status', 'Pending');
-                $item->approvals = $manpowerRequests;
             }
             return $item;
         })->reject(function ($item) {

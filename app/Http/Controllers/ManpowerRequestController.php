@@ -32,7 +32,6 @@ class ManpowerRequestController extends Controller
         } else {
             $manpowerRequests = $this->manpowerServices->getAll();
         }
-/*         dd($manpowerRequests); */
 
         $collection =  ManpowerRequestResource::collection($manpowerRequests);
         $page = request()->get('page', 1);
