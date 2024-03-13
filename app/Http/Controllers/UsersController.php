@@ -7,6 +7,7 @@ use App\Models\Users;
 use App\Models\User;
 use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUsersRequest;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
@@ -42,20 +43,22 @@ class UsersController extends Controller
      */
     public function store(StoreUsersRequest $request)
     {
-        $users = new Users;
-        $users->fill($request->validated());
-        $users->password = Hash::make($request->password);
-        $users->accessibilities = json_encode($request->accessibilities);
+        $validatedData = $request->validated();
+        $validatedData["type"] = UserTypes::EMPLOYEE;
+        $validatedData["password"] = Hash::make($validatedData["password"]);
+        $validatedData["accessibilities"] = json_encode($validatedData["accessibilities"]);
+        $validatedData["email_verified_at"] = Carbon::now();
+        $user = Users::create($validatedData);
         $data = json_decode('{}');
 
-        if (!$users->save()) {
+        if (!$user->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
         $data->message = "Successfully save.";
         $data->success = true;
-        $data->data = $users;
+        $data->data = $user;
         return response()->json($data);
     }
 
@@ -88,9 +91,8 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUsersRequest $request, $id)
+    public function update(UpdateUsersRequest $request, Users $users)
     {
-        $users = Users::find($id);
         $data = json_decode('{}');
         if (!is_null($users)) {
             $users->fill($request->validated());
