@@ -30,20 +30,13 @@ class ManpowerRequestController extends Controller
      */
     public function index()
     {
-        if ($this->manpowerRequestType === $this->manpowerServices::REQUEST_BY_AUTH_USER) {
-            $manpowerRequests = $this->manpowerServices->getAllByAuthUser();
-        } else {
-            $manpowerRequests = $this->manpowerServices->getAll();
-        }
-
-        $collection =  ManpowerRequestResource::collection($manpowerRequests);
-        $page = request()->get('page', 1);
-        $paginatedCollection = new Paginator($collection->forPage($page, 10), 10, $page);
+        $manpowerRequests = $this->manpowerServices->getAll();
+        $collection = ManpowerRequestResource::collection($manpowerRequests);
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => $paginatedCollection
+            'data' => $collection
         ]);
     }
 
@@ -97,14 +90,25 @@ class ManpowerRequestController extends Controller
      */
     public function get_approve()
     {
-        $id = Auth::user()->id;
+        $manpowerRequests = $this->manpowerServices->getAllByAuthUser();
+        $collection =  ManpowerRequestResource::collection($manpowerRequests);
+        $page = request()->get('page', 1);
+        $paginatedCollection = new Paginator($collection->forPage($page, 10), 10, $page);
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $paginatedCollection
+        ]);
+
+        /* $id = Auth::user()->id;
         $main = ManpowerRequest::where("request_status", "=", "Pending")
             ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->first();
         $newdata = json_decode('{}');
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
-        return response()->json($newdata);
+        return response()->json($newdata); */
     }
 
     public function approve_approval($request)
