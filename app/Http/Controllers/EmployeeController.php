@@ -36,9 +36,9 @@ class EmployeeController extends Controller
             ->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey . "%")
             ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%");
         if (in_array("type", array_keys($validatedData)) && $validatedData["type"] === "NoAccount") {
-            $main->doesntHave("account");
+            $main = $main->doesntHave("account");
         }
-        $main->limit(25)
+        $main = $main->limit(25)
             ->orderBy('family_name')
             ->get()
             ->append(["fullnameLast", "fullnameFirst"]);
