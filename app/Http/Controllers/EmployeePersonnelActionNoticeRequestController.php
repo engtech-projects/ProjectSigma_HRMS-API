@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\EmployeeAddressType;
 use App\Enums\EmployeeRelatedPersonType;
+use App\Http\Requests\EmployeeInternalWorkExperience;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
 use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
@@ -11,8 +12,11 @@ use App\Models\Employee;
 use App\Models\InternalWorkExperience;
 use App\Models\JobApplicants;
 use App\Models\ManpowerRequest;
+use App\Models\SalaryGradeStep;
+use App\Models\Termination;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 class EmployeePersonnelActionNoticeRequestController extends Controller
 {
@@ -85,18 +89,15 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     // logged in can approve pan request(if he is the current approval)
     public function approveApprovals($request)
     {
-        // $request = pan_id
+
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::where("id", $request)->with("jobapplicant")->first();
+        $main = EmployeePersonnelActionNoticeRequest::where("id", $request)->with("jobapplicant", "salarygrade")->first();
         $newdata = json_decode('{}');
 
         if (!$main) {
-            $newdata->success = false;
-            $newdata->message = "No data found.";
-            return response()->json($newdata);
+            return $this->failedMessage($newdata);
         }
 
-        $this->hireApproved($main->pan_job_applicant_id);
         $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request)->approval()->first();
         $get_approval = collect(json_decode($main->approvals))->where("status", "Pending")->first();
         $next_approval = 0;
@@ -112,6 +113,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
 
         $count = count(json_decode($panreq->approvals));
+
         if ($next_approval == strval($id)) {
             $a = [];
             foreach (json_decode($panreq->approvals) as $key) {
@@ -120,30 +122,56 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     $key->date_approved = Carbon::now()->format('Y-m-d');
                     $approve = 1;
                     $count_approves += 1;
+                } elseif ($key->status == "Approved") {
+                    $count_approves += 1;
                 }
-
                 array_push($a, $key);
             }
 
             if ($count_approves >= $count) {
                 // Approved All on Panreq
                 if ($main->type == "New Hire") {
-                    $saveData = $this->hireApproved($main->pan_job_applicant_id);
+                    $saveData = $this->hireApproved($main->pan_job_applicant_id, $main);
                     if ($saveData) {
                         $main->jobapplicant->status = "Hired";
                         JobApplicants::where("id", $main->pan_job_applicant_id)->update(["status" => "Hired"]);
                         ManpowerRequest::where("id", $main->jobapplicant->manpower->id)->update(["request_status" => "Approved"]);
                         $main->request_status = "Filled";
                     } else {
-                        $newdata->success = false;
-                        $newdata->message = "Failed approved.";
-                        return response()->json($newdata);
+                        return $this->failedMessage($newdata);
                     }
                 }
-
+                // Approved Transfer Data/ Promotion
                 if ($main->type == "Transfer") {
-                    $this_internal = InternalWorkExperience::where("id", $main->employee_id)->first();
-                    $this_internal->status = "inactive";
+                    $this_internal_id = InternalWorkExperience::select("id")->where(
+                        [
+                            ["id", "=",$main->employee_id],
+                            ["date_to", "=", null],
+                            ["status","=","current"]
+                        ]
+                    )->first();
+                    if ($this_internal_id) {
+                        $saveData = $this->transferData($this_internal_id->id, $main);
+                        // $main->request_status = "Approved";
+                    } else {
+                        return $this->failedMessage($newdata);
+                    }
+                }
+                // Approved Termination
+                if ($main->type == "Termination") {
+                    $this_internal_id = InternalWorkExperience::select("id")->where(
+                        [
+                            ["id", "=",$main->employee_id],
+                            ["date_to", "=", null],
+                            ["status","=","current"]
+                        ]
+                    )->first();
+                    if ($this_internal_id) {
+                        $saveData = $this->termination($this_internal_id->id, $main);
+                        // $main->request_status = "Approved";
+                    } else {
+                        return $this->failedMessage($newdata);
+                    }
                 }
             }
 
@@ -158,119 +186,210 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             }
         }
 
+        return $this->failedMessage($newdata);
+    }
+
+    public function failedMessage($newdata)
+    {
         $newdata->success = false;
         $newdata->message = "Failed approved.";
         return response()->json($newdata);
     }
 
-    public function hireApproved($id)
+    public function hireApproved($id, $request)
     {
         $main = JobApplicants::where('id', '=', $id)->first();
         $employee = new Employee();
-        $arr = [];
-        $arr_workexperience = [];
-        $arr_related = [];
+        $data = [];
+        $internalWork = [];
+        $preAddress = [];
+        $perAddress = [];
+        $externalWorkExperience = [];
+        $relatedPersonSpouse = [];
+        $relatedPersonFather = [];
+        $relatedPersonMother = [];
+        $relatedInCaseEmergency = [];
+        $relatedChildren = [];
+        $arr_company = [];
 
         if (!$main) {
             return false;
         }
+
         // Employee
-        $arr["family_name"] = $main->lastname;
-        $arr["first_name"] = $main->firstname;
-        $arr["middle_name"] = $main->middlename;
-        $arr["gender"] = $main->gender;
-        $arr["date_of_birth"] = $main->date_of_birth;
-        $arr["place_of_birth"] = $main->place_of_birth;
-        $arr["date_of_marriage"] = $main->date_of_marriage;
-        $arr["citizenship"] = $main->citizenship;
-        $arr["blood_type"] = $main->blood_type;
-        $arr["civil_status"] = $main->civil_status;
-        $arr["mobile_number"] = $main->contact_info;
-        $arr["email"] = $main->email;
-        $arr["religion"] = $main->religion;
-        $arr["weight"] = $main->weight;
-        $arr["height"] = $main->height;
-        $employee->fill($arr)->save();
+        $data["employee"] = $main->lastname;
+        $data["family_name"] = $main->lastname;
+        $data["first_name"] = $main->firstname;
+        $data["middle_name"] = $main->middlename;
+        $data["name_suffix"] = $main->name_suffix;
+        $data["gender"] = $main->gender;
+        $data["date_of_birth"] = $main->date_of_birth;
+        $data["place_of_birth"] = $main->place_of_birth;
+        $data["date_of_mdataiage"] = $main->date_of_mdataiage;
+        $data["citizenship"] = $main->citizenship;
+        $data["blood_type"] = $main->blood_type;
+        $data["civil_status"] = $main->civil_status;
+        $data["mobile_number"] = $main->contact_info;
+        $data["email"] = $main->email;
+        $data["religion"] = $main->religion;
+        $data["weight"] = $main->weight;
+        $data["height"] = $main->height;
+
+        // Internal Work Experience
+        $internalWork['position_title'] = $request->designation_position;
+        $internalWork['employment_status'] = $request->new_employment_status;
+        $internalWork['department'] = $request->new_section;
+        $internalWork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
+        $internalWork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
+        $internalWork['work_location'] = $request->new_location;
+        $internalWork['hire_source'] = $request->hire_source;
+        $internalWork['status'] = "current";
+        $internalWork['date_from'] = $request->date_from;
+        $internalWork['date_to'] = null;
+        $internalWork['salary_grades'] = $request->salary_grades;
 
         // Employee Address
-        $arr["employee_id"] = $employee->id;
-        $arr["street"] = $main->pre_address_street;
-        $arr["brgy"] = $main->pre_address_brgy;
-        $arr["city"] = $main->pre_address_city;
-        $arr["zip"] = $main->pre_address_zip;
-        $arr["province"] = $main->pre_address_province;
-        $arr["type"] = EmployeeAddressType::PRESENT;
-        $employee->employee_address()->create($arr);
-        $arr["street"] = $main->per_address_street;
-        $arr["brgy"] = $main->per_address_brgy;
-        $arr["city"] = $main->per_address_city;
-        $arr["zip"] = $main->per_address_zip;
-        $arr["province"] = $main->per_address_province;
-        $arr["type"] = EmployeeAddressType::PERMANENT;
-        $employee->employee_address()->create($arr);
+        $preAddress["street"] = $main->pre_address_street;
+        $preAddress["brgy"] = $main->pre_address_brgy;
+        $preAddress["city"] = $main->pre_address_city;
+        $preAddress["zip"] = $main->pre_address_zip;
+        $preAddress["province"] = $main->pre_address_province;
+        $preAddress["type"] = EmployeeAddressType::PRESENT;
+        $perAddress["street"] = $main->per_address_street;
+        $perAddress["brgy"] = $main->per_address_brgy;
+        $perAddress["city"] = $main->per_address_city;
+        $perAddress["zip"] = $main->per_address_zip;
+        $perAddress["province"] = $main->per_address_province;
+        $perAddress["type"] = EmployeeAddressType::PERMANENT;
+
+        // Employee Company
+        // $arr_company["company"]=;
+        // $arr_company["date_hired"]=;
+        // $arr_company["imidiate_supervisor"]=;
+        // $arr_company["phic_number"]=;
+        // $arr_company["sss_number"]=;
+        // $arr_company["tin_number"]=;
+        // $arr_company["pagibig_number"]=;
+        // $arr_company["status"]=;
+        // $employee->company_employments()->create($arr_company);
 
         // Employee Spouse
-        if (property_exists("name_of_spouse", $main)) {
-            $arr_related["name"] = $main->name_of_spouse;
-            $arr_related["date_of_birth"] = $main->date_of_birth_spouse ?? null;
-            $arr_related["contact_no"] = $main->telephone_spouse ?? null;
-            $arr_related["occupation"] = $main->occupation_spouse ?? null;
-            $arr_related["type"] = EmployeeRelatedPersonType::SPOUSE;
-            $employee->employee_related_person()->create($arr_related);
-        }
+        $relatedPersonSpouse["name"] = $main->name_of_spouse;
+        $relatedPersonSpouse["date_of_birth"] = $main->date_of_birth_spouse ?? null;
+        $relatedPersonSpouse["contact_no"] = $main->telephone_spouse ?? null;
+        $relatedPersonSpouse["occupation"] = $main->occupation_spouse ?? null;
+        $relatedPersonSpouse["type"] = EmployeeRelatedPersonType::SPOUSE;
 
         // Employee Father
-        if (property_exists("father_name", $main)) {
-            $arr_related["name"] = $main->father_name;
-            $arr_related["type"] = EmployeeRelatedPersonType::FATHER;
-            $employee->employee_related_person()->create($arr_related);
-        }
+        $relatedPersonFather["name"] = $main->father_name;
+        $relatedPersonFather["type"] = EmployeeRelatedPersonType::FATHER;
 
         // Employee Mother
-        if (property_exists("mother_name", $main)) {
-            $arr_related["name"] = $main->mother_name;
-            $arr_related["type"] = EmployeeRelatedPersonType::MOTHER;
-            $employee->employee_related_person()->create($arr_related);
-        }
+        $relatedPersonMother["name"] = $main->mother_name;
+        $relatedPersonMother["type"] = EmployeeRelatedPersonType::MOTHER;
 
         // Employee In Case of Emergency
+        $relatedInCaseEmergency["name"] = $main->icoe_name ?? null;
+        $relatedInCaseEmergency["street"] = $main->icoe_street ?? null;
+        $relatedInCaseEmergency["brgy"] = $main->icoe_brgy ?? null;
+        $relatedInCaseEmergency["city"] = $main->icoe_city ?? null;
+        $relatedInCaseEmergency["zip"] = $main->icoe_zip ?? null;
+        $relatedInCaseEmergency["province"] = $main->icoe_province ?? null;
+        $relatedInCaseEmergency["relationship"] = $main->icoe_relationship ?? null;
+        $relatedInCaseEmergency["contact_no"] = $main->telephone_icoe ?? null;
+        $relatedInCaseEmergency["type"] = EmployeeRelatedPersonType::CONTACT_PERSON;
+
+        $employee->fill($data)->save();
+        $employee->employee_internal()->create($internalWork);
+        $employee->employee_address()->create($preAddress);
+        $employee->employee_address()->create($perAddress);
+        if (property_exists("name_of_spouse", $main)) {
+            $employee->employee_related_person()->create($relatedPersonSpouse);
+        }
+        if (property_exists("father_name", $main)) {
+            $employee->employee_related_person()->create($relatedPersonFather);
+        }
+        if (property_exists("mother_name", $main)) {
+            $employee->employee_related_person()->create($relatedPersonMother);
+        }
         if (property_exists("icoe_name", $main)) {
-            $arr_related["name"] = $main->icoe_name ?? null;
-            $arr_related["street"] = $main->icoe_street ?? null;
-            $arr_related["brgy"] = $main->icoe_brgy ?? null;
-            $arr_related["city"] = $main->icoe_city ?? null;
-            $arr_related["zip"] = $main->icoe_zip ?? null;
-            $arr_related["province"] = $main->icoe_province ?? null;
-            $arr_related["relationship"] = $main->icoe_relationship ?? null;
-            $arr_related["contact_no"] = $main->telephone_icoe ?? null;
-            $arr_related["type"] = EmployeeRelatedPersonType::CONTACT_PERSON;
-            $employee->employee_related_person()->create($arr_related);
+            $employee->employee_related_person()->create($relatedInCaseEmergency);
         }
 
         // Employee Children
         if (property_exists("children", $main)) {
             foreach (json_decode($main->children) as $key) {
-                $arr_related["name"] = $key->name;
-                $arr_related["date_of_birth"] = $key->birthdate ?? null;
-                $arr_related["type"] = EmployeeRelatedPersonType::CHILD;
-                $employee->employee_related_person()->create($arr_related);
+                $relatedChildren["name"] = $key->name;
+                $relatedChildren["date_of_birth"] = $key->birthdate ?? null;
+                $relatedChildren["type"] = EmployeeRelatedPersonType::CHILD;
+                $employee->employee_related_person()->create($relatedChildren);
             }
         }
 
         // Employee Work Experience
         if (property_exists("workexperience", $main)) {
             foreach (json_decode($main->workexperience) as $key) {
-                $arr_workexperience["date_from"] = $key->inclusive_dates_from ?? null;
-                $arr_workexperience["date_to"] = $key->inclusive_dates_to ?? null;
-                $arr_workexperience["position_title"] = $key->position_title ?? null;
-                $arr_workexperience["company_name"] = $key->dpt_agency_office_company ?? null;
-                $arr_workexperience["salary"] = $key->monthly_salary ?? null;
-                $arr_workexperience["status_of_appointment"] = $key->status_of_appointment ?? null;
-                $employee->employee_externalwork()->create($arr_related);
+                $externalWorkExperience["date_from"] = $key->inclusive_dates_from ?? null;
+                $externalWorkExperience["date_to"] = $key->inclusive_dates_to ?? null;
+                $externalWorkExperience["position_title"] = $key->position_title ?? null;
+                $externalWorkExperience["company_name"] = $key->dpt_agency_office_company ?? null;
+                $externalWorkExperience["salary"] = $key->monthly_salary ?? null;
+                $externalWorkExperience["status_of_appointment"] = $key->status_of_appointment ?? null;
+                $employee->employee_externalwork()->create($externalWorkExperience);
             }
         }
-        return true;
         // Employee Education
+        return true;
+    }
+
+    public function transferData($id, $request)
+    {
+        $data = InternalWorkExperience::where("id", "=", $id)->first();
+        $data->status = "previous";
+        // $data->date_to = date("Y-m-d");
+        $data->save();
+
+        $arr_internalwork = [];
+        $arr_internalwork['employee_id'] = $data->employee_id;
+        $arr_internalwork['position_title'] = $request->designation_position;
+        $arr_internalwork['employment_status'] = $request->new_employment_status;
+        $arr_internalwork['department'] = $request->new_section;
+        $arr_internalwork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
+        $arr_internalwork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
+        $arr_internalwork['work_location'] = $request->new_location;
+        $arr_internalwork['hire_source'] = $request->hire_source;
+        $arr_internalwork['status'] = "current";
+        $arr_internalwork['date_from'] = $request->date_from;
+        $arr_internalwork['date_to'] = null;
+        $arr_internalwork['salary_grades'] = $request->salary_grades;
+
+        $transferData = InternalWorkExperience::create($arr_internalwork);
+
+        if ($transferData) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function termination($id, $request)
+    {
+        $data = InternalWorkExperience::where("id", "=", $id)->first();
+        $data->date_to = date("Y-m-d");
+        $data->save();
+        $arr = [];
+        $arr['employee_id'] = $id;
+        $arr['type_of_termination'] = $request->type_of_termination;
+        $arr['reason_for_termination'] = $request->reasons_for_termination;
+        $arr['eligible_for_rehire'] = $request->eligible_for_rehire;
+
+        $transferData = Termination::create($arr);
+
+        if ($transferData) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

@@ -118,7 +118,8 @@ class EmployeeController extends Controller
             "masterstudies",
             "doctorstudies",
             "professionalstudies",
-            "employee_seminartraining"
+            "employee_seminartraining",
+            "employee_internal",
         )->get()->find($id);
 
         $data = json_decode('{}');
