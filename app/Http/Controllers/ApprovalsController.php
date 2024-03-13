@@ -26,24 +26,20 @@ class ApprovalsController extends Controller
 
     public function get($request)
     {
-        $main = Approvals::where("form","=",$request)->first();
-        if(!is_null($main)){
+        $main = Approvals::where("form", "=", $request)->first();
+        if (!is_null($main)) {
             $fetchdata = $main->approvals;
             $a = json_decode($fetchdata);
-            $c = 0;
-            foreach($a as $x){
-
-                if($x->user_id==null || $x->userselector=="true"){
+            foreach ($a as $c => $x) {
+                if ($x->user_id == null || $x->userselector == "true") {
                     $data = json_decode('{}');
                     $data->message = "Successfully fetch.";
                     $data->success = true;
                     $data->data = $main;
-                }else{
+                } else {
                     $fetchuser = Users::find($x->user_id);
                     $a[$c]->name = $fetchuser->name;
                 }
-                $c+=1;
-
             }
             $fetchdata = $a;
         }
@@ -72,7 +68,7 @@ class ApprovalsController extends Controller
         $main->fill($request->validated());
         $data = json_decode('{}');
         $main->approvals = json_encode($request->approvals);
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -90,7 +86,7 @@ class ApprovalsController extends Controller
     {
         $main = Approvals::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -116,9 +112,9 @@ class ApprovalsController extends Controller
     {
         $main = Approvals::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -141,8 +137,8 @@ class ApprovalsController extends Controller
     {
         $main = Approvals::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -150,10 +146,10 @@ class ApprovalsController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }
