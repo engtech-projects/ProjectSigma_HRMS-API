@@ -28,7 +28,7 @@ class Employee extends Model
 
     protected function fullnameLast(): Attribute
     {
-        return new Attribute(
+        return Attribute::make(
             get: fn () => $this->family_name . ", " . $this->first_name . " " . $this->middle_name
                 . " " . $this->name_suffix,
         );
@@ -36,7 +36,7 @@ class Employee extends Model
 
     protected function fullnameFirst(): Attribute
     {
-        return new Attribute(
+        return Attribute::make(
             get: fn () => $this->first_name . " " . $this->middle_name . " " . $this->family_name
                 . " " . $this->name_suffix,
         );

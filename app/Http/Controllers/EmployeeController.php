@@ -41,7 +41,7 @@ class EmployeeController extends Controller
         $main = $main->limit(25)
             ->orderBy('family_name')
             ->get()
-            ->append(["fullnameLast", "fullnameFirst"]);
+            ->append(["fullname_last", "fullname_first"]);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
