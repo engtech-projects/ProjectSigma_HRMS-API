@@ -28,7 +28,7 @@ class EmployeeController extends Controller
     {
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
-        $main = Employee::select("id", "first_name", "middle_name", "family_name", "fullnameLast", "fullnameFirst")
+        $main = Employee::select("id", "first_name", "middle_name", "family_name")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('first_name', 'like', "%{$searchKey}%")
                     ->orWhere('family_name', 'like', "%{$searchKey}%");
@@ -41,7 +41,8 @@ class EmployeeController extends Controller
         }
         $main->limit(25)
             ->orderBy('family_name')
-            ->get();
+            ->get()
+            ->append(["fullnameLast", "fullnameFirst"]);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
