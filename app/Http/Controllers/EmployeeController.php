@@ -29,6 +29,7 @@ class EmployeeController extends Controller
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
         $noAccounts = $validatedData["type"] == SearchTypes::NOACCOUNTS;
+        dd([$validatedData, SearchTypes, $noAccounts]);
         $main = Employee::select("id", "first_name", "middle_name", "family_name")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('first_name', 'like', "%{$searchKey}%")
