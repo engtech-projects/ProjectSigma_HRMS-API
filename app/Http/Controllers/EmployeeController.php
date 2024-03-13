@@ -28,6 +28,7 @@ class EmployeeController extends Controller
     {
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
+        $noAccounts = $validatedData["type"] == SearchTypes::NOACCOUNTS;
         $main = Employee::select("id", "first_name", "middle_name", "family_name")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('first_name', 'like', "%{$searchKey}%")
@@ -35,21 +36,11 @@ class EmployeeController extends Controller
                 //     ->orWhere('middle_name', 'like', "%{$searchKey}%");
             })
             ->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey . "%")
-            ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%");
-        if ($validatedData["type"] == SearchTypes::NOACCOUNTS) {
-            $main = $main->doesntHave("account");
-            $main = $main->with(["account"])
-                ->limit(25)
-                ->orderBy('family_name')
-                ->get()
-                ->append(["fullname_last", "fullname_first"]);
-            $data = json_decode('{}');
-            $data->message = "Successfully fetch NO ACCOUNTS.";
-            $data->success = true;
-            $data->data = $main;
-            return response()->json($data);
-        }
-        $main = $main->limit(25)
+            ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%")
+            ->when($noAccounts, function (Builder $query, bool $noAccounts) {
+                $query->doesntHave("account");
+            })
+            ->limit(25)
             ->orderBy('family_name')
             ->get()
             ->append(["fullname_last", "fullname_first"]);
