@@ -26,6 +26,7 @@ class SearchEmployeeRequest extends FormRequest
             'key' =>
             [
                 "present",
+                "nullable",
                 "string",
                 "max:35",
             ],
