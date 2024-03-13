@@ -22,6 +22,7 @@ class Users extends Model
         'email',
         'password',
         'type',
+        "employee_id"
     ];
     /**
      * The attributes that should be hidden for serialization.

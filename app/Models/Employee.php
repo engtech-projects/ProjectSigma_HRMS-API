@@ -17,12 +17,28 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Employee extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected function age(): Attribute
     {
         return new Attribute(
             get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
+        );
+    }
+
+    protected function fullnameLast(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->family_name . ", " . $this->first_name . " " . $this->middle_name
+                . " " . $this->name_suffix,
+        );
+    }
+
+    protected function fullnameFirst(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->first_name . " " . $this->middle_name . " " . $this->family_name
+                . " " . $this->name_suffix,
         );
     }
 
@@ -131,31 +147,31 @@ class Employee extends Model
 
     public function mother(): HasOne
     {
-        $a = $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::MOTHER);
+        $a = $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::MOTHER);
         return $a;
     }
 
     public function father(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::FATHER);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::FATHER);
     }
 
     public function contact_person(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CONTACT_PERSON);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::CONTACT_PERSON);
     }
     public function guardian(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::GUARDIAN);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::GUARDIAN);
     }
     public function spouse(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::SPOUSE);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::SPOUSE);
     }
 
     public function reference(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::REFERENCE);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::REFERENCE);
     }
 
     public function employee_studies(): HasMany
@@ -165,30 +181,36 @@ class Employee extends Model
 
     public function masterstudies(): HasOne
     {
-        return $this->hasOne(EmployeeStudies::class)->where('type',"=",EmployeeStudiesType::MASTER);
+        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::MASTER);
     }
 
     public function doctorstudies(): HasOne
     {
-        return $this->hasOne(EmployeeStudies::class)->where('type',"=",EmployeeStudiesType::DOCTOR);
+        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::DOCTOR);
     }
 
     public function professionalstudies(): HasOne
     {
-        return $this->hasOne(EmployeeStudies::class)->where('type',"=",EmployeeStudiesType::PROFESSIONAL);
+        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::PROFESSIONAL);
     }
 
     public function child(): HasMany
     {
-        return $this->hasMany(EmployeeRelatedperson::class)->where('type',"=",EmployeeRelatedPersonType::CHILD);
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::CHILD);
     }
 
     public function memo(): HasMany
     {
-        return $this->hasMany(EmployeeUploads::class)->where('upload_type',"=",EmployeeUploadType::MEMO);
+        return $this->hasMany(EmployeeUploads::class)->where('upload_type', "=", EmployeeUploadType::MEMO);
     }
+
     public function docs(): HasMany
     {
-        return $this->hasMany(EmployeeUploads::class)->where('upload_type',"=",EmployeeUploadType::DOCUMENTS);
+        return $this->hasMany(EmployeeUploads::class)->where('upload_type', "=", EmployeeUploadType::DOCUMENTS);
+    }
+
+    public function account(): HasOne
+    {
+        return $this->hasOne(Users::class, "employee_id", "id");
     }
 }

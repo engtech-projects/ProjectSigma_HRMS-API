@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SearchStudentRequest extends FormRequest
+class SearchEmployeeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,14 @@ class SearchStudentRequest extends FormRequest
             //
             'key' =>
             [
-                "required",
+                "present",
                 "string",
                 "max:35",
+            ],
+            "type" =>
+            [
+                "nullable",
+                "in:NoAccounts"
             ]
         ];
     }

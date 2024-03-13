@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SearchStudentRequest;
+use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\JobApplicants;
 use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
@@ -42,7 +42,7 @@ class JobApplicantsController extends Controller
      * Show For Hiring status
      * For Hiring Job Applicant
      */
-    public function get_for_hiring(SearchStudentRequest $request)
+    public function get_for_hiring(SearchEmployeeRequest $request)
     {
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
