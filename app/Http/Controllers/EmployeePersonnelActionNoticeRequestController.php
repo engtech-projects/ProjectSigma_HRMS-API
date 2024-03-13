@@ -40,9 +40,12 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function store(StoreEmployeePersonnelActionNoticeRequestRequest $request)
     {
+        $id = Auth::user()->id;
         $main = new EmployeePersonnelActionNoticeRequest();
+        $main->created_by = $id;
         $validData = $request->validated();
         $main->fill($validData);
+        // dd(json_encode($validData["approvals"]));
         $data = json_decode('{}');
         $main->approvals = json_encode($validData["approvals"]);
         if (!$main->save()) {
