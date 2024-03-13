@@ -2,13 +2,14 @@
 
 namespace App\Http\Services;
 
+use App\Enums\ManpowerRequestStatus;
 use App\Models\ManpowerRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Enum;
 
 class ManpowerServices
 {
     protected $manpowerRequest;
-    const REQUEST_BY_AUTH_USER = "manpower-approval-for-user";
     /**
      * Create a new service instance.
      *
@@ -29,7 +30,7 @@ class ManpowerServices
             ->with(['user'])
             ->whereJsonLength('approvals', '>', 0)
             ->where(function ($query) use ($userId) {
-                $query->whereJsonContains('approvals', ['user_id' => $userId, 'status' => 'Pending']);
+                $query->whereJsonContains('approvals', ['user_id' => $userId, 'status' => ManpowerRequestStatus::PENDING]);
             })->get();
     }
 
@@ -39,15 +40,10 @@ class ManpowerServices
         $result = $this->getAllManpowerRequest();
         $manpowerRequests = $result->map(function ($item) use ($userId) {
             $approvals = collect($item['approvals']);
-            $nextPendingApproval = $approvals->where('status', 'Pending')->first();
+            $nextPendingApproval = $approvals->where('status', ManpowerRequestStatus::PENDING)->first();
             $userApprovals = $approvals->where('user_id', $userId)
-                ->where('status', 'Pending');
+                ->where('status', ManpowerRequestStatus::PENDING);
             $nextUserApproval = $userApprovals->first();
-            /* dd([
-                "approvals" => $approvals,
-                "user_approvals" => $userApprovals,
-                "next_user_approval" => $nextPendingApproval
-            ]); */
             $item->approvals = $userApprovals;
             if ($nextUserApproval && $userId != $nextPendingApproval['user_id']) {
                 $item['approvals'] = [];
