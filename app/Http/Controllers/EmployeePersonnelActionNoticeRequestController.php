@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EmployeeAddressType;
+use App\Enums\EmployeeCompanyEmploymentsStatus;
+use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Http\Requests\EmployeeInternalWorkExperience;
 use App\Models\EmployeePersonnelActionNoticeRequest;
@@ -78,7 +80,11 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     {
         $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::approval()
-            ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->get();
+        ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->get();
+        foreach ($main as $key => $value) {
+            $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending");
+            $main[$key]->approvals = $pendingData;
+        }
         $newdata = json_decode('{}');
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
@@ -141,34 +147,49 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                         return $this->failedMessage($newdata);
                     }
                 }
-                // Approved Transfer Data/ Promotion
+                // Approved Transfer Data
                 if ($main->type == "Transfer") {
                     $this_internal_id = InternalWorkExperience::select("id")->where(
                         [
                             ["id", "=",$main->employee_id],
                             ["date_to", "=", null],
-                            ["status","=","current"]
+                            ["status","=", EmployeeInternalWorkExperiencesStatus::CURRENT]
                         ]
                     )->first();
                     if ($this_internal_id) {
                         $saveData = $this->transferData($this_internal_id->id, $main);
-                        // $main->request_status = "Approved";
                     } else {
                         return $this->failedMessage($newdata);
                     }
                 }
-                // Approved Termination
-                if ($main->type == "Termination") {
+
+                // Approved Promotion Data
+                if ($main->type == "Transfer") {
                     $this_internal_id = InternalWorkExperience::select("id")->where(
                         [
                             ["id", "=",$main->employee_id],
                             ["date_to", "=", null],
-                            ["status","=","current"]
+                            ["status","=", EmployeeInternalWorkExperiencesStatus::CURRENT]
+                        ]
+                    )->first();
+                    if ($this_internal_id) {
+                        $saveData = $this->promotionData($this_internal_id->id, $main);
+                    } else {
+                        return $this->failedMessage($newdata);
+                    }
+                }
+
+                // Approved Termination
+                if ($main->type == "Termination") {
+                    $this_internal_id = InternalWorkExperience::select("id")->where(
+                        [
+                            ["id", "=", $main->employee_id],
+                            ["date_to", "=", null],
+                            ["status","=", EmployeeInternalWorkExperiencesStatus::CURRENT]
                         ]
                     )->first();
                     if ($this_internal_id) {
                         $saveData = $this->termination($this_internal_id->id, $main);
-                        // $main->request_status = "Approved";
                     } else {
                         return $this->failedMessage($newdata);
                     }
@@ -210,7 +231,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $relatedPersonMother = [];
         $relatedInCaseEmergency = [];
         $relatedChildren = [];
-        $arr_company = [];
+        $employeecompany = [];
 
         if (!$main) {
             return false;
@@ -237,13 +258,13 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         // Internal Work Experience
         $internalWork['position_title'] = $request->designation_position;
-        $internalWork['employment_status'] = $request->new_employment_status;
-        $internalWork['department'] = $request->new_section;
+        $internalWork['employment_status'] = $request->employement_status;
+        $internalWork['department'] = $request->section_department;
         $internalWork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
         $internalWork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
-        $internalWork['work_location'] = $request->new_location;
+        $internalWork['work_location'] = $request->work_location;
         $internalWork['hire_source'] = $request->hire_source;
-        $internalWork['status'] = "current";
+        $internalWork['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
         $internalWork['date_from'] = $request->date_from;
         $internalWork['date_to'] = null;
         $internalWork['salary_grades'] = $request->salary_grades;
@@ -263,15 +284,13 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $perAddress["type"] = EmployeeAddressType::PERMANENT;
 
         // Employee Company
-        // $arr_company["company"]=;
-        // $arr_company["date_hired"]=;
-        // $arr_company["imidiate_supervisor"]=;
-        // $arr_company["phic_number"]=;
-        // $arr_company["sss_number"]=;
-        // $arr_company["tin_number"]=;
-        // $arr_company["pagibig_number"]=;
-        // $arr_company["status"]=;
-        // $employee->company_employments()->create($arr_company);
+        $employeecompany["employeedisplay_id"] = null;
+        $employeecompany["date_hired"] = $request->date_of_effictivity;
+        $employeecompany["phic_number"] = $main->philhealth;
+        $employeecompany["sss_number"] = $main->sss;
+        $employeecompany["tin_number"] = $main->tin;
+        $employeecompany["pagibig_number"] = $main->pagibig;
+        $employeecompany["status"] = EmployeeCompanyEmploymentsStatus::ACTIVE;
 
         // Employee Spouse
         $relatedPersonSpouse["name"] = $main->name_of_spouse;
@@ -303,6 +322,8 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $employee->employee_internal()->create($internalWork);
         $employee->employee_address()->create($preAddress);
         $employee->employee_address()->create($perAddress);
+        $employee->company_employments()->create($employeecompany);
+
         if (property_exists("name_of_spouse", $main)) {
             $employee->employee_related_person()->create($relatedPersonSpouse);
         }
@@ -345,23 +366,51 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function transferData($id, $request)
     {
         $data = InternalWorkExperience::where("id", "=", $id)->first();
-        $data->status = "previous";
-        // $data->date_to = date("Y-m-d");
+        $data->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
+        $data->save();
+
+        $arr_internalwork = [];
+        $arr_internalwork['department'] = $request->new_section;
+        $arr_internalwork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
+        $arr_internalwork['work_location'] = $request->new_location;
+        $arr_internalwork['date_from'] = $request->date_of_effictivity;
+        $arr_internalwork['employee_id'] = $data->employee_id;
+        $arr_internalwork['position_title'] = $data->position_title;
+        $arr_internalwork['employment_status'] = $data->employment_status;
+        $arr_internalwork['actual_salary'] = $data->actual_salary;
+        $arr_internalwork['hire_source'] = $data->hire_source;
+        $arr_internalwork['salary_grades'] = $data->salary_grades;
+        $arr_internalwork['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        $arr_internalwork['date_to'] = null;
+
+        $transferData = InternalWorkExperience::create($arr_internalwork);
+
+        if ($transferData) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function promotionData($id, $request)
+    {
+        $data = InternalWorkExperience::where("id", "=", $id)->first();
+        $data->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
         $data->save();
 
         $arr_internalwork = [];
         $arr_internalwork['employee_id'] = $data->employee_id;
         $arr_internalwork['position_title'] = $request->designation_position;
         $arr_internalwork['employment_status'] = $request->new_employment_status;
-        $arr_internalwork['department'] = $request->new_section;
-        $arr_internalwork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
+        $arr_internalwork['department'] = $data->department;
+        $arr_internalwork['immediate_supervisor'] = $data->immediate_supervisor ?? "N/A";
         $arr_internalwork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
-        $arr_internalwork['work_location'] = $request->new_location;
-        $arr_internalwork['hire_source'] = $request->hire_source;
-        $arr_internalwork['status'] = "current";
-        $arr_internalwork['date_from'] = $request->date_from;
-        $arr_internalwork['date_to'] = null;
         $arr_internalwork['salary_grades'] = $request->salary_grades;
+        $arr_internalwork['date_from'] = $request->date_from;
+        $arr_internalwork['work_location'] = $data->work_location;
+        $arr_internalwork['hire_source'] = $data->hire_source;
+        $arr_internalwork['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        $arr_internalwork['date_to'] = null;
 
         $transferData = InternalWorkExperience::create($arr_internalwork);
 

@@ -34,7 +34,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                'required_if:type,!=,New Hire',
+                'required_if:type,==,Termination|required_if:type,==,Transfer|required_if:type,==,Promotion',
             ],
             'type' => [
                 "required",
@@ -56,22 +56,22 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 'required_if:type,==,New Hire',
             ],
             'salary_grades' => [
-                "required",
+                "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
-                'required_if:type,!=,Transfer',
-                'required_if:type,==,New Hire|required_if:type,==,Transfer',
+                'required_if:type,==,New Hire',
             ],
             'new_salary_grades' => [
                 "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
-                'required_if:type,!=,Transfer',
+                'required_if:type,==,Promotion',
             ],
             'pan_job_applicant_id' => [
                 "nullable",
                 "integer",
                 "exists:job_applicants,id",
+                'required_if:type,==,New Hire',
             ],
             'hire_source' => [
                 "nullable",
@@ -97,6 +97,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             'new_employment_status' => [
                 "nullable",
                 "string",
+                'required_if:type,==,Promotion'
             ],
             'new_position' => [
                 "nullable",
@@ -164,7 +165,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             'employement_status' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire|required_if:type,==,Promotion',
+                'required_if:type,==,New Hire',
             ],
         ];
     }
