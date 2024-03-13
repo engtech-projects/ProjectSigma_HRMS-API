@@ -38,9 +38,18 @@ class EmployeeController extends Controller
             ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%");
         if ($validatedData["type"] == SearchTypes::NOACCOUNTS) {
             $main = $main->doesntHave("account");
+            $main = $main->with(["account"])
+                ->limit(25)
+                ->orderBy('family_name')
+                ->get()
+                ->append(["fullname_last", "fullname_first"]);
+            $data = json_decode('{}');
+            $data->message = "Successfully fetch NO ACCOUNTS.";
+            $data->success = true;
+            $data->data = $main;
+            return response()->json($data);
         }
-        $main = $main->with(["account"])
-            ->limit(25)
+        $main = $main->limit(25)
             ->orderBy('family_name')
             ->get()
             ->append(["fullname_last", "fullname_first"]);
