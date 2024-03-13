@@ -153,11 +153,6 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'created_by' => [
-                "required",
-                "integer",
-                "exists:users,id",
-            ],
             'comments' => [
                 "nullable",
                 "string",
