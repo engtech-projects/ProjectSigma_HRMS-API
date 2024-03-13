@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
 {
@@ -33,6 +34,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:employees,id",
+                'required_if:type,!=,New Hire',
             ],
             'type' => [
                 "required",
@@ -45,21 +47,26 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             ],
             'section_department' => [
                 "nullable",
-                "string"
+                "string",
+                'required_if:type,==,New Hire',
             ],
             'designation_position' => [
                 "nullable",
-                "string"
+                "string",
+                'required_if:type,==,New Hire',
             ],
             'salary_grades' => [
                 "required",
                 "integer",
                 "exists:salary_grade_steps,id",
+                'required_if:type,!=,Transfer',
+                'required_if:type,==,New Hire|required_if:type,==,Transfer',
             ],
             'new_salary_grades' => [
                 "nullable",
                 "integer",
-                "exists:new_salary_grades,id",
+                "exists:salary_grade_steps,id",
+                'required_if:type,!=,Transfer',
             ],
             'pan_job_applicant_id' => [
                 "nullable",
@@ -69,19 +76,23 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             'hire_source' => [
                 "nullable",
                 "string",
-                'in:Internal,External'
+                'in:Internal,External',
+                'required_if:type,==,New Hire',
             ],
             'work_location' => [
                 "nullable",
                 "string",
+                'required_if:type,==,New Hire|required_if:type,==,Transfer',
             ],
             'new_section' => [
                 "nullable",
                 "string",
+                'required_if:type,==,Transfer',
             ],
             'new_location' => [
                 "nullable",
                 "string",
+                'required_if:type,==,Transfer'
             ],
             'new_employment_status' => [
                 "nullable",
@@ -94,18 +105,22 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             'type_of_termination' => [
                 "nullable",
                 "string",
+                'required_if:type,==,Termination'
             ],
             'reasons_for_termination' => [
                 "nullable",
                 "string",
+                'required_if:type,==,Termination'
             ],
             'eligible_for_rehire' => [
                 "nullable",
                 "string",
+                'required_if:type,==,Termination'
             ],
             'last_day_worked' => [
                 "nullable",
                 "string",
+                'required_if:type,==,Termination'
             ],
             'approvals' => [
                 "required",
@@ -141,6 +156,15 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "required",
                 "integer",
                 "exists:users,id",
+            ],
+            'comments' => [
+                "nullable",
+                "string",
+            ],
+            'employement_status' => [
+                "nullable",
+                "string",
+                'required_if:type,==,New Hire|required_if:type,==,Promotion',
             ],
         ];
     }

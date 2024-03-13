@@ -22,7 +22,6 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
             'employee_id'=> [
                 "nullable",
                 "integer",
@@ -44,13 +43,10 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
                 "nullable",
                 "string"
             ],
-            'salary_type'=>[
+            'salary_grades'=>[
                 "nullable",
-                "string"
-            ],
-            'salary_grade'=>[
-                "nullable",
-                "string"
+                "integer",
+                "exists:salary_grade_steps,id",
             ],
             'actual_salary'=>[
                 "nullable",
@@ -58,11 +54,13 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
             ],
             'work_location'=>[
                 "nullable",
-                "string"
+                "string",
+                'in:pms,office,project_code'
             ],
             'hire_source'=>[
                 "nullable",
-                "string"
+                "string",
+                'in:internal,external'
             ],
             'status'=>[
                 "nullable",

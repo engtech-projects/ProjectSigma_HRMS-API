@@ -47,6 +47,11 @@ class EmployeePersonnelActionNoticeRequest extends Model
         return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id")->with('manpower');
     }
 
+    public function salarygrade(): HasOne
+    {
+        return $this->hasOne(SalaryGradeStep::class, "id", "salary_grades");
+    }
+
     public function manpower(): HasOne
     {
         return $this->hasOne(ManpowerRequest::class, "id", "job_applicants.manpowerrequests_id");

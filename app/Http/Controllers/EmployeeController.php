@@ -15,7 +15,6 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
         $main = Employee::simplePaginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
@@ -118,7 +117,9 @@ class EmployeeController extends Controller
             "masterstudies",
             "doctorstudies",
             "professionalstudies",
-            "employee_seminartraining"
+            "employee_seminartraining",
+            "employee_internal",
+            "employee_externalwork",
         )->get()->find($id);
 
         $data = json_decode('{}');

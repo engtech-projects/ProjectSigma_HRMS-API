@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreInternalWorkExperienceRequest extends FormRequest
+class EmployeeInternalWorkExperience extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,6 +22,11 @@ class StoreInternalWorkExperienceRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id'=> [
+                "required",
+                "integer",
+                "exists:employee_personnel_action_notice_requests,id",
+            ],
             'employee_id'=> [
                 "required",
                 "integer",
@@ -64,14 +69,14 @@ class StoreInternalWorkExperienceRequest extends FormRequest
             ],
             'status'=>[
                 "required",
-                'in:current,previous'
+                'in:active,inactive'
             ],
             'date_from'=>[
                 "required",
                 "date",
             ],
             'date_to'=>[
-                "nullable",
+                "required",
                 "date",
             ],
         ];
