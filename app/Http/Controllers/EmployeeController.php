@@ -39,7 +39,8 @@ class EmployeeController extends Controller
         if ($validatedData["type"] == SearchTypes::NOACCOUNTS) {
             $main = $main->doesntHave("account");
         }
-        $main = $main->limit(25)
+        $main = $main->with(["account"])
+            ->limit(25)
             ->orderBy('family_name')
             ->get()
             ->append(["fullname_last", "fullname_first"]);
