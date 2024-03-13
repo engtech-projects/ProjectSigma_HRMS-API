@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\SearchTypes;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class SearchEmployeeRequest extends FormRequest
 {
@@ -34,7 +36,7 @@ class SearchEmployeeRequest extends FormRequest
             [
                 "required",
                 "nullable",
-                "in:AllEmployees,NoAccounts"
+                [new Enum(SearchTypes::class)]
             ]
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SearchTypes;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\Employee;
 use App\Http\Requests\StoreEmployeeRequest;
@@ -35,7 +36,7 @@ class EmployeeController extends Controller
             })
             ->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey . "%")
             ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%");
-        if ($validatedData["type"] === "NoAccount") {
+        if ($validatedData["type"] === SearchTypes::NOACCOUNTS) {
             $main = $main->doesntHave("account");
         }
         $main = $main->limit(25)
