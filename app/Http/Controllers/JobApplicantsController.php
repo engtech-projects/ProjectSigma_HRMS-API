@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\JobApplication;
+use App\Enums\JobApplicationEnums;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\JobApplicants;
 use App\Http\Requests\StoreJobApplicantsRequest;
@@ -46,19 +48,17 @@ class JobApplicantsController extends Controller
     {
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
-        $main = JobApplicants::select("id", "firstname", "middlename", "lastname")->where(function ($q) use ($searchKey) {
-            $q->orWhere(
-                [
-                    ['firstname', 'like', "%{$searchKey}%"],
-                    ["status", "=", "For Hiring"],
-                ]
-            )->orWhere([
-                    ['lastname', 'like', "%{$searchKey}%"],
-                    ["status", "=", "For Hiring"],
-            ]);
-        })->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "% where status='For Hiring'")
-        ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "% where status='For Hiring'")
-        ->limit(25)->orderBy('lastname')->get();
+        $main = JobApplicants::select("id", "firstname", "middlename", "lastname")
+            ->where(function ($q) use ($searchKey) {
+                $q->orWhere('firstname', 'like', "%{$searchKey}%")
+                ->orWhere('firstname', 'like', "%{$searchKey}%")
+                ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
+                ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
+            })
+            ->where("status", JobApplicationEnums::APPLICATION_STATUS_FOR_HIRING)
+            ->limit(25)
+            ->orderBy('lastname')
+            ->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
