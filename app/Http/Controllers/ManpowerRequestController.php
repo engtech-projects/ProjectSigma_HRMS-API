@@ -91,24 +91,7 @@ class ManpowerRequestController extends Controller
     public function get_approve()
     {
         $manpowerRequests = $this->manpowerServices->getAllByAuthUser();
-        $collection =  ManpowerRequestResource::collection($manpowerRequests);
-        $page = request()->get('page', 1);
-        $paginatedCollection = new Paginator($collection->forPage($page, 10), 10, $page);
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $paginatedCollection
-        ]);
-
-        /* $id = Auth::user()->id;
-        $main = ManpowerRequest::where("request_status", "=", "Pending")
-            ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->first();
-        $newdata = json_decode('{}');
-        $newdata->message = "Successfully fetch.";
-        $newdata->success = true;
-        $newdata->data = $main;
-        return response()->json($newdata); */
+        return ManpowerRequestResource::collection($manpowerRequests);
     }
 
     public function approve_approval($request)
