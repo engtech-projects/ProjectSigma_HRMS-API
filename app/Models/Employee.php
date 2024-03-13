@@ -221,6 +221,6 @@ class Employee extends Model
 
     public function account(): HasOne
     {
-        return $this->hasOne(Users::class, "employee_id", "id");
+        return $this->hasOne(Users::class);
     }
 }

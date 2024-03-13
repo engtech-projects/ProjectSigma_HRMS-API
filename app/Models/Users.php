@@ -43,4 +43,9 @@ class Users extends Model
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function Employee(): BelongsTo
+    {
+        return $this->BelongsTo(Employee::class);
+    }
 }
