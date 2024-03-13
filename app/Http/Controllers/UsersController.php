@@ -46,7 +46,7 @@ class UsersController extends Controller
         $validatedData = $request->validated();
         $validatedData["type"] = UserTypes::EMPLOYEE;
         $validatedData["password"] = Hash::make($validatedData["password"]);
-        $validatedData["accessibilities"] = json_encode($validatedData["accessibilities"]);
+        $validatedData["accessibilities"] = json_encode([]);
         $validatedData["email_verified_at"] = Carbon::now();
         $user = Users::create($validatedData);
         $data = json_decode('{}');
