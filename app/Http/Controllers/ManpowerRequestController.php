@@ -323,25 +323,17 @@ class ManpowerRequestController extends Controller
         $a = explode("/", $main->job_description_attachment);
         Storage::deleteDirectory("public/" . $a[0] . "/" . $a[1]);
         $data = json_decode('{}');
+
         if (!is_null($main)) {
             if ($main->delete()) {
-                if (!is_null($main)) {
-                    if ($main->delete()) {
-                        $data->message = "Successfully delete.";
-                        $data->success = true;
-                        $data->data = $main;
-                        return response()->json($data);
-                    }
-                    $data->message = "Failed delete.";
-                    $data->success = false;
-                    return response()->json($data, 400);
-                    return response()->json($data, 400);
-                }
+                $data->message = "Successfully delete.";
+                $data->success = true;
+                $data->data = $main;
+                return response()->json($data);
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data, 404);
-            return response()->json($data, 404);
+            return response()->json($data, 400);
         }
     }
 }
