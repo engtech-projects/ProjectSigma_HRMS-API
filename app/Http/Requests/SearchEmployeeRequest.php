@@ -36,7 +36,7 @@ class SearchEmployeeRequest extends FormRequest
             [
                 "required",
                 "nullable",
-                [new Enum(SearchTypes::class)]
+                new Enum(SearchTypes::class)
             ]
         ];
     }
