@@ -57,6 +57,11 @@ class ManpowerRequest extends Model
         return $this->belongsTo(User::class, 'requested_by');
     }
 
+    public function job_applicants()
+    {
+        return $this->hasMany(JobApplicants::class, 'manpowerrequests_id', 'id');
+    }
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', 'Pending');
