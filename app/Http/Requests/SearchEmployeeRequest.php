@@ -32,8 +32,9 @@ class SearchEmployeeRequest extends FormRequest
             ],
             "type" =>
             [
+                "required",
                 "nullable",
-                "in:NoAccounts"
+                "in:AllEmployees,NoAccounts"
             ]
         ];
     }

@@ -35,7 +35,7 @@ class EmployeeController extends Controller
             })
             ->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey . "%")
             ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%");
-        if (in_array("type", array_keys($validatedData)) && $validatedData["type"] === "NoAccount") {
+        if ($validatedData["type"] === "NoAccount") {
             $main = $main->doesntHave("account");
         }
         $main = $main->limit(25)
