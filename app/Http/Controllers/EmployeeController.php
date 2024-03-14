@@ -7,6 +7,7 @@ use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\Employee;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
@@ -28,19 +29,27 @@ class EmployeeController extends Controller
     {
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
-        $noAccounts = $validatedData["type"] == SearchTypes::NOACCOUNTS;
-        var_dump([$validatedData, $validatedData["type"], SearchTypes::NOACCOUNTS, $noAccounts]);
+        $noAccounts = $validatedData["type"] == SearchTypes::NOACCOUNTS->value;
         $main = Employee::select("id", "first_name", "middle_name", "family_name")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('first_name', 'like', "%{$searchKey}%")
-                    ->orWhere('family_name', 'like', "%{$searchKey}%");
+                    ->orWhere('family_name', 'like', "%{$searchKey}%")
                 //     ->orWhere('middle_name', 'like', "%{$searchKey}%");
+                    ->orWhere(
+                        DB::raw("CONCAT(family_name, ', ', first_name, ' ', middle_name)"),
+                        'LIKE',
+                        $searchKey . "%"
+                    )
+                    ->orWhere(
+                        DB::raw("CONCAT(first_name, ' ', middle_name, ' ', family_name)"),
+                        'LIKE',
+                        $searchKey . "%"
+                    );
             })
-            ->orWhere(DB::raw("CONCAT(family_name, ', ', first_name, ', ', middle_name)"), 'LIKE', $searchKey . "%")
-            ->orWhere(DB::raw("CONCAT(first_name, ', ', middle_name, ', ', family_name)"), 'LIKE', $searchKey . "%")
-            ->when($noAccounts, function (Builder $query, bool $noAccounts) {
-                $query->doesntHave("account");
+            ->when($noAccounts, function (Builder $builder) {
+                $builder->whereDoesntHave("account");
             })
+            ->with("account")
             ->limit(25)
             ->orderBy('family_name')
             ->get()
