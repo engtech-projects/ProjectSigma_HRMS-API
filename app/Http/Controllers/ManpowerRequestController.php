@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\ManpowerRequestResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use Exception;
 
 class ManpowerRequestController extends Controller
 {
@@ -279,9 +280,21 @@ class ManpowerRequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateManpowerRequestRequest $request, $id)
+    public function update(UpdateManpowerRequestRequest $request, ManpowerRequest $manpowerRequest)
     {
-        $main = ManpowerRequest::find($id);
+        try {
+            $this->manpowerServices->update($request->validated(), $manpowerRequest);
+        } catch (\Exception $e) {
+            throw new Exception("Update transaction failed.");
+        }
+
+        return new JsonResponse([
+            "success" => true, "message" => "Manpower request successfully approved."
+        ]);
+
+
+
+        /* $main = ManpowerRequest::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
@@ -298,7 +311,7 @@ class ManpowerRequestController extends Controller
 
         $data->message = "Failed update.";
         $data->success = false;
-        return response()->json($data, 404);
+        return response()->json($data, 404); */
     }
 
     /**
