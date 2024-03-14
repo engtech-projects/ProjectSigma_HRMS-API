@@ -7,6 +7,7 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Http\Requests\EmployeeInternalWorkExperience;
+use App\Http\Requests\StoreDisapprove;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
 use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
@@ -112,7 +113,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $newdata = json_decode('{}');
 
         if (!$main) {
-            return $this->failedMessage($newdata);
+            return $this->failedMessage($newdata, "No Request found.");
         }
 
         $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request)->approval()->first();
@@ -125,7 +126,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $approve = 0;
         if (!$panreq) {
             $newdata->success = false;
-            $newdata->message = "No data found.";
+            $newdata->message = "No pending data found.";
             return response()->json($newdata);
         }
 
@@ -155,7 +156,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                         ManpowerRequest::where("id", $main->jobapplicant->manpower->id)->update(["request_status" => "Approved"]);
                         $main->request_status = "Filled";
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed approved.");
                     }
                 }
                 // Approved Transfer Data
@@ -170,7 +171,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     if ($this_internal_id) {
                         $saveData = $this->transferData($this_internal_id->id, $main);
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed transfer.");
                     }
                 }
 
@@ -186,7 +187,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     if ($this_internal_id) {
                         $saveData = $this->promotionData($this_internal_id->id, $main);
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed promotion.");
                     }
                 }
 
@@ -202,7 +203,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     if ($this_internal_id) {
                         $saveData = $this->termination($this_internal_id->id, $main);
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed termination.");
                     }
                 }
             }
@@ -218,13 +219,62 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             }
         }
 
-        return $this->failedMessage($newdata);
+        return $this->failedMessage($newdata, "Failed approved.");
     }
 
-    public function failedMessage($newdata)
+    // logged in can approve pan request(if he is the current approval)
+    public function disapproveApprovals(StoreDisapprove $request)
+    {
+        $id = Auth::user()->id;
+        $main = EmployeePersonnelActionNoticeRequest::where("id", $request->id)->with("jobapplicant", "salarygrade")->first();
+        $newdata = json_decode('{}');
+
+        if (!$main) {
+            return $this->failedMessage($newdata, "No data found.");
+        }
+
+        $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request->id)->approval()->first();
+        $get_approval = collect(json_decode($main->approvals))->where("status", "Pending")->first();
+        $next_approval = 0;
+        if ($get_approval) {
+            $next_approval = $get_approval->user_id;
+        }
+
+        if (!$panreq) {
+            $newdata->success = false;
+            $newdata->message = "No data found.";
+            return response()->json($newdata);
+        }
+
+        $disApprove = 0;
+        if ($next_approval == strval($id)) {
+            $a = [];
+            foreach (json_decode($panreq->approvals) as $key) {
+                if ($key->user_id == strval($id) && $key->status == "Pending" && $disApprove == 0) {
+                    $key->status = "Disapproved";
+                    $key->remarks = $request->remarks;
+                    $disApprove = 1;
+                }
+                array_push($a, $key);
+            }
+            $main->approvals = json_encode($a);
+            $main->save();
+
+            if ($main) {
+                $newdata->success = true;
+                $newdata->message = "Successfully disapproved.";
+                $newdata->data = $main;
+                return response()->json($newdata);
+            }
+        }
+        return $this->failedMessage($newdata, "Failed disapproved.");
+    }
+
+    public function failedMessage($newdata, $message)
     {
         $newdata->success = false;
-        $newdata->message = "Failed approved.";
+        $newdata->message = $message;
+        // $newdata->message = "Failed approved.";
         return response()->json($newdata);
     }
 

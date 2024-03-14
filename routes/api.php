@@ -111,4 +111,9 @@ Route::middleware('auth:sanctum')->group(function () {
         'approve-pan-approvals/{id}',
         [EmployeePersonnelActionNoticeRequestController::class, 'approveApprovals']
     );
+    Route::post(
+        'disapprove-pan-approvals',
+        [EmployeePersonnelActionNoticeRequestController::class,
+        'disapproveApprovals']
+    );
 });
