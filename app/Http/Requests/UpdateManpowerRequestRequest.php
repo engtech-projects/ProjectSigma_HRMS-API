@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Rules\JsonStringValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateManpowerRequestRequest extends FormRequest
@@ -11,13 +12,14 @@ class UpdateManpowerRequestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return true;;
     }
 
-    protected function prepareForValidation() {
-        $this->merge([
-            "approvals" => json_decode($this->approvals,true)
-        ]);
+    protected function prepareForValidation()
+    {
+        /*       $this->merge([
+            "approvals" => $this->approvals
+        ]); */
     }
 
     /**
@@ -27,102 +29,91 @@ class UpdateManpowerRequestRequest extends FormRequest
      */
     public function rules(): array
     {
+        $keyMessageForJson = [
+            'type' => 'The type field is required.',
+            'status' => 'The status field is required.',
+            'user_id' => 'The user_id field is required.',
+            'userselector' => 'The userselector field is required.',
+            'date_approved' => 'The date_approved field is required.',
+            'remarks' => 'The remarks field is required.',
+            'name' => 'The name field is required.',
+        ];
         return [
-            'requesting_department'=> [
+            'requesting_department' => [
                 "nullable",
                 "integer",
                 "exists:departments,id",
             ],
-            'date_requested'=>[
+            'date_requested' => [
                 "nullable",
                 "date",
             ],
-            'date_required'=>[
+            'date_required' => [
                 "nullable",
                 "date",
             ],
-            'position'=>[
+            'position' => [
                 "nullable",
                 "string",
             ],
-            'employment_type'=>[
+            'employment_type' => [
                 "nullable",
                 "string",
                 'in:Student Trainee,Project Hire,Contractual,Regular'
             ],
-            'brief_description'=>[
+            'brief_description' => [
                 "nullable",
                 "string",
             ],
-            'job_description_attachment'=>[
+            'job_description_attachment' => [
                 "nullable",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'nature_of_request'=>[
+            'nature_of_request' => [
                 "nullable",
                 "string",
                 'in:New/Addition,Replacement'
             ],
-            'age_range'=>[
+            'age_range' => [
                 "nullable",
                 "string",
             ],
-            'status'=>[
+            'status' => [
                 "nullable",
                 "string",
                 'in:Single,Married,No Preference'
             ],
-            'gender'=>[
+            'gender' => [
                 "nullable",
                 "string",
                 'in:Male,Female,No Preference'
             ],
-            'educational_requirement'=>[
+            'educational_requirement' => [
                 "nullable",
                 "string",
             ],
-            'preferred_qualifications'=>[
+            'preferred_qualifications' => [
                 "nullable",
                 "string",
             ],
-            'approvals.*'=>[
+            'approvals' => [
                 "nullable",
-                "array",
-                "required_array_keys:type,user_id,status,date_approved,remarks",
+                "json",
+                new JsonStringValidation($keyMessageForJson)
+
             ],
-            'approvals.*.type'=>[
-                "nullable",
-                "string",
-            ],
-            'approvals.*.user_id'=>[
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status'=>[
-                "nullable",
-                "string",
-            ],
-            'approvals.*.date_approved'=>[
-                "nullable",
-                "date",
-            ],
-            'remarks'=>[
-                "nullable",
-                "string",
-            ],
-            'request_status'=>[
+            'request_status' => [
                 "nullable",
                 "string",
                 'in:Pending,Approved,Filled,Hold,Cancelled,Disapproved'
             ],
-            'charged_to'=>[
+            'charged_to' => [
                 "nullable",
                 "integer",
                 "exists:departments,id",
             ],
-            'breakdown_details'=>[
+            'breakdown_details' => [
                 "nullable",
                 "string",
             ],
