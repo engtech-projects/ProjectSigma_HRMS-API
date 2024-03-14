@@ -28,7 +28,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function index()
     {
-        $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly')->paginate(15);
+        $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly', 'department')->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -320,7 +320,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         // Internal Work Experience
         $internalWork['position_title'] = $request->designation_position;
         $internalWork['employment_status'] = $request->employement_status;
-        $internalWork['department'] = $request->section_department;
+        $internalWork['department'] = $request->section_department_id;
         $internalWork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
         $internalWork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
         $internalWork['work_location'] = $request->work_location;

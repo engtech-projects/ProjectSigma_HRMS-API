@@ -18,7 +18,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
         'employee_id',
         'type',
         'date_of_effictivity',
-        'section_department',
+        'section_department_id',
         'designation_position',
         'hire_source',
         'work_location',
@@ -60,6 +60,11 @@ class EmployeePersonnelActionNoticeRequest extends Model
     public function manpower(): HasOne
     {
         return $this->hasOne(ManpowerRequest::class, "id", "job_applicants.manpowerrequests_id");
+    }
+
+    public function department(): HasOne
+    {
+        return $this->hasOne(Department::class, "id", "section_department_id");
     }
 
     public function employee(): HasOne

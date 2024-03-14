@@ -37,9 +37,10 @@ class UpdateEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "nullable",
                 "date",
             ],
-            'section_department' => [
+            'section_department_id' => [
                 "nullable",
-                "string",
+                "integer",
+                "exists:departments,id",
                 'required_if:type,==,New Hire',
             ],
             'designation_position' => [
