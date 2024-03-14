@@ -27,7 +27,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function index()
     {
-        $main = EmployeePersonnelActionNoticeRequest::paginate(15);
+        $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly')->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -45,7 +45,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $main->created_by = $id;
         $validData = $request->validated();
         $main->fill($validData);
-        // dd(json_encode($validData["approvals"]));
         $data = json_decode('{}');
         $main->approvals = json_encode($validData["approvals"]);
         if (!$main->save()) {
@@ -84,11 +83,20 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::approval()
         ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->get();
+        $newdata = json_decode('{}');
+
         foreach ($main as $key => $value) {
             $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending");
-            $main[$key]->approvals = $pendingData;
+            $get_approval = collect(json_decode($value->approvals))->where("status", "Pending")->first();
+            $next_approval = $pendingData[0]->user_id;
+            if ($get_approval) {
+                $next_approval = $get_approval->user_id;
+            }
+
+            if ($next_approval == strval($id)) {
+                $main[$key]->approvals = $pendingData;
+            }
         }
-        $newdata = json_decode('{}');
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
@@ -167,7 +175,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                 }
 
                 // Approved Promotion Data
-                if ($main->type == "Transfer") {
+                if ($main->type == "Promotion") {
                     $this_internal_id = InternalWorkExperience::select("id")->where(
                         [
                             ["id", "=",$main->employee_id],
