@@ -63,7 +63,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function getpanrequest()
     {
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::where("created_by", "=", $id)->get();
+        $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -82,10 +82,9 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function getApprovals()
     {
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::approval()
+        $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
         ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])->get();
         $newdata = json_decode('{}');
-
         foreach ($main as $key => $value) {
             $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending");
             $get_approval = collect(json_decode($value->approvals))->where("status", "Pending")->first();
@@ -131,10 +130,10 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         $count = count(json_decode($panreq->approvals));
 
-        if ($next_approval == strval($id)) {
+        if ($next_approval == $id) {
             $a = [];
             foreach (json_decode($panreq->approvals) as $key) {
-                if ($key->user_id == strval($id) && $key->status == "Pending" && $approve == 0) {
+                if ($key->user_id == $id && $key->status == "Pending" && $approve == 0) {
                     $key->status = "Approved";
                     $key->date_approved = Carbon::now()->format('Y-m-d');
                     $approve = 1;
@@ -246,10 +245,10 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
 
         $disApprove = 0;
-        if ($next_approval == strval($id)) {
+        if ($next_approval == $id) {
             $a = [];
             foreach (json_decode($panreq->approvals) as $key) {
-                if ($key->user_id == strval($id) && $key->status == "Pending" && $disApprove == 0) {
+                if ($key->user_id == $id && $key->status == "Pending" && $disApprove == 0) {
                     $key->status = "Disapproved";
                     $key->remarks = $request->remarks;
                     $disApprove = 1;
