@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccessibilitiesController;
+use App\Http\Controllers\Actions\UpdateManpowerRequestApproval;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\PhilhealthContributionController;
@@ -98,6 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
     Route::get('manpower-with-applicant', [ManpowerRequestController::class, 'get_manpower_with_applicant']);
     Route::get('job-applicants-get', [JobApplicantsController::class, 'get']);
+    Route::get('manpower-request-approval/{manpower_request}', UpdateManpowerRequestApproval::class);
 
     Route::resource('internalwork-experience', InternalWorkExperienceController::class);
     Route::resource('termination', TerminationController::class);
