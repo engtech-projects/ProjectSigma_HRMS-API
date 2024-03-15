@@ -6,7 +6,6 @@ use App\Enums\ManpowerRequestStatus;
 use App\Http\Controllers\Controller;
 use App\Models\ManpowerRequest;
 use App\Traits\HasApproval;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,7 +15,7 @@ class UpdateManpowerRequestApproval extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(ManpowerRequest $manpowerRequest)
+    public function __invoke(Request $request, ManpowerRequest $manpowerRequest)
     {
         $manpowerRequestApproval = collect($manpowerRequest->approvals);
         $result = $this->updateApproval($manpowerRequestApproval, $manpowerRequest, ['status' => ManpowerRequestStatus::APPROVED]);

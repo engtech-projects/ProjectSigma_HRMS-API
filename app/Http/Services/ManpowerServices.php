@@ -24,7 +24,7 @@ class ManpowerServices
     }
     public function getAll()
     {
-        return $this->manpowerRequest->simplePaginate(15);
+        return $this->manpowerRequest->all();
     }
     public function getAllManpowerRequest()
     {
