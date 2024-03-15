@@ -116,8 +116,6 @@ Route::middleware('auth:sanctum')->group(function () {
         'approve-pan-approvals/{id}',
         [EmployeePersonnelActionNoticeRequestController::class, 'approveApprovals']
     );
-<<<<<<< Updated upstream
-=======
     Route::post(
         'disapprove-pan-approvals',
         [
@@ -125,5 +123,4 @@ Route::middleware('auth:sanctum')->group(function () {
             'disapproveApprovals'
         ]
     );
->>>>>>> Stashed changes
 });
