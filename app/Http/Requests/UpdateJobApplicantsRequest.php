@@ -390,6 +390,10 @@ class UpdateJobApplicantsRequest extends FormRequest
                 "nullable",
                 "string",
             ],
+            'remarks' => [
+                "nullable",
+                "string",
+            ],
         ];
     }
 }

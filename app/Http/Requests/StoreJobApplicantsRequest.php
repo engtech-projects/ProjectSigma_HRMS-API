@@ -402,6 +402,10 @@ class StoreJobApplicantsRequest extends FormRequest
                 "required",
                 "string",
             ],
+            'remarks' => [
+                "nullable",
+                "string",
+            ],
         ];
     }
 }
