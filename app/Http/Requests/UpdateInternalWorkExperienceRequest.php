@@ -35,9 +35,10 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
                 "nullable",
                 "string"
             ],
-            'department'=>[
+            'department_id'=>[
                 "nullable",
-                "string"
+                "integer",
+                "exists:departments,id"
             ],
             'immediate_supervisor'=>[
                 "nullable",

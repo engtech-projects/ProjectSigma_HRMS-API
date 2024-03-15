@@ -56,13 +56,6 @@ class EmployeePersonnelActionNoticeRequest extends Model
         return $query->where("request_status", "=", "Pending");
     }
 
-    // public function scopeFullname()
-    // {
-    //     if ($this->type == "New Hire") {
-    //         return $this->jobapplicant()
-    //     }
-    // }
-
     public function jobapplicant(): HasOne
     {
         return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id")->with('manpower');

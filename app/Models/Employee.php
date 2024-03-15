@@ -88,12 +88,18 @@ class Employee extends Model
 
     public function employee_internal(): HasOne
     {
-        return $this->hasOne(InternalWorkExperience::class)->where("status", "=", "current")->with("employee_salarygrade");
+        return $this->hasOne(InternalWorkExperience::class)->where("status", "=", "current")
+        ->with("employee_salarygrade", "employee_department");
     }
 
     public function employee_salarygrade(): HasOne
     {
         return $this->hasOne(SalaryGradeStep::class);
+    }
+
+    public function employee_department(): HasOne
+    {
+        return $this->hasOne(InternalWorkExperience::class, "id", "department_id");
     }
 
     public function employee_affiliation(): HasMany
