@@ -2,11 +2,9 @@
 
 namespace App\Http\Services;
 
-use App\Enums\ManpowerRequestStatus;
+use App\Enums\ManpowerApprovalStatus;
 use App\Models\ManpowerRequest;
 use App\Traits\HasApproval;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\Enum;
 
 class ManpowerServices
 {
@@ -33,7 +31,7 @@ class ManpowerServices
             ->with(['user'])
             ->whereJsonLength('approvals', '>', 0)
             ->where(function ($query) use ($userId) {
-                $query->whereJsonContains('approvals', ['user_id' => $userId, 'status' => ManpowerRequestStatus::PENDING]);
+                $query->whereJsonContains('approvals', ['user_id' => $userId, 'status' => ManpowerApprovalStatus::PENDING]);
             })->get();
     }
 

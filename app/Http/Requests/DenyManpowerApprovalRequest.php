@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ManpowerRequestStatus;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateManpowerRequestApprovalRequest extends FormRequest
+class DenyManpowerApprovalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,14 +21,8 @@ class UpdateManpowerRequestApprovalRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->remarks != null) {
-            return [
-                'remarks' => 'required'
-            ];
-        }
-
         return [
-            'remarks' => 'nullable'
+            'remarks' => 'required|string'
         ];
     }
 }
