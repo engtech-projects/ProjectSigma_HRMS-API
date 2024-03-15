@@ -24,7 +24,7 @@ class ManpowerServices
     }
     public function getAll()
     {
-        return $this->manpowerRequest->simplePaginate(15);
+        return $this->manpowerRequest->all();
     }
     public function getAllManpowerRequest()
     {
@@ -69,7 +69,7 @@ class ManpowerServices
             $approvals = collect($item['approvals']);
             $nextPendingApproval = $this->getNextPendingApproval($approvals, $userId);
             $userApprovals = $this->getNextPendingApproval($approvals, $userId);
-            $nextUserApproval = $userApprovals->first();
+            $nextUserApproval = $userApprovals;
             $item->approvals = $userApprovals;
             if ($nextUserApproval && $userId != $nextPendingApproval['user_id']) {
                 $item['approvals'] = [];
@@ -81,6 +81,8 @@ class ManpowerServices
         })->reject(function ($item) {
             return empty($item['approvals']);
         });
+
+
         return $manpowerRequests;
     }
 }

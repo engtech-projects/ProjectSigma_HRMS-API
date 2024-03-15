@@ -6,7 +6,6 @@ use App\Enums\ManpowerRequestStatus;
 use App\Http\Controllers\Controller;
 use App\Models\ManpowerRequest;
 use App\Traits\HasApproval;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,15 +15,23 @@ class UpdateManpowerRequestApproval extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(ManpowerRequest $manpowerRequest)
+    public function __invoke(Request $request, ManpowerRequest $manpowerRequest)
     {
         $manpowerRequestApproval = collect($manpowerRequest->approvals);
         $result = $this->updateApproval($manpowerRequestApproval, $manpowerRequest, ['status' => ManpowerRequestStatus::APPROVED]);
-        if (count($result) > 0) {
-            $manpowerRequest->approvals = $result['approvals'];
-            $manpowerRequest->save();
-            return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_OK);
+        $nextApproval = $this->getNextPendingApproval($manpowerRequestApproval);
+        if (!$nextApproval) {
+            return new JsonResponse(["success" => false, "message" => "Manpower request has been approved."], JsonResponse::HTTP_NOT_FOUND);
         }
-        return new JsonResponse(["success" => false, "message" => "Failed to approve. Your approval is for later or already done."], JsonResponse::HTTP_NOT_FOUND);
+        if ($nextApproval['user_id'] != auth()->user()->id) {
+            return new JsonResponse(["success" => false, "message" => "Failed to approve. Your approval is for later or already done."], JsonResponse::HTTP_NOT_FOUND);
+        }
+        $lastApproval = $result['approvals']->last();
+        if ($lastApproval['status'] === ManpowerRequestStatus::APPROVED) {
+            $manpowerRequest->request_status = ManpowerRequestStatus::APPROVED;
+        }
+        $manpowerRequest->approvals = $result['approvals'];
+        $manpowerRequest->save();
+        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_OK);
     }
 }
