@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\ManpowerRequestResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use App\Utils\PaginateResourceCollection;
 use Exception;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 
 class ManpowerRequestController extends Controller
 {
@@ -32,12 +35,11 @@ class ManpowerRequestController extends Controller
     public function index()
     {
         $manpowerRequests = $this->manpowerServices->getAll();
-        $collection = ManpowerRequestResource::collection($manpowerRequests);
-
+        $collection = Collect(ManpowerRequestResource::collection($manpowerRequests));
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => $collection
+            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
         ]);
     }
 

@@ -14,7 +14,7 @@ trait HasApproval
         return $approvals->where('user_id', $userId)
             ->where('status', ManpowerRequestStatus::PENDING);
     }
-    public function getNextPendingApproval($approvals, $userId)
+    public function getNextPendingApproval($approvals)
     {
         return $approvals->where('status', ManpowerRequestStatus::PENDING)->first();
     }
