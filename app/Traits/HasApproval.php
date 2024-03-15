@@ -21,34 +21,8 @@ trait HasApproval
         return $approvals->where('status', ManpowerApprovalStatus::PENDING)->first();
     }
 
-    public function setApproval(ManpowerRequest $manpowerRequest)
+    public function setNewApproval(ManpowerRequest $manpowerRequest, $approvalToUpdate, $data)
     {
-
-    }
-
-    public function updateApproval($manpowerRequestApproval, ManpowerRequest $manpowerRequest, ?array $data)
-    {
-        $userApproval = $this->getUserPendingApproval($manpowerRequestApproval, auth()->user()->id)->first();
-        $nextApproval = $this->getNextPendingApproval(collect($manpowerRequest->approvals));
-
-        if ($manpowerRequest->request_status === ManpowerRequestStatus::DISAPPROVED) {
-            return [
-                "approvals" => $manpowerRequestApproval,
-                'success' => false,
-                "status_code" => JsonResponse::HTTP_FORBIDDEN,
-                "message" => "Manpower request was already disapproved",
-            ];
-        }
-        if ($nextApproval['user_id'] !== auth()->user()->id) {
-            return [
-                "approvals" => $manpowerRequestApproval,
-                'success' => false,
-                "status_code" => JsonResponse::HTTP_FORBIDDEN,
-                "message" => "Failed to approve. Your approval is for later or already done.",
-            ];
-        }
-
-        $approvalToUpdate = $manpowerRequestApproval->search($userApproval);
         $manpowerRequestApproval = collect($manpowerRequest->approvals)->map(function ($item, int $key) use ($approvalToUpdate, $data) {
             if ($key === $approvalToUpdate) {
                 $item['status'] = $data['status'];
@@ -57,7 +31,11 @@ trait HasApproval
             }
             return $item;
         });
-        $isRequestApproved =  $manpowerRequestApproval->last()['status'] == ManpowerRequestStatus::APPROVED ? true : false;
+        return $manpowerRequestApproval;
+    }
+
+    public function setNewManpowerRequestStatus(ManpowerRequest $manpowerRequest, ?object $manpowerRequestApproval, ?bool $isRequestApproved)
+    {;
         if ($isRequestApproved) {
             $manpowerRequest->request_status = ManpowerRequestStatus::APPROVED;
         } else {
@@ -69,6 +47,38 @@ trait HasApproval
                 $manpowerRequest->request_status = ManpowerRequestStatus::DISAPPROVED;
             }
         }
+    }
+
+    public function updateApproval($manpowerRequestApproval, ManpowerRequest $manpowerRequest, ?array $data)
+    {
+        $userApproval = $this->getUserPendingApproval($manpowerRequestApproval, auth()->user()->id)->first();
+        $nextApproval = $this->getNextPendingApproval(collect($manpowerRequest->approvals));
+
+        // CHECK IF MANPOWER REQUEST ALREADY APPROVED AND SET RESPONSE DATA
+        if ($manpowerRequest->request_status === ManpowerRequestStatus::DISAPPROVED) {
+            return [
+                "approvals" => $manpowerRequestApproval,
+                'success' => false,
+                "status_code" => JsonResponse::HTTP_FORBIDDEN,
+                "message" => "Manpower request was already disapproved",
+            ];
+        }
+        // CHECK IF THE CURRENT USER HAS PENDING APPROVAL AND SET RESPONSE DATA
+        if ($nextApproval['user_id'] !== auth()->user()->id) {
+            return [
+                "approvals" => $manpowerRequestApproval,
+                'success' => false,
+                "status_code" => JsonResponse::HTTP_FORBIDDEN,
+                "message" => "Failed to approve. Your approval is for later or already done.",
+            ];
+        }
+        // SET NEW MAN POWER REQUEST APPROVAL FOR RESOURCE UPDATE
+        $approvalToUpdate = $manpowerRequestApproval->search($userApproval);
+        $manpowerRequestApproval = $this->setNewApproval($manpowerRequest, $approvalToUpdate, $data);
+        // SET NEW MANPOWER REQUEST STATUS FOR RESOURCE UPDATE
+        $isRequestApproved =  $manpowerRequestApproval->last()['status'] == ManpowerRequestStatus::APPROVED ? true : false;
+        $this->setNewManpowerRequestStatus($manpowerRequest, $manpowerRequestApproval, $isRequestApproved);
+        // SAVE NEW RESOURCE FOR MANPOWER REQUEST
         $manpowerRequest->approvals = $manpowerRequestApproval;
         $manpowerRequest->save();
 
