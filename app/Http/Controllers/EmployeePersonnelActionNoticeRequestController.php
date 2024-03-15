@@ -93,8 +93,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             if ($get_approval) {
                 $next_approval = $get_approval->user_id;
             }
-
-            if ($next_approval == strval($id)) {
+            if ($next_approval == $id) {
                 $main[$key]->approvals = $pendingData;
             }
         }
