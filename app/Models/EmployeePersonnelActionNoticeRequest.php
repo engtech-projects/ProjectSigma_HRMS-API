@@ -61,6 +61,11 @@ class EmployeePersonnelActionNoticeRequest extends Model
         return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id")->with('manpower');
     }
 
+    public function jobapplicantname(): HasOne
+    {
+        return $this->hasOne(JobApplicants::class, "id", "user_id");
+    }
+
     public function jobapplicantonly(): HasOne
     {
         return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id");
