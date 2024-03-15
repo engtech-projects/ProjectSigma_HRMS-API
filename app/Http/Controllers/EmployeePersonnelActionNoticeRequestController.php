@@ -83,7 +83,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     {
         $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::approval()
-        ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->get();
+        ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])->get();
         $newdata = json_decode('{}');
 
         foreach ($main as $key => $value) {
