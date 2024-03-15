@@ -32,10 +32,11 @@ trait HasApproval
                 }
                 return $item;
             });
+
             return [
                 "approvals" => $manpowerRequestApproval,
                 'success' => true,
-                "message" => $data['status'] === ManpowerRequestStatus::APPROVED ? "Successfully approved the manpower request" : "Failed to approve. Your approval is for later or already done.",
+                "message" => $data['status'] === ManpowerRequestStatus::APPROVED ? "Successfully approved the manpower request" : "Successfully denied the manpower request",
             ];
         }
         return [];
