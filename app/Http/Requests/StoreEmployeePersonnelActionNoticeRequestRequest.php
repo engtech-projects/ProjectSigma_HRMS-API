@@ -85,9 +85,10 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "string",
                 'required_if:type,==,New Hire,Transfer',
             ],
-            'new_section' => [
+            'new_section_id' => [
                 "nullable",
-                "string",
+                "integer",
+                "exists:departments,id",
                 'required_if:type,==,Transfer',
             ],
             'new_location' => [

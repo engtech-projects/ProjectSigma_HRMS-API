@@ -36,7 +36,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
         'designation_position',
         'hire_source',
         'work_location',
-        'new_section',
+        'new_section_id',
         'new_location',
         'new_employment_status',
         'new_position',
