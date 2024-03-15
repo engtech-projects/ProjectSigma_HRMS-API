@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -12,6 +13,19 @@ use Laravel\Sanctum\HasApiTokens;
 class EmployeePersonnelActionNoticeRequest extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    protected $appends = [
+        'fullname',
+    ];
+
+    public function getFullNameAttribute()
+    {
+        if ($this->type == "New Hire") {
+            return $this->jobapplicant->lastname . ", " . $this->jobapplicant->firstname . " " . $this->jobapplicant->middlename;
+        } else {
+            return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
+        }
+    }
 
     protected $fillable = [
         'id',
@@ -41,6 +55,13 @@ class EmployeePersonnelActionNoticeRequest extends Model
     {
         return $query->where("request_status", "=", "Pending");
     }
+
+    // public function scopeFullname()
+    // {
+    //     if ($this->type == "New Hire") {
+    //         return $this->jobapplicant()
+    //     }
+    // }
 
     public function jobapplicant(): HasOne
     {
