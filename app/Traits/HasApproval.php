@@ -64,7 +64,7 @@ trait HasApproval
             ];
         }
         // CHECK IF THE CURRENT USER HAS PENDING APPROVAL AND SET RESPONSE DATA
-        if ($nextApproval['user_id'] !== auth()->user()->id) {
+        if ($nextApproval && $nextApproval['user_id'] !== auth()->user()->id) {
             return [
                 "approvals" => $manpowerRequestApproval,
                 'success' => false,

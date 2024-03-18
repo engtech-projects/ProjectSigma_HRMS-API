@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Actions;
+namespace App\Http\Controllers\Actions\ManpowerRequest;
 
 use Illuminate\Http\Request;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 use App\Enums\ManpowerApprovalStatus;
-use App\Enums\ManpowerRequestStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DenyManpowerApprovalRequest;
 use App\Traits\HasApproval;
 
-class DenyManpowerRequestApproval extends Controller
+class DenyApprovalController extends Controller
 {
     use HasApproval;
     /**

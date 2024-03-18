@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Actions;
+namespace App\Http\Controllers\Actions\ManpowerRequest;
 
 use App\Enums\ManpowerApprovalStatus;
 use App\Enums\ManpowerRequestStatus;
@@ -10,7 +10,7 @@ use App\Traits\HasApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ApproveManpowerRequestApproval extends Controller
+class ApproveApprovalController extends Controller
 {
     use HasApproval;
     /**
