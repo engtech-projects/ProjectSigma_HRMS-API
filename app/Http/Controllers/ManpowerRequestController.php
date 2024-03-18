@@ -6,7 +6,6 @@ use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Carbon;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\ManpowerServices;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +15,6 @@ use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Utils\PaginateResourceCollection;
 use Exception;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 
 class ManpowerRequestController extends Controller
 {
@@ -35,7 +33,7 @@ class ManpowerRequestController extends Controller
     public function index()
     {
         $manpowerRequests = $this->manpowerServices->getAll();
-        $collection = Collect(ManpowerRequestResource::collection($manpowerRequests));
+        $collection = collect(ManpowerRequestResource::collection($manpowerRequests));
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
