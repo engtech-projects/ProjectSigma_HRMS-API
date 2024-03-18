@@ -16,7 +16,7 @@ class AllowanceController extends Controller
     public function index()
     {
         //
-        $main = Allowance::simplePaginate(15);
+        $main = Allowance::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

@@ -25,7 +25,7 @@ class JobApplicantsController extends Controller
     public function index()
     {
         //
-        $main = JobApplicants::simplePaginate(15);
+        $main = JobApplicants::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

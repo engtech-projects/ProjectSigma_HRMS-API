@@ -14,7 +14,7 @@ class EmployeeRecordController extends Controller
     public function index()
     {
         //
-        $main = EmployeeRecord::simplePaginate(15);
+        $main = EmployeeRecord::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

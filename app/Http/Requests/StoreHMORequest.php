@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateJobApplicantStatus extends FormRequest
+class StoreHMORequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,14 +22,24 @@ class UpdateJobApplicantStatus extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => [
-                "nullable",
+            'hmo_name' => [
+                "required",
                 "string",
-                'in:Contact Extended,Pending,Interviewed,Rejected,Hired,For Hiring,Test,Interview,Reference Checking,Medical Examination,Contract Signed'
             ],
-            'remarks' => [
-                "nullable",
-                "string",
+            'hmo_start' => [
+                "required",
+                "date",
+            ],
+            'hmo_end' => [
+                "required",
+                "date",
+            ],
+            'amount' => [
+                "required",
+                "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
             ],
         ];
     }

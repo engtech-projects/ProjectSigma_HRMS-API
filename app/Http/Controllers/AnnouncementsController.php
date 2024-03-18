@@ -15,7 +15,7 @@ class AnnouncementsController extends Controller
      */
     public function index()
     {
-        $main = Announcements::simplePaginate(15);
+        $main = Announcements::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
