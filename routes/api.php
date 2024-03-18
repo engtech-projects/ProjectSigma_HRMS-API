@@ -93,15 +93,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('employee-relatedperson', EmployeeRelatedpersonController::class);
     Route::resource('employee-seminartraining', EmployeeSeminartrainingController::class);
 
-    Route::get('get-request', [ManpowerRequestController::class, 'get']);
-    Route::get('get-approve-request', [ManpowerRequestController::class, 'get_approve']);
-    Route::put('approve-approval-form/{formid}', [ManpowerRequestController::class, 'approve_approval']);
-    Route::put('deny-approval-form/{formid}', [ManpowerRequestController::class, 'deny_approval']);
-    Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
-    Route::get('manpower-with-applicant', [ManpowerRequestController::class, 'get_manpower_with_applicant']);
-    Route::get('job-applicants-get', [JobApplicantsController::class, 'get']);
-    Route::put('manpower-request/approval/{manpower_request}', ApproveApprovalController::class);
-    Route::post('manpower-request/approval/{manpower_request}', DenyApprovalController::class);
+
+    Route::prefix('manpower')->group(function () {
+        Route::put('approve-approval/{manpower_request}', ApproveApprovalController::class);
+        Route::post('deny-approval/{manpower_request}', DenyApprovalController::class);
+        Route::get('my-requests', [ManpowerRequestController::class, 'get']);
+        Route::get('my-approvals', [ManpowerRequestController::class, 'get_approve']);
+        Route::get('for-hiring', [ManpowerRequestController::class, 'get_hiring']);
+    });
+
+
 
 
     Route::resource('internalwork-experience', InternalWorkExperienceController::class);
@@ -119,7 +120,9 @@ Route::middleware('auth:sanctum')->group(function () {
     );
     Route::post(
         'disapprove-pan-approvals',
-        [EmployeePersonnelActionNoticeRequestController::class,
-        'disapproveApprovals']
+        [
+            EmployeePersonnelActionNoticeRequestController::class,
+            'disapproveApprovals'
+        ]
     );
 });
