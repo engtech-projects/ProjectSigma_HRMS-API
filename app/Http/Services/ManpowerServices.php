@@ -27,12 +27,12 @@ class ManpowerServices
     public function getAllManpowerRequest()
     {
         $userId = auth()->user()->id;
-        return ManpowerRequest::requestStatusPending()
+        $aw =  $this->manpowerRequest->requestStatusPending()
             ->with(['user'])
             ->whereJsonLength('approvals', '>', 0)
-            ->where(function ($query) use ($userId) {
-                $query->whereJsonContains('approvals', ['user_id' => $userId, 'status' => ManpowerApprovalStatus::PENDING]);
-            })->get();
+            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => ManpowerApprovalStatus::PENDING])
+            ->get();
+        dd($aw);
     }
 
     public function update($attributes, ManpowerRequest $manpowerRequest)

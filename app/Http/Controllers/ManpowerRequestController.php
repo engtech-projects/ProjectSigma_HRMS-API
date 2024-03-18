@@ -90,9 +90,9 @@ class ManpowerRequestController extends Controller
     public function store(StoreManpowerRequestRequest $request)
     {
         $main = new ManpowerRequest;
-        $main->fill($request->validated());
+        $attributes = $request->validated();
+        $main->fill($attributes);
         $data = json_decode('{}');
-        $main->approvals = json_encode($request->approvals);
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
