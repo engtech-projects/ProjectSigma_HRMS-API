@@ -30,6 +30,16 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     {
         $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly', 'department')->paginate(15);
         $data = json_decode('{}');
+        foreach ($main as $key => $value) {
+            $pendingData = [];
+            foreach (json_decode($value->approvals) as $approval_key) {
+                $getName = Employee::where("id", $approval_key->user_id)->first()->append("fullnameLast")->fullnameLast;
+                $approval_key->fullname = $getName;
+                array_push($pendingData, $approval_key);
+            }
+            $main[$key]->approvals = json_encode($pendingData);
+        }
+
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
@@ -65,6 +75,17 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
+
+        foreach ($main as $key => $value) {
+            $pendingData = [];
+            foreach (json_decode($value->approvals) as $approval_key) {
+                $getName = Employee::where("id", $approval_key->user_id)->first()->append("fullnameLast")->fullnameLast;
+                $approval_key->fullname = $getName;
+                array_push($pendingData, $approval_key);
+            }
+            $main[$key]->approvals = json_encode($pendingData);
+        }
+
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
