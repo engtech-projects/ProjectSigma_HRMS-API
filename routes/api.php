@@ -36,6 +36,8 @@ use App\Http\Controllers\EmployeeRelatedpersonController;
 use App\Http\Controllers\EmployeeSeminartrainingController;
 use App\Http\Controllers\InternalWorkExperienceController;
 use App\Http\Controllers\TerminationController;
+use App\Http\Controllers\HMOController;
+use App\Http\Controllers\HMOMembersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,6 +111,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('termination', TerminationController::class);
 
     Route::resource('salary-grade-level', SalaryGradeLevelController::class);
+    Route::resource('hmo-members', HMOMembersController::class);
+    Route::resource('hmo', HMOController::class);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
     Route::resource('employee-panrequest', EmployeePersonnelActionNoticeRequestController::class);
