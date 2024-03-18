@@ -100,8 +100,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
     Route::get('manpower-with-applicant', [ManpowerRequestController::class, 'get_manpower_with_applicant']);
     Route::get('job-applicants-get', [JobApplicantsController::class, 'get']);
-    // Route::put('manpower-request/approve/{manpower_request}', ApproveManpowerRequestApproval::class);
-    Route::post('manpower-request/deny/{manpower_request}', DenyManpowerRequestApproval::class);
+    Route::put('manpower-request/approval/{manpower_request}', ApproveManpowerRequestApproval::class);
+    Route::post('manpower-request/approval/{manpower_request}', DenyManpowerRequestApproval::class);
 
 
     Route::resource('internalwork-experience', InternalWorkExperienceController::class);

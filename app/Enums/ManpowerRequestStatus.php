@@ -6,8 +6,10 @@ use Illuminate\Validation\Rules\Enum;
 
 final class ManpowerRequestStatus extends Enum
 {
-    const APPROVED = 'Approved';
     const PENDING = "Pending";
-    const DENIED = "Denied";
-    
+    const APPROVED = "Approved";
+    const DISAPPROVED = "Disapproved";
+    const FILLED = "Filled";
+    const HOLD = "Hold";
+    const CANCELLED = "Cancelled";
 }

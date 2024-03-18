@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Http\Controllers\Actions;
+
+use App\Enums\ManpowerApprovalStatus;
+use App\Enums\ManpowerRequestStatus;
+use App\Http\Controllers\Controller;
+use App\Models\ManpowerRequest;
+use App\Traits\HasApproval;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class ApproveManpowerRequestApproval extends Controller
+{
+    use HasApproval;
+    /**
+     * Handle the incoming request.
+     */
+    public function __invoke(ManpowerRequest $manpowerRequest)
+    {
+        $manpowerRequestApproval = collect($manpowerRequest->approvals);
+        $result = $this->updateApproval($manpowerRequestApproval, $manpowerRequest, ['status' => ManpowerApprovalStatus::APPROVED]);
+        $manpowerRequest->approvals = $result['approvals'];
+        $manpowerRequest->save();
+        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
+    }
+}
