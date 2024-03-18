@@ -73,6 +73,7 @@ class JobApplicants extends Model
         'icoe_city',
         'icoe_zip',
         'icoe_province',
+        'remarks'
     ];
 
     public function manpower(): BelongsTo

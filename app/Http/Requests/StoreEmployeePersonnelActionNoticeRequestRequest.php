@@ -34,7 +34,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                'required_if:type,==,Termination|required_if:type,==,Transfer|required_if:type,==,Promotion',
+                'required_if:type,==,Termination,Transfer,Promotion',
             ],
             'type' => [
                 "required",
@@ -45,9 +45,10 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "required",
                 "date",
             ],
-            'section_department' => [
+            'section_department_id' => [
                 "nullable",
-                "string",
+                "integer",
+                "exists:departments,id",
                 'required_if:type,==,New Hire',
             ],
             'designation_position' => [
@@ -82,11 +83,12 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             'work_location' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire|required_if:type,==,Transfer',
+                'required_if:type,==,New Hire,Transfer',
             ],
-            'new_section' => [
+            'new_section_id' => [
                 "nullable",
-                "string",
+                "integer",
+                "exists:departments,id",
                 'required_if:type,==,Transfer',
             ],
             'new_location' => [

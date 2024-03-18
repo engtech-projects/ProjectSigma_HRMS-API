@@ -59,7 +59,6 @@ class ManpowerServices
         return $manpowerRequest->approvals;
     }
 
-
     public function getAllByAuthUser()
     {
         $userId = auth()->user()->id;

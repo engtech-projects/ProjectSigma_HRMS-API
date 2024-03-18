@@ -17,7 +17,7 @@ class InternalWorkExperience extends Model
         'employee_id',
         'position_title',
         'employment_status',
-        'department',
+        'department_id',
         'immediate_supervisor',
         'actual_salary',
         'salary_grades',
@@ -31,5 +31,10 @@ class InternalWorkExperience extends Model
     public function employee_salarygrade(): HasOne
     {
         return $this->hasOne(SalaryGradeStep::class, "id", "salary_grades");
+    }
+
+    public function employee_department(): HasOne
+    {
+        return $this->hasOne(InternalWorkExperience::class, "id", "department_id");
     }
 }

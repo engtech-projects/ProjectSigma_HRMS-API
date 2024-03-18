@@ -7,6 +7,7 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Http\Requests\EmployeeInternalWorkExperience;
+use App\Http\Requests\StoreDisapprove;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
 use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
@@ -27,7 +28,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function index()
     {
-        $main = EmployeePersonnelActionNoticeRequest::paginate(15);
+        $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly', 'department')->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -45,7 +46,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $main->created_by = $id;
         $validData = $request->validated();
         $main->fill($validData);
-        // dd(json_encode($validData["approvals"]));
         $data = json_decode('{}');
         $main->approvals = json_encode($validData["approvals"]);
         if (!$main->save()) {
@@ -63,7 +63,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function getpanrequest()
     {
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::where("created_by", "=", $id)->get();
+        $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -82,13 +82,22 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function getApprovals()
     {
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::approval()
-        ->whereJsonContains('approvals', ["user_id" => strval($id), "status" => "Pending"])->get();
+        $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
+        ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])->get();
+        $newdata = json_decode('{}');
         foreach ($main as $key => $value) {
             $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending");
-            $main[$key]->approvals = $pendingData;
+            $get_approval = collect(json_decode($value->approvals))->where("status", "Pending")->first();
+            $next_approval = $pendingData[0]->user_id;
+            if ($get_approval) {
+                $next_approval = $get_approval->user_id;
+            }
+            if ($next_approval == $id) {
+                $getName = Employee::where("id", $pendingData[0]->user_id)->first()->append("fullnameLast")->fullnameLast;
+                $pendingData[0]->fullname = $getName;
+                $main[$key]->approvals = $pendingData;
+            }
         }
-        $newdata = json_decode('{}');
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
@@ -104,7 +113,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $newdata = json_decode('{}');
 
         if (!$main) {
-            return $this->failedMessage($newdata);
+            return $this->failedMessage($newdata, "No Request found.");
         }
 
         $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request)->approval()->first();
@@ -117,16 +126,16 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $approve = 0;
         if (!$panreq) {
             $newdata->success = false;
-            $newdata->message = "No data found.";
+            $newdata->message = "No pending data found.";
             return response()->json($newdata);
         }
 
         $count = count(json_decode($panreq->approvals));
 
-        if ($next_approval == strval($id)) {
+        if ($next_approval == $id) {
             $a = [];
             foreach (json_decode($panreq->approvals) as $key) {
-                if ($key->user_id == strval($id) && $key->status == "Pending" && $approve == 0) {
+                if ($key->user_id == $id && $key->status == "Pending" && $approve == 0) {
                     $key->status = "Approved";
                     $key->date_approved = Carbon::now()->format('Y-m-d');
                     $approve = 1;
@@ -147,7 +156,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                         ManpowerRequest::where("id", $main->jobapplicant->manpower->id)->update(["request_status" => "Approved"]);
                         $main->request_status = "Filled";
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed approved.");
                     }
                 }
                 // Approved Transfer Data
@@ -162,12 +171,12 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     if ($this_internal_id) {
                         $saveData = $this->transferData($this_internal_id->id, $main);
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed transfer.");
                     }
                 }
 
                 // Approved Promotion Data
-                if ($main->type == "Transfer") {
+                if ($main->type == "Promotion") {
                     $this_internal_id = InternalWorkExperience::select("id")->where(
                         [
                             ["id", "=",$main->employee_id],
@@ -178,7 +187,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     if ($this_internal_id) {
                         $saveData = $this->promotionData($this_internal_id->id, $main);
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed promotion.");
                     }
                 }
 
@@ -194,7 +203,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     if ($this_internal_id) {
                         $saveData = $this->termination($this_internal_id->id, $main);
                     } else {
-                        return $this->failedMessage($newdata);
+                        return $this->failedMessage($newdata, "Failed termination.");
                     }
                 }
             }
@@ -210,13 +219,62 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             }
         }
 
-        return $this->failedMessage($newdata);
+        return $this->failedMessage($newdata, "Failed approved.");
     }
 
-    public function failedMessage($newdata)
+    // logged in can approve pan request(if he is the current approval)
+    public function disapproveApprovals(StoreDisapprove $request)
+    {
+        $id = Auth::user()->id;
+        $main = EmployeePersonnelActionNoticeRequest::where("id", $request->id)->with("jobapplicant", "salarygrade")->first();
+        $newdata = json_decode('{}');
+
+        if (!$main) {
+            return $this->failedMessage($newdata, "No data found.");
+        }
+
+        $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request->id)->approval()->first();
+        $get_approval = collect(json_decode($main->approvals))->where("status", "Pending")->first();
+        $next_approval = 0;
+        if ($get_approval) {
+            $next_approval = $get_approval->user_id;
+        }
+
+        if (!$panreq) {
+            $newdata->success = false;
+            $newdata->message = "No data found.";
+            return response()->json($newdata);
+        }
+
+        $disApprove = 0;
+        if ($next_approval == $id) {
+            $a = [];
+            foreach (json_decode($panreq->approvals) as $key) {
+                if ($key->user_id == $id && $key->status == "Pending" && $disApprove == 0) {
+                    $key->status = "Disapproved";
+                    $key->remarks = $request->remarks;
+                    $disApprove = 1;
+                }
+                array_push($a, $key);
+            }
+            $main->approvals = json_encode($a);
+            $main->save();
+
+            if ($main) {
+                $newdata->success = true;
+                $newdata->message = "Successfully disapproved.";
+                $newdata->data = $main;
+                return response()->json($newdata);
+            }
+        }
+        return $this->failedMessage($newdata, "Failed disapproved.");
+    }
+
+    public function failedMessage($newdata, $message)
     {
         $newdata->success = false;
-        $newdata->message = "Failed approved.";
+        $newdata->message = $message;
+        // $newdata->message = "Failed approved.";
         return response()->json($newdata);
     }
 
@@ -262,7 +320,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         // Internal Work Experience
         $internalWork['position_title'] = $request->designation_position;
         $internalWork['employment_status'] = $request->employement_status;
-        $internalWork['department'] = $request->section_department;
+        $internalWork['department'] = $request->section_department_id;
         $internalWork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
         $internalWork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
         $internalWork['work_location'] = $request->work_location;

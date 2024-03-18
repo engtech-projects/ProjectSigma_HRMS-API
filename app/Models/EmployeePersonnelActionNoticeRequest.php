@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -13,16 +14,29 @@ class EmployeePersonnelActionNoticeRequest extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    protected $appends = [
+        'fullname',
+    ];
+
+    public function getFullNameAttribute()
+    {
+        if ($this->type == "New Hire") {
+            return $this->jobapplicant->lastname . ", " . $this->jobapplicant->firstname . " " . $this->jobapplicant->middlename;
+        } else {
+            return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
+        }
+    }
+
     protected $fillable = [
         'id',
         'employee_id',
         'type',
         'date_of_effictivity',
-        'section_department',
+        'section_department_id',
         'designation_position',
         'hire_source',
         'work_location',
-        'new_section',
+        'new_section_id',
         'new_location',
         'new_employment_status',
         'new_position',
@@ -47,6 +61,16 @@ class EmployeePersonnelActionNoticeRequest extends Model
         return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id")->with('manpower');
     }
 
+    public function jobapplicantname(): HasOne
+    {
+        return $this->hasOne(JobApplicants::class, "id", "user_id");
+    }
+
+    public function jobapplicantonly(): HasOne
+    {
+        return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id");
+    }
+
     public function salarygrade(): HasOne
     {
         return $this->hasOne(SalaryGradeStep::class, "id", "salary_grades");
@@ -57,8 +81,13 @@ class EmployeePersonnelActionNoticeRequest extends Model
         return $this->hasOne(ManpowerRequest::class, "id", "job_applicants.manpowerrequests_id");
     }
 
+    public function department(): HasOne
+    {
+        return $this->hasOne(Department::class, "id", "section_department_id");
+    }
+
     public function employee(): HasOne
     {
-        return $this->hasOne(Employee::class);
+        return $this->hasOne(Employee::class, "id", "employee_id");
     }
 }

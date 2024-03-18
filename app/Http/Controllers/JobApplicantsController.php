@@ -8,6 +8,7 @@ use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\JobApplicants;
 use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
+use App\Http\Requests\UpdateJobApplicantStatus;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\DB;
@@ -77,6 +78,31 @@ class JobApplicantsController extends Controller
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
+    }
+
+    /**
+     *  Update Job Applicants status and remarks
+     */
+    public function updateApplicant(UpdateJobApplicantStatus $request, $id)
+    {
+        $main = JobApplicants::find($id);
+        $data = json_decode('{}');
+        if (!is_null($main)) {
+            $main->fill($request->validated());
+            if ($main->save()) {
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $main;
+                return response()->json($data);
+            }
+            $data->message = "Update failed.";
+            $data->success = false;
+            return response()->json($data, 400);
+        }
+
+        $data->message = "Failed update.";
+        $data->success = false;
+        return response()->json($data, 404);
     }
 
     /**

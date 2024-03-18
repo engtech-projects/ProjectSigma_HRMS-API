@@ -35,9 +35,10 @@ class StoreInternalWorkExperienceRequest extends FormRequest
                 "required",
                 "string"
             ],
-            'department'=>[
+            'department_id'=>[
                 "required",
-                "string"
+                "integer",
+                "exists:departments,id"
             ],
             'immediate_supervisor'=>[
                 "required",
