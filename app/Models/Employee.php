@@ -232,6 +232,6 @@ class Employee extends Model
 
     public function scopeUser($query, $id)
     {
-        return Users::find($id)->first();
+        return Users::where("id", $id)->first();
     }
 }
