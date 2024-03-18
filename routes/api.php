@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccessibilitiesController;
-use App\Http\Controllers\Actions\ApproveManpowerRequestApproval;
+// use App\Http\Controllers\Actions\ApproveManpowerRequestApproval;
 use App\Http\Controllers\Actions\DenyManpowerRequestApproval;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SSSContributionController;
@@ -100,7 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
     Route::get('manpower-with-applicant', [ManpowerRequestController::class, 'get_manpower_with_applicant']);
     Route::get('job-applicants-get', [JobApplicantsController::class, 'get']);
-    Route::put('manpower-request/approve/{manpower_request}', ApproveManpowerRequestApproval::class);
+    // Route::put('manpower-request/approve/{manpower_request}', ApproveManpowerRequestApproval::class);
     Route::post('manpower-request/deny/{manpower_request}', DenyManpowerRequestApproval::class);
 
 
