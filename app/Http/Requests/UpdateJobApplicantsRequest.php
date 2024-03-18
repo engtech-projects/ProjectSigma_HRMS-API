@@ -22,371 +22,371 @@ class UpdateJobApplicantsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'manpowerrequests_id'=> [
+            'manpowerrequests_id' => [
                 "nullable",
                 "integer",
                 "exists:manpower_requests,id",
             ],
-            'name_suffix'=>[
+            'name_suffix' => [
                 "nullable",
                 "string",
             ],
-            'application_letter_attachment'=>[
+            'application_letter_attachment' => [
                 "nullable",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'resume_attachment'=>[
+            'resume_attachment' => [
                 "nullable",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'status'=>[
+            'status' => [
                 "nullable",
                 "string",
-                'in:Contract Extended,Pending,Interviewed,Rejected,Hired,For Hiring,Test,Interview,Reference Checking,Medical Examination,Contract Signed'
+                'in:Contact Extended,Pending,Interviewed,Rejected,Hired,For Hiring,Test,Interview,Reference Checking,Medical Examination,Contract Signed'
             ],
-            'lastname'=>[
-                "nullable",
-                "string",
-                "max:35"
-            ],
-            'firstname'=>[
+            'lastname' => [
                 "nullable",
                 "string",
                 "max:35"
             ],
-            'middlename'=>[
+            'firstname' => [
                 "nullable",
                 "string",
                 "max:35"
             ],
-            'date_of_application'=>[
+            'middlename' => [
+                "nullable",
+                "string",
+                "max:35"
+            ],
+            'date_of_application' => [
                 "nullable",
                 "date",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "nullable",
                 "date",
             ],
-            'pre_address_street'=>[
+            'pre_address_street' => [
                 "nullable",
                 "string",
             ],
-            'pre_address_brgy'=>[
+            'pre_address_brgy' => [
                 "nullable",
                 "string",
             ],
-            'pre_address_city'=>[
+            'pre_address_city' => [
                 "nullable",
                 "string",
             ],
-            'pre_address_zip'=>[
+            'pre_address_zip' => [
                 "nullable",
                 "string",
             ],
-            'pre_address_province'=>[
+            'pre_address_province' => [
                 "nullable",
                 "string",
             ],
-            'per_address_street'=>[
+            'per_address_street' => [
                 "nullable",
                 "string",
             ],
-            'per_address_brgy'=>[
+            'per_address_brgy' => [
                 "nullable",
                 "string",
             ],
-            'per_address_city'=>[
+            'per_address_city' => [
                 "nullable",
                 "string",
             ],
-            'per_address_zip'=>[
+            'per_address_zip' => [
                 "nullable",
                 "string",
             ],
-            'per_address_province'=>[
+            'per_address_province' => [
                 "nullable",
                 "string",
             ],
-            'contact_info'=>[
+            'contact_info' => [
                 "nullable",
                 "string",
                 "max:11"
             ],
-            'email'=>[
+            'email' => [
                 "nullable",
                 "string",
                 "max:35"
             ],
-            'how_did_u_learn_about_our_company'=>[
+            'how_did_u_learn_about_our_company' => [
                 "nullable",
                 "string",
             ],
-            'desired_position'=>[
+            'desired_position' => [
                 "nullable",
                 "string",
             ],
-            'currently_employed'=>[
+            'currently_employed' => [
                 "nullable",
                 "string",
                 'in:Yes,No'
             ],
-            'name_of_spouse'=>[
+            'name_of_spouse' => [
                 "nullable",
                 "string",
                 "max:35"
             ],
-            'date_of_birth_spouse'=>[
+            'date_of_birth_spouse' => [
                 "nullable",
                 "date",
             ],
-            'occupation_spouse'=>[
+            'occupation_spouse' => [
                 "nullable",
                 "string",
             ],
-            'telephone_spouse'=>[
+            'telephone_spouse' => [
                 "nullable",
                 "string",
                 "max:11"
             ],
-            'children'=>[
+            'children' => [
                 "nullable",
                 "json",
             ],
-            'children.*.name'=>[
+            'children.*.name' => [
                 "nullable",
                 "string",
             ],
-            'children.*.birthdate'=>[
+            'children.*.birthdate' => [
                 'nullable_if:children.*.name,null',
                 "date",
             ],
-            'icoe_name'=>[
+            'icoe_name' => [
                 "nullable",
                 "string",
             ],
-            'icoe_address'=>[
+            'icoe_address' => [
                 "nullable",
                 "string",
             ],
-            'icoe_relationship'=>[
+            'icoe_relationship' => [
                 "nullable",
                 "string",
             ],
-            'telephone_icoe'=>[
+            'telephone_icoe' => [
                 "nullable",
                 "string",
             ],
-            'education'=>[
+            'education' => [
                 "nullable",
                 "json",
             ],
-            'education.*.elementary_name'=>[
+            'education.*.elementary_name' => [
                 "nullable",
                 "string",
             ],
-            'education.*.elementary_education'=>[
+            'education.*.elementary_education' => [
                 "nullable",
                 "string",
             ],
-            'education.*.elementary_period_attendance_to'=>[
+            'education.*.elementary_period_attendance_to' => [
                 "nullable",
                 "date",
             ],
-            'education.*.elementary_period_attendance_from'=>[
+            'education.*.elementary_period_attendance_from' => [
                 "nullable",
                 "date",
             ],
-            'education.*.elementary_year_graduated'=>[
+            'education.*.elementary_year_graduated' => [
                 "nullable",
                 "date",
             ],
-            'education.*.secondary_name'=>[
+            'education.*.secondary_name' => [
                 "nullable",
                 "string",
             ],
-            'education.*.secondary_education'=>[
+            'education.*.secondary_education' => [
                 "nullable",
                 "string",
             ],
-            'education.*.secondary_period_attendance_to'=>[
+            'education.*.secondary_period_attendance_to' => [
                 "nullable",
                 "date",
             ],
-            'education.*.secondary_period_attendance_from'=>[
+            'education.*.secondary_period_attendance_from' => [
                 "nullable",
                 "date",
             ],
-            'education.*.secondary_year_graduated'=>[
+            'education.*.secondary_year_graduated' => [
                 "nullable",
                 "date",
             ],
-            'education.*.vocationalcourse_name'=>[
+            'education.*.vocationalcourse_name' => [
                 "nullable",
                 "string",
             ],
-            'education.*.vocationalcourse_education'=>[
+            'education.*.vocationalcourse_education' => [
                 "nullable",
                 "string",
             ],
-            'education.*.vocationalcourse_period_attendance_to'=>[
+            'education.*.vocationalcourse_period_attendance_to' => [
                 "nullable",
                 "date",
             ],
-            'education.*.vocationalcourse_period_attendance_from'=>[
+            'education.*.vocationalcourse_period_attendance_from' => [
                 "nullable",
                 "date",
             ],
-            'education.*.vocationalcourse_year_graduated'=>[
+            'education.*.vocationalcourse_year_graduated' => [
                 "nullable",
                 "date",
             ],
-            'education.*.college_name'=>[
+            'education.*.college_name' => [
                 "nullable",
                 "string",
             ],
-            'education.*.college_education'=>[
+            'education.*.college_education' => [
                 "nullable",
                 "string",
             ],
-            'education.*.college_period_attendance_to'=>[
+            'education.*.college_period_attendance_to' => [
                 "nullable",
                 "date",
             ],
-            'education.*.college_period_attendance_from'=>[
+            'education.*.college_period_attendance_from' => [
                 "nullable",
                 "date",
             ],
-            'education.*.college_year_graduated'=>[
+            'education.*.college_year_graduated' => [
                 "nullable",
                 "date",
             ],
-            'education.*.graduatestudies_name'=>[
+            'education.*.graduatestudies_name' => [
                 "nullable",
                 "string",
             ],
-            'education.*.graduatestudies_education'=>[
+            'education.*.graduatestudies_education' => [
                 "nullable",
                 "string",
             ],
-            'education.*.graduatestudies_period_attendance_to'=>[
+            'education.*.graduatestudies_period_attendance_to' => [
                 "nullable",
                 "date",
             ],
-            'education.*.graduatestudies_period_attendance_from'=>[
+            'education.*.graduatestudies_period_attendance_from' => [
                 "nullable",
                 "date",
             ],
-            'education.*.graduatestudies_year_graduated'=>[
+            'education.*.graduatestudies_year_graduated' => [
                 "nullable",
                 "date",
             ],
-            'workexperience'=>[
+            'workexperience' => [
                 "nullable",
                 "json",
             ],
-            'workexperience.*.inclusive_dates_from'=>[
+            'workexperience.*.inclusive_dates_from' => [
                 "nullable",
                 "date",
             ],
-            'workexperience.*.inclusive_dates_to'=>[
+            'workexperience.*.inclusive_dates_to' => [
                 "nullable",
                 "date",
             ],
-            'workexperience.*.position_title'=>[
+            'workexperience.*.position_title' => [
                 "nullable",
                 "string",
             ],
-            'workexperience.*.dpt_agency_office_company'=>[
+            'workexperience.*.dpt_agency_office_company' => [
                 "nullable",
                 "string",
             ],
-            'workexperience.*.monthly_salary'=>[
+            'workexperience.*.monthly_salary' => [
                 "nullable",
                 "float",
             ],
-            'workexperience.*.status_of_appointment'=>[
+            'workexperience.*.status_of_appointment' => [
                 "nullable",
                 "string",
             ],
-            'place_of_birth'=>[
+            'place_of_birth' => [
                 "nullable",
                 "string",
             ],
-            'blood_type'=>[
+            'blood_type' => [
                 "nullable",
                 "string",
             ],
-            'date_of_marriage'=>[
+            'date_of_marriage' => [
                 "nullable",
                 "string",
             ],
-            'sss'=>[
+            'sss' => [
                 "nullable",
                 "string",
             ],
-            'philhealth'=>[
+            'philhealth' => [
                 "nullable",
                 "string",
             ],
-            'pagibig'=>[
+            'pagibig' => [
                 "nullable",
                 "string",
             ],
-            'tin'=>[
+            'tin' => [
                 "nullable",
                 "string",
             ],
-            'citizenship'=>[
+            'citizenship' => [
                 "nullable",
                 "string",
             ],
-            'religion'=>[
+            'religion' => [
                 "nullable",
                 "string",
             ],
-            'height'=>[
+            'height' => [
                 "nullable",
                 "string",
             ],
-            'weight'=>[
+            'weight' => [
                 "nullable",
                 "string",
             ],
-            'father_name'=>[
+            'father_name' => [
                 "nullable",
                 "string",
             ],
-            'mother_name'=>[
+            'mother_name' => [
                 "nullable",
                 "string",
             ],
-            'gender'=>[
+            'gender' => [
                 "nullable",
                 "string",
             ],
-            'civil_status'=>[
+            'civil_status' => [
                 "nullable",
                 "string",
             ],
-            'icoe_street'=>[
+            'icoe_street' => [
                 "nullable",
                 "string",
             ],
-            'icoe_brgy'=>[
+            'icoe_brgy' => [
                 "nullable",
                 "string",
             ],
-            'icoe_city'=>[
+            'icoe_city' => [
                 "nullable",
                 "string",
             ],
-            'icoe_zip'=>[
+            'icoe_zip' => [
                 "nullable",
                 "string",
             ],
-            'icoe_province'=>[
+            'icoe_province' => [
                 "nullable",
                 "string",
             ],

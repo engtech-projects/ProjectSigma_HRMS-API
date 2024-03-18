@@ -14,7 +14,7 @@ class CompanyEmployeeController extends Controller
     public function index()
     {
         //
-        $main = CompanyEmployee::simplePaginate(15);
+        $main = CompanyEmployee::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -56,7 +56,6 @@ class CompanyEmployeeController extends Controller
      */
     public function show($id)
     {
-        //
         $main = CompanyEmployee::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
@@ -83,7 +82,6 @@ class CompanyEmployeeController extends Controller
      */
     public function update(UpdateCompanyEmployeeRequest $request,$id)
     {
-        //
         $main = CompanyEmployee::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
@@ -109,7 +107,6 @@ class CompanyEmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
         $main = CompanyEmployee::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {

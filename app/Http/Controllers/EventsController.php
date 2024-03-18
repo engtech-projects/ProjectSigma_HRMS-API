@@ -13,11 +13,11 @@ class EventsController extends Controller
      */
     public function index()
     {
-        $main = Events::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $main = Events::paginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
         return response()->json($data);
     }
 
@@ -35,8 +35,8 @@ class EventsController extends Controller
     {
         $main = new Events;
         $main->fill($request->validated());
-        $data = json_decode('{}'); 
-        
+        $data = json_decode('{}');
+
         if(!$main->save()){
             $data->message = "Save failed.";
             $data->success = false;

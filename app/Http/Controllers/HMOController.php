@@ -2,48 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Approvals;
-use App\Models\Users;
-use App\Http\Requests\StoreApprovalsRequest;
-use App\Http\Requests\UpdateApprovalsRequest;
-use Illuminate\Http\Request;
+use App\Models\HMO;
+use App\Http\Requests\StoreHMORequest;
+use App\Http\Requests\UpdateHMORequest;
 
-class ApprovalsController extends Controller
+class HMOController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $main = Approvals::paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
-    }
-
-
-    public function get($request)
-    {
-        $main = Approvals::where("form", "=", $request)->first();
-        if (!is_null($main)) {
-            $fetchdata = $main->approvals;
-            $a = json_decode($fetchdata);
-            foreach ($a as $c => $x) {
-                if ($x->user_id == null || $x->userselector == "true") {
-                    $data = json_decode('{}');
-                    $data->message = "Successfully fetch.";
-                    $data->success = true;
-                    $data->data = $main;
-                } else {
-                    $fetchuser = Users::find($x->user_id);
-                    $a[$c]->name = $fetchuser->name;
-                }
-            }
-            $fetchdata = $a;
-        }
-        $main->approvals = $fetchdata;
+        $main = HMO::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -56,18 +26,17 @@ class ApprovalsController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreApprovalsRequest $request)
+    public function store(StoreHMORequest $request)
     {
-        $main = new Approvals;
+        $main = new HMO;
         $main->fill($request->validated());
         $data = json_decode('{}');
-        $main->approvals = json_encode($request->approvals);
+
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
@@ -84,7 +53,7 @@ class ApprovalsController extends Controller
      */
     public function show($id)
     {
-        $main = Approvals::find($id);
+        $main = HMO::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -100,7 +69,7 @@ class ApprovalsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Approvals $approvals)
+    public function edit(HMO $hMO)
     {
         //
     }
@@ -108,9 +77,9 @@ class ApprovalsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateApprovalsRequest $request, $id)
+    public function update(UpdateHMORequest $request, $id)
     {
-        $main = Approvals::find($id);
+        $main = HMO::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
@@ -135,7 +104,7 @@ class ApprovalsController extends Controller
      */
     public function destroy($id)
     {
-        $main = Approvals::find($id);
+        $main = HMO::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             if ($main->delete()) {

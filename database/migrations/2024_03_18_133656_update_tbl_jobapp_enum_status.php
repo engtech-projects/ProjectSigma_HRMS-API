@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('job_applicants', function (Blueprint $table) {
-            $table->enum('status', ['Contract Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
+            $table->enum('status', ['Contact Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('job_applicants', function (Blueprint $table) {
-            $table->enum('status', ['Contract Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
+            $table->enum('status', ['Contact Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
         });
     }
 };
