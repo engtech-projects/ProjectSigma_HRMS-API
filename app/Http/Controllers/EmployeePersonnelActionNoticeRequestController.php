@@ -51,7 +51,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function store(StoreEmployeePersonnelActionNoticeRequestRequest $request)
     {
-        $id = Auth::user()->id;
+        $id = Auth::user()->employee_id;
         $main = new EmployeePersonnelActionNoticeRequest();
         $main->created_by = $id;
         $validData = $request->validated();
@@ -72,7 +72,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     // can view all pan request made by logged in user
     public function getpanrequest()
     {
-        $id = Auth::user()->id;
+        $id = Auth::user()->employee_id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
 
@@ -102,7 +102,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function getApprovals()
     {
-        $id = Auth::user()->id;
+        $id = Auth::user()->employee_id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
         ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])->get();
         $newdata = json_decode('{}');
@@ -129,7 +129,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function approveApprovals($request)
     {
 
-        $id = Auth::user()->id;
+        $id = Auth::user()->employee_id;
         $main = EmployeePersonnelActionNoticeRequest::where("id", $request)->with("jobapplicant", "salarygrade")->first();
         $newdata = json_decode('{}');
 
@@ -246,7 +246,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     // logged in can approve pan request(if he is the current approval)
     public function disapproveApprovals(StoreDisapprove $request)
     {
-        $id = Auth::user()->id;
+        $id = Auth::user()->employee_id;
         $main = EmployeePersonnelActionNoticeRequest::where("id", $request->id)->with("jobapplicant", "salarygrade")->first();
         $newdata = json_decode('{}');
 
