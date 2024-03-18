@@ -6,7 +6,6 @@ use App\Enums\EmployeeAddressType;
 use App\Enums\EmployeeCompanyEmploymentsStatus;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Enums\EmployeeRelatedPersonType;
-use App\Http\Requests\EmployeeInternalWorkExperience;
 use App\Http\Requests\StoreDisapprove;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
@@ -15,7 +14,6 @@ use App\Models\Employee;
 use App\Models\InternalWorkExperience;
 use App\Models\JobApplicants;
 use App\Models\ManpowerRequest;
-use App\Models\SalaryGradeStep;
 use App\Models\Termination;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +31,8 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         foreach ($main as $key => $value) {
             $pendingData = [];
             foreach (json_decode($value->approvals) as $approval_key) {
-                $getName = Employee::where("id", $approval_key->user_id)->first()->append("fullnameLast")->fullnameLast;
+                $getId = Employee::user($approval_key->user_id)->employee_id;
+                $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
                 $approval_key->name = $getName;
                 array_push($pendingData, $approval_key);
             }
@@ -51,7 +50,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function store(StoreEmployeePersonnelActionNoticeRequestRequest $request)
     {
-        $id = Auth::user()->employee_id;
+        $id = Auth::user()->id;
         $main = new EmployeePersonnelActionNoticeRequest();
         $main->created_by = $id;
         $validData = $request->validated();
@@ -72,14 +71,15 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     // can view all pan request made by logged in user
     public function getpanrequest()
     {
-        $id = Auth::user()->employee_id;
+        $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
 
         foreach ($main as $key => $value) {
             $pendingData = [];
             foreach (json_decode($value->approvals) as $approval_key) {
-                $getName = Employee::where("id", $approval_key->user_id)->first()->append("fullnameLast")->fullnameLast;
+                $getId = Employee::user($approval_key->user_id)->employee_id;
+                $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
                 $approval_key->name = $getName;
                 array_push($pendingData, $approval_key);
             }
@@ -102,7 +102,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function getApprovals()
     {
-        $id = Auth::user()->employee_id;
+        $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
         ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])->get();
         $newdata = json_decode('{}');
@@ -114,7 +114,8 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                 $next_approval = $get_approval->user_id;
             }
             if ($next_approval == $id) {
-                $getName = Employee::where("id", $pendingData[0]->user_id)->first()->append("fullnameLast")->fullnameLast;
+                $getId = Employee::user($pendingData[0]->user_id)->employee_id;
+                $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
                 $pendingData[0]->name = $getName;
                 $main[$key]->approvals = $pendingData;
             }
@@ -129,7 +130,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function approveApprovals($request)
     {
 
-        $id = Auth::user()->employee_id;
+        $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::where("id", $request)->with("jobapplicant", "salarygrade")->first();
         $newdata = json_decode('{}');
 
@@ -246,7 +247,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     // logged in can approve pan request(if he is the current approval)
     public function disapproveApprovals(StoreDisapprove $request)
     {
-        $id = Auth::user()->employee_id;
+        $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::where("id", $request->id)->with("jobapplicant", "salarygrade")->first();
         $newdata = json_decode('{}');
 

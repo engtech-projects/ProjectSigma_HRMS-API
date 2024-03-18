@@ -229,4 +229,9 @@ class Employee extends Model
     {
         return $this->hasOne(Users::class);
     }
+
+    public function scopeUser($query, $id)
+    {
+        return Users::find($id)->first();
+    }
 }
