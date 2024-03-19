@@ -27,11 +27,16 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     {
         $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly', 'department')->paginate(15);
         $data = json_decode('{}');
+        $getName = "";
         foreach ($main as $key => $value) {
             $pendingData = [];
             foreach (json_decode($value->approvals) as $approval_key) {
                 $getId = Employee::user($approval_key->user_id)->employee_id;
-                $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
+                if ($getId) {
+                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
+                } else {
+                    $getName = Employee::user($approval_key->user_id)->name;
+                }
                 $approval_key->name = $getName;
                 array_push($pendingData, $approval_key);
             }
@@ -73,12 +78,16 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
-
+        $getName = "";
         foreach ($main as $key => $value) {
             $pendingData = [];
             foreach (json_decode($value->approvals) as $approval_key) {
                 $getId = Employee::user($approval_key->user_id)->employee_id;
-                $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
+                if ($getId) {
+                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
+                } else {
+                    $getName = Employee::user($approval_key->user_id)->name;
+                }
                 $approval_key->name = $getName;
                 array_push($pendingData, $approval_key);
             }
@@ -105,6 +114,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
         ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])->get();
         $newdata = json_decode('{}');
+        $getName = "";
         foreach ($main as $key => $value) {
             $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending");
             $get_approval = collect(json_decode($value->approvals))->where("status", "Pending")->first();
@@ -114,7 +124,11 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             }
             if ($next_approval == $id) {
                 $getId = Employee::user($pendingData[0]->user_id)->employee_id;
-                $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
+                if ($getId) {
+                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
+                } else {
+                    $getName = Employee::user($pendingData[0]->user_id)->name;
+                }
                 $pendingData[0]->name = $getName;
                 $main[$key]->approvals = $pendingData;
             }
