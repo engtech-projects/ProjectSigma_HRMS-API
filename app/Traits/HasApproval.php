@@ -42,7 +42,7 @@ trait HasApproval
     {
         $userId = auth()->user()->id;
         return $this->manpowerRequest->requestStatusPending()
-            ->with(['user'])
+            ->with(['user.employee'])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => ManpowerApprovalStatus::PENDING])
             ->get();

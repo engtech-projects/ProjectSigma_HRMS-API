@@ -70,8 +70,6 @@ class ManpowerRequestController extends Controller
      */
     public function myApproval()
     {
-        $testRequest = ManpowerRequest::first();
-        return $testRequest;
         $manpowerRequests = $this->manpowerServices->getAllManpowerRequest();
         return ManpowerRequestResource::collection($manpowerRequests);
     }
