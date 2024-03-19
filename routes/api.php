@@ -115,9 +115,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('hmo', HMOController::class);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
-    Route::resource('employee-panrequest', EmployeePersonnelActionNoticeRequestController::class);
-    Route::get('get-panrequest', [EmployeePersonnelActionNoticeRequestController::class, 'getpanrequest']);
-    Route::get('get-pan-approvals', [EmployeePersonnelActionNoticeRequestController::class, 'getApprovals']);
+    Route::prefix('pan')->group(function () {
+        Route::resource('resource', EmployeePersonnelActionNoticeRequestController::class);
+        Route::get('my-request', [EmployeePersonnelActionNoticeRequestController::class, 'getpanrequest']);
+        Route::get('my-approvals', [EmployeePersonnelActionNoticeRequestController::class, 'getApprovals']);
+    });
     Route::post(
         'approve-pan-approvals/{id}',
         [EmployeePersonnelActionNoticeRequestController::class, 'approveApprovals']
