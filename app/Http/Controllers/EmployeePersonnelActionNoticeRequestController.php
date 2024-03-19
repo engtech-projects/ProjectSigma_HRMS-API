@@ -116,21 +116,23 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $newdata = json_decode('{}');
         $getName = "";
         foreach ($main as $key => $value) {
-            $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending");
+            $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending")->first();
             $get_approval = collect(json_decode($value->approvals))->where("status", "Pending")->first();
-            $next_approval = $pendingData[0]->user_id;
+            $next_approval = $pendingData->user_id;
             if ($get_approval) {
                 $next_approval = $get_approval->user_id;
             }
             if ($next_approval == $id) {
-                $getId = Employee::user($pendingData[0]->user_id)->employee_id;
+                $getId = Employee::user($pendingData->user_id)->employee_id;
                 if ($getId) {
                     $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
                 } else {
-                    $getName = Employee::user($pendingData[0]->user_id)->name;
+                    $getName = Employee::user($pendingData->user_id)->name;
                 }
-                $pendingData[0]->name = $getName;
+                $pendingData->name = $getName;
                 $main[$key]->approvals = $pendingData;
+            } else {
+                $main[$key]->approvals = "[]";
             }
         }
         $newdata->message = "Successfully fetch.";
