@@ -40,6 +40,10 @@ class ManpowerRequestResource extends JsonResource
                     "name" => $this->user->name,
                     "email" => $this->user->email,
                     "type" => $this->user->type,
+                    "employee" => [
+                        "id" => $this->user->employee->id,
+                        "name" => $this->user->employee->fullnameLast,
+                    ]
                 ];
             })
         ];

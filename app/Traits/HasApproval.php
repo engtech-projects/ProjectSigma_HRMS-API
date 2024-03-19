@@ -29,8 +29,8 @@ trait HasApproval
             $user = User::with('employee')->find($approval['user_id']);
             if ($user && $user->employee) {
                 $approval['employee'] = [
-                    'employee_id' => $user->employee_id,
-                    'full_name' =>  $user->employee->fullnameLast,
+                    'id' => $user->employee_id,
+                    'name' =>  $user->employee->fullnameLast,
                     'type' => $user->type
                 ];
             }
