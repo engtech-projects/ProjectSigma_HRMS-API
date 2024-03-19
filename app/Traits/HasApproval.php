@@ -53,7 +53,11 @@ trait HasApproval
         $manpowerRequestApproval = collect($manpowerRequest->approvals)->map(function ($item, int $key) use ($approvalToUpdate, $data) {
             if ($key === $approvalToUpdate) {
                 $item['status'] = $data['status'];
-                $item['date_approved'] = $data['status'] === ManpowerApprovalStatus::APPROVED ? Carbon::now()->format('Y-m-d') : $item["date_approved"];
+                if ($data["status"] === ManpowerApprovalStatus::DENIED) {
+                    $data['date_approved'] = Carbon::now()->format('Y-m-d');
+                } else {
+                    $data['date_denied'] = Carbon::now()->format('Y-m-d');
+                }
                 $item['remarks'] = array_key_exists("remarks", $data) ? $data["remarks"] : $item["remarks"];
             }
             return $item;
