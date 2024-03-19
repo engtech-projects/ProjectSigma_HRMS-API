@@ -122,16 +122,16 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             if ($get_approval) {
                 $next_approval = $get_approval->user_id;
             }
-            if ($next_approval == $id) {
-                $getId = Employee::user($pendingData->user_id)->employee_id;
-                if ($getId) {
-                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
-                } else {
-                    $getName = Employee::user($pendingData->user_id)->name;
-                }
-                $pendingData->name = $getName;
-                $main[$key]->approvals = $pendingData;
+            $getId = Employee::user($pendingData->user_id)->employee_id;
+            if ($getId) {
+                $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
+            } else {
+                $getName = Employee::user($pendingData->user_id)->name;
             }
+            $pendingData->name = $getName;
+            $main[$key]->approvals = $pendingData;
+            // if ($next_approval == $id) {
+            // }
             // else {
             //     $main[$key]->approvals = "[]";
             // }
