@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ManpowerRequestStatus;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Carbon;
@@ -34,25 +35,18 @@ class ManpowerRequestController extends Controller
      */
     public function index()
     {
-        $manpowerRequests = $this->manpowerService->getAll()->load('user.employee');
-        $collection = collect(ManpowerRequestResource::collection($manpowerRequests));
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
-        ]);
+        $manpowerRequests = $this->manpowerService->getAll();
+        $collection = collect(ManpowerRequestResource::collection($manpowerRequests->load('user.employee')));
+        return new JsonResource(PaginateResourceCollection::paginate($collection, 10));
     }
     /**
      * Show List Manpower requests that have status “For Hiring“ = Approve
      */
     public function forHiring()
     {
-        $main = ManpowerRequest::with('job_applicants')->where("request_status", '=', 'Approved')->get();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $manpowerRequest = $this->manpowerService->getAll();
+        $manpowerRequest = $manpowerRequest->where("request_status", ManpowerRequestStatus::APPROVED);
+        return ManpowerRequestResource::collection($manpowerRequest->load('user.employee'));
     }
 
 
@@ -83,6 +77,7 @@ class ManpowerRequestController extends Controller
         } catch (\Exception $e) {
             throw new TransactionFailedException("Create transaction failed.", 400, $e);
         }
+
         return new JsonResponse([
             "success" => true,
             "message" => "Manpower request successfully created.",
