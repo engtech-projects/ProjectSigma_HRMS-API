@@ -37,7 +37,18 @@ class ManpowerRequestController extends Controller
     {
         $manpowerRequests = $this->manpowerService->getAll();
         $collection = collect(ManpowerRequestResource::collection($manpowerRequests->load('user.employee')));
-        return new JsonResource(PaginateResourceCollection::paginate($collection, 10));
+
+        if ($collection->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
+        ]);
     }
     /**
      * Show List Manpower requests that have status “For Hiring“ = Approve
@@ -45,15 +56,35 @@ class ManpowerRequestController extends Controller
     public function forHiring()
     {
         $manpowerRequest = $this->manpowerService->getAll();
-        $manpowerRequest = $manpowerRequest->where("request_status", ManpowerRequestStatus::APPROVED);
-        return ManpowerRequestResource::collection($manpowerRequest->load('user.employee'));
+        $manpowerRequest->load(['job_applicants', 'user.employee']);
+        if ($manpowerRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))
+        ]);
     }
 
 
     public function myRequest()
     {
         $myRequest = $this->manpowerService->getMyRequest();
-        return ManpowerRequestResource::collection($myRequest);
+        if ($myRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => ManpowerRequestResource::collection($myRequest)
+        ]);
     }
 
     /**
@@ -61,8 +92,20 @@ class ManpowerRequestController extends Controller
      */
     public function myApproval()
     {
-        $manpowerRequests = $this->manpowerService->getAllManpowerRequest();
-        return ManpowerRequestResource::collection($manpowerRequests);
+        $myApproval = $this->manpowerService->getAllManpowerRequest();
+
+        $myApproval = collect();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => ManpowerRequestResource::collection($myApproval)
+        ]);
     }
 
 
@@ -90,7 +133,17 @@ class ManpowerRequestController extends Controller
     public function show(ManpowerRequest $manpowerRequest)
     {
         $newManpowerRequest = $manpowerRequest->load('user.employee');
-        return new ManpowerRequestResource($newManpowerRequest);
+        if ($newManpowerRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower request fetched.',
+            'data' => new ManpowerRequestResource($newManpowerRequest)
+        ]);
     }
 
     /**
@@ -105,7 +158,7 @@ class ManpowerRequestController extends Controller
         }
         return new JsonResponse([
             "success" => true,
-            "message" => "Manpower request successfully updated."
+            "message" => "Successfully updated."
         ], JsonResponse::HTTP_OK);
     }
 
@@ -121,9 +174,10 @@ class ManpowerRequestController extends Controller
         } catch (\Exception $e) {
             throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
+
         return new JsonResponse([
             "success" => true,
-            "message" => "Manpower request successfully deleted."
+            "message" => "Successfully delete."
         ], JsonResponse::HTTP_OK);
     }
 }
