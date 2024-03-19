@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string("hmo_name");
             $table->date("hmo_start");
             $table->date("hmo_end");
-            $table->double("amount");
+            $table->double("employee_share");
+            $table->double("employer_share");
             $table->softDeletes();
             $table->timestamps();
         });

@@ -23,18 +23,25 @@ class UpdateHMORequest extends FormRequest
     {
         return [
             'hmo_name' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'hmo_start' => [
-                "required",
+                "nullable",
                 "date",
             ],
             'hmo_end' => [
-                "required",
+                "nullable",
                 "date",
             ],
-            'amount' => [
+            'employee_share' => [
+                "nullable",
+                "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
+            ],
+            'employer_share' => [
                 "nullable",
                 "numeric",
                 "min:0",

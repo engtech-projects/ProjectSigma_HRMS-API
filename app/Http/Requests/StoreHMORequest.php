@@ -34,7 +34,14 @@ class StoreHMORequest extends FormRequest
                 "required",
                 "date",
             ],
-            'amount' => [
+            'employee_share' => [
+                "required",
+                "numeric",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
+            ],
+            'employer_share' => [
                 "required",
                 "numeric",
                 "min:0",

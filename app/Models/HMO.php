@@ -19,6 +19,7 @@ class HMO extends Model
         'hmo_name',
         'hmo_start',
         'hmo_end',
-        'amount',
+        'employee_share',
+        'employer_share',
     ];
 }
