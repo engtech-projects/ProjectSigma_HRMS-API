@@ -22,10 +22,22 @@ class ManpowerServices
     }
     public function getAll()
     {
-        return $this->manpowerRequest->all();
+        return $this->manpowerRequest->get();
     }
 
-    public function update($attributes, ManpowerRequest $manpowerRequest)
+    public function getMyRequest()
+    {
+        $manpowerRequest = $this->getAll();
+
+        return $manpowerRequest->where('requested_by', auth()->user()->id)->load('user.employee');
+    }
+
+    public function createManpowerRequest(array $attributes)
+    {
+        $this->manpowerRequest->create($attributes);
+    }
+
+    public function update(array $attributes, ManpowerRequest $manpowerRequest)
     {
         if (array_key_exists('approvals', $attributes)) {
             $manpowerRequest->approvals = $this->updateApproval(json_decode($attributes['approvals'], true), $manpowerRequest);

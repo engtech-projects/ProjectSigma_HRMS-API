@@ -37,7 +37,7 @@ class ManpowerRequestResource extends JsonResource
             "requested_by_user" => $this->whenLoaded('user', function ($user) {
                 $user = new UserResource($this->user);
                 return [
-                    "name" => $user->employee?->fullnameLast,
+                    "name" => $user->employee ? $user->employee->fullnameLast : $user->name,
                     "type" => $user->type
                 ];
             })

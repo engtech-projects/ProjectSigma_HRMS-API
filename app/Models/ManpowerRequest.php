@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ManpowerRequest extends Model
 {
@@ -48,6 +49,15 @@ class ManpowerRequest extends Model
     protected $casts = [
         'approvals' => 'array'
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        static::deleted(function ($model) {
+            $attachment = explode("/", $model->job_description_attachment);
+            Storage::deleteDirectory("public/" . $attachment[0] . "/" . $attachment[1]);
+        });
+    }
 
     /**
      * MODEL
