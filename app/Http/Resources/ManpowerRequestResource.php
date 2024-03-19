@@ -34,16 +34,11 @@ class ManpowerRequestResource extends JsonResource
             "request_status" => $this->request_status,
             "charged_to" => $this->charged_to,
             "breakdown_details" => $this->breakdown_details,
-            "requested_by" => $this->whenLoaded('user', function () {
+            "requested_by" => $this->whenLoaded('user', function ($user) {
+                $user = new UserResource($this->user);
                 return [
-                    "id" => $this->user->id,
-                    "name" => $this->user->name,
-                    "email" => $this->user->email,
-                    "type" => $this->user->type,
-                    "employee" => [
-                        "id" => $this->user->employee->id,
-                        "name" => $this->user->employee->fullnameLast,
-                    ]
+                    "name" => $user->employee?->fullnameLast,
+                    "type" => $user->type
                 ];
             })
         ];
