@@ -93,13 +93,11 @@ class ManpowerRequestController extends Controller
     public function myApproval()
     {
         $myApproval = $this->manpowerService->getAllManpowerRequest();
-
-        $myApproval = collect();
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-            ], JsonResponse::HTTP_NO_CONTENT);
+            ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => true,
