@@ -42,7 +42,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-            ], JsonResponse::HTTP_NO_CONTENT);
+            ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => true,
@@ -61,7 +61,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-            ], JsonResponse::HTTP_NO_CONTENT);
+            ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => true,
@@ -78,7 +78,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-            ], JsonResponse::HTTP_NO_CONTENT);
+            ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => true,
@@ -131,12 +131,6 @@ class ManpowerRequestController extends Controller
     public function show(ManpowerRequest $manpowerRequest)
     {
         $newManpowerRequest = $manpowerRequest->load('user.employee');
-        if ($newManpowerRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_NO_CONTENT);
-        }
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower request fetched.',
