@@ -112,16 +112,13 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     {
         $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
-        ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])->get();
+            ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])
+            ->get();
         $newdata = json_decode('{}');
-        $getName = "";
+
         foreach ($main as $key => $value) {
+            $getName = "";
             $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending")->first();
-            $get_approval = collect(json_decode($value->approvals))->where("status", "Pending")->first();
-            $next_approval = $pendingData->user_id;
-            if ($get_approval) {
-                $next_approval = $get_approval->user_id;
-            }
             $getId = Employee::user($pendingData->user_id)->employee_id;
             if ($getId) {
                 $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
@@ -130,12 +127,8 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             }
             $pendingData->name = $getName;
             $main[$key]->approvals = $pendingData;
-            // if ($next_approval == $id) {
-            // }
-            // else {
-            //     $main[$key]->approvals = "[]";
-            // }
         }
+
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
@@ -201,9 +194,9 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                 if ($main->type == "Transfer") {
                     $this_internal_id = InternalWorkExperience::select("id")->where(
                         [
-                            ["id", "=",$main->employee_id],
+                            ["id", "=", $main->employee_id],
                             ["date_to", "=", null],
-                            ["status","=", EmployeeInternalWorkExperiencesStatus::CURRENT]
+                            ["status", "=", EmployeeInternalWorkExperiencesStatus::CURRENT]
                         ]
                     )->first();
                     if ($this_internal_id) {
@@ -217,9 +210,9 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                 if ($main->type == "Promotion") {
                     $this_internal_id = InternalWorkExperience::select("id")->where(
                         [
-                            ["id", "=",$main->employee_id],
+                            ["id", "=", $main->employee_id],
                             ["date_to", "=", null],
-                            ["status","=", EmployeeInternalWorkExperiencesStatus::CURRENT]
+                            ["status", "=", EmployeeInternalWorkExperiencesStatus::CURRENT]
                         ]
                     )->first();
                     if ($this_internal_id) {
@@ -235,7 +228,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                         [
                             ["id", "=", $main->employee_id],
                             ["date_to", "=", null],
-                            ["status","=", EmployeeInternalWorkExperiencesStatus::CURRENT]
+                            ["status", "=", EmployeeInternalWorkExperiencesStatus::CURRENT]
                         ]
                     )->first();
                     if ($this_internal_id) {

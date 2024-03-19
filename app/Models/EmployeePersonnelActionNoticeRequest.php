@@ -16,8 +16,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $appends = [
-        'fullname',
-        'approvalfullname',
+        'fullname'
     ];
 
     public function getFullNameAttribute()
@@ -27,16 +26,6 @@ class EmployeePersonnelActionNoticeRequest extends Model
         } else {
             return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
         }
-    }
-
-    public function getApprovalFullNameAttribute()
-    {
-        $data = json_decode($this->approvals);
-        foreach ($data as $approval_index => $approval_key) {
-                $getName = Employee::where("id", $approval_key->user_id)->first()->append("fullnameLast")->fullnameLast;
-                $data[$approval_index]->fullname = $getName;
-        }
-        return ;
     }
 
     protected $fillable = [
