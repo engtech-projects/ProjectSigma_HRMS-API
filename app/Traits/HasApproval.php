@@ -27,7 +27,7 @@ trait HasApproval
         $value = json_decode($value, true);
         foreach ($value as &$approval) {
             $user = User::with('employee')->find($approval['user_id']);
-            if ($user) {
+            if ($user && $user->employee) {
                 $approval['employee'] = [
                     'employee_id' => $user->employee_id,
                     'full_name' =>  $user->employee->fullnameLast,
