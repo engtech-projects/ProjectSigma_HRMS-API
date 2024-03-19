@@ -121,7 +121,7 @@ class ManpowerRequestController extends Controller
 
         return new JsonResponse([
             "success" => true,
-            "message" => "Manpower request successfully created.",
+            "message" => "Successfully created.",
         ], JsonResponse::HTTP_CREATED);
     }
 
@@ -166,7 +166,6 @@ class ManpowerRequestController extends Controller
         } catch (\Exception $e) {
             throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
-
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully delete."
