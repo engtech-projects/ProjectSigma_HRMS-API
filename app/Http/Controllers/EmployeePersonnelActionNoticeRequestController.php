@@ -131,9 +131,10 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                 }
                 $pendingData->name = $getName;
                 $main[$key]->approvals = $pendingData;
-            } else {
-                $main[$key]->approvals = "[]";
             }
+            // else {
+            //     $main[$key]->approvals = "[]";
+            // }
         }
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
