@@ -40,19 +40,10 @@ class ManpowerRequestController extends Controller
             'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
         ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Show List Manpower requests that have status “For Hiring“ = Approve
      */
-    public function get_hiring()
+    public function forHiring()
     {
         $main = ManpowerRequest::with('job_applicants')->where("request_status", '=', 'Approved')->get();
         $data = json_decode('{}');
@@ -63,7 +54,7 @@ class ManpowerRequestController extends Controller
     }
 
 
-    public function get()
+    public function myRequest()
     {
         $id = Auth::user()->id;
         $main = ManpowerRequest::where("requested_by", '=', $id)->get();
@@ -77,9 +68,11 @@ class ManpowerRequestController extends Controller
     /**
      * Show all requests to be approved/reviewed by current user
      */
-    public function get_approve()
+    public function myApproval()
     {
-        $manpowerRequests = $this->manpowerServices->getAllByAuthUser();
+        $testRequest = ManpowerRequest::first();
+        return $testRequest;
+        $manpowerRequests = $this->manpowerServices->getAllManpowerRequest();
         return ManpowerRequestResource::collection($manpowerRequests);
     }
 
@@ -123,13 +116,6 @@ class ManpowerRequestController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ManpowerRequest $manpowerRequest)
-    {
-        //
-    }
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateManpowerRequestRequest $request, ManpowerRequest $manpowerRequest)
@@ -143,27 +129,6 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             "success" => true, "message" => "Manpower request successfully approved."
         ]);
-
-
-
-        /* $main = ManpowerRequest::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $main->fill($request->validated());
-            if ($main->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Update failed.";
-            $data->success = false;
-            return response()->json($data, 400);
-        }
-
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404); */
     }
 
     /**

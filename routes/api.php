@@ -99,9 +99,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('manpower')->group(function () {
         Route::put('approve-approval/{manpower_request}', ApproveApprovalController::class);
         Route::post('deny-approval/{manpower_request}', DenyApprovalController::class);
-        Route::get('my-requests', [ManpowerRequestController::class, 'get']);
-        Route::get('my-approvals', [ManpowerRequestController::class, 'get_approve']);
-        Route::get('for-hiring', [ManpowerRequestController::class, 'get_hiring']);
+        Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
+        Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
+        Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
     });
 
 

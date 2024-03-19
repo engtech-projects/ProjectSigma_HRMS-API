@@ -19,6 +19,8 @@ class Employee extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    protected $table = 'employees';
+
     protected function age(): Attribute
     {
         return new Attribute(
@@ -89,7 +91,7 @@ class Employee extends Model
     public function employee_internal(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class)->where("status", "=", "current")
-        ->with("employee_salarygrade", "employee_department");
+            ->with("employee_salarygrade", "employee_department");
     }
 
     public function employee_salarygrade(): HasOne
