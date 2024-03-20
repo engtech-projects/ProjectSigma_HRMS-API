@@ -29,22 +29,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     {
         $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly', 'department')->paginate(15);
         $data = json_decode('{}');
-        $getName = "";
-        foreach ($main as $key => $value) {
-            $pendingData = [];
-            foreach (json_decode($value->approvals) as $approval_key) {
-                $getId = Employee::user($approval_key->user_id)->employee_id;
-                if ($getId) {
-                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
-                } else {
-                    $getName = Employee::user($approval_key->user_id)->name;
-                }
-                $approval_key->name = $getName;
-                array_push($pendingData, $approval_key);
-            }
-            $main[$key]->approvals = json_encode($pendingData);
-        }
-
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;

@@ -76,6 +76,12 @@ class JobApplicants extends Model
         'remarks'
     ];
 
+    public $casts = [
+        "children" => "array",
+        "education" => "array",
+        "workexperience" => "array"
+    ];
+
     public function manpower(): BelongsTo
     {
         return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');
