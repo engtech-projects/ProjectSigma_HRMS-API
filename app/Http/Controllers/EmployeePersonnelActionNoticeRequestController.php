@@ -119,7 +119,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             ->get();
         $newdata = json_decode('{}');
 
-        foreach ($main as $key => $value) {
+/*         foreach ($main as $key => $value) {
             // $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending")->first();
             $pendingData = $value->approvals;
             foreach ($pendingData as $i => $approval) {
@@ -134,7 +134,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             }
             $main[$key]->approvals = $pendingData;
             // dd($pendingData);
-        }
+        } */
 
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
