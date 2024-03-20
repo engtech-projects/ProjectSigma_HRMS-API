@@ -24,7 +24,18 @@ class SalaryGradeLevelController extends Controller
         $salaryGradeLevel = SalaryGradeLevel::with(['salary_grade_step' => function ($query) {
             $query->orderBy('step_name');
         }])->orderBy('salary_grade_level')->get();
-        return SalaryGradeLevelResource::collection($salaryGradeLevel);
+
+        if ($salaryGradeLevel->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Succcessfully fetched.",
+            "data" => SalaryGradeLevelResource::collection($salaryGradeLevel)
+        ]);
     }
 
     /**
@@ -42,8 +53,10 @@ class SalaryGradeLevelController extends Controller
             throw new TransactionFailedException("Create transaction failed.", 400, $e);
         }
 
-
-        return new JsonResponse(["message" => "Salary grade level and steps created."], JsonResponse::HTTP_CREATED);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully created."
+        ], JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -81,7 +94,10 @@ class SalaryGradeLevelController extends Controller
             throw new TransactionFailedException("Update transaction failed.", 400, $e);
         }
 
-        return new JsonResponse(["message" => "Salary grade level updated."], JsonResponse::HTTP_OK);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Salary grade level updated."
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -95,6 +111,9 @@ class SalaryGradeLevelController extends Controller
             throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
 
-        return new JsonResponse(["message" => "Salary grade level deleted."], JsonResponse::HTTP_OK);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Salary grade level deleted."
+        ], JsonResponse::HTTP_OK);
     }
 }
