@@ -31,27 +31,28 @@ class UpdateScheduleDepartmentRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:departments,id",
-                'nullable_if:groupType,==,department',
+                'required_if:groupType,==,department',
             ],
             'project_id' => [
                 "nullable",
                 "integer",
-                'nullable_if:groupType,==,project',
+                'required_if:groupType,==,project',
             ],
             'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                'nullable_if:groupType,==,employee',
+                'required_if:groupType,==,employee',
             ],
             'scheduleType' => [
                 "nullable",
                 "string",
-                "in:Regular, Irregular",
+                "in:Regular,Irregular",
             ],
             'daysOfWeek' => [
                 "nullable",
                 "array",
+                "required_if:scheduleType,==,Regular"
             ],
             'daysOfWeek.*' => [
                 "nullable",

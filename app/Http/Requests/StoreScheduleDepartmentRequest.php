@@ -32,26 +32,31 @@ class StoreScheduleDepartmentRequest extends FormRequest
                 "integer",
                 "exists:departments,id",
                 'required_if:groupType,==,department',
+                "exclude_if:groupType,!=,department"
             ],
             'project_id' => [
                 "nullable",
                 "integer",
                 'required_if:groupType,==,project',
+                "exclude_if:groupType,!=,project"
             ],
             'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                'required_if:groupType,==,employee',
+                "exclude_if:groupType,project,department",
+                'required_if:groupType,==,employee'
             ],
             'scheduleType' => [
                 "required",
                 "string",
-                "in:Regular, Irregular",
+                "in:Regular,Irregular",
             ],
             'daysOfWeek' => [
-                "required",
+                "nullable",
                 "array",
+                "required_if:scheduleType,==,Regular",
+                "exclude_if:scheduleType,!=,Regular"
             ],
             'daysOfWeek.*' => [
                 "required",
@@ -61,19 +66,20 @@ class StoreScheduleDepartmentRequest extends FormRequest
             ],
             'startTime' => [
                 "required",
-                "date_format:H:i:s'",
+                "date_format:H:i:s",
             ],
             'endTime' => [
                 "required",
-                "date_format:H:i:s|after:startTime",
+                "date_format:H:i:s",
+                "after:startTime",
             ],
             'startRecur' => [
                 "required",
-                "date",
+                "date_format:Y-m-d",
             ],
             'endRecur' => [
                 "required",
-                "date",
+                "date_format:Y-m-d",
                 "after_or_equal:startRecur"
             ],
         ];

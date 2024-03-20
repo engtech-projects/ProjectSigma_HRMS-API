@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId("employee_id")->nullable();
             $table->foreign('employee_id')->references('id')->on('employees');
             $table->enum("scheduleType", ["Regular", "Irregular"]);
-            $table->json("daysOfWeek");
+            $table->json("daysOfWeek")->nullable();
             $table->time("startTime");
             $table->time("endTime");
             $table->date("startRecur");
