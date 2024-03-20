@@ -22,7 +22,6 @@ class Employee extends Model
     protected $table = 'employees';
     protected $appends = [
         'fullname_last',
-        'age',
         'fullname_first',
     ];
 

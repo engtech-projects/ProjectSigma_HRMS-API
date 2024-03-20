@@ -39,6 +39,7 @@ use App\Http\Controllers\InternalWorkExperienceController;
 use App\Http\Controllers\TerminationController;
 use App\Http\Controllers\HMOController;
 use App\Http\Controllers\HMOMembersController;
+use App\Http\Controllers\ScheduleDepartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,6 +119,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('hmo-members', HMOMembersController::class);
     Route::resource('hmo', HMOController::class);
+    Route::resource('schedule', ScheduleDepartmentController::class);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
     Route::prefix('pan')->group(function () {

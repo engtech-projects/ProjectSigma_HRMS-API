@@ -24,7 +24,7 @@ class EmployeeRelatedperson extends Model
     public function getAgeAttribute()
     {
         $a = $this->date_of_birth;
-        if($a){
+        if ($a) {
             return Carbon::createFromFormat("ymd", $a->format('ymd'))->age;
         }
         return null;
