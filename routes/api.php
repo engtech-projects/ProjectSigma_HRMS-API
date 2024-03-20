@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccessibilitiesController;
 use App\Http\Controllers\Actions\ManpowerRequest\ApproveApprovalController;
 use App\Http\Controllers\Actions\ManpowerRequest\DenyApprovalController;
+use App\Http\Controllers\Actions\SalaryGrade\SalaryGradeLevelListController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\PhilhealthContributionController;
@@ -110,7 +111,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('internalwork-experience', InternalWorkExperienceController::class);
     Route::resource('termination', TerminationController::class);
 
-    Route::resource('salary-grade-level', SalaryGradeLevelController::class);
+    Route::prefix('salary')->group(function () {
+        Route::resource('salary-grade-level', SalaryGradeLevelController::class);
+        Route::get('salary-grade-level-list', SalaryGradeLevelListController::class);
+    });
+
     Route::resource('hmo-members', HMOMembersController::class);
     Route::resource('hmo', HMOController::class);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
