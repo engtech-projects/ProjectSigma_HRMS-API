@@ -2,7 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Enums\ManpowerApprovalStatus;
+use App\Enums\RequestApprovalStatus;
 use App\Models\ManpowerRequest;
 use App\Traits\HasApproval;
 

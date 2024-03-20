@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use Illuminate\Validation\Rules\Enum;
 
-final class ManpowerApprovalStatus extends Enum
+final class RequestApprovalStatus extends Enum
 {
     const APPROVED = 'Approved';
     const PENDING = "Pending";

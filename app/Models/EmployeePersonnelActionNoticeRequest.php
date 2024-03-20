@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\HasApproval;
+use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,10 +15,14 @@ use Laravel\Sanctum\HasApiTokens;
 
 class EmployeePersonnelActionNoticeRequest extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasApproval, HasUser;
 
     protected $appends = [
         'fullname'
+    ];
+
+    protected $casts = [
+        'approvals' => 'array'
     ];
 
     public function getFullNameAttribute()

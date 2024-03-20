@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EmployeeAddressType;
-use App\Enums\EmployeeCompanyEmploymentsStatus;
-use App\Enums\EmployeeInternalWorkExperiencesStatus;
-use App\Enums\EmployeeRelatedPersonType;
-use App\Http\Requests\StoreDisapprove;
-use App\Models\EmployeePersonnelActionNoticeRequest;
-use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
-use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
+use Carbon\Carbon;
 use App\Models\Employee;
-use App\Models\InternalWorkExperience;
+use App\Models\Termination;
 use App\Models\JobApplicants;
 use App\Models\ManpowerRequest;
-use App\Models\Termination;
-use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use App\Enums\EmployeeAddressType;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreDisapprove;
+use App\Models\InternalWorkExperience;
+use App\Enums\EmployeeRelatedPersonType;
+use App\Enums\EmployeeCompanyEmploymentsStatus;
+use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Models\EmployeePersonnelActionNoticeRequest;
+use App\Http\Resources\EmployeePersonnelActionNoticeRequestResource;
+use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
+use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
 
 class EmployeePersonnelActionNoticeRequestController extends Controller
 {
@@ -75,13 +77,30 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     // can view all pan request made by logged in user
     public function getpanrequest()
     {
-        $id = Auth::user()->id;
+        $id = auth()->user()->id;
+        $noticeRequest = EmployeePersonnelActionNoticeRequest::with(['department'])
+            ->where("created_by", "=", $id)
+            ->get();
+        if (empty($noticeRequest)) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "No data found.",
+            ]);
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => EmployeePersonnelActionNoticeRequestResource::collection($noticeRequest)
+        ]);
+
+
+        /* $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
         $getName = "";
         foreach ($main as $key => $value) {
             $pendingData = [];
-            foreach (json_decode($value->approvals) as $approval_key) {
+            foreach ($value->approvals as $approval_key) {
                 $getId = Employee::user($approval_key->user_id)->employee_id;
                 if ($getId) {
                     $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
@@ -91,7 +110,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                 $approval_key->name = $getName;
                 array_push($pendingData, $approval_key);
             }
-            $main[$key]->approvals = json_encode($pendingData);
+            $main[$key]->approvals = $pendingData;
         }
 
         if (!is_null($main)) {
@@ -102,7 +121,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
         $data->message = "No data found.";
         $data->success = false;
-        return response()->json($data, 404);
+        return response()->json($data, 404); */
     }
 
     /**

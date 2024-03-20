@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Actions\ManpowerRequest;
 use Illuminate\Http\Request;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
-use App\Enums\ManpowerApprovalStatus;
+use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DenyManpowerApprovalRequest;
 use App\Traits\HasApproval;
@@ -20,7 +20,7 @@ class DenyApprovalController extends Controller
     {
         $attribute = $request->validated();
         $manpowerRequestApproval = collect($manpowerRequest->approvals);
-        $result = collect($this->updateApproval($manpowerRequestApproval, $manpowerRequest, ['status' => ManpowerApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
+        $result = collect($this->updateApproval($manpowerRequestApproval, $manpowerRequest, ['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
         $nextApproval = $this->getNextPendingApproval($manpowerRequestApproval);
 
         if (!$nextApproval) {
@@ -28,7 +28,7 @@ class DenyApprovalController extends Controller
         }
 
         $isApprovalDenied = collect($result['approvals'])->contains(function ($approval) {
-            return $approval['status'] === ManpowerApprovalStatus::DENIED;
+            return $approval['status'] === RequestApprovalStatus::DENIED;
         });
 
         if (!$isApprovalDenied) {
