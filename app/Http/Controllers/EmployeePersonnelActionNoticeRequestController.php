@@ -46,7 +46,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $validData = $request->validated();
         $main->fill($validData);
         $data = json_decode('{}');
-        $main->approvals = json_encode($validData["approvals"]);
+        $main->approvals = $validData["approvals"];
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
@@ -121,7 +121,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         foreach ($main as $key => $value) {
             // $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending")->first();
-            $pendingData = json_decode($value->approvals);
+            $pendingData = $value->approvals;
             foreach ($pendingData as $i => $approval) {
                 $getName = "";
                 $getId = Employee::user($approval->user_id)->employee_id;
@@ -155,12 +155,12 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
 
         $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request)->approval()->first();
-        $get_approval = collect(json_decode($main->approvals))->where("status", "Pending")->first();
+        $get_approval = collect($main->approvals)->where("status", "Pending")->first();
         $next_approval = 0;
         if ($get_approval) {
             $next_approval = $get_approval->user_id;
         }
-        $count_approves = collect(json_decode($main->approvals))->where("status", "Approved")->count();
+        $count_approves = collect($main->approvals)->where("status", "Approved")->count();
         $approve = 0;
         if (!$panreq) {
             $newdata->success = false;
@@ -172,7 +172,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         if ($next_approval == $id) {
             $a = [];
-            foreach (json_decode($panreq->approvals) as $key) {
+            foreach ($panreq->approvals as $key) {
                 if ($key->user_id == $id && $key->status == "Pending" && $approve == 0) {
                     $key->status = "Approved";
                     $key->date_approved = Carbon::now()->format('Y-m-d');
@@ -438,7 +438,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         // Employee Children
         if (property_exists("children", $main)) {
-            foreach (json_decode($main->children) as $key) {
+            foreach ($main->children as $key) {
                 $relatedChildren["name"] = $key->name;
                 $relatedChildren["date_of_birth"] = $key->birthdate ?? null;
                 $relatedChildren["type"] = EmployeeRelatedPersonType::CHILD;
@@ -448,7 +448,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         // Employee Work Experience
         if (property_exists("workexperience", $main)) {
-            foreach (json_decode($main->workexperience) as $key) {
+            foreach ($main->workexperience as $key) {
                 $externalWorkExperience["date_from"] = $key->inclusive_dates_from ?? null;
                 $externalWorkExperience["date_to"] = $key->inclusive_dates_to ?? null;
                 $externalWorkExperience["position_title"] = $key->position_title ?? null;
