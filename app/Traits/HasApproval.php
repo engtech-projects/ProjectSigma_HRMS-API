@@ -31,6 +31,7 @@ trait HasApproval
                 $approval['employee'] = [
                     'id' => $user->employee_id,
                     'fullname_last' =>  $user->employee->fullname_last,
+                    'firstname_last' => $user->employee->fullname_first,
                     'type' => $user->type
                 ];
             }
