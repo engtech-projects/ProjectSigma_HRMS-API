@@ -76,36 +76,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             "message" => "Successfully fetched.",
             "data" => EmployeePersonnelActionNoticeRequestResource::collection($noticeRequest)
         ]);
-
-
-        /* $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
-        $data = json_decode('{}');
-        $getName = "";
-        foreach ($main as $key => $value) {
-            $pendingData = [];
-            foreach ($value->approvals as $approval_key) {
-                $getId = Employee::user($approval_key->user_id)->employee_id;
-                if ($getId) {
-                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
-                } else {
-                    $getName = Employee::user($approval_key->user_id)->name;
-                }
-                $approval_key->name = $getName;
-                array_push($pendingData, $approval_key);
-            }
-            $main[$key]->approvals = $pendingData;
-        }
-
-        if (!is_null($main)) {
-            $data->message = "Successfully fetch.";
-            $data->success = true;
-            $data->data = $main;
-            return response()->json($data);
-        }
-        $data->message = "No data found.";
-        $data->success = false;
-        return response()->json($data, 404); */
     }
 
     /**
