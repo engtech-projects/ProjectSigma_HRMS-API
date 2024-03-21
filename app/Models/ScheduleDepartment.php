@@ -4,30 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class HMO extends Model
+class ScheduleDepartment extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    protected $table = 'hmo';
+    protected $table = "schedules";
 
     protected $fillable = [
         'id',
-        'hmo_name',
-        'hmo_start',
-        'hmo_end',
-        'employee_share',
-        'employer_share',
+        'groupType',
+        'department_id',
+        'project_id',
+        'employee_id',
+        'scheduleType',
+        'daysOfWeek',
+        'startTime',
+        'endTime',
+        'startRecur',
+        'endRecur',
     ];
 
-    public function hmoMembers(): HasMany
+    public function department(): HasOne
     {
-        return $this->hasMany(HMOMembers::class, "hmo_id")->with("employee");
+        return $this->hasOne(Department::class, "id", "department_id");
     }
 
     public function employee(): HasOne

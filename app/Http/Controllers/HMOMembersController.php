@@ -13,7 +13,7 @@ class HMOMembersController extends Controller
      */
     public function index()
     {
-        $main = HMOMembers::paginate(15);
+        $main = HMOMembers::with("hmo", "employee")->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -34,7 +34,7 @@ class HMOMembersController extends Controller
      */
     public function store(StoreHMOMembersRequest $request)
     {
-        $main = new HMOMembers;
+        $main = new HMOMembers();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -54,7 +54,7 @@ class HMOMembersController extends Controller
      */
     public function show($id)
     {
-        $main = HMOMembers::find($id);
+        $main = HMOMembers::with("hmo", "employee")->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";

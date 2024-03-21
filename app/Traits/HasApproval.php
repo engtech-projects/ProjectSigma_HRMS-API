@@ -6,7 +6,7 @@ use Illuminate\Support\Carbon;
 use App\Models\ManpowerRequest;
 use Illuminate\Support\Collection;
 use App\Enums\ManpowerRequestStatus;
-use App\Enums\ManpowerApprovalStatus;
+use App\Enums\RequestApprovalStatus;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
@@ -15,11 +15,11 @@ trait HasApproval
     public function getUserPendingApproval($approvals, $userId)
     {
         return $approvals->where('user_id', $userId)
-            ->where('status', ManpowerApprovalStatus::PENDING);
+            ->where('status', RequestApprovalStatus::PENDING);
     }
     public function getNextPendingApproval($approvals)
     {
-        return $approvals->where('status', ManpowerApprovalStatus::PENDING)->first();
+        return $approvals->where('status', RequestApprovalStatus::PENDING)->first();
     }
 
     public function getApprovalsAttribute($value)
@@ -30,7 +30,7 @@ trait HasApproval
             if ($user && $user->employee) {
                 $approval['employee'] = [
                     'id' => $user->employee_id,
-                    'name' =>  $user->employee->fullnameLast,
+                    'fullname_last' =>  $user->employee->fullname_last,
                     'type' => $user->type
                 ];
             }
@@ -44,7 +44,7 @@ trait HasApproval
         return $this->manpowerRequest->requestStatusPending()
             ->with(['user.employee'])
             ->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => ManpowerApprovalStatus::PENDING])
+            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
     }
 
@@ -53,7 +53,7 @@ trait HasApproval
         $manpowerRequestApproval = collect($manpowerRequest->approvals)->map(function ($item, int $key) use ($approvalToUpdate, $data) {
             if ($key === $approvalToUpdate) {
                 $item['status'] = $data['status'];
-                if ($data["status"] === ManpowerApprovalStatus::DENIED) {
+                if ($data["status"] === RequestApprovalStatus::DENIED) {
                     $data['date_approved'] = Carbon::now()->format('Y-m-d');
                 } else {
                     $data['date_denied'] = Carbon::now()->format('Y-m-d');
@@ -71,7 +71,7 @@ trait HasApproval
             $manpowerRequest->request_status = ManpowerRequestStatus::APPROVED;
         } else {
             $isApprovalDenied = $manpowerRequestApproval->contains(function ($approval) {
-                return $approval['status'] === ManpowerApprovalStatus::DENIED;
+                return $approval['status'] === RequestApprovalStatus::DENIED;
             });
 
             if ($isApprovalDenied) {
@@ -117,7 +117,7 @@ trait HasApproval
             "approvals" => $manpowerRequestApproval,
             'success' => true,
             "status_code" => JsonResponse::HTTP_OK,
-            "message" => $data['status'] === ManpowerApprovalStatus::APPROVED ? "Manpower request successfully approved." : "Manpower request successfully denied.",
+            "message" => $data['status'] === RequestApprovalStatus::APPROVED ? "Manpower request successfully approved." : "Manpower request successfully denied.",
         ];
     }
 }

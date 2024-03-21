@@ -6,6 +6,7 @@ use App\Models\Approvals;
 use App\Models\Users;
 use App\Http\Requests\StoreApprovalsRequest;
 use App\Http\Requests\UpdateApprovalsRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ApprovalsController extends Controller
@@ -26,29 +27,18 @@ class ApprovalsController extends Controller
 
     public function get($request)
     {
-        $main = Approvals::where("form", "=", $request)->first();
-        if (!is_null($main)) {
-            $fetchdata = $main->approvals;
-            $a = json_decode($fetchdata);
-            foreach ($a as $c => $x) {
-                if ($x->user_id == null || $x->userselector == "true") {
-                    $data = json_decode('{}');
-                    $data->message = "Successfully fetch.";
-                    $data->success = true;
-                    $data->data = $main;
-                } else {
-                    $fetchuser = Users::find($x->user_id);
-                    $a[$c]->name = $fetchuser->name;
-                }
-            }
-            $fetchdata = $a;
+        $formRequest = Approvals::where("form", "=", $request)->first();
+        if (empty($formRequest)) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "No data found.",
+            ]);
         }
-        $main->approvals = $fetchdata;
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => $formRequest
+        ]);
     }
 
     /**

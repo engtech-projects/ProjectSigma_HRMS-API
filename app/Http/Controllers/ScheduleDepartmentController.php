@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Position;
-use App\Http\Requests\StorepositionRequest;
-use App\Http\Requests\UpdatepositionRequest;
+use App\Models\ScheduleDepartment;
+use App\Http\Requests\StoreScheduleDepartmentRequest;
+use App\Http\Requests\UpdateScheduleDepartmentRequest;
 
-class PositionController extends Controller
+class ScheduleDepartmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->paginate(15);
+        $main = ScheduleDepartment::with("department", "employee")->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -21,33 +21,22 @@ class PositionController extends Controller
         return response()->json($data);
     }
 
-    public function get()
-    {
-        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->get();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
-    }
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorepositionRequest $request)
+    public function store(StoreScheduleDepartmentRequest $request)
     {
-        $main = new Position();
+        $main = new ScheduleDepartment();
         $main->fill($request->validated());
         $data = json_decode('{}');
-
+        $main->daysOfWeek = json_encode($request->daysOfWeek);
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
@@ -64,7 +53,7 @@ class PositionController extends Controller
      */
     public function show($id)
     {
-        $main = Position::find($id);
+        $main = ScheduleDepartment::with("department", "employee")->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -80,20 +69,20 @@ class PositionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(position $position)
+    public function edit(ScheduleDepartment $scheduleDepartment)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatepositionRequest $request, $id)
+    public function update(UpdateScheduleDepartmentRequest $request, $id)
     {
-        $main = Position::find($id);
+        $main = ScheduleDepartment::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
+            $main->daysOfWeek = json_encode($request->daysOfWeek);
             if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
@@ -115,7 +104,7 @@ class PositionController extends Controller
      */
     public function destroy($id)
     {
-        $main = Position::find($id);
+        $main = ScheduleDepartment::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             if ($main->delete()) {

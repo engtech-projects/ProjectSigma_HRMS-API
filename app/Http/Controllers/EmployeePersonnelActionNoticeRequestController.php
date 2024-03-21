@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EmployeeAddressType;
-use App\Enums\EmployeeCompanyEmploymentsStatus;
-use App\Enums\EmployeeInternalWorkExperiencesStatus;
-use App\Enums\EmployeeRelatedPersonType;
-use App\Http\Requests\StoreDisapprove;
-use App\Models\EmployeePersonnelActionNoticeRequest;
-use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
-use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
+use Carbon\Carbon;
 use App\Models\Employee;
-use App\Models\InternalWorkExperience;
+use App\Models\Termination;
 use App\Models\JobApplicants;
 use App\Models\ManpowerRequest;
-use App\Models\Termination;
-use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use App\Enums\EmployeeAddressType;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreDisapprove;
+use App\Models\InternalWorkExperience;
+use App\Enums\EmployeeRelatedPersonType;
+use App\Enums\EmployeeCompanyEmploymentsStatus;
+use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Models\EmployeePersonnelActionNoticeRequest;
+use App\Http\Resources\EmployeePersonnelActionNoticeRequestResource;
+use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
+use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
 
 class EmployeePersonnelActionNoticeRequestController extends Controller
 {
@@ -27,22 +29,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     {
         $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly', 'department')->paginate(15);
         $data = json_decode('{}');
-        $getName = "";
-        foreach ($main as $key => $value) {
-            $pendingData = [];
-            foreach (json_decode($value->approvals) as $approval_key) {
-                $getId = Employee::user($approval_key->user_id)->employee_id;
-                if ($getId) {
-                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
-                } else {
-                    $getName = Employee::user($approval_key->user_id)->name;
-                }
-                $approval_key->name = $getName;
-                array_push($pendingData, $approval_key);
-            }
-            $main[$key]->approvals = json_encode($pendingData);
-        }
-
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
@@ -60,7 +46,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $validData = $request->validated();
         $main->fill($validData);
         $data = json_decode('{}');
-        $main->approvals = json_encode($validData["approvals"]);
+        $main->approvals = $validData["approvals"];
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
@@ -75,13 +61,30 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     // can view all pan request made by logged in user
     public function getpanrequest()
     {
-        $id = Auth::user()->id;
+        $id = auth()->user()->id;
+        $noticeRequest = EmployeePersonnelActionNoticeRequest::with(['department'])
+            ->where("created_by", "=", $id)
+            ->get();
+        if (empty($noticeRequest)) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "No data found.",
+            ]);
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => EmployeePersonnelActionNoticeRequestResource::collection($noticeRequest)
+        ]);
+
+
+        /* $id = Auth::user()->id;
         $main = EmployeePersonnelActionNoticeRequest::with('department')->where("created_by", "=", $id)->get();
         $data = json_decode('{}');
         $getName = "";
         foreach ($main as $key => $value) {
             $pendingData = [];
-            foreach (json_decode($value->approvals) as $approval_key) {
+            foreach ($value->approvals as $approval_key) {
                 $getId = Employee::user($approval_key->user_id)->employee_id;
                 if ($getId) {
                     $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
@@ -91,7 +94,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                 $approval_key->name = $getName;
                 array_push($pendingData, $approval_key);
             }
-            $main[$key]->approvals = json_encode($pendingData);
+            $main[$key]->approvals = $pendingData;
         }
 
         if (!is_null($main)) {
@@ -102,7 +105,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
         $data->message = "No data found.";
         $data->success = false;
-        return response()->json($data, 404);
+        return response()->json($data, 404); */
     }
 
     /**
@@ -115,24 +118,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])
             ->get();
         $newdata = json_decode('{}');
-
-        foreach ($main as $key => $value) {
-            // $pendingData = collect(json_decode($value->approvals))->where("user_id", $id)->where("status", "Pending")->first();
-            $pendingData = json_decode($value->approvals);
-            foreach ($pendingData as $i => $approval) {
-                $getName = "";
-                $getId = Employee::user($approval->user_id)->employee_id;
-                if ($getId) {
-                    $getName = Employee::where("id", $getId)->first()->append("fullnameLast")->fullnameLast;
-                } else {
-                    $getName = Employee::user($pendingData->user_id)->name;
-                }
-                $pendingData[$i]->name = $getName;
-            }
-            $main[$key]->approvals = $pendingData;
-            // dd($pendingData);
-        }
-
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
         $newdata->data = $main;
@@ -152,12 +137,12 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
 
         $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request)->approval()->first();
-        $get_approval = collect(json_decode($main->approvals))->where("status", "Pending")->first();
+        $get_approval = collect($main->approvals)->where("status", "Pending")->first();
         $next_approval = 0;
         if ($get_approval) {
             $next_approval = $get_approval->user_id;
         }
-        $count_approves = collect(json_decode($main->approvals))->where("status", "Approved")->count();
+        $count_approves = collect($main->approvals)->where("status", "Approved")->count();
         $approve = 0;
         if (!$panreq) {
             $newdata->success = false;
@@ -169,7 +154,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         if ($next_approval == $id) {
             $a = [];
-            foreach (json_decode($panreq->approvals) as $key) {
+            foreach ($panreq->approvals as $key) {
                 if ($key->user_id == $id && $key->status == "Pending" && $approve == 0) {
                     $key->status = "Approved";
                     $key->date_approved = Carbon::now()->format('Y-m-d');
@@ -435,7 +420,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         // Employee Children
         if (property_exists("children", $main)) {
-            foreach (json_decode($main->children) as $key) {
+            foreach ($main->children as $key) {
                 $relatedChildren["name"] = $key->name;
                 $relatedChildren["date_of_birth"] = $key->birthdate ?? null;
                 $relatedChildren["type"] = EmployeeRelatedPersonType::CHILD;
@@ -445,7 +430,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
 
         // Employee Work Experience
         if (property_exists("workexperience", $main)) {
-            foreach (json_decode($main->workexperience) as $key) {
+            foreach ($main->workexperience as $key) {
                 $externalWorkExperience["date_from"] = $key->inclusive_dates_from ?? null;
                 $externalWorkExperience["date_to"] = $key->inclusive_dates_to ?? null;
                 $externalWorkExperience["position_title"] = $key->position_title ?? null;
