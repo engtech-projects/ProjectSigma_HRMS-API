@@ -50,6 +50,10 @@ class ManpowerRequest extends Model
         'approvals' => 'array'
     ];
 
+    /**
+     * MODEL
+     * STATIC METHODS
+     */
     public static function boot()
     {
         parent::boot();
@@ -61,13 +65,18 @@ class ManpowerRequest extends Model
 
     /**
      * MODEL
-     * RELATIONS
-     * */
+     * ATTRIBUTES
+     */
+
     public function getDataUserIdAttribute()
     {
         return $this->data['user_id'] ?? null;
     }
 
+    /**
+     * MODEL
+     * RELATED RELATIONS
+     * */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requested_by');
@@ -77,6 +86,11 @@ class ManpowerRequest extends Model
     {
         return $this->hasMany(JobApplicants::class, 'manpowerrequests_id', 'id');
     }
+
+    /**
+     * MODEL
+     * LOCAL SCOPES
+     */
 
     public function scopeRequestStatusPending(Builder $query): void
     {
