@@ -2,6 +2,6 @@
     "recommendations": [
         "editorconfig.editorconfig",
         "bmewburn.vscode-intelephense-client",
-        "shevaua.phpcs"
+        "open-southeners.laravel-pint",
     ]
 }
