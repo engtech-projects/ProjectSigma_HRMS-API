@@ -110,7 +110,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $get_approval = collect($main->approvals)->where("status", "Pending")->first();
         $next_approval = 0;
         if ($get_approval) {
-            $next_approval = $get_approval->user_id;
+            $next_approval = $get_approval["user_id"];
         }
         $count_approves = collect($main->approvals)->where("status", "Approved")->count();
         $approve = 0;
@@ -120,7 +120,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
             return response()->json($newdata);
         }
 
-        $count = count(json_decode($panreq->approvals));
+        $count = count($panreq->approvals);
 
         if ($next_approval == $id) {
             $a = [];
@@ -224,10 +224,10 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
 
         $panreq = EmployeePersonnelActionNoticeRequest::select('approvals')->where("id", "=", $request->id)->approval()->first();
-        $get_approval = collect(json_decode($main->approvals))->where("status", "Pending")->first();
+        $get_approval = collect($main->approvals)->where("status", "Pending")->first();
         $next_approval = 0;
         if ($get_approval) {
-            $next_approval = $get_approval->user_id;
+            $next_approval = $get_approval["user_id"];
         }
 
         if (!$panreq) {
@@ -239,7 +239,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $disApprove = 0;
         if ($next_approval == $id) {
             $a = [];
-            foreach (json_decode($panreq->approvals) as $key) {
+            foreach ($panreq->approvals as $key) {
                 if ($key->user_id == $id && $key->status == "Pending" && $disApprove == 0) {
                     $key->status = "Disapproved";
                     $key->remarks = $request->remarks;
