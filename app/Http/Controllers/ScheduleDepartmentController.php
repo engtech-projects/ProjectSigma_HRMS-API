@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FilterByScheduleGroupType;
 use App\Models\ScheduleDepartment;
 use App\Http\Requests\StoreScheduleDepartmentRequest;
 use App\Http\Requests\UpdateScheduleDepartmentRequest;
@@ -54,6 +55,24 @@ class ScheduleDepartmentController extends Controller
     public function show($id)
     {
         $main = ScheduleDepartment::with("department", "employee")->find($id);
+        $data = json_decode('{}');
+        if (!is_null($main)) {
+            $data->message = "Successfully fetch.";
+            $data->success = true;
+            $data->data = $main;
+            return response()->json($data);
+        }
+        $data->message = "No data found.";
+        $data->success = false;
+        return response()->json($data, 404);
+    }
+
+    /**
+     * Display data by groupType.
+     */
+    public function getGroupType(FilterByScheduleGroupType $request)
+    {
+        $main = ScheduleDepartment::with("department", "employee")->where("groupType", $request);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";

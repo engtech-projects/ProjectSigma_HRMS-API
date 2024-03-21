@@ -120,6 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('hmo-members', HMOMembersController::class);
     Route::resource('hmo', HMOController::class);
     Route::resource('schedule', ScheduleDepartmentController::class);
+    Route::get('schedules', [ScheduleDepartmentController::class, 'getGroupType']);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
     Route::prefix('pan')->group(function () {
