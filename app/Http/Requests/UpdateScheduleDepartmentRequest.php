@@ -32,17 +32,20 @@ class UpdateScheduleDepartmentRequest extends FormRequest
                 "integer",
                 "exists:departments,id",
                 'required_if:groupType,==,department',
+                "exclude_if:groupType,project,employee",
             ],
             'project_id' => [
                 "nullable",
                 "integer",
                 'required_if:groupType,==,project',
+                "exclude_if:groupType,department,employee",
             ],
             'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
                 'required_if:groupType,==,employee',
+                "exclude_if:groupType,department,project",
             ],
             'scheduleType' => [
                 "nullable",
@@ -52,7 +55,8 @@ class UpdateScheduleDepartmentRequest extends FormRequest
             'daysOfWeek' => [
                 "nullable",
                 "array",
-                "required_if:scheduleType,==,Regular"
+                "required_if:scheduleType,==,Regular",
+                "exclude_if:scheduleType,!=,Regular"
             ],
             'daysOfWeek.*' => [
                 "nullable",
@@ -62,19 +66,20 @@ class UpdateScheduleDepartmentRequest extends FormRequest
             ],
             'startTime' => [
                 "nullable",
-                "date_format:H:i'",
+                "date_format:H:i:s",
             ],
             'endTime' => [
                 "nullable",
-                "date_format:H:i|after:startTime",
+                "date_format:H:i:s",
+                "after:startTime",
             ],
             'startRecur' => [
                 "nullable",
-                "date",
+                "date_format:Y-m-d",
             ],
             'endRecur' => [
                 "nullable",
-                "date",
+                "date_format:Y-m-d",
                 "after_or_equal:startRecur"
             ],
         ];
