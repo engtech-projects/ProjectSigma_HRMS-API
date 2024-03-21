@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreScheduleDepartmentRequest extends FormRequest
 {
@@ -32,20 +33,20 @@ class StoreScheduleDepartmentRequest extends FormRequest
                 "integer",
                 "exists:departments,id",
                 'required_if:groupType,==,department',
-                "exclude_if:groupType,!=,department"
+                "exclude_if:groupType,project,employee",
             ],
             'project_id' => [
                 "nullable",
                 "integer",
                 'required_if:groupType,==,project',
-                "exclude_if:groupType,!=,project"
+                "exclude_if:groupType,department,employee",
             ],
             'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                "exclude_if:groupType,project,department",
-                'required_if:groupType,==,employee'
+                'required_if:groupType,==,employee',
+                "exclude_if:groupType,department,project",
             ],
             'scheduleType' => [
                 "required",
