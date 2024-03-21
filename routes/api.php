@@ -2,12 +2,13 @@
 
 use App\Http\Controllers\EmployeeBulkUploadController;
 use App\Http\Controllers\SalaryGradeLevelController;
-use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccessibilitiesController;
 use App\Http\Controllers\Actions\ManpowerRequest\ApproveApprovalController;
 use App\Http\Controllers\Actions\ManpowerRequest\DenyApprovalController;
+use App\Http\Controllers\Actions\Pan\ApprovePanApproval;
+use App\Http\Controllers\Actions\Pan\DisapprovePanApproval;
 use App\Http\Controllers\Actions\SalaryGrade\SalaryGradeLevelListController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SSSContributionController;
@@ -127,6 +128,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', EmployeePersonnelActionNoticeRequestController::class);
         Route::get('my-request', [EmployeePersonnelActionNoticeRequestController::class, 'getpanrequest']);
         Route::get('my-approvals', [EmployeePersonnelActionNoticeRequestController::class, 'getApprovals']);
+
+        Route::post('approve-pan-approval/{pan_request}', ApprovePanApproval::class);
+        Route::post('disapprove-pan-approval/{pan_request}', DisapprovePanApproval::class);
     });
     Route::post(
         'approve-pan-approvals/{id}',

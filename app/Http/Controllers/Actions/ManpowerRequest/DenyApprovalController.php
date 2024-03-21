@@ -19,9 +19,8 @@ class DenyApprovalController extends Controller
     public function __invoke(DenyManpowerApprovalRequest $request, ManpowerRequest $manpowerRequest)
     {
         $attribute = $request->validated();
-        $manpowerRequestApproval = collect($manpowerRequest->approvals);
-        $result = collect($this->updateApproval($manpowerRequestApproval, $manpowerRequest, ['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
-        $nextApproval = $this->getNextPendingApproval($manpowerRequestApproval);
+        $result = collect($this->updateApproval($manpowerRequest, ['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
+        $nextApproval = $this->getNextPendingApproval(collect($manpowerRequest->approvals));
 
         if (!$nextApproval) {
             return new JsonResponse(["success" => false, "message" => "Manpower request successfully denied."], JsonResponse::HTTP_NOT_FOUND);
