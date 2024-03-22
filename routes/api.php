@@ -128,11 +128,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', EmployeePersonnelActionNoticeRequestController::class);
         Route::get('my-request', [EmployeePersonnelActionNoticeRequestController::class, 'getpanrequest']);
         Route::get('my-approvals', [EmployeePersonnelActionNoticeRequestController::class, 'getApprovals']);
-
-        Route::post('approve-pan-approval/{pan_request}', ApprovePanApproval::class);
-        Route::post('disapprove-pan-approval/{pan_request}', DisapprovePanApproval::class);
+        Route::post('approve-approval/{pan_request}', ApprovePanApproval::class);
+        Route::post('deny-approval/{pan_request}', DisapprovePanApproval::class);
     });
-    Route::post(
+
+    /*     Route::post(
         'approve-pan-approvals/{id}',
         [EmployeePersonnelActionNoticeRequestController::class, 'approveApprovals']
     );
@@ -142,5 +142,5 @@ Route::middleware('auth:sanctum')->group(function () {
             EmployeePersonnelActionNoticeRequestController::class,
             'disapproveApprovals'
         ]
-    );
+    ); */
 });

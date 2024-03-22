@@ -34,7 +34,6 @@ class InternalWorkExperience extends Model
         parent::boot();
         static::creating(function ($internalWorkExp) {
             $internalWorkExp->status = EmployeeInternalWorkExperiencesStatus::CURRENT;
-            $internalWorkExp->date_to = null;
         });
     }
 

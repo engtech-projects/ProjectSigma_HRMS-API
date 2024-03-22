@@ -25,8 +25,12 @@ class ApprovePanApproval extends Controller
             case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
                 $panRequestService->toHireEmployee($panRequest);
             case EmployeePersonnelActionNoticeRequest::TRANSFER:
+                $panRequestService->toTransferEmployee($panRequest);
             case EmployeePersonnelActionNoticeRequest::PROMOTION:
+                $panRequestService->toPromoteEmployee($panRequest);
             case EmployeePersonnelActionNoticeRequest::TERMINATION:
+                $panRequestService->toTerminateEmployee($panRequest);
+                break;
         }
         $panRequest->save();
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);;

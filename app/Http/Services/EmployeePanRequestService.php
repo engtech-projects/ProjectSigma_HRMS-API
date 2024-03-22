@@ -2,11 +2,12 @@
 
 namespace App\Http\Services;
 
+use Exception;
 use App\Models\Employee;
+use App\Models\InternalWorkExperience;
 use App\Exceptions\TransactionFailedException;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Models\EmployeePersonnelActionNoticeRequest;
-use Exception;
 
 class EmployeePanRequestService
 {
@@ -37,7 +38,6 @@ class EmployeePanRequestService
                 "actual_salary" => $panRequest->salarygrade->monthly_salary_amount,
                 "work_location" => $panRequest->work_location,
                 "hire_source" => $panRequest->hire_source,
-                "status" => EmployeeInternalWorkExperiencesStatus::CURRENT,
                 "date_from" => $panRequest->date_from,
                 "salary_grades" => $panRequest->salary_grades,
             ]);
@@ -56,13 +56,33 @@ class EmployeePanRequestService
 
     public function toTransferEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
     {
+        $interWorkExp = InternalWorkExperience::where([
+            "employee_id" => $panRequest->employee_id,
+            "status" => EmployeeInternalWorkExperiencesStatus::CURRENT,
+            "date_to" => null
+        ])->firstOrFail();
+        $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
+        $interWorkExp->fill($panRequest->toArray());
+        $interWorkExp->save();
     }
 
     public function toPromoteEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
     {
+        $interWorkExp = InternalWorkExperience::where(["employee_id" => $panRequest->employee_id])->firstOrfail();
+        $panRequest->hire_source = $interWorkExp->hire_source;
+        $panRequest->salary_grades = $interWorkExp->salary_grades;
+        $interWorkExp->fill($panRequest->toArray());
+        $interWorkExp->save();
     }
 
     public function toTerminateEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
     {
+        $interWorkExp = InternalWorkExperience::where(["employee_id" => $panRequest->employee_id])->firstOrfail();
+        $panRequest->work_location = $interWorkExp->work_location;
+        $panRequest->hire_source = $interWorkExp->hire_source;
+        $panRequest->salary_grades = $interWorkExp->salary_grades;
+        $interWorkExp->fill($panRequest->toArray());
+        $interWorkExp->save();
     }
+
 }
