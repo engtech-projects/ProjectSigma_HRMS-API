@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\PendingRequestScope;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +19,12 @@ class EmployeePersonnelActionNoticeRequest extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasApproval, HasUser;
 
+    const NEW_HIRE = "New Hire";
+    const TRANSFER = "Transfer";
+    const PROMOTION = "Promotion";
+    const TERMINATION = "Termination";
+
+
     protected $appends = [
         'fullname'
     ];
@@ -24,6 +32,19 @@ class EmployeePersonnelActionNoticeRequest extends Model
     protected $casts = [
         'approvals' => 'array'
     ];
+
+    /**
+     * MODEL STATIC
+     * METHODS
+     *
+     */
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function ($employeePersonnelActionNoticeRequest) {
+            $employeePersonnelActionNoticeRequest->created_by = auth()->user()->id;
+        });
+    }
 
     public function getFullNameAttribute()
     {
@@ -61,6 +82,10 @@ class EmployeePersonnelActionNoticeRequest extends Model
     public function scopeApproval($query)
     {
         return $query->where("request_status", "=", "Pending");
+    }
+    public function scopeCreatedBy(Builder $query, $id): Builder
+    {
+        return $query->where("created_by", $id);
     }
 
     public function jobapplicant(): HasOne

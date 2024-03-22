@@ -9,11 +9,15 @@ use App\Models\JobApplicants;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 use App\Enums\EmployeeAddressType;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreDisapprove;
 use App\Models\InternalWorkExperience;
 use App\Enums\EmployeeRelatedPersonType;
+use App\Utils\PaginateResourceCollection;
+use App\Exceptions\TransactionFailedException;
 use App\Enums\EmployeeCompanyEmploymentsStatus;
+use App\Http\Services\EmployeePanRequestService;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Http\Resources\EmployeePersonnelActionNoticeRequestResource;
@@ -22,17 +26,25 @@ use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
 
 class EmployeePersonnelActionNoticeRequestController extends Controller
 {
+
+    protected $panelRequestService;
+    public function __construct(EmployeePanRequestService $panelRequestService)
+    {
+        $this->panelRequestService = $panelRequestService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $main = EmployeePersonnelActionNoticeRequest::with('employee', 'jobapplicantonly', 'department')->paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $panRequest = $this->panelRequestService->getAll();
+        $paginated = EmployeePersonnelActionNoticeRequestResource::collection($panRequest);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetch.",
+            "data" => PaginateResourceCollection::paginate(collect($paginated), 15)
+        ]);
     }
 
     /**
@@ -40,31 +52,22 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
      */
     public function store(StoreEmployeePersonnelActionNoticeRequestRequest $request)
     {
-        $id = Auth::user()->id;
-        $main = new EmployeePersonnelActionNoticeRequest();
-        $main->created_by = $id;
-        $validData = $request->validated();
-        $main->fill($validData);
-        $data = json_decode('{}');
-        $main->approvals = $validData["approvals"];
-        if (!$main->save()) {
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        try {
+            $this->panelRequestService->create($request->validated());
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Create transaction failed.", 500, $e);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully created."
+        ], JsonResponse::HTTP_CREATED);
     }
 
     // can view all pan request made by logged in user
     public function getpanrequest()
     {
         $id = auth()->user()->id;
-        $noticeRequest = EmployeePersonnelActionNoticeRequest::with(['department'])
-            ->where("created_by", "=", $id)
-            ->get();
+        $noticeRequest = EmployeePersonnelActionNoticeRequest::with(['department'])->createdBy($id)->get();
         if (empty($noticeRequest)) {
             return new JsonResponse([
                 "success" => false,
@@ -84,14 +87,14 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     public function getApprovals()
     {
         $id = Auth::user()->id;
-        $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
+        $noticeRequest = EmployeePersonnelActionNoticeRequest::with('department')->approval()
             ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])
             ->get();
-        $newdata = json_decode('{}');
-        $newdata->message = "Successfully fetch.";
-        $newdata->success = true;
-        $newdata->data = $main;
-        return response()->json($newdata);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => EmployeePersonnelActionNoticeRequestResource::collection($noticeRequest)
+        ]);
     }
 
     // logged in can approve pan request(if he is the current approval)
@@ -142,8 +145,8 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
                     $saveData = $this->hireApproved($main->pan_job_applicant_id, $main);
                     if ($saveData) {
                         $main->jobapplicant->status = "Hired";
-                        JobApplicants::where("id", $main->pan_job_applicant_id)->update(["status" => "Hired"]);
-                        ManpowerRequest::where("id", $main->jobapplicant->manpower->id)->update(["request_status" => "Approved"]);
+                        JobApplicants::find($main->pan_job_applicant_id)->update(["status" => "Hired"]);
+                        ManpowerRequest::find($main->jobapplicant->manpower->id)->update(["request_status" => "Approved"]);
                         $main->request_status = "Filled";
                     } else {
                         return $this->failedMessage($newdata, "Failed approved.");
@@ -306,6 +309,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $data["religion"] = $main->religion;
         $data["weight"] = $main->weight;
         $data["height"] = $main->height;
+        dd($request);
 
         // Internal Work Experience
         $internalWork['position_title'] = $request->designation_position;

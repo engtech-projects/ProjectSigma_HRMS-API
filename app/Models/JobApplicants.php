@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,10 +14,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class JobApplicants extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
-        'id',
+/*         'id', */
         'manpowerrequests_id',
         'name_suffix',
         'application_letter_attachment',
@@ -76,6 +77,7 @@ class JobApplicants extends Model
         'remarks'
     ];
 
+
     public $casts = [
         "children" => "array",
         "education" => "array",
@@ -86,5 +88,4 @@ class JobApplicants extends Model
     {
         return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');
     }
-
 }
