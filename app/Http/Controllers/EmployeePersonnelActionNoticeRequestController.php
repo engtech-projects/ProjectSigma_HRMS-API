@@ -87,6 +87,14 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $main = EmployeePersonnelActionNoticeRequest::with('department')->approval()
             ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])
             ->get();
+        foreach ($main as $key => $value) {
+            if (!is_null($value->approvals)) {
+                $firstapproval = collect($value->approvals)->where("status","Pending")->first()["user_id"];
+                if ($firstapproval!=$id) {
+                    unset($main[$key]);
+                }
+            }
+        }
         $newdata = json_decode('{}');
         $newdata->message = "Successfully fetch.";
         $newdata->success = true;
