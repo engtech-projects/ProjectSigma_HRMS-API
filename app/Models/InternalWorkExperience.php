@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class InternalWorkExperience extends Model
@@ -45,5 +46,11 @@ class InternalWorkExperience extends Model
     public function employee_department(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class, "id", "department_id");
+    }
+
+
+    public function scopeByEmployee(Builder $query, $id): Builder
+    {
+        return $this->where('employee_id', $id);
     }
 }

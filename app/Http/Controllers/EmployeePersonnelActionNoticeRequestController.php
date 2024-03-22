@@ -98,7 +98,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     }
 
     // logged in can approve pan request(if he is the current approval)
-/*     public function approveApprovals($request)
+    public function approveApprovals($request)
     {
 
         $id = Auth::user()->id;
@@ -213,7 +213,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
 
         return $this->failedMessage($newdata, "Failed approved.");
-    } */
+    }
 
     // logged in can approve pan request(if he is the current approval)
     public function disapproveApprovals(StoreDisapprove $request)
@@ -271,7 +271,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         return response()->json($newdata);
     }
 
-/*     public function hireApproved($id, $request)
+    public function hireApproved($id, $request)
     {
         $main = JobApplicants::where('id', '=', $id)->first();
         $employee = new Employee();
@@ -309,6 +309,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $data["religion"] = $main->religion;
         $data["weight"] = $main->weight;
         $data["height"] = $main->height;
+
 
         // Internal Work Experience
         $internalWork['position_title'] = $request->designation_position;
@@ -437,19 +438,6 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         $arr_internalwork['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
         $arr_internalwork['date_to'] = null;
 
-        $arr_internalwork['employee_id'] = $data->employee_id;
-        $arr_internalwork['position_title'] = $request->designation_position;
-        $arr_internalwork['employment_status'] = $request->new_employment_status;
-        $arr_internalwork['department'] = $data->department;
-        $arr_internalwork['immediate_supervisor'] = $data->immediate_supervisor ?? "N/A";
-        $arr_internalwork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
-        $arr_internalwork['salary_grades'] = $request->salary_grades;
-        $arr_internalwork['date_from'] = $request->date_from;
-        $arr_internalwork['work_location'] = $data->work_location;
-        $arr_internalwork['hire_source'] = $data->hire_source;
-        $arr_internalwork['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
-        $arr_internalwork['date_to'] = null;
-
         $transferData = InternalWorkExperience::create($arr_internalwork);
 
         if ($transferData) {
@@ -506,7 +494,7 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
         }
 
         return false;
-    } */
+    }
 
     /**
      * Display the specified resource.

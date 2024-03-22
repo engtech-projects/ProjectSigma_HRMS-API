@@ -24,7 +24,7 @@ class EmployeePanRequestService
 
     public function create($attributes)
     {
-        EmployeePersonnelActionNoticeRequest::create($attributes);
+        return EmployeePersonnelActionNoticeRequest::create($attributes);
     }
 
     public function createInternalWorkExperiences(Employee $employee, EmployeePersonnelActionNoticeRequest $panRequest)
@@ -54,13 +54,19 @@ class EmployeePanRequestService
         $this->createInternalWorkExperiences($employee, $panRequest);
     }
 
+    public function getInternalWorkExp(int $employeeId, ?array $filter = [])
+    {
+        return InternalWorkExperience::where($filter)
+            ->byEmployee($employeeId)
+            ->firstOrFail();
+    }
+
     public function toTransferEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
     {
-        $interWorkExp = InternalWorkExperience::where([
-            "employee_id" => $panRequest->employee_id,
+        $interWorkExp = $this->getInternalWorkExp($panRequest->employee_id, [
             "status" => EmployeeInternalWorkExperiencesStatus::CURRENT,
             "date_to" => null
-        ])->firstOrFail();
+        ]);
         $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
         $interWorkExp->fill($panRequest->toArray());
         $interWorkExp->save();
@@ -68,7 +74,7 @@ class EmployeePanRequestService
 
     public function toPromoteEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
     {
-        $interWorkExp = InternalWorkExperience::where(["employee_id" => $panRequest->employee_id])->firstOrfail();
+        $interWorkExp = $this->getInternalWorkExp($panRequest->employee_id);
         $panRequest->hire_source = $interWorkExp->hire_source;
         $panRequest->salary_grades = $interWorkExp->salary_grades;
         $interWorkExp->fill($panRequest->toArray());
@@ -77,12 +83,11 @@ class EmployeePanRequestService
 
     public function toTerminateEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
     {
-        $interWorkExp = InternalWorkExperience::where(["employee_id" => $panRequest->employee_id])->firstOrfail();
+        $interWorkExp = $this->getInternalWorkExp($panRequest->employee_id);
         $panRequest->work_location = $interWorkExp->work_location;
         $panRequest->hire_source = $interWorkExp->hire_source;
         $panRequest->salary_grades = $interWorkExp->salary_grades;
         $interWorkExp->fill($panRequest->toArray());
         $interWorkExp->save();
     }
-
 }
