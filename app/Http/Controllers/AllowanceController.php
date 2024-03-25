@@ -6,7 +6,6 @@ use App\Models\Allowance;
 use App\Models\Position;
 use App\Http\Requests\StoreallowanceRequest;
 use App\Http\Requests\UpdateallowanceRequest;
-use Illuminate\Support\Facades\DB;
 
 class AllowanceController extends Controller
 {
@@ -15,7 +14,6 @@ class AllowanceController extends Controller
      */
     public function index()
     {
-        //
         $main = Allowance::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
@@ -36,19 +34,10 @@ class AllowanceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreallowanceRequest $request)
     {
-        //
         $main = new Allowance;
         $main->fill($request->validated());
         $data = json_decode('{}');
@@ -83,19 +72,10 @@ class AllowanceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Allowance $allowance)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateallowanceRequest $request, $id)
     {
-        //
         $main = Allowance::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {

@@ -22,14 +22,6 @@ class EmployeeEducationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeEducationRequest $request)
@@ -69,19 +61,10 @@ class EmployeeEducationController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(EmployeeEducation $employeeEducation)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeEducationRequest $request, $id)
     {
-        //
         $main = EmployeeEducation::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
@@ -107,7 +90,6 @@ class EmployeeEducationController extends Controller
      */
     public function destroy($id)
     {
-        //
         $main = EmployeeEducation::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {

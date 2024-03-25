@@ -75,16 +75,6 @@ class UsersController extends Controller
         return response()->json($data, 400);
     }
 
-    function updateUserName($request)
-    {
-
-    }
-
-    function updateUserEmail($request)
-    {
-
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -125,14 +115,6 @@ class UsersController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Users $users)
-    {
-        //
     }
 
     /**

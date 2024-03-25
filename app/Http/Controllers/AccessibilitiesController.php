@@ -18,14 +18,6 @@ class AccessibilitiesController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreAccessibilitiesRequest $request)
@@ -43,17 +35,8 @@ class AccessibilitiesController extends Controller
      */
     public function show($id)
     {
-        //
         $accessibilities = Accessibilities::find($id);
         return response()->json($accessibilities);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Accessibilities $accessibilities)
-    {
-        //
     }
 
     /**

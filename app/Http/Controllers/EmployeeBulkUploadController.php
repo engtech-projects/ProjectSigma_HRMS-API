@@ -6,14 +6,9 @@ use App\Enums\EmployeeAddressType;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\EmployeeStudiesType;
 use App\Http\Requests\BulkValidationRequest;
-use App\Http\Requests\StoreEmployeeBulkUpload;
-use App\Models\CompanyEmployee;
 use App\Models\Employee;
-use App\Models\EmployeeRecord;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Illuminate\Support\Str;
 
 class EmployeeBulkUploadController extends Controller
 {
