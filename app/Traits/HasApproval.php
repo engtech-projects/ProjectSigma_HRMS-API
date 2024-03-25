@@ -49,10 +49,11 @@ trait HasApproval
             ->get();
     }
 
-    public function setNewApproval(ManpowerRequest $manpowerRequest, $approvalToUpdate, $data)
+    public function setNewApproval($model, $approvalToUpdate, $data)
     {
-        $manpowerRequestApproval = collect($manpowerRequest->approvals)->map(function ($item, int $key) use ($approvalToUpdate, $data) {
+        $manpowerRequestApproval = collect($model->approvals)->map(function ($item, int $key) use ($approvalToUpdate, $data) {
             if ($key === $approvalToUpdate) {
+
                 $item['status'] = $data['status'];
                 if ($data["status"] === RequestApprovalStatus::DENIED) {
                     $data['date_approved'] = Carbon::now()->format('Y-m-d');
@@ -66,59 +67,72 @@ trait HasApproval
         return $manpowerRequestApproval;
     }
 
-    public function setNewManpowerRequestStatus(ManpowerRequest $manpowerRequest, ?object $manpowerRequestApproval, ?bool $isRequestApproved)
-    {;
+    public function setNewManpowerRequestStatus($model, ?object $manpowerRequestApproval, ?bool $isRequestApproved)
+    {
         if ($isRequestApproved) {
-            $manpowerRequest->request_status = ManpowerRequestStatus::APPROVED;
+            $model->request_status = ManpowerRequestStatus::APPROVED;
         } else {
             $isApprovalDenied = $manpowerRequestApproval->contains(function ($approval) {
                 return $approval['status'] === RequestApprovalStatus::DENIED;
             });
 
             if ($isApprovalDenied) {
-                $manpowerRequest->request_status = ManpowerRequestStatus::DISAPPROVED;
+                $model->request_status = ManpowerRequestStatus::DISAPPROVED;
             }
         }
     }
 
-    public function updateApproval($manpowerRequestApproval, ManpowerRequest $manpowerRequest, ?array $data)
+    public function setActionResponse()
     {
-        $userApproval = $this->getUserPendingApproval($manpowerRequestApproval, auth()->user()->id)->first();
-        $nextApproval = $this->getNextPendingApproval(collect($manpowerRequest->approvals));
+    }
+
+    public function updateApproval($model, ?array $data)
+    {
+        $approvals = collect($model->approvals);
+        $userApproval = $this->getUserPendingApproval($approvals, auth()->user()->id)->first();
+        $nextApproval = $this->getNextPendingApproval(collect($model->approvals));
 
         // CHECK IF MANPOWER REQUEST ALREADY APPROVED AND SET RESPONSE DATA
-        if ($manpowerRequest->request_status === ManpowerRequestStatus::DISAPPROVED) {
+        if ($model->request_status === ManpowerRequestStatus::DISAPPROVED) {
             return [
-                "approvals" => $manpowerRequestApproval,
+                "approvals" => $approvals,
                 'success' => false,
                 "status_code" => JsonResponse::HTTP_FORBIDDEN,
-                "message" => "Manpower request was already disapproved",
+                "message" => "The request was already disapproved",
+            ];
+        }
+        if ($model->request_status === ManpowerRequestStatus::APPROVED) {
+            return [
+                "approvals" => $approvals,
+                'success' => false,
+                "status_code" => JsonResponse::HTTP_FORBIDDEN,
+                "message" => "The request was already approved",
             ];
         }
         // CHECK IF THE CURRENT USER HAS PENDING APPROVAL AND SET RESPONSE DATA
-        if ($nextApproval && $nextApproval['user_id'] !== auth()->user()->id) {
+        if (!empty($nextApproval) && $nextApproval['user_id'] != auth()->user()->id) {
             return [
-                "approvals" => $manpowerRequestApproval,
+                "approvals" => $approvals,
                 'success' => false,
                 "status_code" => JsonResponse::HTTP_FORBIDDEN,
                 "message" => "Failed to approve. Your approval is for later or already done.",
             ];
         }
         // SET NEW MAN POWER REQUEST APPROVAL FOR RESOURCE UPDATE
-        $approvalToUpdate = $manpowerRequestApproval->search($userApproval);
-        $manpowerRequestApproval = $this->setNewApproval($manpowerRequest, $approvalToUpdate, $data);
+        $approvalToUpdate = $approvals->search($userApproval);
+        $newApproval = $this->setNewApproval($model, $approvalToUpdate, $data);
         // SET NEW MANPOWER REQUEST STATUS FOR RESOURCE UPDATE
-        $isRequestApproved =  $manpowerRequestApproval->last()['status'] == ManpowerRequestStatus::APPROVED ? true : false;
-        $this->setNewManpowerRequestStatus($manpowerRequest, $manpowerRequestApproval, $isRequestApproved);
+        $isRequestApproved =  $newApproval->last()['status'] == ManpowerRequestStatus::APPROVED ? true : false;
+        //$this->setNewManpowerRequestStatus($model, $newApproval, $isRequestApproved);
         // SAVE NEW RESOURCE FOR MANPOWER REQUEST
-        $manpowerRequest->approvals = $manpowerRequestApproval;
-        $manpowerRequest->save();
+        $model->approvals = $newApproval;
+        $model->save();
 
         return [
-            "approvals" => $manpowerRequestApproval,
+            "approvals" => $newApproval,
             'success' => true,
             "status_code" => JsonResponse::HTTP_OK,
-            "message" => $data['status'] === RequestApprovalStatus::APPROVED ? "Manpower request successfully approved." : "Manpower request successfully denied.",
+            "message" => $data['status'] === RequestApprovalStatus::APPROVED ? "Successfully approved." : "Successfully denied.",
         ];
     }
 }

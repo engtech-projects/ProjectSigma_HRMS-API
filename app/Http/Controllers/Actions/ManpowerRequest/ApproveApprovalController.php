@@ -18,9 +18,8 @@ class ApproveApprovalController extends Controller
      */
     public function __invoke(ManpowerRequest $manpowerRequest)
     {
-        $manpowerRequestApproval = collect($manpowerRequest->approvals);
-        $result = $this->updateApproval($manpowerRequestApproval, $manpowerRequest, ['status' => RequestApprovalStatus::APPROVED]);
-        $manpowerRequest->approvals = $result['approvals'];
+        $result = $this->updateApproval($manpowerRequest, ['status' => RequestApprovalStatus::APPROVED]);
+        $manpowerRequest->approvals = $result["approvals"];
         $manpowerRequest->save();
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
     }

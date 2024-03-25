@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class InternalWorkExperience extends Model
 {
@@ -28,6 +30,14 @@ class InternalWorkExperience extends Model
         'date_to'
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function ($internalWorkExp) {
+            $internalWorkExp->status = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        });
+    }
+
     public function employee_salarygrade(): HasOne
     {
         return $this->hasOne(SalaryGradeStep::class, "id", "salary_grades");
@@ -36,5 +46,11 @@ class InternalWorkExperience extends Model
     public function employee_department(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class, "id", "department_id");
+    }
+
+
+    public function scopeByEmployee(Builder $query, $id): Builder
+    {
+        return $this->where('employee_id', $id);
     }
 }
