@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class CompanyEmployee extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $table = 'company_employments';
 
@@ -26,6 +26,8 @@ class CompanyEmployee extends Model
         'sss_number',
         'tin_number',
         'pagibig_number',
+        'status',
+        'atm',
     ];
 
     public function employee(): BelongsTo
