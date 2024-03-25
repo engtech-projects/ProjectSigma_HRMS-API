@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\PendingRequestScope;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
 class EmployeePersonnelActionNoticeRequest extends Model
@@ -26,34 +28,14 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
 
     protected $appends = [
-        'fullname'
+        "fullname",
+        "request_created_at"
     ];
 
     protected $casts = [
-        'approvals' => 'array'
+        "approvals" => "array",
+        "created_at" => "date:Y-m-d"
     ];
-
-    /**
-     * MODEL STATIC
-     * METHODS
-     *
-     */
-    public static function boot()
-    {
-        parent::boot();
-        static::creating(function ($employeePersonnelActionNoticeRequest) {
-            $employeePersonnelActionNoticeRequest->created_by = auth()->user()->id;
-        });
-    }
-
-    public function getFullNameAttribute()
-    {
-        if ($this->type == "New Hire") {
-            return $this->jobapplicant->lastname . ", " . $this->jobapplicant->firstname . " " . $this->jobapplicant->middlename;
-        } else {
-            return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
-        }
-    }
 
     protected $fillable = [
         'id',
@@ -78,6 +60,36 @@ class EmployeePersonnelActionNoticeRequest extends Model
         'pan_job_applicant_id',
         'salary_grades',
     ];
+
+
+    /**
+     * MODEL STATIC
+     * METHODS
+     *
+     */
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function ($employeePersonnelActionNoticeRequest) {
+            $employeePersonnelActionNoticeRequest->created_by = auth()->user()->id;
+        });
+    }
+
+    public function getFullNameAttribute()
+    {
+        if ($this->type == "New Hire") {
+            return $this->jobapplicant->lastname . ", " . $this->jobapplicant->firstname . " " . $this->jobapplicant->middlename;
+        } else {
+            return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
+        }
+    }
+    protected function requestCreatedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->created_at->format('F j, Y')
+        );
+    }
+
 
     public function scopeApproval($query)
     {

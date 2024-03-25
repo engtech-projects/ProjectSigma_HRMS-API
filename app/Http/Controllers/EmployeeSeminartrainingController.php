@@ -13,12 +13,21 @@ class EmployeeSeminartrainingController extends Controller
      */
     public function index()
     {
+        //
         $main = EmployeeSeminartraining::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -61,10 +70,19 @@ class EmployeeSeminartrainingController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(EmployeeSeminartraining $employeeSeminartraining)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeSeminartrainingRequest $request, $id)
     {
+        //
         $main = EmployeeSeminartraining::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,6 +17,7 @@ class EmployeePersonnelActionNoticeRequestResource extends JsonResource
     {
         return [
             "id" => $this->id,
+
             "employee_id" => $this->employee_id,
             "type" => $this->type,
             "date_of_effictivity" => $this->date_of_effictivity,
@@ -31,6 +33,7 @@ class EmployeePersonnelActionNoticeRequestResource extends JsonResource
             "last_day_worked" => $this->last_day_worked,
             "approvals" => $this->approvals,
             "created_by" => $this->created_by,
+            "request_created_at" => $this->request_created_at,
             "new_salary_grades" => $this->new_salary_grades,
             "pan_job_applicant_id" => $this->pan_job_applicant_id,
             "salary_grades" => $this->salary_grades,
@@ -41,6 +44,8 @@ class EmployeePersonnelActionNoticeRequestResource extends JsonResource
             "new_section_id" => $this->new_section_id,
             "fullname" => $this->employee?->fullname_last,
             "department" => $this->whenLoaded('department'),
+
+
 
         ];
         //return parent::toArray($request);

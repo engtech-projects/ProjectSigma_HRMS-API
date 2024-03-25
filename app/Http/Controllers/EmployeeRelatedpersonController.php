@@ -13,12 +13,21 @@ class EmployeeRelatedpersonController extends Controller
      */
     public function index()
     {
+        //
         $main = EmployeeRelatedperson::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -60,10 +69,19 @@ class EmployeeRelatedpersonController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(EmployeeRelatedperson $employeeRelatedperson)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeRelatedpersonRequest $request, $id)
     {
+        //
         $main = EmployeeRelatedperson::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
@@ -89,6 +107,7 @@ class EmployeeRelatedpersonController extends Controller
      */
     public function destroy($id)
     {
+        //
         $main = EmployeeRelatedperson::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {

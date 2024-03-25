@@ -23,12 +23,21 @@ class DepartmentController extends Controller
 
     public function get()
     {
+        //
         $main = Department::get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -66,6 +75,15 @@ class DepartmentController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Department $department)
+    {
+        //
+
     }
 
     /**

@@ -33,8 +33,7 @@ class StoreInternalWorkExperienceRequest extends FormRequest
             ],
             'employment_status'=>[
                 "required",
-                "string",
-                'in:Project Base,Regularization,Probationary'
+                "string"
             ],
             'department_id'=>[
                 "required",

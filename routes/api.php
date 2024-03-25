@@ -143,6 +143,4 @@ Route::middleware('auth:sanctum')->group(function () {
             'disapproveApprovals'
         ]
     ); */
-
-    Route::put('update-user', [UsersController::class, 'updateUserCredential']);
 });

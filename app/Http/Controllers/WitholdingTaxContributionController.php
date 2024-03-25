@@ -14,11 +14,19 @@ class WitholdingTaxContributionController extends Controller
     public function index()
     {
         $witholdingtax = WitholdingTaxContribution::paginate(15);
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $witholdingtax;
         return response()->json($data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -28,7 +36,7 @@ class WitholdingTaxContributionController extends Controller
     {
         $witholdingtax = new WitholdingTaxContribution;
         $witholdingtax->fill($request->validated());
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         if(!$witholdingtax->save()){
             $data->message = "Save failed.";
             $data->success = false;
@@ -46,7 +54,7 @@ class WitholdingTaxContributionController extends Controller
     public function show($id)
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         if (!is_null($witholdingtax) ) {
             $data->message = "Successfully fetch.";
             $data->success = true;
@@ -59,13 +67,21 @@ class WitholdingTaxContributionController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(WitholdingTaxContribution $witholdingTaxContribution)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateWitholdingTaxContributionRequest $request, $id)
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
         $witholdingtax->fill($request->validated());
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         if (!is_null($witholdingtax) ) {
             if($witholdingtax->save()){
                 $data->message = "Successfully update.";
@@ -88,7 +104,7 @@ class WitholdingTaxContributionController extends Controller
     public function destroy($id)
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         if (!is_null($witholdingtax) ) {
             if($witholdingtax->delete()){
                 $data->message = "Successfully delete.";
@@ -98,7 +114,7 @@ class WitholdingTaxContributionController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data,400); 
         }
         $data->message = "Failed delete.";
         $data->success = false;
