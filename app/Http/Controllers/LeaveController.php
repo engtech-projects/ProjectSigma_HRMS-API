@@ -13,21 +13,12 @@ class LeaveController extends Controller
      */
     public function index()
     {
-        //
         $leave = Leave::paginate(15);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $leave;
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -38,7 +29,7 @@ class LeaveController extends Controller
         $leave = new Leave;
         $leave->fill($request->validated());
         $leave->employment_type = json_encode($request->employment_type);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if(!$leave->save()){
             $data->message = "Save failed.";
             $data->success = false;
@@ -56,7 +47,7 @@ class LeaveController extends Controller
     public function show($id)
     {
         $leave = Leave::find($id);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if (!is_null($leave) ) {
             $data->message = "Successfully fetch.";
             $data->success = true;
@@ -69,20 +60,12 @@ class LeaveController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Leave $leave)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateLeaveRequest $request,  $id)
     {
         $leave = Leave::find($id);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if (!is_null($leave) ) {
             $leave->fill($request->validated());
             $leave->employment_type = json_encode($request->employment_type);
@@ -107,7 +90,7 @@ class LeaveController extends Controller
     public function destroy($id)
     {
         $leave = Leave::find($id);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         if (!is_null($leave) ) {
             if($leave->delete()){
                 $data->message = "Successfully delete.";
@@ -117,10 +100,10 @@ class LeaveController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400); 
+            return response()->json($data,400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404); 
+        return response()->json($data,404);
     }
 }

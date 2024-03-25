@@ -42,7 +42,8 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
             ],
             'immediate_supervisor'=>[
                 "nullable",
-                "string"
+                "string",
+                'in:Project Base,Regularization,Probationary'
             ],
             'salary_grades'=>[
                 "nullable",

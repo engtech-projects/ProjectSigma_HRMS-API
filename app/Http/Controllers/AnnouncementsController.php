@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Announcements;
 use App\Http\Requests\StoreAnnouncementsRequest;
 use App\Http\Requests\UpdateAnnouncementsRequest;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class AnnouncementsController extends Controller
@@ -37,14 +36,6 @@ class AnnouncementsController extends Controller
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -83,14 +74,6 @@ class AnnouncementsController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Announcements $announcements)
-    {
-        //
     }
 
     /**

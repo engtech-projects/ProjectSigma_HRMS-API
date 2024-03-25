@@ -22,19 +22,10 @@ class EmployeeAffiliationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeAffiliationRequest $request)
     {
-        //
         $main = new EmployeeAffiliation;
         $main->fill($request->validated());
         $data = json_decode('{}');
@@ -55,7 +46,6 @@ class EmployeeAffiliationController extends Controller
      */
     public function show($id)
     {
-        //
         $main = EmployeeAffiliation::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
@@ -70,19 +60,10 @@ class EmployeeAffiliationController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(EmployeeAffiliation $employeeAffiliation)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeAffiliationRequest $request, $id)
     {
-        //
         $main = EmployeeAffiliation::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {

@@ -10,21 +10,12 @@ class EmployeeStudiesController extends Controller
 {
     public function index()
     {
-        //
         $main = EmployeeStudies::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -67,19 +58,10 @@ class EmployeeStudiesController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(EmployeeStudies $employeeSeminartraining)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeStudiesRequest $request, $id)
     {
-        //
         $main = EmployeeStudies::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
