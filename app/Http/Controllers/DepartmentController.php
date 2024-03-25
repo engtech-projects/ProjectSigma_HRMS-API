@@ -23,21 +23,12 @@ class DepartmentController extends Controller
 
     public function get()
     {
-        //
         $main = Department::get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -48,7 +39,7 @@ class DepartmentController extends Controller
         $department = new Department;
         $department->fill($request->validated());
         $data = json_decode('{}');
-        if(!$department->save()){
+        if (!$department->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -66,7 +57,7 @@ class DepartmentController extends Controller
     {
         $department = Department::find($id);
         $data = json_decode('{}');
-        if (!is_null($department) ) {
+        if (!is_null($department)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $department;
@@ -78,24 +69,15 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Department $department)
-    {
-        //
-
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateDepartmentRequest $request, $id)
     {
         $department = Department::find($id);
         $data = json_decode('{}');
-        if (!is_null($department) ) {
+        if (!is_null($department)) {
             $department->fill($request->validated());
-            if($department->save()){
+            if ($department->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $department;
@@ -117,8 +99,8 @@ class DepartmentController extends Controller
     {
         $department = Department::find($id);
         $data = json_decode('{}');
-        if (!is_null($department) ) {
-            if($department->delete()){
+        if (!is_null($department)) {
+            if ($department->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $department;
@@ -126,7 +108,7 @@ class DepartmentController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;

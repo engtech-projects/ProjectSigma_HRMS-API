@@ -6,7 +6,6 @@ use App\Models\Allowance;
 use App\Models\Position;
 use App\Http\Requests\StoreallowanceRequest;
 use App\Http\Requests\UpdateallowanceRequest;
-use Illuminate\Support\Facades\DB;
 
 class AllowanceController extends Controller
 {
@@ -25,7 +24,7 @@ class AllowanceController extends Controller
 
     public function get()
     {
-        $main = Position::with('allowances','departments')->get();
+        $main = Position::with('allowances', 'departments')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -117,11 +116,11 @@ class AllowanceController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
 
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }
