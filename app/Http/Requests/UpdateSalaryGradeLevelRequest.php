@@ -25,7 +25,6 @@ class UpdateSalaryGradeLevelRequest extends FormRequest
     {
         $id = $this->route('salary_grade_level')->id;
         return [
-            //'salary_grade_level' => 'required|string|unique:salary_grade_levels,salary_grade_level,' . $id . ',id',
             'salary_grade_level' => [
                 'required',
                 'string',
@@ -33,12 +32,6 @@ class UpdateSalaryGradeLevelRequest extends FormRequest
                     $query->whereNull('deleted_at');
                 })->ignore($id)
             ],
-            /*             'salary_grade_level' => [
-                'required',
-                'string',
-                'unique:salary_grade_levels,salary_grade_level,' . $id . ',id',
-                new UniqueWithoutSoftDeleted('salary_grade_levels', 'salary_grade_level')
-            ], */
             'salary_grade_step' => 'required|array',
             'salary_grade_step.*.id' => 'required|integer',
             'salary_grade_step.*.step_name' => 'required|numeric',

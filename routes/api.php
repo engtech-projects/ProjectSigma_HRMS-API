@@ -22,6 +22,7 @@ use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ApprovalsController;
+use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\ManpowerRequestController;
 use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\EmployeeController;
@@ -36,6 +37,7 @@ use App\Http\Controllers\EmployeeEligibilityController;
 use App\Http\Controllers\EmployeePersonnelActionNoticeRequestController;
 use App\Http\Controllers\EmployeeRelatedpersonController;
 use App\Http\Controllers\EmployeeSeminartrainingController;
+use App\Http\Controllers\FailureToLogController;
 use App\Http\Controllers\InternalWorkExperienceController;
 use App\Http\Controllers\TerminationController;
 use App\Http\Controllers\HMOController;
@@ -130,6 +132,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-approvals', [EmployeePersonnelActionNoticeRequestController::class, 'getApprovals']);
         Route::post('approve-approval/{pan_request}', ApprovePanApproval::class);
         Route::post('deny-approval/{pan_request}', DisapprovePanApproval::class);
+    });
+
+    Route::prefix('attendance')->group(function () {
+        Route::resource('logs', AttendanceLogController::class);
+        Route::resource('failure-log', FailureToLogController::class);
     });
 
     /*     Route::post(
