@@ -7,10 +7,11 @@ use App\Models\Traits\HasApproval;
 use App\Models\Traits\HasEmployee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FailureToLog extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     use HasEmployee;
 
     protected $fillable = [
@@ -25,7 +26,9 @@ class FailureToLog extends Model
         'date' => 'date:Y-m-d',
         'time' => 'time:H:i:s',
         'log_type' => AttendanceLogType::class,
-        'approval' => 'json',
+        'approval' => 'array',
         'employee_id' => 'integer',
     ];
+
+
 }

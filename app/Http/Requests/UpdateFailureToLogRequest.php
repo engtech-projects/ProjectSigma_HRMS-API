@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AttendanceLogType;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFailureToLogRequest extends FormRequest
@@ -11,7 +13,7 @@ class UpdateFailureToLogRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,16 @@ class UpdateFailureToLogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'date' => 'required|date_format:Y-m-d',
+            'time' => 'required|date_format:H:i:s',
+            'log_type' => [
+                'required',
+                'string',
+                new Enum(AttendanceLogType::class)
+            ],
+            'reason' => 'required|string',
+            'approvals' => 'required|json',
+            'employee_id' => 'required|integer',
         ];
     }
 }

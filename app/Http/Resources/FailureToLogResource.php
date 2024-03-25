@@ -14,6 +14,14 @@ class FailureToLogResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'date' => $this->date,
+            'time' => $this->time,
+            'log_type' => $this->log_type,
+            'reason' => $this->reason,
+            'approvals' => json_decode($this->approvals),
+            'employee' => $this->whenLoaded('employee'),
+        ];
+        //return parent::toArray($request);
     }
 }
