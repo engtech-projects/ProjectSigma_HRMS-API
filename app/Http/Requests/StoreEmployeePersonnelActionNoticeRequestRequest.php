@@ -19,7 +19,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
     {
         $this->merge([
             "approvals" => json_decode($this->approvals, true)
-            
+
         ]);
     }
 

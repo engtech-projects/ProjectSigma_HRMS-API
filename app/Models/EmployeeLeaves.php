@@ -9,20 +9,20 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-class EmployeeEligibility extends Model
+class EmployeeLeaves extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
     protected $fillable = [
         'id',
         'employee_id',
-        'program_module',
-        'certificate_lvl',
-        'status',
-        'cert_exp_date',
+        'department_id',
+        'project_id',
+        'type',
+        'other_absence',
+        'date_of_absence_from',
+        'date_of_absence_to',
+        'reason_for_absence',
+        'approvals',
+        'request_status',
     ];
-
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class);
-    }
 }
