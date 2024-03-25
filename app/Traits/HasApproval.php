@@ -101,14 +101,7 @@ trait HasApproval
                 "message" => "The request was already disapproved",
             ];
         }
-        if ($model->request_status === ManpowerRequestStatus::APPROVED) {
-            return [
-                "approvals" => $approvals,
-                'success' => false,
-                "status_code" => JsonResponse::HTTP_FORBIDDEN,
-                "message" => "The request was already approved",
-            ];
-        }
+
         // CHECK IF THE CURRENT USER HAS PENDING APPROVAL AND SET RESPONSE DATA
         if (!empty($nextApproval) && $nextApproval['user_id'] != auth()->user()->id) {
             return [
@@ -123,10 +116,19 @@ trait HasApproval
         $newApproval = $this->setNewApproval($model, $approvalToUpdate, $data);
         // SET NEW MANPOWER REQUEST STATUS FOR RESOURCE UPDATE
         $isRequestApproved =  $newApproval->last()['status'] == ManpowerRequestStatus::APPROVED ? true : false;
-        //$this->setNewManpowerRequestStatus($model, $newApproval, $isRequestApproved);
+        $this->setNewManpowerRequestStatus($model, $newApproval, $isRequestApproved);
         // SAVE NEW RESOURCE FOR MANPOWER REQUEST
         $model->approvals = $newApproval;
         $model->save();
+        if ($model->request_status === ManpowerRequestStatus::APPROVED && !$nextApproval) {
+            return [
+                "approvals" => $approvals,
+                'success' => false,
+                "status_code" => JsonResponse::HTTP_FORBIDDEN,
+                "message" => "The request was already been approved",
+            ];
+        }
+
 
         return [
             "approvals" => $newApproval,
