@@ -13,6 +13,7 @@ class EmployeeRecordController extends Controller
      */
     public function index()
     {
+        //
         $main = EmployeeRecord::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
@@ -22,10 +23,19 @@ class EmployeeRecordController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeRecordRequest $request)
     {
+        //
         $main = new EmployeeRecord;
         $main->fill($request->validated());
         $data = json_decode('{}');
@@ -46,6 +56,7 @@ class EmployeeRecordController extends Controller
      */
     public function show($id)
     {
+        //
         $main = EmployeeRecord::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
@@ -60,10 +71,19 @@ class EmployeeRecordController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(EmployeeRecord $employeeRecord)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeRecordRequest $request, $id)
     {
+        //
         $main = EmployeeRecord::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {

@@ -14,11 +14,19 @@ class SSSContributionController extends Controller
     public function index()
     {
         $sss = SSSContribution::paginate(15);
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $sss;
         return response()->json($data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -28,7 +36,7 @@ class SSSContributionController extends Controller
     {
         $sss = new SSSContribution;
         $sss->fill($request->validated());
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         if(!$sss->save()){
             $data->message = "Save failed.";
             $data->success = false;
@@ -52,10 +60,18 @@ class SSSContributionController extends Controller
             $data->success = true;
             $data->data = $sss;
             return response()->json($data);
-        }
+        } 
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(SSSContribution $sSSContribution)
+    {
+        //
     }
 
     /**
@@ -64,7 +80,7 @@ class SSSContributionController extends Controller
     public function update(UpdateSSSContributionRequest $request, $id)
     {
         $sss = SSSContribution::find($id);
-        $data = json_decode('{}');
+        $data = json_decode('{}'); 
         if (!is_null($sss) ) {
             $sss->fill($request->validated());
             if($sss->save()){
@@ -99,8 +115,8 @@ class SSSContributionController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
-        }
+            return response()->json($data,400); 
+        } 
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);

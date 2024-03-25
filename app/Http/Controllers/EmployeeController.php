@@ -49,7 +49,7 @@ class EmployeeController extends Controller
             ->when($noAccounts, function (Builder $builder) {
                 $builder->whereDoesntHave("account");
             })
-            ->with("account", "employee_internal")
+            ->with("account")
             ->limit(25)
             ->orderBy('family_name')
             ->get()
@@ -70,12 +70,20 @@ class EmployeeController extends Controller
         $data->data = $main;
         return response()->json($data);
     }
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeRequest $request)
     {
+        //
         $main = new Employee;
         $main->fill($request->validated());
         $data = json_decode('{}');
@@ -96,6 +104,7 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
+        //
         $main = Employee::with(
             "company_employments",
             "employment_records",
@@ -139,10 +148,19 @@ class EmployeeController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Employee $employee)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeRequest $request,  $id)
     {
+        //
         $main = Employee::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
@@ -168,6 +186,7 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
+        //
         $main = Employee::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {

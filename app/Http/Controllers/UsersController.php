@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UpdateTypesOnUser;
 use App\Enums\UserTypes;
 use App\Models\Users;
 use App\Models\User;
 use App\Http\Requests\StoreUsersRequest;
-use App\Http\Requests\UpdateUserCredentialRequest;
 use App\Http\Requests\UpdateUsersRequest;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -38,41 +36,6 @@ class UsersController extends Controller
         $data->success = true;
         $data->data = $users;
         return response()->json($data);
-    }
-
-    function updateUserCredential(UpdateUserCredentialRequest $request)
-    {
-        $data = json_decode('{}');
-        $id = auth()->user()->id;
-        $users = Users::find($id);
-
-        if (!$users || !password_verify($request->current_password, $users->password))
-        {
-            return response()->json([ 'message' => 'Invalid Password'  ], 401);
-        }
-
-        switch ($request->typechange) {
-            case UpdateTypesOnUser::NAME->value:
-                $users->name = $request->name;
-                break;
-            case UpdateTypesOnUser::EMAIL->value:
-                $users->email = $request->email;
-                break;
-            case UpdateTypesOnUser::PASSWORD->value:
-                $users->password = $request->password;
-                break;
-        }
-
-        if ($users->save()) {
-            $data->message = "Successfully update.";
-            $data->success = true;
-            $data->data = $users;
-            return response()->json($data);
-        }
-
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 400);
     }
 
     /**
@@ -115,6 +78,14 @@ class UsersController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Users $users)
+    {
+        //
     }
 
     /**

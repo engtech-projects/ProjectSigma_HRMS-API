@@ -13,6 +13,7 @@ class CompanyEmployeeController extends Controller
      */
     public function index()
     {
+        //
         $main = CompanyEmployee::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
@@ -22,10 +23,19 @@ class CompanyEmployeeController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreCompanyEmployeeRequest $request)
     {
+        //
         $main = new CompanyEmployee;
         $main->fill($request->validated());
         $data = json_decode('{}');
@@ -57,6 +67,14 @@ class CompanyEmployeeController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(CompanyEmployee $companyEmployee)
+    {
+        //
     }
 
     /**

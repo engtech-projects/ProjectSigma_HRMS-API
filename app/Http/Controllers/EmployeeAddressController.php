@@ -22,6 +22,14 @@ class EmployeeAddressController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeAddressRequest $request)
@@ -46,6 +54,7 @@ class EmployeeAddressController extends Controller
      */
     public function show($id)
     {
+        //
         $main = EmployeeAddress::find($id);
         $data = json_decode('{}');
         if (!is_null($main) ) {
@@ -57,6 +66,14 @@ class EmployeeAddressController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(EmployeeAddress $employeeAddress)
+    {
+        //
     }
 
     /**

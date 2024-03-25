@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthUserRequest;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\Users;
+use App\Models\Personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

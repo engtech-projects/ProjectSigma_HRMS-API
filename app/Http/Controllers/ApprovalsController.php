@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Approvals;
+use App\Models\Users;
 use App\Http\Requests\StoreApprovalsRequest;
 use App\Http\Requests\UpdateApprovalsRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ApprovalsController extends Controller
 {
@@ -22,6 +24,7 @@ class ApprovalsController extends Controller
         return response()->json($data);
     }
 
+
     public function get($request)
     {
         $formRequest = Approvals::where("form", "=", $request)->first();
@@ -36,6 +39,14 @@ class ApprovalsController extends Controller
             "message" => "Successfully fetched.",
             "data" => $formRequest
         ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -74,6 +85,14 @@ class ApprovalsController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Approvals $approvals)
+    {
+        //
     }
 
     /**
