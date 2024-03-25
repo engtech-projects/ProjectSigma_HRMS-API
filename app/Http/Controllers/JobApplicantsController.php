@@ -24,21 +24,12 @@ class JobApplicantsController extends Controller
      */
     public function index()
     {
-        //
         $main = JobApplicants::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -52,9 +43,9 @@ class JobApplicantsController extends Controller
         $main = JobApplicants::select("id", "firstname", "middlename", "lastname")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('firstname', 'like', "%{$searchKey}%")
-                ->orWhere('firstname', 'like', "%{$searchKey}%")
-                ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
-                ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
+                    ->orWhere('firstname', 'like', "%{$searchKey}%")
+                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
+                    ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
             })
             ->where("status", JobApplicationEnums::APPLICATION_STATUS_FOR_HIRING)
             ->limit(25)
@@ -163,14 +154,6 @@ class JobApplicantsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(JobApplicants $jobApplicants)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateJobApplicantsRequest $request, $id)
@@ -223,7 +206,6 @@ class JobApplicantsController extends Controller
      */
     public function destroy($id)
     {
-        //
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
