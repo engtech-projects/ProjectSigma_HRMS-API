@@ -26,8 +26,8 @@ return new class extends Migration
             $table->date("date_of_absence_from");
             $table->date("date_of_absence_to");
             $table->string("reason_for_absence");
-            $table->string("approvals");
-            $table->string("request_status");
+            $table->json("approvals");
+            $table->enum("request_status", ['Pending', 'Approved', 'Filled', 'Hold', 'Cancelled', 'Disapproved']);
             $table->softDeletes();
             $table->timestamps();
         });
