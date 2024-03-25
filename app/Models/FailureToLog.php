@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class FailureToLog extends Model
 {
     use HasFactory;
-    use HasEmployee, HasApproval;
+    use HasEmployee;
 
     protected $fillable = [
         'date',
