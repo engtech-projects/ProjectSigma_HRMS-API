@@ -313,7 +313,7 @@ class EmployeeBulkUploadController extends Controller
                     'period_attendance_from' => 'N/A',
                     'period_attendance_to' => 'N/A',
                     'education' => $data['secondary_education'] ?? 'N/A',
-                    'type' => EmployeeEducationType::ELEMENTARY,
+                    'type' => EmployeeEducationType::SECONDARY,
                     'name' =>  $data['secondary_name'] ?? 'N/A',
                 ];
 
@@ -325,7 +325,7 @@ class EmployeeBulkUploadController extends Controller
                     'period_attendance_from' => 'N/A',
                     'period_attendance_to' => 'N/A',
                     'education' => $data['college_education'] ?? 'N/A',
-                    'type' => EmployeeEducationType::ELEMENTARY,
+                    'type' => EmployeeEducationType::COLLEGE,
                     'name' =>  $data['college_name'] ?? 'N/A',
                 ];
 
@@ -337,7 +337,7 @@ class EmployeeBulkUploadController extends Controller
                     'period_attendance_from' => 'N/A',
                     'period_attendance_to' => 'N/A',
                     'education' => $data['vocationalcourse_education'] ?? 'N/A',
-                    'type' => EmployeeEducationType::ELEMENTARY,
+                    'type' => EmployeeEducationType::VOCATIONAL,
                     'name' =>  $data['vocationalcourse_name'] ?? 'N/A',
                 ];
                 //father information
