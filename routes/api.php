@@ -137,7 +137,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('attendance')->group(function () {
         Route::resource('logs', AttendanceLogController::class);
-        Route::resource('failure-log', FailureToLogController::class);
+        Route::resource('failed-log', FailureToLogController::class);
     });
 
     Route::prefix('project-monitoring')->group(function () {

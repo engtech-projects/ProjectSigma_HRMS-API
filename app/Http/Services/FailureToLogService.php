@@ -2,35 +2,51 @@
 
 namespace App\Http\Services;
 
-use App\Models\AttendanceLog;
+use App\Models\FailureToLog;
+use App\Exceptions\TransactionFailedException;
 
 class FailureToLogService
 {
-    protected $attendanceLog;
-    public function __construct(AttendanceLog $attendanceLog)
+    protected $failLog;
+    public function __construct(FailureToLog $failLog)
     {
-        $this->attendanceLog = $attendanceLog;
+        $this->failLog = $failLog;
     }
 
     public function getAll()
     {
-        return $this->attendanceLog->all();
+        return $this->failLog->with(['employee'])->get();
     }
 
-    public function get(AttendanceLog $attendanceLog)
+    public function get(FailureToLog $failLog)
     {
+        return $failLog;
     }
 
     public function create(array $attributes)
     {
-
+        try {
+            $this->failLog->create($attributes);
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Create transaction failed.", 500, $e);
+        }
     }
 
-    public function update(array $attributes, AttendanceLog $attendanceLog)
+    public function update(array $attributes, FailureToLog $failLog)
     {
+        try {
+            $failLog->update($attributes);
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Update transaction failed.", 500, $e);
+        }
     }
 
-    public function delete(AttendanceLog $attendanceLog)
+    public function delete(FailureToLog $failLog)
     {
+        try {
+            $failLog->delete();
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Delete transaction failed.", 500, $e);
+        }
     }
 }
