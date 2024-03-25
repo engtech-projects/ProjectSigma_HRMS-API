@@ -57,7 +57,6 @@ class Employee extends Model
     const EMPLOYEE_BULK_STATUS_DUPLICATE = 'duplicate';
     const EMPLOYEE_BULK_STATUS_UNDUPLICATE = 'unduplicate';
     protected $fillable = [
-        'id',
         'first_name',
         'middle_name',
         'family_name',
