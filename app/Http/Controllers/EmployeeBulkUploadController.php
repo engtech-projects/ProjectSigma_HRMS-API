@@ -161,9 +161,9 @@ class EmployeeBulkUploadController extends Controller
                         ],
                     ])->first();
                     if ($employeeRecord) {
-                        $tempData['status'] = 'duplicate';
+                        $tempData['_status'] = 'duplicate';
                     } else {
-                        $tempData['status'] = 'unduplicate';
+                        $tempData['_status'] = 'unduplicate';
                     }
                     foreach (self::HEADER_KEYS as $index => $value) {
                         $tempData[$value] = $data[$index];
