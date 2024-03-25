@@ -32,19 +32,19 @@ class ProjectService
         }
     }
 
-    public function update(array $attributes, Project $attendanceLog)
+    public function update(array $attributes, Project $project)
     {
         try {
-            $attendanceLog->update($attributes);
+            $project->update($attributes);
         } catch (\Exception $e) {
             throw new TransactionFailedException("Update transaction failed.", 500, $e);
         }
     }
 
-    public function delete(Project $attendanceLog)
+    public function delete(Project $project)
     {
         try {
-            $attendanceLog->delete();
+            $project->delete();
         } catch (\Exception $e) {
             throw new TransactionFailedException("Delete transaction failed.", 500, $e);
         }

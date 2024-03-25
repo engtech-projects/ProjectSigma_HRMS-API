@@ -12,18 +12,18 @@ use App\Http\Requests\UpdateFailureToLogRequest;
 
 class FailureToLogController extends Controller
 {
-    protected $failLogService;
+    protected $failedLogService;
 
-    public function __construct(FailureToLogService $failLogService)
+    public function __construct(FailureToLogService $failedLogService)
     {
-        $this->failLogService = $failLogService;
+        $this->failedLogService = $failedLogService;
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $failedLog = $this->failLogService->getAll();
+        $failedLog = $this->failedLogService->getAll();
         $collection = collect(FailureToLogResource::collection($failedLog));
 
         return new JsonResponse([
@@ -39,7 +39,7 @@ class FailureToLogController extends Controller
      */
     public function store(StoreFailureToLogRequest $request)
     {
-        $this->failLogService->create($request->validated());
+        $this->failedLogService->create($request->validated());
 
         return new JsonResponse([
             "success" => true,
@@ -64,7 +64,7 @@ class FailureToLogController extends Controller
      */
     public function update(UpdateFailureToLogRequest $request, FailureToLog $failedLog)
     {
-        $this->failLogService->update($request->validated(), $failedLog);
+        $this->failedLogService->update($request->validated(), $failedLog);
 
         return new JsonResponse([
             "success" => true,
@@ -77,7 +77,7 @@ class FailureToLogController extends Controller
      */
     public function destroy(FailureToLog $failedLog)
     {
-        $this->failLogService->delete($failedLog);
+        $this->failedLogService->delete($failedLog);
 
         return new JsonResponse([
             "success" => true,

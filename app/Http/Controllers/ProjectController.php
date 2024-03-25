@@ -23,8 +23,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $attendanceLog = $this->projectService->getAll();
-        $collection = collect(ProjectResource::collection($attendanceLog));
+        $project = $this->projectService->getAll();
+        $collection = collect(ProjectResource::collection($project));
 
         return new JsonResponse([
             "success" => true,

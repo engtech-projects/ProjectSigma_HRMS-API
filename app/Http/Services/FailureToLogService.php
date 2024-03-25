@@ -7,44 +7,44 @@ use App\Exceptions\TransactionFailedException;
 
 class FailureToLogService
 {
-    protected $failLog;
-    public function __construct(FailureToLog $failLog)
+    protected $failedLog;
+    public function __construct(FailureToLog $failedLog)
     {
-        $this->failLog = $failLog;
+        $this->failedLog = $failedLog;
     }
 
     public function getAll()
     {
-        return $this->failLog->with(['employee'])->get();
+        return $this->failedLog->with(['employee'])->get();
     }
 
-    public function get(FailureToLog $failLog)
+    public function get(FailureToLog $failedLog)
     {
-        return $failLog;
+        return $failedLog;
     }
 
     public function create(array $attributes)
     {
         try {
-            $this->failLog->create($attributes);
+            $this->failedLog->create($attributes);
         } catch (\Exception $e) {
             throw new TransactionFailedException("Create transaction failed.", 500, $e);
         }
     }
 
-    public function update(array $attributes, FailureToLog $failLog)
+    public function update(array $attributes, FailureToLog $failedLog)
     {
         try {
-            $failLog->update($attributes);
+            $failedLog->update($attributes);
         } catch (\Exception $e) {
             throw new TransactionFailedException("Update transaction failed.", 500, $e);
         }
     }
 
-    public function delete(FailureToLog $failLog)
+    public function delete(FailureToLog $failedLog)
     {
         try {
-            $failLog->delete();
+            $failedLog->delete();
         } catch (\Exception $e) {
             throw new TransactionFailedException("Delete transaction failed.", 500, $e);
         }
