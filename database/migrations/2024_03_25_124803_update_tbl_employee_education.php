@@ -45,14 +45,14 @@ return new class extends Migration
             $table->dropColumn('college_honors_received');
             $table->dropColumn('vocationalcourse_degree_earned_of_school');
             $table->dropColumn('vocationalcourse_honors_received');
-            $table->enum("type",["elementary,secondary,vocational_course,college,graduate_studies"]);
-            $table->string("name");
-            $table->string("education");
-            $table->string("period_attendance_to");
-            $table->string("period_attendance_from");
-            $table->string("year_graduated");
-            $table->string('degree_earned_of_school');
-            $table->string('honors_received');
+            $table->enum("type",["elementary","secondary","vocational_course","college","graduate_studies"]);
+            $table->string("name")->before('id');
+            $table->string("education")->after('id');
+            $table->string("period_attendance_to")->after('id');
+            $table->string("period_attendance_from")->after('id');
+            $table->string("year_graduated")->after('id');
+            $table->string('degree_earned_of_school')->after('id');
+            $table->string('honors_received')->after('id');
         });
     }
 

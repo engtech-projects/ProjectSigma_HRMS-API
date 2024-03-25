@@ -27,135 +27,36 @@ class StoreEmployeeEducationRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
-            'elementary_name'=>[
+            'type'=>[
+                "required",
+                "string",
+                "in:elementary,secondary,vocational_course,college,graduate_studies",
+            ],
+            'name'=>[
                 "required",
                 "string",
             ],
-            'elementary_education'=>[
+            'education'=>[
                 "required",
                 "string",
             ],
-            'elementary_period_attendance_to'=>[
+            'period_attendance_to'=>[
                 "required",
                 "string",
             ],
-            'elementary_period_attendance_from'=>[
+            'period_attendance_from'=>[
                 "required",
                 "string",
             ],
-            'elementary_year_graduated'=>[
+            'year_graduated'=>[
                 "required",
                 "string",
             ],
-            'secondary_name'=>[
+            'degree_earned_of_school'=>[
                 "required",
                 "string",
             ],
-            'secondary_education'=>[
-                "required",
-                "string",
-            ],
-            'secondary_period_attendance_to'=>[
-                "required",
-                "string",
-            ],
-            'secondary_period_attendance_from'=>[
-                "required",
-                "string",
-            ],
-            'secondary_year_graduated'=>[
-                "required",
-                "string",
-            ],
-            'vocationalcourse_name'=>[
-                "required",
-                "string",
-            ],
-            'vocationalcourse_education'=>[
-                "required",
-                "string",
-            ],
-            'vocationalcourse_period_attendance_to'=>[
-                "required",
-                "string",
-            ],
-            'vocationalcourse_period_attendance_from'=>[
-                "required",
-                "string",
-            ],
-            'vocationalcourse_year_graduated'=>[
-                "required",
-                "string",
-            ],
-            'college_name'=>[
-                "required",
-                "string",
-            ],
-            'college_education'=>[
-                "required",
-                "string",
-            ],
-            'college_period_attendance_to'=>[
-                "required",
-                "string",
-            ],
-            'college_period_attendance_from'=>[
-                "required",
-                "string",
-            ],
-            'college_year_graduated'=>[
-                "required",
-                "string",
-            ],
-            'graduatestudies_name'=>[
-                "required",
-                "string",
-            ],
-            'graduatestudies_education'=>[
-                "required",
-                "string",
-            ],
-            'graduatestudies_period_attendance_to'=>[
-                "required",
-                "string",
-            ],
-            'graduatestudies_period_attendance_from'=>[
-                "required",
-                "string",
-            ],
-            'graduatestudies_year_graduated'=>[
-                "required",
-                "string",
-            ],
-            'elementary_degree_earned_of_school'=>[
-                "required",
-                "string",
-            ],
-            'elementary_honors_received'=>[
-                "required",
-                "string",
-            ],
-            'secondary_degree_earned_of_school'=>[
-                "required",
-                "string",
-            ],
-            'secondary_honors_received'=>[
-                "required",
-                "string",
-            ],
-            'college_degree_earned_of_school'=>[
-                "required",
-                "string",
-            ],
-            'college_honors_received'=>[
-                "required",
-                "string",
-            ],
-            'vocationalcourse_degree_earned_of_school'=>[
-                "required",
-                "string",
-            ],
-            'vocationalcourse_honors_received'=>[
+            'honors_received'=>[
                 "required",
                 "string",
             ],
