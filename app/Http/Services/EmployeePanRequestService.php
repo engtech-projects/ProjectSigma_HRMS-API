@@ -56,9 +56,7 @@ class EmployeePanRequestService
 
     public function getInternalWorkExp($employeeId, ?array $filter = [])
     {
-        return InternalWorkExperience::where($filter)
-            ->byEmployee($employeeId)
-            ->firstOrFail();
+        return InternalWorkExperience::byEmployee($employeeId)->where($filter)->firstOrFail();
     }
 
     public function toTransferEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
@@ -74,10 +72,18 @@ class EmployeePanRequestService
 
     public function toPromoteEmployee(EmployeePersonnelActionNoticeRequest $panRequest)
     {
-        $interWorkExp = $this->getInternalWorkExp($panRequest->employee_id);
-        $panRequest->hire_source = $interWorkExp->hire_source;
-        $panRequest->salary_grades = $interWorkExp->salary_grades;
-        $interWorkExp->fill($panRequest->toArray());
+        $interWorkExp = $this->getInternalWorkExp($panRequest->employee_id, [
+            "date_to" => null,
+            "status" => EmployeeInternalWorkExperiencesStatus::CURRENT
+        ]);
+        unset($interWorkExp->id);
+        $interWorkExp->position_title = $panRequest->designation_position;
+        $interWorkExp->employment_status = $panRequest->new_employment_status;
+        $interWorkExp->immediate_supervisor = $interWorkExp->immediate_supervisor ?? "N/A";
+        $interWorkExp->actual_salary = $panRequest->salarygrade?->monthly_salary_amount;
+        $interWorkExp->salary_grades = $panRequest->salary_grades;
+        $interWorkExp->date_from = $panRequest->date_from;
+        $interWorkExp->date_to = null;
         $interWorkExp->save();
     }
 
