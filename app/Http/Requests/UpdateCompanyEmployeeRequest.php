@@ -22,40 +22,49 @@ class UpdateCompanyEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'employeedisplay_id'=> [
+            'employeedisplay_id' => [
                 "nullable",
                 "string",
             ],
-            'company'=>[
+            'company' => [
                 "nullable",
                 "string",
             ],
-            'date_hired'=>[
+            'date_hired' => [
                 "nullable",
                 "date",
             ],
-            'imidiate_supervisor'=>[
+            'imidiate_supervisor' => [
                 "nullable",
                 "string",
             ],
-            'phic_number'=>[
+            'phic_number' => [
                 "nullable",
                 "string",
             ],
-            'sss_number'=>[
+            'sss_number' => [
                 "nullable",
                 "string",
             ],
-            'tin_number'=>[
+            'tin_number' => [
                 "nullable",
                 "string",
             ],
-            'pagibig_number'=>[
+            'pagibig_number' => [
+                "nullable",
+                "string",
+            ],
+            'status' => [
+                "nullable",
+                "string",
+                "in:active,inactive"
+            ],
+            'atm' => [
                 "nullable",
                 "string",
             ],
