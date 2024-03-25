@@ -28,7 +28,7 @@ class AttendanceLogController extends Controller
 
         return new JsonResponse([
             "success" => true,
-            "message" => "Successfully fetch.",
+            "message" => "Successfully fetched.",
             "data" => PaginateResourceCollection::paginate(collect($collection), 15)
         ], JsonResponse::HTTP_OK);
     }
@@ -54,7 +54,7 @@ class AttendanceLogController extends Controller
     {
         return new JsonResponse([
             "success" => true,
-            "message" => "Successfully fetch.",
+            "message" => "Successfully fetched.",
             "data" => new AttendanceLogResource($log),
         ], JsonResponse::HTTP_OK);
     }

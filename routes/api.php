@@ -1,48 +1,49 @@
 <?php
 
-use App\Http\Controllers\EmployeeBulkUploadController;
-use App\Http\Controllers\SalaryGradeLevelController;
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AccessibilitiesController;
-use App\Http\Controllers\Actions\ManpowerRequest\ApproveApprovalController;
-use App\Http\Controllers\Actions\ManpowerRequest\DenyApprovalController;
-use App\Http\Controllers\Actions\Pan\ApprovePanApproval;
-use App\Http\Controllers\Actions\Pan\DisapprovePanApproval;
-use App\Http\Controllers\Actions\SalaryGrade\SalaryGradeLevelListController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\SSSContributionController;
-use App\Http\Controllers\PhilhealthContributionController;
-use App\Http\Controllers\WitholdingTaxContributionController;
-use App\Http\Controllers\EventsController;
+use App\Http\Controllers\HMOController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeaveController;
-use App\Http\Controllers\PagibigContributionController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\EventsController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\AllowanceController;
-use App\Http\Controllers\PositionController;
-use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ApprovalsController;
-use App\Http\Controllers\AttendanceLogController;
-use App\Http\Controllers\ManpowerRequestController;
-use App\Http\Controllers\JobApplicantsController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\CompanyEmployeeController;
-use App\Http\Controllers\EmployeeUploadsController;
-use App\Http\Controllers\EmployeeRecordController;
-use App\Http\Controllers\EmployeeAddressController;
-use App\Http\Controllers\EmployeeAffiliationController;
-use App\Http\Controllers\EmployeeEducationController;
-use App\Http\Controllers\EmployeeEligibilityController;
-use App\Http\Controllers\EmployeePersonnelActionNoticeRequestController;
-use App\Http\Controllers\EmployeeRelatedpersonController;
-use App\Http\Controllers\EmployeeSeminartrainingController;
-use App\Http\Controllers\FailureToLogController;
-use App\Http\Controllers\InternalWorkExperienceController;
-use App\Http\Controllers\TerminationController;
-use App\Http\Controllers\HMOController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HMOMembersController;
+use App\Http\Controllers\TerminationController;
+use App\Http\Controllers\FailureToLogController;
+use App\Http\Controllers\AnnouncementsController;
+use App\Http\Controllers\AttendanceLogController;
+use App\Http\Controllers\JobApplicantsController;
+use App\Http\Controllers\EmployeeRecordController;
+use App\Http\Controllers\AccessibilitiesController;
+use App\Http\Controllers\CompanyEmployeeController;
+use App\Http\Controllers\EmployeeAddressController;
+use App\Http\Controllers\EmployeeUploadsController;
+use App\Http\Controllers\ManpowerRequestController;
+use App\Http\Controllers\SSSContributionController;
+use App\Http\Controllers\SalaryGradeLevelController;
+use App\Http\Controllers\EmployeeEducationController;
+use App\Http\Controllers\EmployeeBulkUploadController;
 use App\Http\Controllers\ScheduleDepartmentController;
+use App\Http\Controllers\EmployeeAffiliationController;
+use App\Http\Controllers\EmployeeEligibilityController;
+use App\Http\Controllers\PagibigContributionController;
+use App\Http\Controllers\Actions\Pan\ApprovePanApproval;
+use App\Http\Controllers\EmployeeRelatedpersonController;
+use App\Http\Controllers\InternalWorkExperienceController;
+use App\Http\Controllers\PhilhealthContributionController;
+use App\Http\Controllers\Actions\Pan\DisapprovePanApproval;
+use App\Http\Controllers\EmployeeSeminartrainingController;
+use App\Http\Controllers\WitholdingTaxContributionController;
+use App\Http\Controllers\Actions\ManpowerRequest\DenyApprovalController;
+use App\Http\Controllers\EmployeePersonnelActionNoticeRequestController;
+use App\Http\Controllers\Actions\ManpowerRequest\ApproveApprovalController;
+use App\Http\Controllers\Actions\SalaryGrade\SalaryGradeLevelListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,6 +138,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('attendance')->group(function () {
         Route::resource('logs', AttendanceLogController::class);
         Route::resource('failure-log', FailureToLogController::class);
+    });
+
+    Route::prefix('project-monitoring')->group(function () {
+        Route::resource('project', ProjectController::class);
     });
 
     /*     Route::post(
