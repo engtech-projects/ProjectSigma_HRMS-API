@@ -22,24 +22,15 @@ class EmployeeAffiliationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeAffiliationRequest $request)
     {
-        //
         $main = new EmployeeAffiliation;
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -55,10 +46,9 @@ class EmployeeAffiliationController extends Controller
      */
     public function show($id)
     {
-        //
         $main = EmployeeAffiliation::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -70,24 +60,15 @@ class EmployeeAffiliationController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(EmployeeAffiliation $employeeAffiliation)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEmployeeAffiliationRequest $request, $id)
     {
-        //
         $main = EmployeeAffiliation::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -110,8 +91,8 @@ class EmployeeAffiliationController extends Controller
     {
         $main = EmployeeAffiliation::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -119,10 +100,10 @@ class EmployeeAffiliationController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }
