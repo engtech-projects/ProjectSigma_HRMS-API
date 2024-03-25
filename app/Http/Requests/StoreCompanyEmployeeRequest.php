@@ -22,40 +22,49 @@ class StoreCompanyEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'employeedisplay_id'=> [
+            'employeedisplay_id' => [
                 "required",
                 "string",
             ],
-            'company'=>[
+            'company' => [
                 "required",
                 "string",
             ],
-            'date_hired'=>[
+            'date_hired' => [
                 "required",
                 "date",
             ],
-            'imidiate_supervisor'=>[
+            'imidiate_supervisor' => [
                 "required",
                 "string",
             ],
-            'phic_number'=>[
+            'phic_number' => [
                 "required",
                 "string",
             ],
-            'sss_number'=>[
+            'sss_number' => [
                 "required",
                 "string",
             ],
-            'tin_number'=>[
+            'tin_number' => [
                 "required",
                 "string",
             ],
-            'pagibig_number'=>[
+            'pagibig_number' => [
+                "required",
+                "string",
+            ],
+            'status' => [
+                "required",
+                "string",
+                "in:active,inactive"
+            ],
+            'atm' => [
                 "required",
                 "string",
             ],
