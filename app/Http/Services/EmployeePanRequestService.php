@@ -54,7 +54,7 @@ class EmployeePanRequestService
         $this->createInternalWorkExperiences($employee, $panRequest);
     }
 
-    public function getInternalWorkExp(int $employeeId, ?array $filter = [])
+    public function getInternalWorkExp($employeeId, ?array $filter = [])
     {
         return InternalWorkExperience::where($filter)
             ->byEmployee($employeeId)

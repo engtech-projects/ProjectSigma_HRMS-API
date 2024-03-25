@@ -24,15 +24,19 @@ class ApprovePanApproval extends Controller
         switch ($panRequest->type) {
             case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
                 $panRequestService->toHireEmployee($panRequest);
+                break;
             case EmployeePersonnelActionNoticeRequest::TRANSFER:
                 $panRequestService->toTransferEmployee($panRequest);
+                break;
             case EmployeePersonnelActionNoticeRequest::PROMOTION:
                 $panRequestService->toPromoteEmployee($panRequest);
+                break;
             case EmployeePersonnelActionNoticeRequest::TERMINATION:
                 $panRequestService->toTerminateEmployee($panRequest);
                 break;
         }
         $panRequest->save();
+
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);;
     }
 }
