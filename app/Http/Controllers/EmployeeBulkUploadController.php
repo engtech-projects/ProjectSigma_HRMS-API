@@ -197,7 +197,7 @@ class EmployeeBulkUploadController extends Controller
         $studies = [];
         $employeeRelatedPerson = [];
         foreach (json_decode($validatedData['employees_data'], true) as $data) {
-            if ($data['status'] == 'unduplicate') {
+            if ($data['_status'] == 'unduplicate') {
                 //insert
                 $employee = new Employee();
                 $employee->fill($data)->save();
@@ -438,7 +438,11 @@ class EmployeeBulkUploadController extends Controller
                     'cert_exp_date' => 'N/A',
                 ];
 
+                //employment
+                $data['atm'] = null;
+                $data['status'] = 'active';
                 $employee->company_employments()->create($data);
+
                 $employee->employee_externalwork()->create($externalEmployee);
                 //$employee->employment_records()->create($employeeRecord);
                 $employee->employee_address()->create($address_pre);
