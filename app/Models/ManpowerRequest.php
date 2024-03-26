@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ManpowerRequestStatus;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Builder;
@@ -96,4 +97,46 @@ class ManpowerRequest extends Model
     {
         $query->where('request_status', 'Pending');
     }
+
+    public function completeRequestStatus()
+    {
+        $this->request_status = ManpowerRequestStatus::APPROVED;
+        $this->save();
+        $this->refresh();
+    }
+    public function denyRequestStatus()
+    {
+
+        $this->request_status = ManpowerRequestStatus::DISAPPROVED;
+        $this->save();
+        $this->refresh();
+    }
+
+    public function requestStatusCompleted() : bool
+    {
+        if($this->request_status == ManpowerRequestStatus::APPROVED){
+            return true;
+        }
+        return false;
+    }
+
+    public function requestStatusEnded() : bool
+    {
+
+        if(
+            in_array(
+                $this->request_status,
+                [
+                    ManpowerRequestStatus::DISAPPROVED,
+                    ManpowerRequestStatus::FILLED,
+                    ManpowerRequestStatus::HOLD,
+                    ManpowerRequestStatus::CANCELLED,
+                ]
+            )
+        ){
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -62,28 +62,22 @@ trait HasApproval
         return false;
     }
 
-    public function requestStatusDisapproved() : bool
+    public function requestStatusEnded() : bool
     {
         return false;
     }
-
-    public function requestStatusCancelled() : bool
-    {
-        return false;
-    }
-
     public function updateApproval(?array $data)
     {
         $userApproval = $this->getUserPendingApproval(auth()->user()->id)->first();
         $nextApproval = $this->getNextPendingApproval();
 
         // CHECK IF MANPOWER REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA
-        if ($this->requestStatusDisapproved()) {
+        if ($this->requestStatusEnded()) {
             return [
                 "approvals" => $this->approvals,
                 'success' => false,
                 "status_code" => JsonResponse::HTTP_FORBIDDEN,
-                "message" => "The request was already disapproved.",
+                "message" => "The request was already ended.",
             ];
         }
         // CHECK IF MANPOWER REQUEST ALREADY COMPLETED AND SET RESPONSE DATA
@@ -95,16 +89,6 @@ trait HasApproval
                 "message" => "The request was already completed.",
             ];
         }
-        // CHECK IF MANPOWER REQUEST ALREADY CANCELLED AND SET RESPONSE DATA
-        if ($this->requestStatusCancelled()) {
-            return [
-                "approvals" => $this->approvals,
-                'success' => false,
-                "status_code" => JsonResponse::HTTP_FORBIDDEN,
-                "message" => "The request was already cancelled.",
-            ];
-        }
-
         // CHECK IF THE CURRENT USER HAS PENDING APPROVAL AND SET RESPONSE DATA
         if (!empty($nextApproval) && $nextApproval['user_id'] != auth()->user()->id) {
             return [
@@ -115,7 +99,7 @@ trait HasApproval
             ];
         }
         // SET NEW MAN POWER REQUEST APPROVAL FOR RESOURCE UPDATE
-        $approvalToUpdate = $this->approvals->search($userApproval);
+        $approvalToUpdate = collect($this->approvals)->search($userApproval);
         $newApproval = $this->setNewApproval($approvalToUpdate, $data);
         // SAVE NEW RESOURCE FOR MANPOWER REQUEST
         $this->approvals = $newApproval;
@@ -123,11 +107,10 @@ trait HasApproval
         if(RequestApprovalStatus::DENIED === $data['status']){
             $this->denyRequestStatus();
         }
-        dd($newApproval);
-        // IF LAST APPROVAL
-        /* if () {
+        // IF LAST APPROVAL complete Request Status
+        if ($newApproval->last()['user_id'] === auth()->user()->id ) {
             $this->completeRequestStatus();
-        } */
+        }
 
 
         return [
