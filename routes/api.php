@@ -41,7 +41,7 @@ use App\Http\Controllers\Actions\Pan\DisapprovePanApproval;
 use App\Http\Controllers\EmployeeSeminartrainingController;
 use App\Http\Controllers\WitholdingTaxContributionController;
 use App\Http\Controllers\Actions\ManpowerRequest\DenyApprovalController;
-use App\Http\Controllers\EmployeePersonnelActionNoticeRequestController;
+use App\Http\Controllers\PersonnelActionNoticeRequestController;
 use App\Http\Controllers\Actions\ManpowerRequest\ApproveApprovalController;
 use App\Http\Controllers\Actions\SalaryGrade\SalaryGradeLevelListController;
 
@@ -87,7 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('job-applicants', JobApplicantsController::class);
     Route::get('employee-list', [EmployeeController::class, 'get']);
     Route::resource('pagibig', PagibigContributionController::class);
-    Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::post('employee-search', [EmployeeController::class, 'search']);
 
     Route::resource('employee', EmployeeController::class);
@@ -102,8 +101,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('employee-seminartraining', EmployeeSeminartrainingController::class);
 
 
+    Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::prefix('manpower')->group(function () {
-        Route::put('approve-approval/{manpower_request}', ApproveApprovalController::class);
+        Route::post('approve-approval/{manpower_request}', ApproveApprovalController::class);
         Route::post('deny-approval/{manpower_request}', DenyApprovalController::class);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
@@ -128,9 +128,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
     Route::prefix('pan')->group(function () {
-        Route::resource('resource', EmployeePersonnelActionNoticeRequestController::class);
-        Route::get('my-request', [EmployeePersonnelActionNoticeRequestController::class, 'getpanrequest']);
-        Route::get('my-approvals', [EmployeePersonnelActionNoticeRequestController::class, 'getApprovals']);
+        Route::resource('resource', PersonnelActionNoticeRequestController::class);
+        Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
+        Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
         Route::post('approve-approval/{pan_request}', ApprovePanApproval::class);
         Route::post('deny-approval/{pan_request}', DisapprovePanApproval::class);
     });
@@ -146,12 +146,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     /*     Route::post(
         'approve-pan-approvals/{id}',
-        [EmployeePersonnelActionNoticeRequestController::class, 'approveApprovals']
+        [PersonnelActionNoticeRequestController::class, 'approveApprovals']
     );
     Route::post(
         'disapprove-pan-approvals',
         [
-            EmployeePersonnelActionNoticeRequestController::class,
+            PersonnelActionNoticeRequestController::class,
             'disapproveApprovals'
         ]
     ); */

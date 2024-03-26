@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\PendingRequestScope;
+use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
 class EmployeePersonnelActionNoticeRequest extends Model
@@ -90,9 +87,12 @@ class EmployeePersonnelActionNoticeRequest extends Model
             get: fn () => $this->created_at->format('F j, Y')
         );
     }
-    
 
 
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
     public function scopeApproval($query)
     {
         return $query->where("request_status", "=", "Pending");
@@ -135,5 +135,59 @@ class EmployeePersonnelActionNoticeRequest extends Model
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
+    }
+
+    public function completeRequestStatus()
+    {
+        // switch ($this->type) {
+        //     case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
+        //         $panRequestService->toHireEmployee($panRequest);
+        //         break;
+        //     case EmployeePersonnelActionNoticeRequest::TRANSFER:
+        //         $panRequestService->toTransferEmployee($panRequest);
+        //         break;
+        //     case EmployeePersonnelActionNoticeRequest::PROMOTION:
+        //         $panRequestService->toPromoteEmployee($panRequest);
+        //         break;
+        //     case EmployeePersonnelActionNoticeRequest::TERMINATION:
+        //         $panRequestService->toTerminateEmployee($panRequest);
+        //         break;
+        // }
+        $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
+        $this->save();
+        $this->refresh();
+    }
+    public function denyRequestStatus()
+    {
+
+        $this->request_status = PersonelAccessForm::REQUESTSTATUS_DISAPPROVED;
+        $this->save();
+        $this->refresh();
+    }
+
+    public function requestStatusCompleted() : bool
+    {
+        if($this->request_status == PersonelAccessForm::REQUESTSTATUS_APPROVED){
+            return true;
+        }
+        return false;
+    }
+
+    public function requestStatusEnded() : bool
+    {
+        if(
+            in_array(
+                $this->request_status,
+                [
+                    PersonelAccessForm::REQUESTSTATUS_DISAPPROVED,
+                    PersonelAccessForm::REQUESTSTATUS_FILLED,
+                    PersonelAccessForm::REQUESTSTATUS_HOLD,
+                    PersonelAccessForm::REQUESTSTATUS_CANCELLED,
+                ]
+            )
+        ){
+            return true;
+        }
+        return false;
     }
 }
