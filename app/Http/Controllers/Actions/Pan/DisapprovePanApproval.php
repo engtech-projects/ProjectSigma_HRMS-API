@@ -39,29 +39,9 @@ class DisapprovePanApproval extends Controller
             if ($nextApproval['user_id'] != auth()->user()->id) {
                 return new JsonResponse(["success" => false, "message" => "Failed to approve or deny. Your approval is for later or already done."], JsonResponse::HTTP_FORBIDDEN);
             }
-        } else {
-            $panRequest->request_status = ManpowerRequestStatus::DISAPPROVED;
-            $panRequest->save();
-            return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_FORBIDDEN);
         }
+        $panRequest->request_status = ManpowerRequestStatus::DISAPPROVED;
         $panRequest->save();
-
-
-        /*        if ($panRequest->request_status == ManpowerRequestStatus::DISAPPROVED) {
-            return new JsonResponse(["success" => false, "message" => "Request was already denied."], JsonResponse::HTTP_FORBIDDEN);
-        } else {
-            $isApprovalDenied = collect($result['approvals'])->contains(function ($approval) {
-                return $approval['status'] === RequestApprovalStatus::DENIED;
-            });
-
-            if (!$isApprovalDenied) {
-                if ($nextApproval['user_id'] != auth()->user()->id) {
-                    return new JsonResponse(["success" => false, "message" => "Failed to approve or deny. Your approval is for later or already done."], JsonResponse::HTTP_FORBIDDEN);
-                }
-            } else {
-                return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_FORBIDDEN);
-            }
-        } */
-        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_OK);
+        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
     }
 }
