@@ -20,7 +20,7 @@ class EmployeePersonnelActionNoticeRequestResource extends JsonResource
 
             "employee_id" => $this->employee_id,
             "type" => $this->type,
-            "date_of_effictivity" => $this->date_of_effictivity,
+            "date_of_effictivity" => $this->date_of_effictivity->format('F j, Y'),
             "designation_position" => $this->designation_position,
             "hire_source" => $this->work_location,
             "work_location" => $this->work_locationm,

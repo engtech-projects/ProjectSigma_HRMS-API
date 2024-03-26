@@ -34,7 +34,8 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
     protected $casts = [
         "approvals" => "array",
-        "created_at" => "date:Y-m-d"
+        "created_at" => "date:Y-m-d",
+        "date_of_effictivity" => "date:Y-m-d"
     ];
 
     protected $fillable = [
@@ -83,12 +84,13 @@ class EmployeePersonnelActionNoticeRequest extends Model
             return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
         }
     }
-    protected function requestCreatedAt(): Attribute
+    public function requestCreatedAt(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->created_at->format('F j, Y')
         );
     }
+    
 
 
     public function scopeApproval($query)
