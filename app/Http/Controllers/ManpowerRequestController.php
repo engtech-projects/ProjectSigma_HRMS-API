@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ManpowerRequestStatus;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Carbon;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Enums\ManpowerRequestStatus;
+use App\Enums\RequestApprovalStatus;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\ManpowerServices;
 use Illuminate\Support\Facades\Storage;

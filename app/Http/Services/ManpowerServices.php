@@ -25,6 +25,16 @@ class ManpowerServices
         return $this->manpowerRequest->get();
     }
 
+    public function getAllManpowerRequest()
+    {
+        $userId = auth()->user()->id;
+        return ManpowerRequest::requestStatusPending()
+            ->with(['user.employee'])
+            ->whereJsonLength('approvals', '>', 0)
+            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
+            ->get();
+    }
+
     public function getMyRequest()
     {
         $manpowerRequest = $this->getAll();

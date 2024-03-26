@@ -22,7 +22,7 @@ class DisapprovePanApproval extends Controller
     public function __invoke(DenyManpowerApprovalRequest $request, EmployeePersonnelActionNoticeRequest $panRequest)
     {
         $attribute = $request->validated();
-        $result = collect($this->updateApproval($panRequest, ['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
+        $result = collect($this->updateApproval(['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
         $nextApproval = $this->getNextPendingApproval(collect($panRequest->approvals));
 
         $panRequest->approvals = $result["approvals"];

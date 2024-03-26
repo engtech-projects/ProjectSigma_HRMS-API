@@ -12,15 +12,12 @@ use Illuminate\Http\Request;
 
 class ApproveApprovalController extends Controller
 {
-    use HasApproval;
     /**
      * Handle the incoming request.
      */
     public function __invoke(ManpowerRequest $manpowerRequest)
     {
-        $result = $this->updateApproval($manpowerRequest, ['status' => RequestApprovalStatus::APPROVED]);
-        $manpowerRequest->approvals = $result["approvals"];
-        $manpowerRequest->save();
+        $result = $manpowerRequest->updateApproval(['status' => RequestApprovalStatus::APPROVED]);
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
     }
 }
