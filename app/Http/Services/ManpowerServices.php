@@ -4,11 +4,9 @@ namespace App\Http\Services;
 
 use App\Enums\RequestApprovalStatus;
 use App\Models\ManpowerRequest;
-use App\Traits\HasApproval;
 
 class ManpowerServices
 {
-    use HasApproval;
 
     protected $manpowerRequest;
     /**
@@ -38,8 +36,17 @@ class ManpowerServices
     public function getMyRequest()
     {
         $manpowerRequest = $this->getAll();
-
         return $manpowerRequest->where('requested_by', auth()->user()->id)->load('user.employee');
+    }
+
+    public function getMyApprovals()
+    {
+        $userId = auth()->user()->id;
+        $result = $this->getAllManpowerRequest();
+        return $result->filter(function ($item) use ($userId) {
+            $nextPendingApproval = $item->getNextPendingApproval();
+            return  ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
+        });
     }
 
     public function createManpowerRequest(array $attributes)
@@ -69,30 +76,5 @@ class ManpowerServices
             $manpowerRequest->approvals = $manpowerRequestApproval;
         }
         return $manpowerRequest->approvals;
-    }
-
-    public function getAllByAuthUser()
-    {
-        $userId = auth()->user()->id;
-        $result = $this->getAllManpowerRequest();
-        $manpowerRequests = $result->map(function ($item) use ($userId) {
-            $approvals = collect($item['approvals']);
-            $nextPendingApproval = $this->getNextPendingApproval($approvals, $userId);
-            $userApprovals = $this->getNextPendingApproval($approvals, $userId);
-            $nextUserApproval = $userApprovals;
-            $item->approvals = $userApprovals;
-            if ($nextUserApproval && $userId != $nextPendingApproval['user_id']) {
-                $item['approvals'] = [];
-            }
-            if (!$userApprovals) {
-                $item->approvals = [];
-            }
-            return $item;
-        })->reject(function ($item) {
-            return empty($item['approvals']);
-        });
-
-
-        return $manpowerRequests;
     }
 }

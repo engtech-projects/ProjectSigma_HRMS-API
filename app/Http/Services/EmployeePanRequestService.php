@@ -26,6 +26,26 @@ class EmployeePanRequestService
     {
         return EmployeePersonnelActionNoticeRequest::create($attributes);
     }
+    public function getMyRequests()
+    {
+        return EmployeePersonnelActionNoticeRequest::
+            with(['employee', 'jobapplicantonly', 'department'])
+            ->where("requested_by", auth()->user()->id)
+            ->get();
+    }
+    public function getMyApprovals()
+    {
+        $userId = auth()->user()->id;
+        $result = EmployeePersonnelActionNoticeRequest::
+            with(['employee', 'jobapplicantonly', 'department'])
+            ->requestStatusPending()
+            ->authUserPending()
+            ->get();
+        return $result->filter(function ($item) use ($userId) {
+            $nextPendingApproval = $item->getNextPendingApproval();
+            return  ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
+        });
+    }
 
     public function createInternalWorkExperiences(Employee $employee, EmployeePersonnelActionNoticeRequest $panRequest)
     {

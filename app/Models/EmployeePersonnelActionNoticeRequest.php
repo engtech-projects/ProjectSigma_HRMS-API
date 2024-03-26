@@ -89,7 +89,10 @@ class EmployeePersonnelActionNoticeRequest extends Model
     }
 
 
-
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
     public function scopeApproval($query)
     {
         return $query->where("request_status", "=", "Pending");

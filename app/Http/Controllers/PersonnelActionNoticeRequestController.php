@@ -24,7 +24,7 @@ use App\Http\Resources\EmployeePersonnelActionNoticeRequestResource;
 use App\Http\Requests\StoreEmployeePersonnelActionNoticeRequestRequest;
 use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
 
-class EmployeePersonnelActionNoticeRequestController extends Controller
+class PersonnelActionNoticeRequestController extends Controller
 {
 
     protected $panelRequestService;
@@ -64,10 +64,9 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     }
 
     // can view all pan request made by logged in user
-    public function getpanrequest()
+    public function myRequests()
     {
-        $id = auth()->user()->id;
-        $noticeRequest = EmployeePersonnelActionNoticeRequest::with(['department'])->createdBy($id)->get();
+        $noticeRequest = $this->panelRequestService->getMyRequests();
         if (empty($noticeRequest)) {
             return new JsonResponse([
                 "success" => false,
@@ -84,16 +83,19 @@ class EmployeePersonnelActionNoticeRequestController extends Controller
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
-    public function getApprovals()
+    public function myApprovals()
     {
-        $id = Auth::user()->id;
-        $noticeRequest = EmployeePersonnelActionNoticeRequest::with('department')->approval()
-            ->whereJsonContains('approvals', ["user_id" => $id, "status" => "Pending"])
-            ->get();
+        $myApproval = $this->panelRequestService->getMyApprovals();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
         return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => EmployeePersonnelActionNoticeRequestResource::collection($noticeRequest)
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => EmployeePersonnelActionNoticeRequestResource::collection($myApproval)
         ]);
     }
 

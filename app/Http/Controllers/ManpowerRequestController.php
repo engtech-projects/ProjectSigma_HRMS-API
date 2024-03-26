@@ -93,7 +93,7 @@ class ManpowerRequestController extends Controller
      */
     public function myApproval()
     {
-        $myApproval = $this->manpowerService->getAllManpowerRequest();
+        $myApproval = $this->manpowerService->getMyApprovals();
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,

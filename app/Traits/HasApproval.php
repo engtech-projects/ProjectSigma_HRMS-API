@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use App\Enums\ManpowerRequestStatus;
 use App\Enums\RequestApprovalStatus;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
@@ -24,6 +25,11 @@ trait HasApproval
     public function requestStatusEnded() : bool
     {
         return false;
+    }
+    public function scopeAuthUserPending(Builder $query): void
+    {
+        $query->whereJsonLength('approvals', '>', 0)
+        ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
     }
     public function getUserPendingApproval($userId)
     {
