@@ -30,7 +30,7 @@ class EmployeePanRequestService
     {
         return EmployeePersonnelActionNoticeRequest::
             with(['employee', 'jobapplicantonly', 'department'])
-            ->where("requested_by", auth()->user()->id)
+            ->where("created_by", auth()->user()->id)
             ->get();
     }
     public function getMyApprovals()
