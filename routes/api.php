@@ -87,7 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('job-applicants', JobApplicantsController::class);
     Route::get('employee-list', [EmployeeController::class, 'get']);
     Route::resource('pagibig', PagibigContributionController::class);
-    Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::post('employee-search', [EmployeeController::class, 'search']);
 
     Route::resource('employee', EmployeeController::class);
@@ -102,8 +101,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('employee-seminartraining', EmployeeSeminartrainingController::class);
 
 
+    Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::prefix('manpower')->group(function () {
-        Route::put('approve-approval/{manpower_request}', ApproveApprovalController::class);
+        Route::post('approve-approval/{manpower_request}', ApproveApprovalController::class);
         Route::post('deny-approval/{manpower_request}', DenyApprovalController::class);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);

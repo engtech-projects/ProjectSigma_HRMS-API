@@ -122,7 +122,6 @@ class ManpowerRequest extends Model
 
     public function requestStatusEnded() : bool
     {
-
         if(
             in_array(
                 $this->request_status,

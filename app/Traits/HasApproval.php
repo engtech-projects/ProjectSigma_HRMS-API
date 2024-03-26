@@ -13,6 +13,18 @@ use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 trait HasApproval
 {
+
+    public function completeRequestStatus(){}
+    public function denyRequestStatus(){}
+    public function setRequestStatus(?string $newStatus){}
+    public function requestStatusCompleted() : bool
+    {
+        return false;
+    }
+    public function requestStatusEnded() : bool
+    {
+        return false;
+    }
     public function getUserPendingApproval($userId)
     {
         return collect($this->approvals)->where('user_id', $userId)
@@ -22,7 +34,6 @@ trait HasApproval
     {
         return collect($this->approvals)->where('status', RequestApprovalStatus::PENDING)->first();
     }
-
 
     public function setNewApproval($approvalToUpdate, $data)
     {
@@ -40,31 +51,6 @@ trait HasApproval
             return $item;
         });
         return $manpowerRequestApproval;
-    }
-
-    public function completeRequestStatus()
-    {
-
-    }
-    public function denyRequestStatus()
-    {
-
-    }
-
-    public function setRequestStatus(?string $newStatus)
-    {
-
-    }
-
-
-    public function requestStatusCompleted() : bool
-    {
-        return false;
-    }
-
-    public function requestStatusEnded() : bool
-    {
-        return false;
     }
     public function updateApproval(?array $data)
     {
