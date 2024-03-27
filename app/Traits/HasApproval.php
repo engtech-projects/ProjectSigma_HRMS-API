@@ -15,21 +15,27 @@ use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 trait HasApproval
 {
 
-    public function completeRequestStatus(){}
-    public function denyRequestStatus(){}
-    public function setRequestStatus(?string $newStatus){}
-    public function requestStatusCompleted() : bool
+    public function completeRequestStatus()
+    {
+    }
+    public function denyRequestStatus()
+    {
+    }
+    public function setRequestStatus(?string $newStatus)
+    {
+    }
+    public function requestStatusCompleted(): bool
     {
         return false;
     }
-    public function requestStatusEnded() : bool
+    public function requestStatusEnded(): bool
     {
         return false;
     }
     public function scopeAuthUserPending(Builder $query): void
     {
         $query->whereJsonLength('approvals', '>', 0)
-        ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
+            ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
     }
     public function getUserPendingApproval($userId)
     {
@@ -96,13 +102,16 @@ trait HasApproval
         // SAVE NEW RESOURCE FOR MANPOWER REQUEST
         $this->approvals = $newApproval;
         $this->save();
-        if(RequestApprovalStatus::DENIED === $data['status']){
+        if (RequestApprovalStatus::DENIED === $data['status']) {
             $this->denyRequestStatus();
         }
         // IF LAST APPROVAL complete Request Status
-        if ($newApproval->last()['user_id'] === auth()->user()->id ) {
+        if ($newApproval->last()['status'] === RequestApprovalStatus::APPROVED) {
             $this->completeRequestStatus();
         }
+        /*         if ($newApproval->last()['user_id'] === auth()->user()->id) {
+            $this->completeRequestStatus();
+        } */
 
 
         return [

@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use App\Enums\PersonelAccessForm;
-use App\Traits\HasApproval;
 use App\Traits\HasUser;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\HasApproval;
+use App\Enums\PersonelAccessForm;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeePersonnelActionNoticeRequest extends Model
 {
@@ -139,20 +141,20 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
     public function completeRequestStatus()
     {
-        // switch ($this->type) {
-        //     case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
-        //         $panRequestService->toHireEmployee($panRequest);
-        //         break;
-        //     case EmployeePersonnelActionNoticeRequest::TRANSFER:
-        //         $panRequestService->toTransferEmployee($panRequest);
-        //         break;
-        //     case EmployeePersonnelActionNoticeRequest::PROMOTION:
-        //         $panRequestService->toPromoteEmployee($panRequest);
-        //         break;
-        //     case EmployeePersonnelActionNoticeRequest::TERMINATION:
-        //         $panRequestService->toTerminateEmployee($panRequest);
-        //         break;
-        // }
+        switch ($this->type) {
+            case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
+                $this->hireRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::TRANSFER:
+                $this->transferRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::PROMOTION:
+                $this->promotionRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::TERMINATION:
+                $this->terminationRequest();
+                break;
+        }
         $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
         $this->save();
         $this->refresh();
@@ -165,17 +167,17 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $this->refresh();
     }
 
-    public function requestStatusCompleted() : bool
+    public function requestStatusCompleted(): bool
     {
-        if($this->request_status == PersonelAccessForm::REQUESTSTATUS_APPROVED){
+        if ($this->request_status == PersonelAccessForm::REQUESTSTATUS_APPROVED) {
             return true;
         }
         return false;
     }
 
-    public function requestStatusEnded() : bool
+    public function requestStatusEnded(): bool
     {
-        if(
+        if (
             in_array(
                 $this->request_status,
                 [
@@ -185,9 +187,97 @@ class EmployeePersonnelActionNoticeRequest extends Model
                     PersonelAccessForm::REQUESTSTATUS_CANCELLED,
                 ]
             )
-        ){
+        ) {
             return true;
         }
         return false;
+    }
+
+    /** Get InternalWorkExperience model
+     * Parameters:
+     * integer $employeeId from attribute in Employee PAN request model,
+     * array $filters from attribute in Employee PAN request model
+     */
+    public function getInternalWorkExp(int $employeeId, ?array $filter = [])
+    {
+        return InternalWorkExperience::byEmployee($employeeId)->where($filter)->firstOrFail();
+    }
+
+    /** New Hire Employee PAN request approved
+     * to hire proccessed
+     * Get job applicant model in related in PAN request
+     * create new Employee model from Job Applicant attributes
+     * create InternalWorkExperience model from Employee model.
+     */
+    public function hireRequest()
+    {
+        $jobApplicant = $this->jobapplicantonly;
+        $jobApplicant["first_name"] = $jobApplicant->firstname;
+        $jobApplicant["family_name"] = $jobApplicant->lastname;
+        $employee = Employee::create($jobApplicant->toArray());
+        $employee->employee_internal()->create([
+            "position_title" => $this->designation_position,
+            "employment_status" => "status",
+            "department" => $this->section_department_id,
+            "immediate_supervisor" => $this->immediate_supervisor ?? "N/A",
+            "actual_salary" => $this->salarygrade?->monthly_salary_amount,
+            "work_location" => $this->work_location,
+            "hire_source" => $this->hire_source,
+            "date_from" => $this->date_from,
+            "salary_grades" => $this->salary_grades,
+        ]);
+    }
+
+    /** Transfer Employee PAN  request approved
+     * to transfer proccessed.
+     * Get InternalworkExperience related in PAN Request with status is current
+     * Update Interenal Work Experience status to Previous
+     * Fill InternalWorkExperience model attributes from PAN Request and save.
+     */
+    public function transferRequest()
+    {
+        $interWorkExp = $this->getInternalWorkExp($this->employee_id, [
+            "status" => EmployeeInternalWorkExperiencesStatus::CURRENT,
+            "date_to" => null
+        ]);
+        $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
+        $interWorkExp->fill($this->toArray());
+        $interWorkExp->save();
+    }
+
+    /** Promotion Employee PAN request approved
+     * to promote employee proccessed.
+     * Get InternalworkExperience related in PAN Request with status is current.
+     * Save InternalWorkExperience model from attributes from InternalWorkExperience model.
+     */
+    public function promotionRequest()
+    {
+        $interWorkExp = $this->getInternalWorkExp($this->employee_id, [
+            "date_to" => null,
+            "status" => EmployeeInternalWorkExperiencesStatus::CURRENT
+        ]);
+        unset($interWorkExp->id);
+        $interWorkExp->position_title = $this->designation_position;
+        $interWorkExp->employment_status = $this->new_employment_status;
+        $interWorkExp->immediate_supervisor = $interWorkExp->immediate_supervisor ?? "N/A";
+        $interWorkExp->actual_salary = $this->salarygrade?->monthly_salary_amount;
+        $interWorkExp->salary_grades = $this->salary_grades;
+        $interWorkExp->date_from = $this->date_from;
+        $interWorkExp->date_to = null;
+        $interWorkExp->save();
+    }
+    /** Termination Employee PAN  request approved
+     * to terminate proccessed.
+     * Get InternalworkExperience related in PAN Request with the specific employee_id
+     * Fill InternalWorkExperience model attributes from PAN Request and save.
+     */
+    public function terminationRequest()
+    {
+        $interWorkExp = $this->getInternalWorkExp($this->employee_id);
+        $this->work_location = $interWorkExp->work_location;
+        $this->hire_source = $interWorkExp->hire_source;
+        $this->salary_grades = $interWorkExp->salary_grades;
+        $interWorkExp->fill($this->toArray());
+        $interWorkExp->save();
     }
 }

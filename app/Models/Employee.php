@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
+use App\Enums\EmployeeUploadType;
+use Laravel\Sanctum\HasApiTokens;
+use App\Enums\EmployeeStudiesType;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\EmployeeRelatedPersonType;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Enums\EmployeeRelatedPersonType;
-use App\Enums\EmployeeStudiesType;
-use App\Enums\EmployeeUploadType;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Employee extends Model
 {
@@ -240,4 +242,7 @@ class Employee extends Model
     {
         return Users::where("id", $id)->first();
     }
+
+
+
 }
