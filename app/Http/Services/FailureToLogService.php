@@ -12,41 +12,22 @@ class FailureToLogService
     {
         $this->failedLog = $failedLog;
     }
-
-    public function getAll()
+    public function getMyRequests()
     {
-        return $this->failedLog->with(['employee'])->get();
+        return FailureToLog::with(['employee'])
+            ->where("created_by", auth()->user()->id)
+            ->get();
     }
-
-    public function get(FailureToLog $failedLog)
+    public function getMyApprovals()
     {
-        return $failedLog;
-    }
-
-    public function create(array $attributes)
-    {
-        try {
-            $this->failedLog->create($attributes);
-        } catch (\Exception $e) {
-            throw new TransactionFailedException("Create transaction failed.", 500, $e);
-        }
-    }
-
-    public function update(array $attributes, FailureToLog $failedLog)
-    {
-        try {
-            $failedLog->update($attributes);
-        } catch (\Exception $e) {
-            throw new TransactionFailedException("Update transaction failed.", 500, $e);
-        }
-    }
-
-    public function delete(FailureToLog $failedLog)
-    {
-        try {
-            $failedLog->delete();
-        } catch (\Exception $e) {
-            throw new TransactionFailedException("Delete transaction failed.", 500, $e);
-        }
+        $userId = auth()->user()->id;
+        $result = FailureToLog::with(['employee'])
+            ->requestStatusPending()
+            ->authUserPending()
+            ->get();
+        return $result->filter(function ($item) use ($userId) {
+            $nextPendingApproval = $item->getNextPendingApproval();
+            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
+        });
     }
 }

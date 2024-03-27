@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Actions\Pan;
+namespace App\Http\Controllers\Actions\Attendance;
 
+use App\Models\FailureToLog;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DisapproveApprovalRequest;
-use App\Models\EmployeePersonnelActionNoticeRequest;
 
-class DisapprovePanApproval extends Controller
+class DisapproveFailureToLogApproval extends Controller
 {
     /**
      * Handle the incoming request.
      */
-    public function __invoke(DisapproveApprovalRequest $request, EmployeePersonnelActionNoticeRequest $panRequest)
+    public function __invoke(DisapproveApprovalRequest $request, FailureToLog $failureToLog)
     {
         $attribute = $request->validated();
-        $result = collect($panRequest->updateApproval(['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
+        $result = collect($failureToLog->updateApproval(['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks']]));
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_OK);
     }
 }

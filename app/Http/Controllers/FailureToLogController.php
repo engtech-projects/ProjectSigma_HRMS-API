@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Utils\PaginateResourceCollection;
 use App\Http\Services\FailureToLogService;
 use App\Http\Resources\FailureToLogResource;
+use App\Exceptions\TransactionFailedException;
 use App\Http\Requests\StoreFailureToLogRequest;
 use App\Http\Requests\UpdateFailureToLogRequest;
 
@@ -23,9 +24,8 @@ class FailureToLogController extends Controller
      */
     public function index()
     {
-        $failedLog = $this->failedLogService->getAll();
+        $failedLog = FailureToLog::with(['employee'])->get();
         $collection = collect(FailureToLogResource::collection($failedLog));
-
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetch.",
@@ -39,7 +39,11 @@ class FailureToLogController extends Controller
      */
     public function store(StoreFailureToLogRequest $request)
     {
-        $this->failedLogService->create($request->validated());
+        try {
+            FailureToLog::create($request->validated());
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Transaction failed.", 500, $e);
+        }
 
         return new JsonResponse([
             "success" => true,
@@ -64,8 +68,11 @@ class FailureToLogController extends Controller
      */
     public function update(UpdateFailureToLogRequest $request, FailureToLog $failedLog)
     {
-        $this->failedLogService->update($request->validated(), $failedLog);
-
+        try {
+            $failedLog->update($request->validated());
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Transaction failed.", 500, $e);
+        }
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully updated.",
@@ -75,13 +82,39 @@ class FailureToLogController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(FailureToLog $failedLog)
+    public function destroy(FailureToLog $failedLogs)
     {
-        $this->failedLogService->delete($failedLog);
-
+        try {
+            $failedLogs->delete();
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Transaction failed.", 500, $e);
+        }
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully deleted.",
+        ], JsonResponse::HTTP_OK);
+    }
+
+    public function myRequests()
+    {
+        $failedLog = $this->failedLogService->getMyRequests();
+        $collection = collect(FailureToLogResource::collection($failedLog));
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetch.",
+            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+        ], JsonResponse::HTTP_OK);
+    }
+    public function myApprovals()
+    {
+        $failedLog = $this->failedLogService->getMyApprovals();
+        $collection = collect(FailureToLogResource::collection($failedLog));
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetch.",
+            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
         ], JsonResponse::HTTP_OK);
     }
 }

@@ -21,6 +21,14 @@ use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\AccessibilitiesController;
+use App\Http\Controllers\Actions\{
+    Approvals\DisapproveApproval,
+    Approvals\ApproveApproval,
+};
+/* use App\Http\Controllers\Actions\Approvals\ApproveApproval; */
+use App\Http\Controllers\Actions\Attendance\ApproveFailureToLogApproval;
+use App\Http\Controllers\Actions\Attendance\MyApprovalController;
+use App\Http\Controllers\Actions\Attendance\MyRequestController;
 use App\Http\Controllers\CompanyEmployeeController;
 use App\Http\Controllers\EmployeeAddressController;
 use App\Http\Controllers\EmployeeUploadsController;
@@ -40,14 +48,15 @@ use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\Actions\Pan\DisapprovePanApproval;
 use App\Http\Controllers\EmployeeSeminartrainingController;
 use App\Http\Controllers\WitholdingTaxContributionController;
-use App\Http\Controllers\Actions\ManpowerRequest\DenyApprovalController;
+
 use App\Http\Controllers\PersonnelActionNoticeRequestController;
-use App\Http\Controllers\Actions\ManpowerRequest\ApproveApprovalController;
 use App\Http\Controllers\Actions\SalaryGrade\SalaryGradeLevelListController;
 use App\Http\Controllers\EmployeeLeavesController;
 use App\Http\Controllers\TravelOrderController;
 use App\Http\Controllers\Actions\LeaveRequest\ApproveLeaveApproval;
 use App\Http\Controllers\Actions\LeaveRequest\DisapproveLeaveApproval;
+
+/* use App\Http\Controllers\Actions\ManpowerRequest\DisapproveApproval; */
 
 /*
 |--------------------------------------------------------------------------
@@ -107,11 +116,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::prefix('manpower')->group(function () {
-        Route::post('approve-approval/{manpower_request}', ApproveApprovalController::class);
-        Route::post('deny-approval/{manpower_request}', DenyApprovalController::class);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
+    });
+
+    Route::prefix('approvals')->group(function () {
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::put('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
 
@@ -135,37 +147,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class);
         Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
         Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
-        Route::post('approve-approval/{pan_request}', ApprovePanApproval::class);
-        Route::post('deny-approval/{pan_request}', DisapprovePanApproval::class);
+
     });
 
     Route::prefix('attendance')->group(function () {
-        Route::resource('logs', AttendanceLogController::class);
+        Route::resource('log', AttendanceLogController::class);
         Route::resource('failed-log', FailureToLogController::class);
+        Route::prefix('failure-to-log')->group(function () {
+            Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
+            Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
+        });
     });
 
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
     });
 
-    /*     Route::post(
-        'approve-pan-approvals/{id}',
-        [PersonnelActionNoticeRequestController::class, 'approveApprovals']
-    );
-    Route::post(
-        'disapprove-pan-approvals',
-        [
-            PersonnelActionNoticeRequestController::class,
-            'disapproveApprovals'
-        ]
-    ); */
-
     Route::prefix('leave-request')->group(function () {
         Route::resource('resource', EmployeeLeavesController::class);
         Route::get('my-request', [EmployeeLeavesController::class, 'myRequests']);
         Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
-        Route::post('approve-approval/{employee_leaves}', ApproveLeaveApproval::class);
-        Route::post('deny-approval/{employee_leaves}', DisapproveLeaveApproval::class);
     });
 
     Route::resource('travel-orders', TravelOrderController::class);

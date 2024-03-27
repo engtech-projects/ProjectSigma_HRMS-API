@@ -37,6 +37,8 @@ trait HasApproval
         $query->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
     }
+
+
     public function getUserPendingApproval($userId)
     {
         return collect($this->approvals)->where('user_id', $userId)
@@ -61,7 +63,7 @@ trait HasApproval
                 $item['remarks'] = array_key_exists("remarks", $data) ? $data["remarks"] : $item["remarks"];
             }
             return $item;
-        });
+        })->all();
         return $manpowerRequestApproval;
     }
     public function updateApproval(?array $data)
@@ -106,7 +108,7 @@ trait HasApproval
             $this->denyRequestStatus();
         }
         // IF LAST APPROVAL complete Request Status
-        if ($newApproval->last()['status'] === RequestApprovalStatus::APPROVED) {
+        if (collect($newApproval)->last()['status'] === RequestApprovalStatus::APPROVED) {
             $this->completeRequestStatus();
         }
         return [

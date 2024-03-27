@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 
-class ApproveApprovalController extends Controller
+class ApproveApproval extends Controller
 {
     /**
      * Handle the incoming request.

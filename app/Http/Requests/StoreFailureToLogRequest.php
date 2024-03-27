@@ -16,6 +16,12 @@ class StoreFailureToLogRequest extends FormRequest
     {
         return true;
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            "approvals" => json_decode($this->approvals, true)
+        ]);
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -33,7 +39,7 @@ class StoreFailureToLogRequest extends FormRequest
                 new Enum(AttendanceLogType::class)
             ],
             'reason' => 'required|string',
-            'approvals' => 'required|json',
+            'approvals' => 'required|array',
             'employee_id' => 'required|integer',
         ];
     }
