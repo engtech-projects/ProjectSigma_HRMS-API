@@ -2,27 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmployeeLeaves;
-use App\Http\Requests\StoreEmployeeLeavesRequest;
-use App\Http\Requests\UpdateEmployeeLeavesRequest;
-use App\Http\Resources\EmployeeLeaveResource;
-use App\Http\Services\EmployeeLeaveService;
-use Illuminate\Http\JsonResponse;
+use App\Models\TravelOrderMembers;
+use App\Http\Requests\StoreTravelOrderMembersRequest;
+use App\Http\Requests\UpdateTravelOrderMembersRequest;
 
-class EmployeeLeavesController extends Controller
+class TravelOrderMembersController extends Controller
 {
-    protected $leaveRequestService;
-    public function __construct(EmployeeLeaveService $leaveRequestService)
-    {
-        $this->leaveRequestService = $leaveRequestService;
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $main = EmployeeLeaves::paginate(15);
+        $main = TravelOrderMembers::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -33,9 +24,9 @@ class EmployeeLeavesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEmployeeLeavesRequest $request)
+    public function store(StoreTravelOrderMembersRequest $request)
     {
-        $main = new EmployeeLeaves;
+        $main = new TravelOrderMembers;
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -55,7 +46,7 @@ class EmployeeLeavesController extends Controller
      */
     public function show($id)
     {
-        $main = EmployeeLeaves::find($id);
+        $main = TravelOrderMembers::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -71,9 +62,9 @@ class EmployeeLeavesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeLeavesRequest $request, $id)
+    public function update(UpdateTravelOrderMembersRequest $request, $id)
     {
-        $main = EmployeeLeaves::find($id);
+        $main = TravelOrderMembers::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
@@ -94,7 +85,7 @@ class EmployeeLeavesController extends Controller
      */
     public function destroy($id)
     {
-        $main = EmployeeLeaves::find($id);
+        $main = TravelOrderMembers::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             if ($main->delete()) {
@@ -110,41 +101,5 @@ class EmployeeLeavesController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
-    }
-
-
-    public function myRequests()
-    {
-        $myRequest = $this->leaveRequestService->getMyRequest();
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => EmployeeLeaveResource::collection($myRequest)
-        ]);
-    }
-
-    /**
-     * Show can view all pan request to be approved by logged in user (same login in manpower request)
-     */
-    public function myApprovals()
-    {
-        $myApproval = $this->leaveRequestService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => EmployeeLeaveResource::collection($myApproval)
-        ]);
     }
 }

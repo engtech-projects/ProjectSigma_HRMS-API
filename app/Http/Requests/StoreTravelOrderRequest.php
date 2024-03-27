@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEmployeeLeavesRequest extends FormRequest
+class StoreTravelOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,55 +29,56 @@ class StoreEmployeeLeavesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => [
+            'name' => [
                 "required",
-                "integer",
-                "exists:employees,id",
+                "string",
             ],
-            'department_id' => [
+            'requesting_office' => [
                 "required",
                 "integer",
                 "exists:departments,id",
             ],
-            'project_id' => [
-                "nullable",
+            'destination' => [
+                "required",
+                "string",
+            ],
+            'purpose_of_travel' => [
+                "required",
+                "string",
+            ],
+            'date_and_time_of_travel' => [
+                "required",
+                "date",
+            ],
+            'duration_of_travel' => [
+                "required",
                 "integer",
+                "min:1"
             ],
-            'type' => [
+            'means_of_transportation' => [
                 "required",
                 "string",
-                "in:Sick/Checkup,Special Celebration,Vacation,Mandatory Leave,Bereavement,Maternity/Paternity,Other"
             ],
-            'other_absence' => [
-                "nullable",
-                "string",
-                "exclude_if:type,Sick/Checkup,Special Celebration,Vacation,Mandatory Leave,Bereavement,Maternity/Paternity",
-                'required_if:type,==,Other',
-            ],
-            'date_of_absence_from' => [
-                "required",
-                "date",
-            ],
-            'date_of_absence_to' => [
-                "required",
-                "date",
-                "after:date_of_absence_from"
-            ],
-            'reason_for_absence' => [
+            'remarks' => [
                 "required",
                 "string",
+            ],
+            'requested_by' => [
+                "required",
+                "integer",
+                "exists:departments,id",
             ],
             'approvals' => [
-                "required",
+                "nullable",
                 "array",
             ],
             'approvals.*' => [
-                "required",
+                "nullable",
                 "array",
                 "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
             'approvals.*.type' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'approvals.*.user_id' => [
@@ -86,7 +87,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "exists:users,id",
             ],
             'approvals.*.status' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'approvals.*.date_approved' => [
@@ -96,11 +97,6 @@ class StoreEmployeeLeavesRequest extends FormRequest
             'approvals.*.remarks' => [
                 "nullable",
                 "string",
-            ],
-            'request_status' => [
-                "required",
-                "string",
-                "in:Pending,Approved,Filled,Hold,Cancelled,Disapproved"
             ],
         ];
     }

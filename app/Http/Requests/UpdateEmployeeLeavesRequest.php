@@ -38,7 +38,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             ],
             'type' => [
                 "nullable",
-                "integer",
+                "string",
                 "in:Sick/Checkup,Special Celebration,Vacation,Mandatory Leave,Bereavement,Maternity/Paternity,Other"
             ],
             'other_absence' => [
@@ -49,16 +49,16 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             ],
             'date_of_absence_from' => [
                 "nullable",
-                "integer",
+                "date",
             ],
             'date_of_absence_to' => [
                 "nullable",
-                "integer",
-                "exists:employees,id",
+                "date",
+                "after:date_of_absence_from"
             ],
             'reason_for_absence' => [
                 "nullable",
-                "integer",
+                "string",
             ],
             'approvals' => [
                 "nullable",
