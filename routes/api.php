@@ -21,14 +21,6 @@ use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\AccessibilitiesController;
-use App\Http\Controllers\Actions\{
-    Approvals\DisapproveApproval,
-    Approvals\ApproveApproval,
-};
-/* use App\Http\Controllers\Actions\Approvals\ApproveApproval; */
-use App\Http\Controllers\Actions\Attendance\ApproveFailureToLogApproval;
-use App\Http\Controllers\Actions\Attendance\MyApprovalController;
-use App\Http\Controllers\Actions\Attendance\MyRequestController;
 use App\Http\Controllers\CompanyEmployeeController;
 use App\Http\Controllers\EmployeeAddressController;
 use App\Http\Controllers\EmployeeUploadsController;
@@ -41,20 +33,21 @@ use App\Http\Controllers\ScheduleDepartmentController;
 use App\Http\Controllers\EmployeeAffiliationController;
 use App\Http\Controllers\EmployeeEligibilityController;
 use App\Http\Controllers\PagibigContributionController;
-use App\Http\Controllers\Actions\Pan\ApprovePanApproval;
 use App\Http\Controllers\EmployeeRelatedpersonController;
 use App\Http\Controllers\InternalWorkExperienceController;
 use App\Http\Controllers\PhilhealthContributionController;
-use App\Http\Controllers\Actions\Pan\DisapprovePanApproval;
 use App\Http\Controllers\EmployeeSeminartrainingController;
 use App\Http\Controllers\WitholdingTaxContributionController;
 
 use App\Http\Controllers\PersonnelActionNoticeRequestController;
-use App\Http\Controllers\Actions\SalaryGrade\SalaryGradeLevelListController;
 use App\Http\Controllers\EmployeeLeavesController;
 use App\Http\Controllers\TravelOrderController;
-use App\Http\Controllers\Actions\LeaveRequest\ApproveLeaveApproval;
-use App\Http\Controllers\Actions\LeaveRequest\DisapproveLeaveApproval;
+
+use App\Http\Controllers\Actions\{
+    Approvals\DisapproveApproval,
+    Approvals\ApproveApproval,
+    Actions\SalaryGrade\SalaryGradeLevelListController
+};
 
 /* use App\Http\Controllers\Actions\ManpowerRequest\DisapproveApproval; */
 
@@ -147,7 +140,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class);
         Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
         Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
-
     });
 
     Route::prefix('attendance')->group(function () {
