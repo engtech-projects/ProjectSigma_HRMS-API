@@ -35,7 +35,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "exists:employees,id",
             ],
             'department_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:departments,id",
             ],
@@ -45,7 +45,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
             ],
             'type' => [
                 "required",
-                "integer",
+                "string",
                 "in:Sick/Checkup,Special Celebration,Vacation,Mandatory Leave,Bereavement,Maternity/Paternity,Other"
             ],
             'other_absence' => [
@@ -56,16 +56,16 @@ class StoreEmployeeLeavesRequest extends FormRequest
             ],
             'date_of_absence_from' => [
                 "required",
-                "integer",
+                "date",
             ],
             'date_of_absence_to' => [
                 "required",
-                "integer",
-                "exists:employees,id",
+                "date",
+                "after:date_of_absence_from"
             ],
             'reason_for_absence' => [
                 "required",
-                "integer",
+                "string",
             ],
             'approvals' => [
                 "required",

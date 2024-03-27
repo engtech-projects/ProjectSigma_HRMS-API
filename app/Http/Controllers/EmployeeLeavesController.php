@@ -5,9 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\EmployeeLeaves;
 use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
+use App\Http\Resources\EmployeeLeaveResource;
+use App\Http\Services\EmployeeLeaveService;
+use Illuminate\Http\JsonResponse;
 
 class EmployeeLeavesController extends Controller
 {
+    protected $leaveRequestService;
+    public function __construct(EmployeeLeaveService $leaveRequestService)
+    {
+        $this->leaveRequestService = $leaveRequestService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -101,5 +110,41 @@ class EmployeeLeavesController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+
+    public function myRequests()
+    {
+        $myRequest = $this->leaveRequestService->getMyRequest();
+        if ($myRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Leave Request fetched.',
+            'data' => EmployeeLeaveResource::collection($myRequest)
+        ]);
+    }
+
+    /**
+     * Show can view all pan request to be approved by logged in user (same login in manpower request)
+     */
+    public function myApprovals()
+    {
+        $myApproval = $this->leaveRequestService->getMyApprovals();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => EmployeeLeaveResource::collection($myApproval)
+        ]);
     }
 }

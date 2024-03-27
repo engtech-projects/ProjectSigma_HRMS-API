@@ -165,17 +165,17 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $this->refresh();
     }
 
-    public function requestStatusCompleted() : bool
+    public function requestStatusCompleted(): bool
     {
-        if($this->request_status == PersonelAccessForm::REQUESTSTATUS_APPROVED){
+        if ($this->request_status == PersonelAccessForm::REQUESTSTATUS_APPROVED) {
             return true;
         }
         return false;
     }
 
-    public function requestStatusEnded() : bool
+    public function requestStatusEnded(): bool
     {
-        if(
+        if (
             in_array(
                 $this->request_status,
                 [
@@ -185,7 +185,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
                     PersonelAccessForm::REQUESTSTATUS_CANCELLED,
                 ]
             )
-        ){
+        ) {
             return true;
         }
         return false;

@@ -9,5 +9,4 @@ final class RequestApprovalStatus extends Enum
     const APPROVED = 'Approved';
     const PENDING = "Pending";
     const DENIED = "Denied";
-
 }
