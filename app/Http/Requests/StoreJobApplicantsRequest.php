@@ -191,105 +191,38 @@ class StoreJobApplicantsRequest extends FormRequest
             'education.*' => [
                 "required",
                 "array",
-                "required_array_keys:elementary_name,elementary_education,elementary_period_attendance_to,elementary_period_attendance_from,elementary_year_graduated,secondary_name,secondary_education,secondary_period_attendance_to,secondary_period_attendance_from,secondary_year_graduated,vocationalcourse_name,vocationalcourse_education,vocationalcourse_period_attendance_to,vocationalcourse_period_attendance_from,vocationalcourse_year_graduated,college_name,college_education,college_period_attendance_to,college_period_attendance_from,college_year_graduated,graduatestudies_name,graduatestudies_education,graduatestudies_period_attendance_to,graduatestudies_period_attendance_from,graduatestudies_year_graduated"
+                "required_array_keys:type,name,education,period_attendance_from,period_attendance_to,year_graduated,honors_received"
             ],
-            'education.*.elementary_name' => [
+            'education.*.type' => [
+                "required",
+                "string",
+                "in:elementary,secondary,vocational_course,college,graduate_studies",
+            ],
+            'education.*.name' => [
                 "required",
                 "string",
             ],
-            'education.*.elementary_education' => [
+            'education.*.education' => [
                 "required",
                 "string",
             ],
-            'education.*.elementary_period_attendance_to' => [
+            'education.*.period_attendance_from' => [
                 "required",
                 "string",
             ],
-            'education.*.elementary_period_attendance_from' => [
+            'education.*.period_attendance_to' => [
                 "required",
                 "string",
             ],
-            'education.*.elementary_year_graduated' => [
+            'education.*.year_graduated' => [
                 "required",
                 "string",
             ],
-            'education.*.secondary_name' => [
+            'education.*.honors_received' => [
                 "required",
                 "string",
             ],
-            'education.*.secondary_education' => [
-                "required",
-                "string",
-            ],
-            'education.*.secondary_period_attendance_to' => [
-                "required",
-                "string",
-            ],
-            'education.*.secondary_period_attendance_from' => [
-                "required",
-                "string",
-            ],
-            'education.*.secondary_year_graduated' => [
-                "required",
-                "string",
-            ],
-            'education.*.vocationalcourse_name' => [
-                "required",
-                "string",
-            ],
-            'education.*.vocationalcourse_education' => [
-                "required",
-                "string",
-            ],
-            'education.*.vocationalcourse_period_attendance_to' => [
-                "required",
-                "string",
-            ],
-            'education.*.vocationalcourse_period_attendance_from' => [
-                "required",
-                "string",
-            ],
-            'education.*.vocationalcourse_year_graduated' => [
-                "required",
-                "string",
-            ],
-            'education.*.college_name' => [
-                "required",
-                "string",
-            ],
-            'education.*.college_education' => [
-                "required",
-                "string",
-            ],
-            'education.*.college_period_attendance_to' => [
-                "required",
-                "string",
-            ],
-            'education.*.college_period_attendance_from' => [
-                "required",
-                "string",
-            ],
-            'education.*.college_year_graduated' => [
-                "required",
-                "string",
-            ],
-            'education.*.graduatestudies_name' => [
-                "required",
-                "string",
-            ],
-            'education.*.graduatestudies_education' => [
-                "required",
-                "string",
-            ],
-            'education.*.graduatestudies_period_attendance_to' => [
-                "required",
-                "string",
-            ],
-            'education.*.graduatestudies_period_attendance_from' => [
-                "required",
-                "string",
-            ],
-            'education.*.graduatestudies_year_graduated' => [
+            'education.*.degree_earned_of_school' => [
                 "required",
                 "string",
             ],

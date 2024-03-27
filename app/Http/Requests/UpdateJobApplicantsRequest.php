@@ -112,7 +112,8 @@ class UpdateJobApplicantsRequest extends FormRequest
             'contact_info' => [
                 "nullable",
                 "string",
-                "max:11"
+                "min:11",
+                "max:11",
             ],
             'email' => [
                 "nullable",
@@ -135,7 +136,7 @@ class UpdateJobApplicantsRequest extends FormRequest
             'name_of_spouse' => [
                 "nullable",
                 "string",
-                "max:35"
+                "max:55"
             ],
             'date_of_birth_spouse' => [
                 "nullable",
@@ -148,25 +149,23 @@ class UpdateJobApplicantsRequest extends FormRequest
             'telephone_spouse' => [
                 "nullable",
                 "string",
-                "max:11"
+                "min:11",
+                "max:11",
             ],
-            'children' => [
+            'children.*' => [
                 "nullable",
-                "json",
+                "array",
+                "required_array_keys:name,birthdate"
             ],
             'children.*.name' => [
                 "nullable",
                 "string",
             ],
             'children.*.birthdate' => [
-                'nullable_if:children.*.name,null',
+                "nullable",
                 "date",
             ],
             'icoe_name' => [
-                "nullable",
-                "string",
-            ],
-            'icoe_address' => [
                 "nullable",
                 "string",
             ],
@@ -177,114 +176,51 @@ class UpdateJobApplicantsRequest extends FormRequest
             'telephone_icoe' => [
                 "nullable",
                 "string",
+                "min:11",
+                "max:11",
             ],
-            'education' => [
+            'education.*' => [
                 "nullable",
-                "json",
+                "array",
+                "nullable_array_keys:type,name,education,period_attendance_from,period_attendance_to,year_graduated,honors_received"
             ],
-            'education.*.elementary_name' => [
+            'education.*.type' => [
+                "nullable",
+                "string",
+                "in:elementary,secondary,vocational_course,college,graduate_studies",
+            ],
+            'education.*.name' => [
                 "nullable",
                 "string",
             ],
-            'education.*.elementary_education' => [
+            'education.*.education' => [
                 "nullable",
                 "string",
             ],
-            'education.*.elementary_period_attendance_to' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.elementary_period_attendance_from' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.elementary_year_graduated' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.secondary_name' => [
+            'education.*.period_attendance_from' => [
                 "nullable",
                 "string",
             ],
-            'education.*.secondary_education' => [
+            'education.*.period_attendance_to' => [
                 "nullable",
                 "string",
             ],
-            'education.*.secondary_period_attendance_to' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.secondary_period_attendance_from' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.secondary_year_graduated' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.vocationalcourse_name' => [
+            'education.*.year_graduated' => [
                 "nullable",
                 "string",
             ],
-            'education.*.vocationalcourse_education' => [
+            'education.*.honors_received' => [
                 "nullable",
                 "string",
             ],
-            'education.*.vocationalcourse_period_attendance_to' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.vocationalcourse_period_attendance_from' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.vocationalcourse_year_graduated' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.college_name' => [
+            'education.*.degree_earned_of_school' => [
                 "nullable",
                 "string",
             ],
-            'education.*.college_education' => [
+            'workexperience.*' => [
                 "nullable",
-                "string",
-            ],
-            'education.*.college_period_attendance_to' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.college_period_attendance_from' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.college_year_graduated' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.graduatestudies_name' => [
-                "nullable",
-                "string",
-            ],
-            'education.*.graduatestudies_education' => [
-                "nullable",
-                "string",
-            ],
-            'education.*.graduatestudies_period_attendance_to' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.graduatestudies_period_attendance_from' => [
-                "nullable",
-                "date",
-            ],
-            'education.*.graduatestudies_year_graduated' => [
-                "nullable",
-                "date",
-            ],
-            'workexperience' => [
-                "nullable",
-                "json",
+                "array",
+                "nullable_array_keys:inclusive_dates_from,inclusive_dates_to,position_title,dpt_agency_office_company,monthly_salary,status_of_appointment"
             ],
             'workexperience.*.inclusive_dates_from' => [
                 "nullable",
@@ -304,7 +240,7 @@ class UpdateJobApplicantsRequest extends FormRequest
             ],
             'workexperience.*.monthly_salary' => [
                 "nullable",
-                "float",
+                "string",
             ],
             'workexperience.*.status_of_appointment' => [
                 "nullable",
