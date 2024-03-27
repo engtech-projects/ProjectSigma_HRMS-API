@@ -109,11 +109,6 @@ trait HasApproval
         if ($newApproval->last()['status'] === RequestApprovalStatus::APPROVED) {
             $this->completeRequestStatus();
         }
-        /*         if ($newApproval->last()['user_id'] === auth()->user()->id) {
-            $this->completeRequestStatus();
-        } */
-
-
         return [
             "approvals" => $newApproval,
             'success' => true,
