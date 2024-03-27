@@ -48,6 +48,8 @@ use App\Http\Controllers\EmployeeLeavesController;
 use App\Http\Controllers\TravelOrderController;
 use App\Http\Controllers\Actions\LeaveRequest\ApproveLeaveApproval;
 use App\Http\Controllers\Actions\LeaveRequest\DisapproveLeaveApproval;
+use App\Http\Controllers\Actions\TravelOrderRequest\ApproveTravelOrderApproval;
+use App\Http\Controllers\Actions\TravelOrderRequest\DisapproveTravelOrderApproval;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,6 +170,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('deny-approval/{employee_leaves}', DisapproveLeaveApproval::class);
     });
 
-    Route::resource('travel-orders', TravelOrderController::class);
+    Route::prefix('travelorder-request')->group(function () {
+        Route::resource('resource', TravelOrderController::class);
+        Route::get('my-request', [TravelOrderController::class, 'myRequests']);
+        Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
+        Route::post('approve-approval/{travel_order}', ApproveTravelOrderApproval::class);
+        Route::post('deny-approval/{travel_order}', DisapproveTravelOrderApproval::class);
+    });
+
     Route::put('update-user', [UsersController::class, 'updateUserCredential']);
 });
