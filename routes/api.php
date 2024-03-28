@@ -46,12 +46,8 @@ use App\Http\Controllers\TravelOrderController;
 use App\Http\Controllers\Actions\{
     Approvals\DisapproveApproval,
     Approvals\ApproveApproval,
-    Actions\SalaryGrade\SalaryGradeLevelListController
+    SalaryGrade\SalaryGradeLevelListController,
 };
-
-/* use App\Http\Controllers\Actions\ManpowerRequest\DisapproveApproval; */
-use App\Http\Controllers\Actions\TravelOrderRequest\ApproveTravelOrderApproval;
-use App\Http\Controllers\Actions\TravelOrderRequest\DisapproveTravelOrderApproval;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,9 +117,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
-
-
-
     Route::resource('internalwork-experience', InternalWorkExperienceController::class);
     Route::resource('termination', TerminationController::class);
 
@@ -161,16 +154,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', EmployeeLeavesController::class);
         Route::get('my-request', [EmployeeLeavesController::class, 'myRequests']);
         Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
-        Route::post('approve-approval/{employee_leaves}', ApproveLeaveApproval::class);
-        Route::post('deny-approval/{employee_leaves}', DisapproveLeaveApproval::class);
     });
 
     Route::prefix('travelorder-request')->group(function () {
         Route::resource('resource', TravelOrderController::class);
         Route::get('my-request', [TravelOrderController::class, 'myRequests']);
         Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
-        Route::post('approve-approval/{travel_order}', ApproveTravelOrderApproval::class);
-        Route::post('deny-approval/{travel_order}', DisapproveTravelOrderApproval::class);
     });
 
     Route::put('update-user', [UsersController::class, 'updateUserCredential']);
