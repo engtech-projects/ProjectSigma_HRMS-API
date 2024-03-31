@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasAttendanceLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Department extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasAttendanceLog;
 
     protected $fillable = [
         'id',
@@ -19,4 +21,10 @@ class Department extends Model
         'created_at',
     ];
 
+
+    /**
+     * MODEL
+     * RELATED
+     * RELATION
+     */
 }

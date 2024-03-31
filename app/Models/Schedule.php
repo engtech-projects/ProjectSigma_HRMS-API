@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class ScheduleDepartment extends Model
+class Schedule extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 

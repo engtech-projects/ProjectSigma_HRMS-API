@@ -48,6 +48,7 @@ use App\Http\Controllers\Actions\{
     Approvals\ApproveApproval,
     SalaryGrade\SalaryGradeLevelListController,
 };
+use App\Http\Controllers\EmployeeDtrController;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,6 +144,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('failure-to-log')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
             Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
+        });
+
+        Route::prefix('dtr')->group(function () {
+            Route::get('employees', EmployeeDtrController::class);
         });
     });
 
