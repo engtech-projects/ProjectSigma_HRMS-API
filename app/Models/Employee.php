@@ -14,12 +14,15 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Models\Traits\HasProject;
+use App\Models\Traits\HasProjectMember;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Employee extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasProjectMember;
 
     protected $table = 'employees';
     protected $appends = [
