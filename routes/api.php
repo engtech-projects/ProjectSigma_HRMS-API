@@ -65,44 +65,54 @@ Route::middleware('auth:sanctum')->group(function () {
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/session', [AuthController::class, 'session']);
-    Route::resource('sss', SSSContributionController::class);
-    Route::resource('witholdingtax', WitholdingTaxContributionController::class);
-    Route::resource('leave', LeaveController::class);
+    Route::put('update-user', [UsersController::class, 'updateUserCredential']);
+    Route::resource('users', UsersController::class);
     Route::resource('accessibilities', AccessibilitiesController::class);
+    Route::resource('sss', SSSContributionController::class);
+    Route::resource('philhealth', PhilhealthContributionController::class);
+    Route::resource('witholdingtax', WitholdingTaxContributionController::class);
+
     Route::resource('settings', SettingsController::class);
     Route::resource('allowance', AllowanceController::class);
+    Route::resource('leave', LeaveController::class);
     Route::resource('events', EventsController::class);
     Route::resource('announcement', AnnouncementsController::class);
-    Route::get('users-employees-list', [UsersController::class, 'get']);
-    Route::get('department-list', [DepartmentController::class, 'get']);
-    Route::get('user-list', [UsersController::class, 'get']);
-    Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::get('announcement-list', [AnnouncementsController::class, 'currentAnnouncements']);
-    Route::resource('philhealth', PhilhealthContributionController::class);
+    Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::resource('position', PositionController::class);
     Route::get('position-list', [PositionController::class, 'get']);
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
-    Route::resource('users', UsersController::class);
-    Route::resource('approvals', ApprovalsController::class);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
-    Route::post('employee-bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
-    Route::post('employee-bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
     Route::resource('departments', DepartmentController::class);
+    Route::get('department-list', [DepartmentController::class, 'get']);
     Route::resource('job-applicants', JobApplicantsController::class);
-    Route::get('employee-list', [EmployeeController::class, 'get']);
     Route::resource('pagibig', PagibigContributionController::class);
-    Route::post('employee-search', [EmployeeController::class, 'search']);
 
-    Route::resource('employee', EmployeeController::class);
-    Route::resource('company-employee', CompanyEmployeeController::class);
-    Route::resource('employee-records', EmployeeRecordController::class);
-    Route::resource('employee-uploads', EmployeeUploadsController::class);
-    Route::resource('employee-address', EmployeeAddressController::class);
-    Route::resource('employee-affiliation', EmployeeAffiliationController::class);
-    Route::resource('employee-education', EmployeeEducationController::class);
-    Route::resource('employee-eligibility', EmployeeEligibilityController::class);
-    Route::resource('employee-relatedperson', EmployeeRelatedpersonController::class);
-    Route::resource('employee-seminartraining', EmployeeSeminartrainingController::class);
+    Route::prefix("employee")->group(function() {
+        Route::get('users-list', [UsersController::class, 'get']);
+        Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
+        Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
+        Route::get('list', [EmployeeController::class, 'get']);
+        Route::post('search', [EmployeeController::class, 'search']);
+        Route::resource('resource', EmployeeController::class);
+        Route::resource('companyemployment', CompanyEmployeeController::class);
+        Route::resource('records', EmployeeRecordController::class);
+        Route::resource('uploads', EmployeeUploadsController::class);
+        Route::resource('address', EmployeeAddressController::class);
+        Route::resource('affiliation', EmployeeAffiliationController::class);
+        Route::resource('education', EmployeeEducationController::class);
+        Route::resource('eligibility', EmployeeEligibilityController::class);
+        Route::resource('relatedperson', EmployeeRelatedpersonController::class);
+        Route::resource('seminartraining', EmployeeSeminartrainingController::class);
+        Route::resource('internalwork-experience', InternalWorkExperienceController::class);
+        Route::resource('termination', TerminationController::class);
+    });
+
+    Route::resource('approvals', ApprovalsController::class);
+    Route::prefix('approvals')->group(function () {
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::put('disapprove/{modelName}/{model}', DisapproveApproval::class);
+    });
 
 
     Route::resource('manpower-requests', ManpowerRequestController::class);
@@ -112,21 +122,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
     });
 
-    Route::prefix('approvals')->group(function () {
-        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
-        Route::put('disapprove/{modelName}/{model}', DisapproveApproval::class);
-    });
-
-    Route::resource('internalwork-experience', InternalWorkExperienceController::class);
-    Route::resource('termination', TerminationController::class);
 
     Route::prefix('salary')->group(function () {
-        Route::resource('salary-grade-level', SalaryGradeLevelController::class);
-        Route::get('salary-grade-level-list', SalaryGradeLevelListController::class);
+        Route::resource('resource', SalaryGradeLevelController::class);
+        Route::get('list', SalaryGradeLevelListController::class);
     });
 
-    Route::resource('hmo-members', HMOMembersController::class);
-    Route::resource('hmo', HMOController::class);
+    Route::prefix("hmo")->group(function() {
+        Route::resource('resource', HMOController::class);
+        Route::resource('members', HMOMembersController::class);
+    });
     Route::resource('schedule', ScheduleDepartmentController::class);
     Route::get('schedules', [ScheduleDepartmentController::class, 'getGroupType']);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
@@ -162,5 +167,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
     });
 
-    Route::put('update-user', [UsersController::class, 'updateUserCredential']);
 });
