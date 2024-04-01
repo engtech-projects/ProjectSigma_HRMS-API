@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('failure_to_logs', function (Blueprint $table) {
-            $table->enum("request_status", ["Pending", "Approved","Filled","Hold","Cancelled","Disapproved",])
-            ->after("approvals")->default("Pending");
+            $table->enum("request_status", ["Pending", "Approved", "Filled", "Hold", "Cancelled", "Disapproved",])
+                ->after("approvals")->default("Pending");
         });
     }
 

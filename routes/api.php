@@ -48,6 +48,7 @@ use App\Http\Controllers\Actions\{
     Approvals\ApproveApproval,
     SalaryGrade\SalaryGradeLevelListController,
 };
+use App\Http\Controllers\LoansController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,7 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('job-applicants', JobApplicantsController::class);
     Route::resource('pagibig', PagibigContributionController::class);
 
-    Route::prefix("employee")->group(function() {
+    Route::prefix("employee")->group(function () {
         Route::get('users-list', [UsersController::class, 'get']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
@@ -128,7 +129,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('list', SalaryGradeLevelListController::class);
     });
 
-    Route::prefix("hmo")->group(function() {
+    Route::prefix("hmo")->group(function () {
         Route::resource('resource', HMOController::class);
         Route::resource('members', HMOMembersController::class);
     });
@@ -167,4 +168,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
     });
 
+    Route::prefix('loans')->group(function () {
+        Route::resource('resource', LoansController::class);
+        Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
+    });
 });
