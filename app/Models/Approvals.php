@@ -11,7 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Approvals extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes, HasApproval;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApproval;
 
     protected $fillable = [
         'id',
@@ -20,6 +21,6 @@ class Approvals extends Model
     ];
 
     protected $casts = [
-        "approval" => "array"
+        "approvals" => "array"
     ];
 }

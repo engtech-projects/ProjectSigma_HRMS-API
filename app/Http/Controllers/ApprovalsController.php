@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Approvals;
 use App\Http\Requests\StoreApprovalsRequest;
 use App\Http\Requests\UpdateApprovalsRequest;
+use App\Http\Resources\ApprovalResource;
+use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 
 class ApprovalsController extends Controller
 {
@@ -14,12 +18,14 @@ class ApprovalsController extends Controller
      */
     public function index()
     {
-        $main = Approvals::paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $approvals = Approvals::get();
+        $collection = collect(ApprovalResource::collection($approvals));
+
+        return new JsonResponse([
+            'success' => 'true',
+            'message' => 'Successfully fetched.',
+            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
+        ]);
     }
 
 
