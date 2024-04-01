@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,8 +18,7 @@ class ApprovalResource extends JsonResource
         return [
             'id' => $this->id,
             'form' => $this->form,
-            'approvals' => $this->approvals
+            'approvals' => ApprovalAttributeResource::collection($this->approvals)
         ];
-        //return parent::toArray($request);
     }
 }
