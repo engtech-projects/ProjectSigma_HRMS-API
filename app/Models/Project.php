@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasAttendanceLog;
+use App\Models\Traits\HasProjectMember;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Project extends Model
 {
     use HasFactory, SoftDeletes;
-    use HasAttendanceLog;
+    use HasProjectMember;
 
     protected $fillable = [
         'code',
@@ -22,16 +22,9 @@ class Project extends Model
         'project_monitoring_id' => 'integer',
     ];
 
-
-    /** MODEL
-     * RELATED
-     * RELATION
-     */
-
-
     /**
      * MODEL
-      LOCAL
-      SCOPES
+     * RELATED
+     * RELATION
      */
 }

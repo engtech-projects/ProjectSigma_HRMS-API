@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\LoanPaymentPostingStatusType;
+use App\Enums\LoanPaymentsType;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
+
+class Loans extends Model
+{
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    protected $casts = [
+        "period_start" => "date:Y-m-d",
+        "period_end" => "date:Y-m-d",
+    ];
+
+    protected $fillable = [
+        'id',
+        'employee_id',
+        'loan_amount',
+        'installment_deduction',
+        'terms_length',
+        'period_start',
+        'period_end',
+    ];
+
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class);
+    }
+
+    public function loanPayments(): HasMany
+    {
+        return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::POSTED);
+    }
+
+    function loanPaid()
+    {
+        $totalpaid = $this->loanPayments()->sum('amount_paid');
+        if ($this->loan_amount <= $totalpaid) {
+            return true;
+        }
+        return false;
+    }
+
+    function paymentWillOverpay($paymentAmount)
+    {
+        $totalpaid = $this->loanPayments()->sum('amount_paid');
+
+        if ($this->loan_amount < $totalpaid + $paymentAmount) {
+            return true;
+        }
+        return false;
+    }
+
+    public function loanPayment($paymentAmount, $type)
+    {
+
+        if ($this->loanPaid()) {
+            return false;
+        }
+
+        if ($this->paymentWillOverpay($paymentAmount)) {
+            return false;
+        }
+
+
+        if ($type == LoanPaymentsType::MANUAL->value) {
+            $this->loanPayments()->create([
+                'amount_paid' => $paymentAmount,
+                'date_paid' => Carbon::now(),
+                'payment_type' => LoanPaymentsType::MANUAL,
+                'posting_status' => LoanPaymentPostingStatusType::POSTED
+            ]);
+        } else {
+            $this->loanPayments()->create([
+                'amount_paid' => $paymentAmount,
+                'date_paid' => Carbon::now(),
+                'payment_type' => LoanPaymentsType::MANUAL,
+                'posting_status' => LoanPaymentPostingStatusType::NOTPOSTED
+            ]);
+        }
+
+        return true;
+    }
+}

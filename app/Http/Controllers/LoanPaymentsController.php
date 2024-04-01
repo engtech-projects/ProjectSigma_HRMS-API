@@ -2,63 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Approvals;
-use App\Http\Requests\StoreApprovalsRequest;
-use App\Http\Requests\UpdateApprovalsRequest;
-use App\Http\Resources\ApprovalResource;
-use App\Utils\PaginateResourceCollection;
+use App\Models\LoanPayments;
+use App\Http\Requests\StoreLoanPaymentsRequest;
+use App\Http\Requests\UpdateLoanPaymentsRequest;
+use App\Models\Loans;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 
-class ApprovalsController extends Controller
+class LoanPaymentsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $approvals = Approvals::get();
-        $collection = collect(ApprovalResource::collection($approvals));
-
-        return new JsonResponse([
-            'success' => 'true',
-            'message' => 'Successfully fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
-        ]);
-    }
-
-
-    public function get($request)
-    {
-        $formRequest = Approvals::where("form", "=", $request)->first();
-        if (empty($formRequest)) {
-            return new JsonResponse([
-                "success" => false,
-                "message" => "No data found.",
-            ]);
-        }
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => $formRequest
-        ]);
+        $main = LoanPayments::with("loan")->paginate(15);
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreApprovalsRequest $request)
+    public function store(StoreLoanPaymentsRequest $request)
     {
-        $main = new Approvals;
+        $main = new LoanPayments;
         $main->fill($request->validated());
         $data = json_decode('{}');
-        $main->approvals = json_encode($request->approvals);
+
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
+
         $data->message = "Successfully save.";
         $data->success = true;
         $data->data = $main;
@@ -70,14 +49,16 @@ class ApprovalsController extends Controller
      */
     public function show($id)
     {
-        $main = Approvals::find($id);
+        $main = LoanPayments::find($id);
         $data = json_decode('{}');
+
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
             return response()->json($data);
         }
+
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
@@ -86,10 +67,11 @@ class ApprovalsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateApprovalsRequest $request, $id)
+    public function update(UpdateLoanPaymentsRequest $request, $id)
     {
-        $main = Approvals::find($id);
+        $main = LoanPayments::find($id);
         $data = json_decode('{}');
+
         if (!is_null($main)) {
             $main->fill($request->validated());
             if ($main->save()) {
@@ -113,8 +95,9 @@ class ApprovalsController extends Controller
      */
     public function destroy($id)
     {
-        $main = Approvals::find($id);
+        $main = LoanPayments::find($id);
         $data = json_decode('{}');
+
         if (!is_null($main)) {
             if ($main->delete()) {
                 $data->message = "Successfully delete.";
@@ -126,6 +109,7 @@ class ApprovalsController extends Controller
             $data->success = false;
             return response()->json($data, 400);
         }
+
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);

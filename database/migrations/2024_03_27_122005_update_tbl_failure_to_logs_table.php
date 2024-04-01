@@ -27,6 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('failure_to_logs', function (Blueprint $table) {
+            $table->dropForeign('failure_to_logs_created_by_foreign');
             $table->dropColumn('created_by');
         });
     }

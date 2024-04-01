@@ -2,25 +2,32 @@
 
 namespace App\Models;
 
-use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-class Approvals extends Model
+class LoanPayments extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
-    use HasApproval;
+
+    protected $casts = [
+        "date_paid" => "date:Y-m-d",
+    ];
 
     protected $fillable = [
         'id',
-        'form',
-        'approvals',
+        'loans_id',
+        'amount_paid',
+        'date_paid',
+        'payment_type',
+        'posting_status',
     ];
 
-    protected $casts = [
-        "approvals" => "array"
-    ];
+    public function loan(): HasOne
+    {
+        return $this->hasOne(Loans::class);
+    }
 }
