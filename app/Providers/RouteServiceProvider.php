@@ -8,6 +8,7 @@ use App\Models\FailureToLog;
 use App\Models\Leave;
 use App\Models\ManpowerRequest;
 use App\Models\SalaryGradeLevel;
+use App\Models\TravelOrder;
 use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -58,7 +59,8 @@ class RouteServiceProvider extends ServiceProvider
             'ManpowerRequest' => ManpowerRequest::class,
             'FailureToLog' => FailureToLog::class,
             'EmployeePanRequest' => EmployeePersonnelActionNoticeRequest::class,
-            'LeaveEmployeeRequest' => Leave::class
+            'LeaveEmployeeRequest' => Leave::class,
+            'TravelOrder' => TravelOrder::class,
         ];
         try {
             array_key_exists($modelName, $modelHasApprovals);
