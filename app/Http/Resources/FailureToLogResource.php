@@ -19,7 +19,7 @@ class FailureToLogResource extends JsonResource
             'time' => $this->time,
             'log_type' => $this->log_type,
             'reason' => $this->reason,
-            'approvals' => json_decode($this->approvals),
+            'approvals' => ApprovalAttributeResource::collection($this->approvals),
             'employee' => $this->whenLoaded('employee'),
         ];
         //return parent::toArray($request);

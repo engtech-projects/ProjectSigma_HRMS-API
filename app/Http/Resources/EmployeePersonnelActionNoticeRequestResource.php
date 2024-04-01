@@ -31,7 +31,7 @@ class EmployeePersonnelActionNoticeRequestResource extends JsonResource
             "reasons_for_termination" => $this->reasons_for_termination,
             "eligible_for_rehire" => $this->eligible_for_rehire,
             "last_day_worked" => $this->last_day_worked,
-            "approvals" => $this->approvals,
+            "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "created_by" => $this->created_by,
             "request_created_at" => $this->request_created_at,
             "new_salary_grades" => $this->new_salary_grades,

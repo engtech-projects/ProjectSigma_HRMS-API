@@ -23,7 +23,7 @@ class EmployeeLeaveResource extends JsonResource
             "date_of_absence_from" => $this->date_of_absence_from,
             "date_of_absence_to" => $this->date_of_absence_to,
             "reason_for_absence" => $this->reason_for_absence,
-            "approvals" => $this->approvals,
+            "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "requested_by_user" => $this->whenLoaded('user', function ($user) {
                 return [
                     "name" => $user->employee?->fullname_last,

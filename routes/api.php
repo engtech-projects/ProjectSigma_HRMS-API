@@ -114,8 +114,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('approvals', ApprovalsController::class);
     Route::prefix('approvals')->group(function () {
-        Route::put('approve/{modelName}/{model}', ApproveApproval::class);
-        Route::put('disapprove/{modelName}/{model}', DisapproveApproval::class);
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
 
