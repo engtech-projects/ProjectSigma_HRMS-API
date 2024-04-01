@@ -114,7 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('approvals', ApprovalsController::class);
     Route::prefix('approvals')->group(function () {
-        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::put('approve/{modelName}/{model}', ApproveApproval::class);
         Route::put('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
@@ -153,10 +153,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
             Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
         });
-
-        Route::prefix('dtr')->group(function () {
-            Route::get('employees', EmployeeDtrController::class);
-        });
+        Route::get('dtr', EmployeeDtrController::class);
     });
 
     Route::prefix('project-monitoring')->group(function () {
