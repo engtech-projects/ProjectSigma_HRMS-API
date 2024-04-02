@@ -24,6 +24,7 @@ class ApprovalAttributeResource extends JsonResource
             "type" => $this["type"],
             "status" => $this["status"] ?? null,
             "userselector" => array_key_exists("userselector", $this->resource) ? $this['userselector'] : null,
+            "user_id" => $this["user_id"] ?? null,
             "remarks" => $this["remarks"] ?? null,
             "date_approved" => $this["date_approved"] ?? null,
             "date_denied" => $this["date_denied"] ?? null,
