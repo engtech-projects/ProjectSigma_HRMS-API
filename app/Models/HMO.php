@@ -32,6 +32,10 @@ class HMO extends Model
     {
         return $this->hasMany(HMOMembers::class, "hmo_id")->with("employee");
     }
+    public function savehmoMembers(): HasMany
+    {
+        return $this->hasMany(HMOMembers::class, "hmo_id");
+    }
 
     public function employee(): HasOne
     {
