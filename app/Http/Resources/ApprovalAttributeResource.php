@@ -16,14 +16,17 @@ class ApprovalAttributeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = User::with('employee')->where('id', $this["user_id"])->first();
+        $employee = null;
         if ($user) {
             $employee = $user->employee ? new EmployeeUserResource($user->employee) : null;
         }
         return [
             "type" => $this["type"],
-            "status" => $this["status"],
+            "status" => $this["status"] ?? null,
             "userselector" => array_key_exists("userselector", $this->resource) ? $this['userselector'] : null,
-            "remarks" => $this["remarks"],
+            "remarks" => $this["remarks"] ?? null,
+            "date_approved" => $this["date_approved"] ?? null,
+            "date_denied" => $this["date_denied"] ?? null,
             "employee" => $employee
         ];
     }
