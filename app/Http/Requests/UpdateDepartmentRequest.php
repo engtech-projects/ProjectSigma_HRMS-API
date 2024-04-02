@@ -23,12 +23,12 @@ class UpdateDepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'department_name' 
+            'department_name'
             => [
                 "nullable",
                 "string",
                 "max:35",
-                Rule::unique("departments","department_name")->ignore($this->route("department"),'id')->whereNull('deleted_at'),
+                Rule::unique("departments", "department_name")->ignore($this->route("department"), 'id')->whereNull('deleted_at'),
             ],
         ];
     }

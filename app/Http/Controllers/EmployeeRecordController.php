@@ -26,7 +26,7 @@ class EmployeeRecordController extends Controller
      */
     public function store(StoreEmployeeRecordRequest $request)
     {
-        $main = new EmployeeRecord;
+        $main = new EmployeeRecord();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\UpdateTypesOnUser;
 use App\Enums\UserTypes;
 use App\Models\Users;
-use App\Models\User;
 use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUserCredentialRequest;
 use App\Http\Requests\UpdateUsersRequest;
@@ -40,7 +39,7 @@ class UsersController extends Controller
         return response()->json($data);
     }
 
-    function updateUserCredential(UpdateUserCredentialRequest $request)
+    public function updateUserCredential(UpdateUserCredentialRequest $request)
     {
         $data = json_decode('{}');
         $id = auth()->user()->id;

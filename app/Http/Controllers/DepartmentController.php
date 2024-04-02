@@ -36,7 +36,7 @@ class DepartmentController extends Controller
      */
     public function store(StoreDepartmentRequest $request)
     {
-        $department = new Department;
+        $department = new Department();
         $department->fill($request->validated());
         $data = json_decode('{}');
         if (!$department->save()) {

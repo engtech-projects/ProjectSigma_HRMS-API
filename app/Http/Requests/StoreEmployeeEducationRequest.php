@@ -22,41 +22,41 @@ class StoreEmployeeEducationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'type'=>[
+            'type' => [
                 "required",
                 "string",
                 "in:elementary,secondary,vocational_course,college,graduate_studies",
             ],
-            'name'=>[
+            'name' => [
                 "required",
                 "string",
             ],
-            'education'=>[
+            'education' => [
                 "required",
                 "string",
             ],
-            'period_attendance_to'=>[
+            'period_attendance_to' => [
                 "required",
                 "string",
             ],
-            'period_attendance_from'=>[
+            'period_attendance_from' => [
                 "required",
                 "string",
             ],
-            'year_graduated'=>[
+            'year_graduated' => [
                 "required",
                 "string",
             ],
-            'degree_earned_of_school'=>[
+            'degree_earned_of_school' => [
                 "required",
                 "string",
             ],
-            'honors_received'=>[
+            'honors_received' => [
                 "required",
                 "string",
             ],

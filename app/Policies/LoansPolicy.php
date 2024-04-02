@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Loans;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class LoansPolicy
 {

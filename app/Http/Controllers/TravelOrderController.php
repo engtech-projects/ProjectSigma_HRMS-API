@@ -26,7 +26,7 @@ class TravelOrderController extends Controller
      */
     public function store(StoreTravelOrderRequest $request)
     {
-        $main = new TravelOrder;
+        $main = new TravelOrder();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

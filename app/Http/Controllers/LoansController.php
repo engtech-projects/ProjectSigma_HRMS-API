@@ -29,7 +29,7 @@ class LoansController extends Controller
      */
     public function store(StoreLoansRequest $request)
     {
-        $main = new Loans;
+        $main = new Loans();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

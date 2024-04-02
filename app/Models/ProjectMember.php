@@ -10,8 +10,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProjectMember extends Model
 {
-    use HasFactory, SoftDeletes;
-    use HasDepartment, HasEmployee;
+    use HasFactory;
+    use SoftDeletes;
+    use HasDepartment;
+    use HasEmployee;
 
     protected $fillable = [
         'project_id',

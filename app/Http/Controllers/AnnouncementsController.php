@@ -41,7 +41,7 @@ class AnnouncementsController extends Controller
      */
     public function store(StoreAnnouncementsRequest $request)
     {
-        $main = new Announcements;
+        $main = new Announcements();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

@@ -22,42 +22,42 @@ class UpdateSSSContributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'range_from'=> [
+            'range_from' => [
                 "nullable",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'range_to'=>[
+            'range_to' => [
                 "nullable",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employee_share'=>[
+            'employee_share' => [
                 "nullable",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employer_share'=>[
+            'employer_share' => [
                 "nullable",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employee_contribution'=>[
+            'employee_contribution' => [
                 "nullable",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employer_contribution'=>[
+            'employer_contribution' => [
                 "nullable",
                 "min:0",
                 'max:999999',

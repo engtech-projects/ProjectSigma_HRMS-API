@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Position extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $table = 'positions';
 
@@ -31,7 +33,7 @@ class Position extends Model
 
     public function departments(): HasOne
     {
-        return $this->hasOne(Department::class,'id','department_id');
+        return $this->hasOne(Department::class, 'id', 'department_id');
     }
 
     // public function departmentsdata(): BelongsTo

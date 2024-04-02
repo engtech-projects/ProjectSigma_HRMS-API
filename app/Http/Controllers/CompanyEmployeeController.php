@@ -26,7 +26,7 @@ class CompanyEmployeeController extends Controller
      */
     public function store(StoreCompanyEmployeeRequest $request)
     {
-        $main = new CompanyEmployee;
+        $main = new CompanyEmployee();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

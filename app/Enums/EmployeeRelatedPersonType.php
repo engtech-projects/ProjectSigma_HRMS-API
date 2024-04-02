@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Enums;
 
-enum EmployeeRelatedPersonType:string
+enum EmployeeRelatedPersonType: string
 {
     case MOTHER = "mother";
     case FATHER = "father";

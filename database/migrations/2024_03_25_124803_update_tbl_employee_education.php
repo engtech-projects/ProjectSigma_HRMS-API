@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -45,7 +44,7 @@ return new class extends Migration
             $table->dropColumn('college_honors_received');
             $table->dropColumn('vocationalcourse_degree_earned_of_school');
             $table->dropColumn('vocationalcourse_honors_received');
-            $table->enum("type",["elementary","secondary","vocational_course","college","graduate_studies"]);
+            $table->enum("type", ["elementary","secondary","vocational_course","college","graduate_studies"]);
             $table->string("name")->before('id');
             $table->string("education")->after('id');
             $table->string("period_attendance_to")->after('id');

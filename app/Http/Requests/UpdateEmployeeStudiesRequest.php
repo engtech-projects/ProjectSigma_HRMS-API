@@ -23,20 +23,20 @@ class UpdateEmployeeStudiesRequest extends FormRequest
     {
         return [
             //
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable`",
                 "integer",
                 "exists:employees,id",
             ],
-            'title'=>[
+            'title' => [
                 "nullable`",
                 "string",
             ],
-            'date'=>[
+            'date' => [
                 "nullable`",
                 "string",
             ],
-            'type'=>[
+            'type' => [
                 "nullable`",
                 "string",
                 'in:master thesis,doctor dissertation,professional license'

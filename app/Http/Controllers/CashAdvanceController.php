@@ -29,7 +29,7 @@ class CashAdvanceController extends Controller
      */
     public function store(StoreCashAdvanceRequest $request)
     {
-        $main = new CashAdvance;
+        $main = new CashAdvance();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -45,7 +45,7 @@ class CashAdvanceController extends Controller
         return response()->json($data);
     }
 
-    function cashAdvancePayment(CashAdvance $cash, CashAdvanceRequest $request)
+    public function cashAdvancePayment(CashAdvance $cash, CashAdvanceRequest $request)
     {
         $valid = true;
         $msg = "";
@@ -94,7 +94,7 @@ class CashAdvanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCashAdvanceRequest $request,  $id)
+    public function update(UpdateCashAdvanceRequest $request, $id)
     {
         $main = CashAdvance::find($id);
         $data = json_decode('{}');

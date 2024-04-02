@@ -22,32 +22,32 @@ class UpdateEmployeeAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'street'=>[
+            'street' => [
                 "nullable",
                 "string",
             ],
-            'brgy'=>[
+            'brgy' => [
                 "nullable",
                 "string",
             ],
-            'city'=>[
+            'city' => [
                 "nullable",
                 "string",
             ],
-            'zip'=>[
+            'zip' => [
                 "nullable",
                 "string",
             ],
-            'province'=>[
+            'province' => [
                 "nullable",
                 "string",
             ],
-            'type'=>[
+            'type' => [
                 "string",
                 "nullable",
                 'in:present,permanent,same'

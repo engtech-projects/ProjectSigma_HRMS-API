@@ -6,12 +6,12 @@ use Illuminate\Validation\Rules\Enum;
 
 final class LeaveRequestStatusType extends Enum
 {
-    const APPROVED = 'Approved';
-    const PENDING = "Pending";
-    const DENIED = "Denied";
-    const RELEASED = "Released";
-    const FILLED = "Filled";
-    const HOLD = "Hold";
-    const CANCELLED = "Cancelled";
-    const DISAPPROVED = "Disapproved";
+    public const APPROVED = 'Approved';
+    public const PENDING = "Pending";
+    public const DENIED = "Denied";
+    public const RELEASED = "Released";
+    public const FILLED = "Filled";
+    public const HOLD = "Hold";
+    public const CANCELLED = "Cancelled";
+    public const DISAPPROVED = "Disapproved";
 }

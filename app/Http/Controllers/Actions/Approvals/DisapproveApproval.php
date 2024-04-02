@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Actions\Approvals;
 
-use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DenyManpowerApprovalRequest;
 use App\Http\Requests\DisapproveApprovalRequest;
 
 class DisapproveApproval extends Controller

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class ProjectMemberPivot extends Pivot
 {
-    use HasEmployee, HasProject;
+    use HasEmployee;
+    use HasProject;
 
 }

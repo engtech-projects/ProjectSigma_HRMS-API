@@ -16,7 +16,7 @@ class UserAccountResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "employee" => $this->whenLoaded("employee",  function ($employee) {
+            "employee" => $this->whenLoaded("employee", function ($employee) {
                 return new EmployeeUserResource($employee);
             }),
         ];

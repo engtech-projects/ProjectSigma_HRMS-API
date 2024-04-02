@@ -26,7 +26,7 @@ class EmployeeAffiliationController extends Controller
      */
     public function store(StoreEmployeeAffiliationRequest $request)
     {
-        $main = new EmployeeAffiliation;
+        $main = new EmployeeAffiliation();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

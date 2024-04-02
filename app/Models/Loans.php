@@ -15,7 +15,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Loans extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $casts = [
         "period_start" => "date:Y-m-d",
@@ -42,7 +45,7 @@ class Loans extends Model
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::POSTED);
     }
 
-    function loanPaid()
+    public function loanPaid()
     {
         $totalpaid = $this->loanPayments()->sum('amount_paid');
         if ($this->loan_amount <= $totalpaid) {
@@ -51,7 +54,7 @@ class Loans extends Model
         return false;
     }
 
-    function paymentWillOverpay($paymentAmount)
+    public function paymentWillOverpay($paymentAmount)
     {
         $totalpaid = $this->loanPayments()->sum('amount_paid');
 

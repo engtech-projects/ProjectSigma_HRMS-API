@@ -13,15 +13,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Enums\EmployeeInternalWorkExperiencesStatus;
-use App\Models\Traits\HasProject;
 use App\Models\Traits\HasProjectMember;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Employee extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
     use HasProjectMember;
 
     protected $table = 'employees';
@@ -59,8 +59,8 @@ class Employee extends Model
         'spouse_datebirth' => 'datetime:Y-m-d',
     ];
 
-    const EMPLOYEE_BULK_STATUS_DUPLICATE = 'duplicate';
-    const EMPLOYEE_BULK_STATUS_UNDUPLICATE = 'unduplicate';
+    public const EMPLOYEE_BULK_STATUS_DUPLICATE = 'duplicate';
+    public const EMPLOYEE_BULK_STATUS_UNDUPLICATE = 'unduplicate';
     protected $fillable = [
         'first_name',
         'middle_name',

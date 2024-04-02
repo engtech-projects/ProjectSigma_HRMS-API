@@ -3,18 +3,13 @@
 namespace App\Traits;
 
 use Illuminate\Support\Carbon;
-use App\Models\ManpowerRequest;
-use Illuminate\Support\Collection;
-use App\Enums\ManpowerRequestStatus;
 use App\Enums\RequestApprovalStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 trait HasApproval
 {
-
     public function completeRequestStatus()
     {
     }

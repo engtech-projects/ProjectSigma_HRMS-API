@@ -15,7 +15,7 @@ class JsonStringValidation implements Rule
 
     public function passes($attribute, $value)
     {
-        $jsonStringDecoded = json_decode($value,true);
+        $jsonStringDecoded = json_decode($value, true);
         if ($jsonStringDecoded === null) {
             return false;
         }

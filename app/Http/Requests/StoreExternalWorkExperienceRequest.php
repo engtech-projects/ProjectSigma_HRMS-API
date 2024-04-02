@@ -22,37 +22,37 @@ class StoreExternalWorkExperienceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'application_name'=>[
+            'application_name' => [
                 "required",
                 'string'
             ],
-            'position_title'=>[
+            'position_title' => [
                 "required",
                 'string'
             ],
-            'company_name'=>[
+            'company_name' => [
                 "required",
                 "string",
             ],
-            'salary'=>[
+            'salary' => [
                 "required",
                 "integer",
                 "min:0"
             ],
-            'status_of_appointment'=>[
+            'status_of_appointment' => [
                 "required",
                 "string",
             ],
-            'date_from'=>[
+            'date_from' => [
                 "required",
                 "date",
             ],
-            'date_to'=>[
+            'date_to' => [
                 "required",
                 "date",
             ],

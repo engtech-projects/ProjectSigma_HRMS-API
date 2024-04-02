@@ -22,26 +22,26 @@ class UpdateHMOMembersRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'hmo_id'=> [
+            'hmo_id' => [
                 "required",
                 "integer",
                 "exists:hmo,id",
             ],
-            'member_type'=> [
+            'member_type' => [
                 "required",
                 "string",
                 'in:employee,external(addon)'
             ],
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'member_name'=> [
+            'member_name' => [
                 "required",
                 "string",
             ],
-            'member_belongs_to'=> [
+            'member_belongs_to' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",

@@ -28,7 +28,7 @@ class UpdateUsersRequest extends FormRequest
             'password' => "nullable|string|max:255",
             'remember_token' => "nullable|string|max:100",
             'type' => "nullable|in:Administrator,Employee",
-            'accessibilities'=>"nullable|array|exists:accessibilities,id",
+            'accessibilities' => "nullable|array|exists:accessibilities,id",
         ];
     }
 }

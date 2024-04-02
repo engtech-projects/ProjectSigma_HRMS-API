@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\JobApplication;
 use App\Enums\JobApplicationEnums;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\JobApplicants;
@@ -10,14 +9,13 @@ use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantStatus;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class JobApplicantsController extends Controller
 {
-    const RADIR = "resume_attachment/";
-    const ALADIR = "application_letter_attachment/";
+    public const RADIR = "resume_attachment/";
+    public const ALADIR = "application_letter_attachment/";
 
     /**
      * Display a listing of the resource.
@@ -101,7 +99,7 @@ class JobApplicantsController extends Controller
      */
     public function store(StoreJobApplicantsRequest $request)
     {
-        $main = new JobApplicants;
+        $main = new JobApplicants();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
