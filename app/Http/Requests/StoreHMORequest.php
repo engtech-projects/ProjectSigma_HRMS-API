@@ -17,9 +17,11 @@ class StoreHMORequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        $this->merge([
-            "hmo_members" => json_decode($this->hmo_members, true)
-        ]);
+        if (gettype($this->hmo_members) == "string") {
+            $this->merge([
+                "hmo_members" => json_decode($this->hmo_members, true)
+            ]);
+        }
     }
 
     /**
