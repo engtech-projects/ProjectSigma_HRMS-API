@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HMO;
 use App\Http\Requests\StoreHMORequest;
 use App\Http\Requests\UpdateHMORequest;
+use Illuminate\Support\Facades\DB;
 
 class HMOController extends Controller
 {
@@ -29,16 +30,22 @@ class HMOController extends Controller
         $main = new HMO();
         $main->fill($request->validated());
         $data = json_decode('{}');
-
-        if (!$main->save()) {
+        try {
+            DB::transaction(function () use ($main, $request) {
+                $main->save();
+                $main->savehmoMembers()->createMany(
+                    $request->hmo_members
+                );
+            });
+            $data->message = "Successfully save.";
+            $data->success = true;
+            $data->data = $main;
+            return response()->json($data);
+        } catch (\Exception $th) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
     }
 
     /**
