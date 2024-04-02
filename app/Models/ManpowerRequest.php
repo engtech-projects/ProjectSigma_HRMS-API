@@ -112,17 +112,17 @@ class ManpowerRequest extends Model
         $this->refresh();
     }
 
-    public function requestStatusCompleted() : bool
+    public function requestStatusCompleted(): bool
     {
-        if($this->request_status == ManpowerRequestStatus::APPROVED){
+        if ($this->request_status == ManpowerRequestStatus::APPROVED) {
             return true;
         }
         return false;
     }
 
-    public function requestStatusEnded() : bool
+    public function requestStatusEnded(): bool
     {
-        if(
+        if (
             in_array(
                 $this->request_status,
                 [
@@ -132,10 +132,9 @@ class ManpowerRequest extends Model
                     ManpowerRequestStatus::CANCELLED,
                 ]
             )
-        ){
+        ) {
             return true;
         }
         return false;
     }
-
 }

@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\LeaveRequestStatusType;
-use App\Enums\LeaveRequestType;
+use App\Enums\RequestApprovalStatus;
+use App\Enums\RequestStatusType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class UpdateEmployeeLeavesRequest extends FormRequest
+class UpdateCashAdvanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -40,27 +40,27 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "integer",
                 "exists:projects,id",
             ],
-            'type' => [
+            'amount_requested' => [
+                "nullable",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'amount_approved' => [
+                "nullable",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'purpose' => [
                 "nullable",
                 "string",
-                new Enum(LeaveRequestType::class)
             ],
-            'other_absence' => [
+            'terms_of_cash_advance' => [
                 "nullable",
                 "string",
-                "exclude_if:type,Sick/Checkup,Special Celebration,Vacation,Mandatory Leave,Bereavement,Maternity/Paternity",
-                'required_if:type,==,Other',
             ],
-            'date_of_absence_from' => [
-                "nullable",
-                "date",
-            ],
-            'date_of_absence_to' => [
-                "nullable",
-                "date",
-                "after:date_of_absence_from"
-            ],
-            'reason_for_absence' => [
+            'remarks' => [
                 "nullable",
                 "string",
             ],
@@ -71,7 +71,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             'approvals.*' => [
                 "nullable",
                 "array",
-                "required_array_keys:type,user_id,status,date_approved,remarks",
+                new Enum(RequestApprovalStatus::class)
             ],
             'approvals.*.type' => [
                 "nullable",
@@ -97,7 +97,12 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             'request_status' => [
                 "nullable",
                 "string",
-                new Enum(LeaveRequestStatusType::class)
+                new Enum(RequestStatusType::class)
+            ],
+            'released_by' => [
+                "nullable",
+                "integer",
+                "exists:users,id",
             ],
         ];
     }
