@@ -65,7 +65,6 @@ class StoreHMORequest extends FormRequest
             'hmo_members.*' => [
                 "required",
                 "array",
-                "required_array_keys:member_type,employee_id,member_name,member_belongs_to",
             ],
             'hmo_members.*.hmo_id' => [
                 "required",
@@ -77,17 +76,20 @@ class StoreHMORequest extends FormRequest
                 'in:employee,external(addon)'
             ],
             'hmo_members.*.employee_id' => [
-                "required",
+                "nullable",
                 "integer",
                 "exists:employees,id",
+                'required_if:hmo_members.*.member_type,employee',
             ],
             'hmo_members.*.member_name' => [
                 "required",
                 "string",
             ],
             'hmo_members.*.member_belongs_to' => [
+                "nullable",
                 "integer",
                 "exists:employees,id",
+                'required_if:hmo_members.*.member_type,external(addon)',
             ],
         ];
     }

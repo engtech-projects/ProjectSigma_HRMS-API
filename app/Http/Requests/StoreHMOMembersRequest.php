@@ -34,9 +34,10 @@ class StoreHMOMembersRequest extends FormRequest
                     'in:employee,external(addon)'
                 ],
                 'employee_id'=> [
-                    "required",
+                    "nullable",
                     "integer",
                     "exists:employees,id",
+                    'required_if:member_type,employee',
                 ],
                 'member_name'=> [
                     "required",

@@ -18,6 +18,10 @@ class HMOMembers extends Model
 
     protected $table = 'hmo_members';
 
+    public $rules = [
+        'employee_id' => 'required|member_type:employee',
+    ];
+
     protected $fillable = [
         'id',
         'hmo_id',

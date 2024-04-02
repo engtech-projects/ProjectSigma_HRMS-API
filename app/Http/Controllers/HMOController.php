@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreHMOMembersRequest;
 use App\Models\HMO;
 use App\Http\Requests\StoreHMORequest;
 use App\Http\Requests\UpdateHMORequest;
@@ -112,5 +113,13 @@ class HMOController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function storeHmoMembers(StoreHMOMembersRequest $request)
+    {
+        if ($request->validated()) {
+            return true;
+        }
+        return false;
     }
 }
