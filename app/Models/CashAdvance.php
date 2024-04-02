@@ -13,23 +13,27 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-class Loans extends Model
+class CashAdvance extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $casts = [
-        "period_start" => "date:Y-m-d",
-        "period_end" => "date:Y-m-d",
+        'approvals' => 'array'
     ];
 
     protected $fillable = [
         'id',
         'employee_id',
-        'loan_amount',
-        'installment_deduction',
-        'terms_length',
-        'period_start',
-        'period_end',
+        'department_id',
+        'project_id',
+        'amount_requested',
+        'amount_approved',
+        'purpose',
+        'terms_of_cash_advance',
+        'remarks',
+        'request_status',
+        'approvals',
+        'released_by',
     ];
 
     public function employee(): HasOne
@@ -37,34 +41,43 @@ class Loans extends Model
         return $this->hasOne(Employee::class);
     }
 
-    public function loanPayments(): HasMany
+    public function department(): HasOne
     {
-        return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::POSTED);
+        return $this->hasOne(Department::class);
     }
 
-    function loanPaid()
+    public function project(): HasOne
     {
-        $totalpaid = $this->loanPayments()->sum('amount_paid');
-        if ($this->loan_amount <= $totalpaid) {
+        return $this->hasOne(Project::class);
+    }
+
+    public function cashAdvancePayments(): HasMany
+    {
+        return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id');
+    }
+
+    public function cashPaid()
+    {
+        $totalpaid = $this->cashAdvancePayments()->sum("amount_paid");
+        if ($this->amount_requested <= $totalpaid) {
             return true;
         }
         return false;
     }
 
-    function paymentWillOverpay($paymentAmount)
+    public function paymentWillOverpay($amount)
     {
         $totalpaid = $this->loanPayments()->sum('amount_paid');
 
-        if ($this->loan_amount < $totalpaid + $paymentAmount) {
+        if ($this->amount_requested < $totalpaid + $amount) {
             return true;
         }
         return false;
     }
 
-    public function loanPayment($paymentAmount, $type)
+    public function cashAdvance($paymentAmount, $type)
     {
-
-        if ($this->loanPaid()) {
+        if ($this->cashPaid()) {
             return false;
         }
 
@@ -73,16 +86,16 @@ class Loans extends Model
         }
 
         if ($type == LoanPaymentsType::MANUAL->value) {
-            $this->loanPayments()->create([
-                'loans_id' => $this->id,
+            $this->cashAdvancePayments()->create([
+                'cashadvance_id' => $this->id,
                 'amount_paid' => $paymentAmount,
                 'date_paid' => Carbon::now(),
                 'payment_type' => LoanPaymentsType::MANUAL,
                 'posting_status' => LoanPaymentPostingStatusType::POSTED
             ]);
         } else {
-            $this->loanPayments()->create([
-                'loans_id' => $this->id,
+            $this->cashAdvancePayments()->create([
+                'cashadvance_id' => $this->id,
                 'amount_paid' => $paymentAmount,
                 'date_paid' => Carbon::now(),
                 'payment_type' => LoanPaymentsType::MANUAL,

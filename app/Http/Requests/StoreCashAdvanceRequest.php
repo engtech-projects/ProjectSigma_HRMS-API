@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\LeaveRequestStatusType;
-use App\Enums\LeaveRequestType;
+use App\Enums\RequestStatusType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class UpdateEmployeeLeavesRequest extends FormRequest
+class StoreCashAdvanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,6 +16,12 @@ class UpdateEmployeeLeavesRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            "approvals" => json_decode($this->approvals, true)
+        ]);
+    }
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,55 +31,55 @@ class UpdateEmployeeLeavesRequest extends FormRequest
     {
         return [
             'employee_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:employees,id",
             ],
             'department_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:departments,id",
             ],
             'project_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:projects,id",
             ],
-            'type' => [
-                "nullable",
+            'amount_requested' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'amount_approved' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'purpose' => [
+                "required",
                 "string",
-                new Enum(LeaveRequestType::class)
             ],
-            'other_absence' => [
-                "nullable",
+            'terms_of_cash_advance' => [
+                "required",
                 "string",
-                "exclude_if:type,Sick/Checkup,Special Celebration,Vacation,Mandatory Leave,Bereavement,Maternity/Paternity",
-                'required_if:type,==,Other',
             ],
-            'date_of_absence_from' => [
-                "nullable",
-                "date",
-            ],
-            'date_of_absence_to' => [
-                "nullable",
-                "date",
-                "after:date_of_absence_from"
-            ],
-            'reason_for_absence' => [
-                "nullable",
+            'remarks' => [
+                "required",
                 "string",
             ],
             'approvals' => [
-                "nullable",
+                "required",
                 "array",
             ],
             'approvals.*' => [
-                "nullable",
+                "required",
                 "array",
                 "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
             'approvals.*.type' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'approvals.*.user_id' => [
@@ -83,7 +88,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "exists:users,id",
             ],
             'approvals.*.status' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'approvals.*.date_approved' => [
@@ -95,9 +100,14 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "string",
             ],
             'request_status' => [
-                "nullable",
+                "required",
                 "string",
-                new Enum(LeaveRequestStatusType::class)
+                new Enum(RequestStatusType::class)
+            ],
+            'released_by' => [
+                "required",
+                "integer",
+                "exists:users,id",
             ],
         ];
     }

@@ -50,6 +50,7 @@ use App\Http\Controllers\Actions\{
 };
 use App\Http\Controllers\Actions\ProjectMember\AttachProjectEmployee;
 
+use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
 
 /*
@@ -173,5 +174,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('loans')->group(function () {
         Route::resource('resource', LoansController::class);
         Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
+    });
+
+    Route::prefix('cash-advance')->group(function () {
+        Route::resource('resource', CashAdvanceController::class);
+        Route::post('manual-payment/{ca}', [CashAdvanceController::class, "cashAdvancePayment"]);
     });
 });
