@@ -123,7 +123,6 @@ class UpdateEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             'approvals.*' => [
                 "nullable",
                 "array",
-                "nullable_array_keys:type,user_id,status,date_approved,remarks",
             ],
             'approvals.*.type' => [
                 "nullable",

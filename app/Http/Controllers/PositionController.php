@@ -26,7 +26,6 @@ class PositionController extends Controller
         $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
-        $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
