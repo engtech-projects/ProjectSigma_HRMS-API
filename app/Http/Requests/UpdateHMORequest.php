@@ -64,14 +64,13 @@ class UpdateHMORequest extends FormRequest
             'hmo_members.*' => [
                 "nullable",
                 "array",
-                "nullable_array_keys:member_type,employee_id,member_name,member_belongs_to",
             ],
             'hmo_members.*.hmo_id' => [
-                "nullable",
+                "required",
                 "integer",
             ],
             'hmo_members.*.member_type' => [
-                "nullable",
+                "required",
                 "string",
                 'in:employee,external(addon)'
             ],
@@ -79,14 +78,17 @@ class UpdateHMORequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:employees,id",
+                'required_if:hmo_members.*.member_type,employee',
             ],
             'hmo_members.*.member_name' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'hmo_members.*.member_belongs_to' => [
+                "nullable",
                 "integer",
                 "exists:employees,id",
+                'required_if:hmo_members.*.member_type,external(addon)',
             ],
         ];
     }
