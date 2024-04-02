@@ -22,21 +22,21 @@ class UpdateEmployeeUploadsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_uploads'=>[
+            'employee_uploads' => [
                 "nullable",
                 "string",
             ],
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'upload_type'=>[
+            'upload_type' => [
                 "string",
                 "nullable",
                 'in:Documents,Memo'
             ],
-            'file'=>[
+            'file' => [
                 "nullable",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",

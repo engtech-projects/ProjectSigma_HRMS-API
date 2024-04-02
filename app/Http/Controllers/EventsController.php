@@ -26,7 +26,7 @@ class EventsController extends Controller
      */
     public function store(StoreEventsRequest $request)
     {
-        $main = new Events;
+        $main = new Events();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

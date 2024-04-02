@@ -35,7 +35,7 @@ class EmployeeLeavesController extends Controller
      */
     public function store(StoreEmployeeLeavesRequest $request)
     {
-        $main = new EmployeeLeaves;
+        $main = new EmployeeLeaves();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

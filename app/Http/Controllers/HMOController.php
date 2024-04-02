@@ -26,7 +26,7 @@ class HMOController extends Controller
      */
     public function store(StoreHMORequest $request)
     {
-        $main = new HMO;
+        $main = new HMO();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

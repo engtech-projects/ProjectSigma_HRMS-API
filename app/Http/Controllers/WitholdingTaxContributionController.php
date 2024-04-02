@@ -14,7 +14,7 @@ class WitholdingTaxContributionController extends Controller
     public function index()
     {
         $witholdingtax = WitholdingTaxContribution::paginate(15);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $witholdingtax;
@@ -34,10 +34,10 @@ class WitholdingTaxContributionController extends Controller
      */
     public function store(StoreWitholdingTaxContributionRequest $request)
     {
-        $witholdingtax = new WitholdingTaxContribution;
+        $witholdingtax = new WitholdingTaxContribution();
         $witholdingtax->fill($request->validated());
-        $data = json_decode('{}'); 
-        if(!$witholdingtax->save()){
+        $data = json_decode('{}');
+        if(!$witholdingtax->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -54,8 +54,8 @@ class WitholdingTaxContributionController extends Controller
     public function show($id)
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
-        $data = json_decode('{}'); 
-        if (!is_null($witholdingtax) ) {
+        $data = json_decode('{}');
+        if (!is_null($witholdingtax)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $witholdingtax;
@@ -81,9 +81,9 @@ class WitholdingTaxContributionController extends Controller
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
         $witholdingtax->fill($request->validated());
-        $data = json_decode('{}'); 
-        if (!is_null($witholdingtax) ) {
-            if($witholdingtax->save()){
+        $data = json_decode('{}');
+        if (!is_null($witholdingtax)) {
+            if($witholdingtax->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $witholdingtax;
@@ -104,9 +104,9 @@ class WitholdingTaxContributionController extends Controller
     public function destroy($id)
     {
         $witholdingtax = WitholdingTaxContribution::find($id);
-        $data = json_decode('{}'); 
-        if (!is_null($witholdingtax) ) {
-            if($witholdingtax->delete()){
+        $data = json_decode('{}');
+        if (!is_null($witholdingtax)) {
+            if($witholdingtax->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $witholdingtax;
@@ -114,7 +114,7 @@ class WitholdingTaxContributionController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400); 
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -30,7 +29,7 @@ class UsersSeeder extends Seeder
                     'email' => 'jermilymozo@gmail.com',
                     'password' => Hash::make('!onetimepassword'),
                     'accessibilities' => '[1]',
-                    'type'=> 'Employee',
+                    'type' => 'Employee',
                 ],
                 [
                     'id' => 3,
@@ -38,7 +37,7 @@ class UsersSeeder extends Seeder
                     'email' => 'richiedalauta@gmail.com',
                     'password' => Hash::make('!onetimepassword'),
                     'accessibilities' => '[1]',
-                    'type'=> 'Employee',
+                    'type' => 'Employee',
                 ],
                 [
                     'id' => 4,
@@ -46,7 +45,7 @@ class UsersSeeder extends Seeder
                     'email' => 'dionisionrodes@gmail.com',
                     'password' => Hash::make('!onetimepassword'),
                     'accessibilities' => '[1]',
-                    'type'=> 'Employee',
+                    'type' => 'Employee',
                 ],
                 [
                     'id' => 5,
@@ -54,7 +53,7 @@ class UsersSeeder extends Seeder
                     'email' => 'angelabrau@gmail.com',
                     'password' => Hash::make('!onetimepassword'),
                     'accessibilities' => '[1]',
-                    'type'=> 'Employee',
+                    'type' => 'Employee',
                 ],
             ]
         );

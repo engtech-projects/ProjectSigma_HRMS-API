@@ -22,24 +22,24 @@ class StoreEmployeeSeminartrainingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required`",
                 "integer",
                 "exists:employees,id",
             ],
-            'name_title_training'=>[
+            'name_title_training' => [
                 "required`",
                 "string",
             ],
-            'inclusive_dates'=>[
+            'inclusive_dates' => [
                 "required`",
                 "date",
             ],
-            'venue'=>[
+            'venue' => [
                 "required`",
                 "string",
             ],
-            'training_provider'=>[
+            'training_provider' => [
                 "required`",
                 "string",
             ],

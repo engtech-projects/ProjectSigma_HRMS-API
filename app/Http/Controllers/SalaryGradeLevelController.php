@@ -6,7 +6,6 @@ use App\Exceptions\TransactionFailedException;
 use Exception;
 use App\Models\SalaryGradeStep;
 use App\Models\SalaryGradeLevel;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\SalaryGradeLevelResource;
@@ -15,7 +14,6 @@ use App\Http\Requests\UpdateSalaryGradeLevelRequest;
 
 class SalaryGradeLevelController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      */

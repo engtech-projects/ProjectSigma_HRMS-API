@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use GuzzleHttp\Psr7\Request;
-use Illuminate\Support\Carbon;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use App\Enums\ManpowerRequestStatus;
-use App\Enums\RequestApprovalStatus;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Services\ManpowerServices;
 use Illuminate\Support\Facades\Storage;
 use App\Utils\PaginateResourceCollection;
@@ -22,7 +16,6 @@ use App\Http\Requests\UpdateManpowerRequestRequest;
 
 class ManpowerRequestController extends Controller
 {
-
     protected $manpowerService;
     protected $manpowerRequestType = null;
 

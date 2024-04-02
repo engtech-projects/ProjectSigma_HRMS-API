@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum PersonelAccessForm : string
+enum PersonelAccessForm: string
 {
     //request type
     case REQUEST_TYPE_NEW_HIRE = "newhire";
@@ -27,10 +27,10 @@ enum PersonelAccessForm : string
     case REASONS_TERMINATION_TYPE_SANCTIONS = "Sanctions";
     case REASONS_TERMINATION_TYPE_FORCE_RESIGN = "Force Resign";
 
-    const REQUESTSTATUS_PENDING = "Pending";
-    const REQUESTSTATUS_APPROVED = "Approved";
-    const REQUESTSTATUS_DISAPPROVED = "Disapproved";
-    const REQUESTSTATUS_FILLED = "Filled";
-    const REQUESTSTATUS_HOLD = "Hold";
-    const REQUESTSTATUS_CANCELLED = "Cancelled";
+    public const REQUESTSTATUS_PENDING = "Pending";
+    public const REQUESTSTATUS_APPROVED = "Approved";
+    public const REQUESTSTATUS_DISAPPROVED = "Disapproved";
+    public const REQUESTSTATUS_FILLED = "Filled";
+    public const REQUESTSTATUS_HOLD = "Hold";
+    public const REQUESTSTATUS_CANCELLED = "Cancelled";
 }

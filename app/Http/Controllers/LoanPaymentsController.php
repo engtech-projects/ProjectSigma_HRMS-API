@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\LoanPayments;
 use App\Http\Requests\StoreLoanPaymentsRequest;
 use App\Http\Requests\UpdateLoanPaymentsRequest;
-use App\Models\Loans;
-use Illuminate\Http\JsonResponse;
 
 class LoanPaymentsController extends Controller
 {
@@ -28,7 +26,7 @@ class LoanPaymentsController extends Controller
      */
     public function store(StoreLoanPaymentsRequest $request)
     {
-        $main = new LoanPayments;
+        $main = new LoanPayments();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

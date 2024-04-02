@@ -14,6 +14,7 @@ class ApproveApproval extends Controller
     public function __invoke($modelType, $model)
     {
         $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED]);
-        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);;
+        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
+        ;
     }
 }

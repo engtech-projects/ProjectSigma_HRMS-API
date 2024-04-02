@@ -2,8 +2,6 @@
 
 namespace App\Http\Services;
 
-use Exception;
-use App\Models\Employee;
 use App\Enums\RequestApprovalStatus;
 use App\Models\EmployeeLeaves;
 

@@ -22,24 +22,24 @@ class StoreTerminationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'type_of_termination'=>[
+            'type_of_termination' => [
                 "required",
                 'in:voluntary,involuntary'
             ],
-            'reason_for_termination'=>[
+            'reason_for_termination' => [
                 "required",
                 "string"
             ],
-            'eligible_for_rehire'=>[
+            'eligible_for_rehire' => [
                 "required",
                 "boolean"
             ],
-            'last_day_worked'=>[
+            'last_day_worked' => [
                 "required",
                 "date"
             ],

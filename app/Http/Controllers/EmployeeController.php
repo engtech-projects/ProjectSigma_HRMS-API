@@ -76,7 +76,7 @@ class EmployeeController extends Controller
      */
     public function store(StoreEmployeeRequest $request)
     {
-        $main = new Employee;
+        $main = new Employee();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -141,7 +141,7 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeRequest $request,  $id)
+    public function update(UpdateEmployeeRequest $request, $id)
     {
         $main = Employee::find($id);
         $data = json_decode('{}');

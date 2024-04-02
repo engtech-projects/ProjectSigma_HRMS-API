@@ -7,8 +7,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
-
-
 class PaginateResourceCollection
 {
     public static function paginate(Collection $results, $showPerPage)

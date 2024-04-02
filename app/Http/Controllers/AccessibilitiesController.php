@@ -22,7 +22,7 @@ class AccessibilitiesController extends Controller
      */
     public function store(StoreAccessibilitiesRequest $request)
     {
-        $access = new Accessibilities;
+        $access = new Accessibilities();
         $access->fill($request->validated());
         if (!$access->save()) {
             return response()->json(["msg" => "error"], 400);

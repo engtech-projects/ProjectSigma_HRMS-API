@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class EmployeeRelatedperson extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $appends = ['age'];
 

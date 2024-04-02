@@ -2,8 +2,6 @@
 
 namespace App\Enums;
 
-use Illuminate\Validation\Rules\Enum;
-
 enum AttendanceType: string
 {
     case MANUAL = "Manual";

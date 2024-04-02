@@ -22,35 +22,35 @@ class UpdateEventsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'=> [
+            'title' => [
                 "nullable",
                 "string",
             ],
-            'event_type'=>[
+            'event_type' => [
                 "nullable",
                 'in:Holiday,Company Event'
             ],
-            'repetition_type'=>[
+            'repetition_type' => [
                 "nullable",
                 'in:One Day,Long Event'
             ],
-            'with_pay'=>[
+            'with_pay' => [
                 "nullable",
                 "boolean",
             ],
-            'with_work'=>[
+            'with_work' => [
                 "nullable",
                 "boolean",
             ],
-            'start_date'=>[
+            'start_date' => [
                 "nullable",
                 "date",
             ],
-            'end_date'=>[
+            'end_date' => [
                 "nullable",
                 "date",
             ],
-            'description'=>[
+            'description' => [
                 "nullable",
                 "string",
             ],

@@ -6,13 +6,13 @@ use Illuminate\Validation\Rules\Enum;
 
 final class LeaveRequestType extends Enum
 {
-    const SICK_CHECKUP = 'Sick/Checkup';
-    const SPECIAL = "Special";
-    const CELEBRATION = "Celebration";
-    const VACATION = "Vacation";
-    const MANDATORY = "Mandatory";
-    const LEAVE = "Leave";
-    const BEREAVEMENT = "Bereavement";
-    const MATERNITY_PATERNITY = "Maternity/Paternity";
-    const OTHER = "Other";
+    public const SICK_CHECKUP = 'Sick/Checkup';
+    public const SPECIAL = "Special";
+    public const CELEBRATION = "Celebration";
+    public const VACATION = "Vacation";
+    public const MANDATORY = "Mandatory";
+    public const LEAVE = "Leave";
+    public const BEREAVEMENT = "Bereavement";
+    public const MATERNITY_PATERNITY = "Maternity/Paternity";
+    public const OTHER = "Other";
 }

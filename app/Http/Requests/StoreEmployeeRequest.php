@@ -23,82 +23,82 @@ class StoreEmployeeRequest extends FormRequest
     {
         return [
             //
-            'first_name'=> [
+            'first_name' => [
                 "required",
                 "string",
             ],
-            'middle_name'=>[
+            'middle_name' => [
                 "nullable",
                 "string",
             ],
-            'family_name'=>[
+            'family_name' => [
                 "required",
                 "string",
             ],
-            'nick_name'=>[
+            'nick_name' => [
                 "nullable",
                 "string",
             ],
-            'name_suffix'=>[
+            'name_suffix' => [
                 "nullable",
                 "string",
             ],
-            'gender'=>[
+            'gender' => [
                 "required",
                 "string",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "required",
                 "date",
             ],
-            'place_of_birth'=>[
+            'place_of_birth' => [
                 "required",
                 "string",
             ],
-            'date_of_marriage'=>[
+            'date_of_marriage' => [
                 "nullable",
                 "date",
             ],
-            'citizenship'=>[
+            'citizenship' => [
                 "required",
                 "string",
             ],
-            'blood_type'=>[
+            'blood_type' => [
                 "required",
                 "string",
                 "max:55"
             ],
-            'civil_status'=>[
+            'civil_status' => [
                 "required",
                 "string",
                 "max:55"
             ],
-            'telephone_number'=>[
+            'telephone_number' => [
                 "nullable",
                 "string",
                 "max:15"
             ],
-            'mobile_number'=>[
+            'mobile_number' => [
                 "required",
                 "string",
                 "min:11",
                 "max:11"
             ],
-            'email'=>[
+            'email' => [
                 "required",
                 "string",
                 "max:35"
             ],
-            'religion'=>[
+            'religion' => [
                 "required",
                 "string",
                 "max:35"
             ],
-            'weight'=>[
+            'weight' => [
                 "required",
                 "string",
             ],
-            'height'=>[
+            'height' => [
                 "required",
                 "string",
             ],

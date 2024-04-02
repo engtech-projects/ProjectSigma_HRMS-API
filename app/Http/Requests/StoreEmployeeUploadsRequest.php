@@ -22,21 +22,21 @@ class StoreEmployeeUploadsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_uploads'=>[
+            'employee_uploads' => [
                 "required",
                 "string",
             ],
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'upload_type'=>[
+            'upload_type' => [
                 "string",
                 "required",
                 'in:Documents,Memo'
             ],
-            'file'=>[
+            'file' => [
                 "required",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",

@@ -26,7 +26,7 @@ class LeaveController extends Controller
      */
     public function store(StoreLeaveRequest $request)
     {
-        $leave = new Leave;
+        $leave = new Leave();
         $leave->fill($request->validated());
         $leave->employment_type = json_encode($request->employment_type);
         $data = json_decode('{}');
@@ -62,7 +62,7 @@ class LeaveController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLeaveRequest $request,  $id)
+    public function update(UpdateLeaveRequest $request, $id)
     {
         $leave = Leave::find($id);
         $data = json_decode('{}');

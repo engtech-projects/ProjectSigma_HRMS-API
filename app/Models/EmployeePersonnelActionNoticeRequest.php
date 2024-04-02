@@ -14,16 +14,20 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeePersonnelActionNoticeRequest extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasApproval, HasUser;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+    use HasApproval;
+    use HasUser;
 
-    const NEW_HIRE = "New Hire";
-    const TRANSFER = "Transfer";
-    const PROMOTION = "Promotion";
-    const TERMINATION = "Termination";
+    public const NEW_HIRE = "New Hire";
+    public const TRANSFER = "Transfer";
+    public const PROMOTION = "Promotion";
+    public const TERMINATION = "Termination";
 
 
     protected $appends = [

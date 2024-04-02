@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class InternalWorkExperience extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
     protected $fillable = [
         'id',
         'employee_id',
@@ -29,7 +32,7 @@ class InternalWorkExperience extends Model
         'date_from',
         'date_to'
     ];
-    
+
 
     public static function boot()
     {

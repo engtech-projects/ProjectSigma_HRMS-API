@@ -11,7 +11,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Approvals extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
     use HasApproval;
 
     protected $fillable = [

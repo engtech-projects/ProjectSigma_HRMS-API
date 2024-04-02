@@ -26,7 +26,7 @@ class EmployeeRelatedpersonController extends Controller
      */
     public function store(StoreEmployeeRelatedpersonRequest $request)
     {
-        $main = new EmployeeRelatedperson;
+        $main = new EmployeeRelatedperson();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

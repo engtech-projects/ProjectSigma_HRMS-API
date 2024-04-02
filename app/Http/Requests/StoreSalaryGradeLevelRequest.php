@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Http\Rules\UniqueWithoutSoftDeleted;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSalaryGradeLevelRequest extends FormRequest

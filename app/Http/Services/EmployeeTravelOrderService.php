@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use Exception;
 use App\Enums\RequestApprovalStatus;
 use App\Models\TravelOrder;
 

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class EmployeeUploadsController extends Controller
 {
-    const EMPLOYEEDIR = "employee_folder/";
+    public const EMPLOYEEDIR = "employee_folder/";
 
     /**
      * Display a listing of the resource.
@@ -30,7 +30,7 @@ class EmployeeUploadsController extends Controller
      */
     public function store(StoreEmployeeUploadsRequest $request)
     {
-        $main = new EmployeeUploads;
+        $main = new EmployeeUploads();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -78,7 +78,7 @@ class EmployeeUploadsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeUploadsRequest $request,  $id)
+    public function update(UpdateEmployeeUploadsRequest $request, $id)
     {
         $main = EmployeeUploads::find($id);
         $data = json_decode('{}');

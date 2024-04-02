@@ -15,7 +15,12 @@ use Laravel\Sanctum\HasApiTokens;
 
 class EmployeeLeaves extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasApproval, HasUser;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+    use HasApproval;
+    use HasUser;
 
     protected $casts = [
         "approvals" => "array",

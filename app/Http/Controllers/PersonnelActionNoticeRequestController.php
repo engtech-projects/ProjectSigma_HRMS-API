@@ -9,7 +9,6 @@ use App\Models\JobApplicants;
 use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 use App\Enums\EmployeeAddressType;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreDisapprove;
 use App\Models\InternalWorkExperience;
@@ -26,7 +25,6 @@ use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
 
 class PersonnelActionNoticeRequestController extends Controller
 {
-
     protected $panelRequestService;
     public function __construct(EmployeePanRequestService $panelRequestService)
     {

@@ -3,7 +3,6 @@
 namespace App\Http\Services;
 
 use App\Models\FailureToLog;
-use App\Exceptions\TransactionFailedException;
 
 class FailureToLogService
 {

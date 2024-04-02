@@ -26,7 +26,7 @@ class EmployeeEligibilityController extends Controller
      */
     public function store(StoreEmployeeEligibilityRequest $request)
     {
-        $main = new EmployeeEligibility;
+        $main = new EmployeeEligibility();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

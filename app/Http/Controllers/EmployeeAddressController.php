@@ -26,7 +26,7 @@ class EmployeeAddressController extends Controller
      */
     public function store(StoreEmployeeAddressRequest $request)
     {
-        $main = new EmployeeAddress;
+        $main = new EmployeeAddress();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
@@ -62,7 +62,7 @@ class EmployeeAddressController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeAddressRequest $request,  $id)
+    public function update(UpdateEmployeeAddressRequest $request, $id)
     {
         $main = EmployeeAddress::find($id);
         $data = json_decode('{}');

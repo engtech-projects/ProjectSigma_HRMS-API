@@ -37,7 +37,7 @@ class AllowanceController extends Controller
      */
     public function store(StoreallowanceRequest $request)
     {
-        $main = new Allowance;
+        $main = new Allowance();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
