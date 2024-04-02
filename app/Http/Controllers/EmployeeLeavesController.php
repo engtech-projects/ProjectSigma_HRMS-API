@@ -113,7 +113,7 @@ class EmployeeLeavesController extends Controller
     }
 
 
-    public function myLeaves()
+    public function myRequests()
     {
         $myRequest = $this->leaveRequestService->getMyRequest();
         if ($myRequest->isEmpty()) {
