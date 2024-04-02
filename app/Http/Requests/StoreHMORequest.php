@@ -66,10 +66,6 @@ class StoreHMORequest extends FormRequest
                 "required",
                 "array",
             ],
-            'hmo_members.*.hmo_id' => [
-                "required",
-                "integer",
-            ],
             'hmo_members.*.member_type' => [
                 "required",
                 "string",
