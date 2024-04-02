@@ -22,53 +22,53 @@ class StoreEmployeeRelatedpersonRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'relationship'=>[
+            'relationship' => [
                 "required",
                 "string",
             ],
-            'type'=>[
+            'type' => [
                 "required",
                 "string",
                 'in:contact person,dependent/children,father,mother,spouse,reference,guardian'
             ],
-            'name'=>[
+            'name' => [
                 "required",
                 "string",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "required",
                 "date",
             ],
-            'street'=>[
+            'street' => [
                 "required",
                 "string",
             ],
-            'brgy'=>[
+            'brgy' => [
                 "required",
                 "string",
             ],
-            'city'=>[
+            'city' => [
                 "required",
                 "string",
             ],
-            'zip'=>[
+            'zip' => [
                 "required",
                 "string",
             ],
-            'province'=>[
+            'province' => [
                 "required",
                 "string",
             ],
-            'occupation'=>[
+            'occupation' => [
                 "required",
                 "string",
             ],
-            'contact_no'=>[
+            'contact_no' => [
                 "required",
                 "string",
             ],

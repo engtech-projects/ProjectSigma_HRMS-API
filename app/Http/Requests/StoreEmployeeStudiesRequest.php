@@ -22,20 +22,20 @@ class StoreEmployeeStudiesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required`",
                 "integer",
                 "exists:employees,id",
             ],
-            'title'=>[
+            'title' => [
                 "required`",
                 "string",
             ],
-            'date'=>[
+            'date' => [
                 "required`",
                 "string",
             ],
-            'type'=>[
+            'type' => [
                 "required`",
                 "string",
                 'in:master thesis,doctor dissertation,professional license'

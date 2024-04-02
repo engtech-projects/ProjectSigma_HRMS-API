@@ -34,11 +34,11 @@ class TerminationController extends Controller
      */
     public function store(StoreTerminationRequest $request)
     {
-        $main = new Termination;
+        $main = new Termination();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$main->save()){
+        if(!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -57,7 +57,7 @@ class TerminationController extends Controller
         //
         $main = Termination::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -79,14 +79,14 @@ class TerminationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTerminationRequest $request,  $id)
+    public function update(UpdateTerminationRequest $request, $id)
     {
         //
         $main = Termination::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -105,12 +105,12 @@ class TerminationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy( $id)
+    public function destroy($id)
     {
         $main = Termination::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -118,10 +118,10 @@ class TerminationController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

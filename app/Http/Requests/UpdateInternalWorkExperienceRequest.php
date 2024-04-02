@@ -22,56 +22,56 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'position_title'=>[
+            'position_title' => [
                 "nullable",
                 "string"
             ],
-            'employment_status'=>[
+            'employment_status' => [
                 "nullable",
                 "string"
             ],
-            'department_id'=>[
+            'department_id' => [
                 "nullable",
                 "integer",
                 "exists:departments,id"
             ],
-            'immediate_supervisor'=>[
+            'immediate_supervisor' => [
                 "nullable",
                 "string"
             ],
-            'salary_grades'=>[
+            'salary_grades' => [
                 "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
             ],
-            'actual_salary'=>[
+            'actual_salary' => [
                 "nullable",
                 "string"
             ],
-            'work_location'=>[
+            'work_location' => [
                 "nullable",
                 "string",
                 'in:pms,office,project_code'
             ],
-            'hire_source'=>[
+            'hire_source' => [
                 "nullable",
                 "string",
                 'in:internal,external'
             ],
-            'status'=>[
+            'status' => [
                 "nullable",
                 'in:active,inactive'
             ],
-            'date_from'=>[
+            'date_from' => [
                 "nullable",
                 "date",
             ],
-            'date_to'=>[
+            'date_to' => [
                 "nullable",
                 "date",
             ],

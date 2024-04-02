@@ -22,24 +22,24 @@ class StoreEmployeeEligibilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'program_module'=>[
+            'program_module' => [
                 "required",
                 "string",
             ],
-            'certificate_lvl'=>[
+            'certificate_lvl' => [
                 "required",
                 "string",
             ],
-            'status'=>[
+            'status' => [
                 "required",
                 "string",
             ],
-            'cert_exp_date'=>[
+            'cert_exp_date' => [
                 "required",
                 "date",
             ],

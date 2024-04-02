@@ -7,7 +7,6 @@ use App\Models\ManpowerRequest;
 
 class ManpowerServices
 {
-
     protected $manpowerRequest;
     /**
      * Create a new service instance.

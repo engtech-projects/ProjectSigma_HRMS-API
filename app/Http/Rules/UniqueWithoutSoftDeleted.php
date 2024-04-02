@@ -7,7 +7,6 @@ use Illuminate\Contracts\Validation\Rule;
 
 class UniqueWithoutSoftDeleted implements Rule
 {
-
     protected $table;
     protected $column;
 

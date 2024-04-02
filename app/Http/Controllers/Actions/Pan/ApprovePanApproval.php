@@ -15,6 +15,7 @@ class ApprovePanApproval extends Controller
     public function __invoke(EmployeePersonnelActionNoticeRequest $panRequest)
     {
         $result = $panRequest->updateApproval(['status' => RequestApprovalStatus::APPROVED]);
-        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);;
+        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
+        ;
     }
 }

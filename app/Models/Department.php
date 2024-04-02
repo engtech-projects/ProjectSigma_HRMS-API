@@ -11,8 +11,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Department extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
-    use HasAttendanceLog;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $fillable = [
         'id',

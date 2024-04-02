@@ -12,7 +12,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class HMO extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $table = 'hmo';
 
@@ -28,6 +31,10 @@ class HMO extends Model
     public function hmoMembers(): HasMany
     {
         return $this->hasMany(HMOMembers::class, "hmo_id")->with("employee");
+    }
+    public function savehmoMembers(): HasMany
+    {
+        return $this->hasMany(HMOMembers::class, "hmo_id");
     }
 
     public function employee(): HasOne

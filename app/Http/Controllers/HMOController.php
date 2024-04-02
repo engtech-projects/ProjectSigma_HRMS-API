@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreHMOMembersRequest;
 use App\Models\HMO;
 use App\Http\Requests\StoreHMORequest;
 use App\Http\Requests\UpdateHMORequest;
+use Illuminate\Support\Facades\DB;
 
 class HMOController extends Controller
 {
@@ -26,19 +28,25 @@ class HMOController extends Controller
      */
     public function store(StoreHMORequest $request)
     {
-        $main = new HMO;
+        $main = new HMO();
         $main->fill($request->validated());
         $data = json_decode('{}');
-
-        if (!$main->save()) {
+        try {
+            DB::transaction(function () use ($main, $request) {
+                $main->save();
+                $main->savehmoMembers()->createMany(
+                    $request->hmo_members
+                );
+            });
+            $data->message = "Successfully save.";
+            $data->success = true;
+            $data->data = $main;
+            return response()->json($data);
+        } catch (\Exception $th) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
     }
 
     /**
@@ -105,5 +113,13 @@ class HMOController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function storeHmoMembers(StoreHMOMembersRequest $request)
+    {
+        if ($request->validated()) {
+            return true;
+        }
+        return false;
     }
 }

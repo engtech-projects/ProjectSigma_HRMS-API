@@ -10,7 +10,6 @@ use App\Http\Resources\ApprovalResource;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 
 class ApprovalsController extends Controller
 {
@@ -51,7 +50,7 @@ class ApprovalsController extends Controller
      */
     public function store(StoreApprovalsRequest $request)
     {
-        $main = new Approvals;
+        $main = new Approvals();
         $main->fill($request->validated());
         $data = json_decode('{}');
         $main->approvals = json_encode($request->approvals);

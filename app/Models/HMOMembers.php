@@ -11,9 +11,16 @@ use Laravel\Sanctum\HasApiTokens;
 
 class HMOMembers extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $table = 'hmo_members';
+
+    public $rules = [
+        'employee_id' => 'required|member_type:employee',
+    ];
 
     protected $fillable = [
         'id',

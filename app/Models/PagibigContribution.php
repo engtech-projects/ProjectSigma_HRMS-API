@@ -10,7 +10,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class PagibigContribution extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
     protected $fillable = [
         'id',
         'range_from',

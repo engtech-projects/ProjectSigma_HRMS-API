@@ -26,7 +26,7 @@ class EmployeeSeminartrainingController extends Controller
      */
     public function store(StoreEmployeeSeminartrainingRequest $request)
     {
-        $main = new EmployeeSeminartraining;
+        $main = new EmployeeSeminartraining();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

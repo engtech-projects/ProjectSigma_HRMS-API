@@ -23,24 +23,24 @@ class StoreApprovalsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'form'=> [
+            'form' => [
                 "required",
                 "string",
-                Rule::unique("approvals","form")
+                Rule::unique("approvals", "form")
             ],
-            'approvals'=> [
+            'approvals' => [
                 "nullable",
                 "array",
             ],
-            'approvals.*.type'=> [
+            'approvals.*.type' => [
                 "required",
                 "string",
             ],
-            'approvals.*.userselector'=> [
+            'approvals.*.userselector' => [
                 "nullable",
                 "boolean",
             ],
-            'approvals.*.user_id'=> [
+            'approvals.*.user_id' => [
                 "nullable",
                 "integer",
                 "exists:users,id",

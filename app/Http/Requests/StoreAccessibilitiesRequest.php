@@ -23,12 +23,12 @@ class StoreAccessibilitiesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'accessibilities_name' => 
+            'accessibilities_name' =>
             [
                 "required",
                 "string",
                 "max:35",
-                Rule::unique("accessibilities","accessibilities_name")
+                Rule::unique("accessibilities", "accessibilities_name")
             ]
         ];
     }

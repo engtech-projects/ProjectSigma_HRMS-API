@@ -22,24 +22,24 @@ class UpdateTerminationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'type_of_termination'=>[
+            'type_of_termination' => [
                 "nullable",
                 'in:voluntary,involuntary'
             ],
-            'reason_for_termination'=>[
+            'reason_for_termination' => [
                 "nullable",
                 "string"
             ],
-            'eligible_for_rehire'=>[
+            'eligible_for_rehire' => [
                 "nullable",
                 "boolean"
             ],
-            'last_day_worked'=>[
+            'last_day_worked' => [
                 "nullable",
                 "date"
             ],

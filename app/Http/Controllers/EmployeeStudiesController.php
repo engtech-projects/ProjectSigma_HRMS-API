@@ -23,7 +23,7 @@ class EmployeeStudiesController extends Controller
      */
     public function store(StoreEmployeeStudiesRequest $request)
     {
-        $main = new EmployeeStudies;
+        $main = new EmployeeStudies();
         $main->fill($request->validated());
         $data = json_decode('{}');
 

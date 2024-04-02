@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\LeaveRequestStatusType;
+use App\Enums\LeaveRequestType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateEmployeeLeavesRequest extends FormRequest
 {
@@ -35,11 +38,12 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             'project_id' => [
                 "nullable",
                 "integer",
+                "exists:projects,id",
             ],
             'type' => [
                 "nullable",
                 "string",
-                "in:Sick/Checkup,Special Celebration,Vacation,Mandatory Leave,Bereavement,Maternity/Paternity,Other"
+                new Enum(LeaveRequestType::class)
             ],
             'other_absence' => [
                 "nullable",
@@ -93,7 +97,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             'request_status' => [
                 "nullable",
                 "string",
-                "in:Pending,Approved,Filled,Hold,Cancelled,Disapproved"
+                new Enum(LeaveRequestStatusType::class)
             ],
         ];
     }

@@ -22,41 +22,41 @@ class UpdateEmployeeEducationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'type'=>[
+            'type' => [
                 "nullable",
                 "string",
                 "in:elementary,secondary,vocational_course,college,graduate_studies",
             ],
-            'name'=>[
+            'name' => [
                 "nullable",
                 "string",
             ],
-            'education'=>[
+            'education' => [
                 "nullable",
                 "string",
             ],
-            'period_attendance_to'=>[
+            'period_attendance_to' => [
                 "nullable",
                 "string",
             ],
-            'period_attendance_from'=>[
+            'period_attendance_from' => [
                 "nullable",
                 "string",
             ],
-            'year_graduated'=>[
+            'year_graduated' => [
                 "nullable",
                 "string",
             ],
-            'degree_earned_of_school'=>[
+            'degree_earned_of_school' => [
                 "nullable",
                 "string",
             ],
-            'honors_received'=>[
+            'honors_received' => [
                 "nullable",
                 "string",
             ],

@@ -10,7 +10,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class TravelOrderMembers extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
     protected $fillable = [
         'id',
         'travel_order_id',

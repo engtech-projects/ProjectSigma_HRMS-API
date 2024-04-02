@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Enums;
 
-enum EmployeeStudiesType:string
+enum EmployeeStudiesType: string
 {
     case MASTER = "master thesis";
     case DOCTOR = "doctor dissertation";

@@ -23,53 +23,53 @@ class UpdateEmployeeRelatedpersonRequest extends FormRequest
     {
         return [
             //
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'relationship'=>[
+            'relationship' => [
                 "nullable",
                 "string",
             ],
-            'type'=>[
+            'type' => [
                 "nullable",
                 "string",
                 'in:contact person,dependent/children,father,mother,spouse,reference,guardian'
             ],
-            'name'=>[
+            'name' => [
                 "nullable",
                 "string",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "nullable",
                 "date",
             ],
-            'street'=>[
+            'street' => [
                 "nullable",
                 "string",
             ],
-            'brgy'=>[
+            'brgy' => [
                 "nullable",
                 "string",
             ],
-            'city'=>[
+            'city' => [
                 "nullable",
                 "string",
             ],
-            'zip'=>[
+            'zip' => [
                 "nullable",
                 "string",
             ],
-            'province'=>[
+            'province' => [
                 "nullable",
                 "string",
             ],
-            'occupation'=>[
+            'occupation' => [
                 "nullable",
                 "string",
             ],
-            'contact_no'=>[
+            'contact_no' => [
                 "nullable",
                 "string",
             ],

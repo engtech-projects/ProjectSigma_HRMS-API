@@ -22,56 +22,56 @@ class StorePagibigContributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'range_from'=> [
+            'range_from' => [
                 "required",
                 "numeric",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
             ],
-            'range_to'=>[
+            'range_to' => [
                 "nullable",
                 "numeric",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employee_share_percent'=>[
+            'employee_share_percent' => [
                 "required",
                 "numeric",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employer_share_percent'=>[
+            'employer_share_percent' => [
                 "required",
                 "numeric",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employee_maximum_contribution'=>[
+            'employee_maximum_contribution' => [
                 "required",
                 "numeric",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employer_maximum_contribution'=>[
+            'employer_maximum_contribution' => [
                 "required",
                 "numeric",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employee_compensation'=>[
+            'employee_compensation' => [
                 "required",
                 "numeric",
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employer_compensation'=>[
+            'employer_compensation' => [
                 "required",
                 "numeric",
                 "min:0",

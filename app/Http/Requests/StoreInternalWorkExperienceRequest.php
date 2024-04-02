@@ -22,56 +22,56 @@ class StoreInternalWorkExperienceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'position_title'=>[
+            'position_title' => [
                 "required",
                 "string"
             ],
-            'employment_status'=>[
+            'employment_status' => [
                 "required",
                 "string"
             ],
-            'department_id'=>[
+            'department_id' => [
                 "required",
                 "integer",
                 "exists:departments,id"
             ],
-            'immediate_supervisor'=>[
+            'immediate_supervisor' => [
                 "required",
                 "string"
             ],
-            'salary_grades'=>[
+            'salary_grades' => [
                 "required",
                 "integer",
                 "exists:salary_grade_steps,id",
             ],
-            'actual_salary'=>[
+            'actual_salary' => [
                 "required",
                 "string"
             ],
-            'work_location'=>[
+            'work_location' => [
                 "required",
                 "string",
                 'in:pms,office,project_code'
             ],
-            'hire_source'=>[
+            'hire_source' => [
                 "required",
                 "string",
                 'in:internal,external'
             ],
-            'status'=>[
+            'status' => [
                 "required",
                 'in:current,previous'
             ],
-            'date_from'=>[
+            'date_from' => [
                 "required",
                 "date",
             ],
-            'date_to'=>[
+            'date_to' => [
                 "nullable",
                 "date",
             ],

@@ -22,15 +22,15 @@ class StoreLeaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'leave_name'=> [
+            'leave_name' => [
                 "required",
                 "string",
             ],
-            'amt_of_leave'=>[
+            'amt_of_leave' => [
                 "required",
                 "integer",
             ],
-            'employment_type'=>[
+            'employment_type' => [
                 "required",
                 "array",
                 'in:Probationary,Regular/FullTime,Part Time,Project Based,Contractual'

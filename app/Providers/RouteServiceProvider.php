@@ -2,14 +2,11 @@
 
 namespace App\Providers;
 
-use App\Models\AttendanceLog;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Models\FailureToLog;
 use App\Models\Leave;
 use App\Models\ManpowerRequest;
-use App\Models\SalaryGradeLevel;
 use App\Models\TravelOrder;
-use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;

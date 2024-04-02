@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Traits\HasApproval;
 use App\Enums\AttendanceLogType;
 use App\Enums\PersonelAccessForm;
-use App\Enums\RequestApprovalStatus;
 use App\Models\Traits\HasEmployee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,8 +12,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class FailureToLog extends Model
 {
-    use HasFactory, SoftDeletes;
-    use HasEmployee, HasApproval;
+    use HasFactory;
+    use SoftDeletes;
+    use HasEmployee;
+    use HasApproval;
 
     protected $fillable = [
         'date',

@@ -6,7 +6,7 @@ use Illuminate\Validation\Rules\Enum;
 
 final class RequestApprovalStatus extends Enum
 {
-    const APPROVED = 'Approved';
-    const PENDING = "Pending";
-    const DENIED = "Denied";
+    public const APPROVED = 'Approved';
+    public const PENDING = "Pending";
+    public const DENIED = "Denied";
 }

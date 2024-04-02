@@ -4,25 +4,22 @@ namespace App\Models;
 
 use App\Enums\ManpowerRequestStatus;
 use App\Traits\HasApproval;
-use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Casts\AsCollection;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class ManpowerRequest extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasApproval;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+    use HasApproval;
 
     protected $fillable = [
         'id',
@@ -112,17 +109,17 @@ class ManpowerRequest extends Model
         $this->refresh();
     }
 
-    public function requestStatusCompleted() : bool
+    public function requestStatusCompleted(): bool
     {
-        if($this->request_status == ManpowerRequestStatus::APPROVED){
+        if ($this->request_status == ManpowerRequestStatus::APPROVED) {
             return true;
         }
         return false;
     }
 
-    public function requestStatusEnded() : bool
+    public function requestStatusEnded(): bool
     {
-        if(
+        if (
             in_array(
                 $this->request_status,
                 [
@@ -132,10 +129,9 @@ class ManpowerRequest extends Model
                     ManpowerRequestStatus::CANCELLED,
                 ]
             )
-        ){
+        ) {
             return true;
         }
         return false;
     }
-
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\HMOMembers;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreHMORequest extends FormRequest
@@ -12,6 +13,13 @@ class StoreHMORequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            "hmo_members" => json_decode($this->hmo_members, true)
+        ]);
     }
 
     /**
@@ -29,10 +37,12 @@ class StoreHMORequest extends FormRequest
             'hmo_start' => [
                 "required",
                 "date",
+                "date_format:Y-m-d",
             ],
             'hmo_end' => [
                 "required",
                 "date",
+                "date_format:Y-m-d",
             ],
             'employee_share' => [
                 "required",
@@ -47,6 +57,39 @@ class StoreHMORequest extends FormRequest
                 "min:0",
                 'max:999999',
                 'decimal:0,2',
+            ],
+            'hmo_members' => [
+                "required",
+                "array",
+            ],
+            'hmo_members.*' => [
+                "required",
+                "array",
+            ],
+            'hmo_members.*.hmo_id' => [
+                "required",
+                "integer",
+            ],
+            'hmo_members.*.member_type' => [
+                "required",
+                "string",
+                'in:employee,external(addon)'
+            ],
+            'hmo_members.*.employee_id' => [
+                "nullable",
+                "integer",
+                "exists:employees,id",
+                'required_if:hmo_members.*.member_type,employee',
+            ],
+            'hmo_members.*.member_name' => [
+                "required",
+                "string",
+            ],
+            'hmo_members.*.member_belongs_to' => [
+                "nullable",
+                "integer",
+                "exists:employees,id",
+                'required_if:hmo_members.*.member_type,external(addon)',
             ],
         ];
     }

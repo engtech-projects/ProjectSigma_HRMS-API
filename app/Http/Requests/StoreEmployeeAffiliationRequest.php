@@ -22,20 +22,20 @@ class StoreEmployeeAffiliationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'club_organization_name'=>[
+            'club_organization_name' => [
                 "required",
                 "string",
             ],
-            'membership_type'=>[
+            'membership_type' => [
                 "required",
                 "string",
             ],
-            'membership_exp_date'=>[
+            'membership_exp_date' => [
                 "required",
                 "date",
             ],
