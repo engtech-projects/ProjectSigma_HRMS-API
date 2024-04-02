@@ -100,7 +100,7 @@ class StoreManpowerRequestRequest extends FormRequest
                 "string",
             ],
             'approvals.*.user_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:users,id",
             ],
