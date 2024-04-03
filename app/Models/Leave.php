@@ -14,6 +14,7 @@ class Leave extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+
     protected $fillable = [
         'id',
         'leave_name',

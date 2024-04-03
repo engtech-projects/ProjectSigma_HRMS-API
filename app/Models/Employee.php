@@ -8,12 +8,12 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Enums\EmployeeStudiesType;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
+use App\Models\Traits\HasProjectEmployee;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Traits\HasProjectMember;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Employee extends Model
@@ -22,7 +22,7 @@ class Employee extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasProjectMember;
+    use HasProjectEmployee;
 
     protected $table = 'employees';
     protected $appends = [
@@ -245,6 +245,20 @@ class Employee extends Model
     public function account(): HasOne
     {
         return $this->hasOne(Users::class);
+    }
+
+    public function employee_schedule(): HasMany
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
+    public function attendance_log(): HasMany
+    {
+        return $this->hasMany(AttendanceLog::class);
+    }
+    public function employee_leave(): HasMany
+    {
+        return $this->hasMany(Leave::class);
     }
 
     public function scopeUser($query, $id)

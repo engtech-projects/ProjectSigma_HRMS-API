@@ -47,15 +47,18 @@ use App\Http\Controllers\Actions\{
     Approvals\DisapproveApproval,
     Approvals\ApproveApproval,
     SalaryGrade\SalaryGradeLevelListController,
+    Attendance\EmployeeDtrController
 };
 use App\Http\Controllers\Actions\ProjectMember\AttachProjectEmployee;
 
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
+<<<<<<< Updated upstream
 use App\Http\Controllers\EmployeeDtrController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
+>>>>>>> Stashed changes
 
 /*
 |--------------------------------------------------------------------------

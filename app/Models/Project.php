@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasProjectMember;
+use App\Models\Traits\HasProjectEmployee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +11,7 @@ class Project extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use HasProjectMember;
+    use HasProjectEmployee;
 
     protected $fillable = [
         'code',

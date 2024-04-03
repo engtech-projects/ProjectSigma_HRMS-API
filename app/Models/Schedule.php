@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Schedule extends Model
 {
@@ -32,13 +35,39 @@ class Schedule extends Model
         'endRecur',
     ];
 
+    protected $casts = [
+        'startTime' => 'date:H:s:i',
+        'endTime' => 'date:H:s:i',
+        'startRecur' => 'date:Y-m-d',
+        'endRecur' => 'date:Y-m-d',
+    ];
+
     public function department(): HasOne
     {
         return $this->hasOne(Department::class, "id", "department_id");
+    }
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class, "id", "project_id");
     }
 
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
+    }
+
+
+    /**
+     * MODEL
+     * LOCAL
+     * SCOPES
+     */
+
+    public function scopeEmployeeSchedule(Builder $query, array $filter = [])
+    {
+        $query->where(function ($query) use ($filter) {
+            $query->where('startRecur', '>=', $filter['start_date'])
+                ->orWhereNull('endRecur');
+        })->where('endRecur', '<', $filter['end_date']);
     }
 }

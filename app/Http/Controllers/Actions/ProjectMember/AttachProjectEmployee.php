@@ -15,7 +15,7 @@ class AttachProjectEmployee extends Controller
     public function __invoke(Project $project, AttachProjectEmployeeRequest $request)
     {
         $attribute = $request->validated();
-        $project->employees()->sync(
+        $project->employee_has_projects()->sync(
             $attribute['employee_id']
         );
 
