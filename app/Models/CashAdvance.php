@@ -75,7 +75,8 @@ class CashAdvance extends Model
 
     public function paymentWillOverpay($amount)
     {
-        $totalpaid = $this->loanPayments()->sum('amount_paid');
+        // $totalpaid = $this->loanPayments()->sum('amount_paid');
+        $totalpaid = $this->cashAdvancePayments()->sum('amount_paid');
 
         if ($this->amount_requested < $totalpaid + $amount) {
             return true;
