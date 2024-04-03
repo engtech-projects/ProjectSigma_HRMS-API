@@ -6,7 +6,7 @@ use App\Enums\RequestStatusType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreCashAdvanceRequest extends FormRequest
+class StoreOvertimeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -35,41 +35,40 @@ class StoreCashAdvanceRequest extends FormRequest
             'employee_id' => [
                 "required",
                 "integer",
-                "exists:employees,id",
-            ],
-            'department_id' => [
-                "required",
-                "integer",
-                "exists:departments,id",
+                "exists:employees,id"
             ],
             'project_id' => [
                 "required",
                 "integer",
-                "exists:projects,id",
+                "exists:projects,id"
             ],
-            'amount_requested' => [
+            'department_id' => [
                 "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
+                "integer",
+                "exists:departments,id"
             ],
-            'amount_approved' => [
+            'overtime_date' => [
                 "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
+                "date",
+                "date_format:Y-m-d",
             ],
-            'purpose' => [
+            'overtime_start_time' => [
+                "required",
+                'date_format:H:i:s',
+            ],
+            'overtime_end_time' => [
+                "required",
+                'date_format:H:i:s',
+                'after:overtime_start_time',
+            ],
+            'reason' => [
                 "required",
                 "string",
             ],
-            'terms_of_cash_advance' => [
+            'prepared_by' => [
                 "required",
-                "string",
-            ],
-            'remarks' => [
-                "required",
-                "string",
+                "integer",
+                "exists:users,id",
             ],
             'approvals' => [
                 "required",
@@ -104,11 +103,6 @@ class StoreCashAdvanceRequest extends FormRequest
                 "required",
                 "string",
                 new Enum(RequestStatusType::class)
-            ],
-            'released_by' => [
-                "required",
-                "integer",
-                "exists:users,id",
             ],
         ];
     }

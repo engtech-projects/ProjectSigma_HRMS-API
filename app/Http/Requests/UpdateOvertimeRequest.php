@@ -6,7 +6,7 @@ use App\Enums\RequestStatusType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreCashAdvanceRequest extends FormRequest
+class UpdateOvertimeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +24,7 @@ class StoreCashAdvanceRequest extends FormRequest
             ]);
         }
     }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -33,54 +34,53 @@ class StoreCashAdvanceRequest extends FormRequest
     {
         return [
             'employee_id' => [
-                "required",
+                "nullable",
                 "integer",
-                "exists:employees,id",
-            ],
-            'department_id' => [
-                "required",
-                "integer",
-                "exists:departments,id",
+                "exists:employees,id"
             ],
             'project_id' => [
-                "required",
+                "nullable",
                 "integer",
-                "exists:projects,id",
+                "exists:projects,id"
             ],
-            'amount_requested' => [
-                "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
+            'department_id' => [
+                "nullable",
+                "integer",
+                "exists:departments,id"
             ],
-            'amount_approved' => [
-                "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
+            'overtime_date' => [
+                "nullable",
+                "date",
+                "date_format:Y-m-d",
             ],
-            'purpose' => [
-                "required",
+            'overtime_start_time' => [
+                "nullable",
+                'date_format:H:i:s',
+            ],
+            'overtime_end_time' => [
+                "nullable",
+                'date_format:H:i:s',
+                'after:overtime_start_time',
+            ],
+            'reason' => [
+                "nullable",
                 "string",
             ],
-            'terms_of_cash_advance' => [
-                "required",
-                "string",
-            ],
-            'remarks' => [
-                "required",
-                "string",
+            'prepared_by' => [
+                "nullable",
+                "integer",
+                "exists:users,id",
             ],
             'approvals' => [
-                "required",
+                "nullable",
                 "array",
             ],
             'approvals.*' => [
-                "required",
+                "nullable",
                 "array",
             ],
             'approvals.*.type' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'approvals.*.user_id' => [
@@ -89,7 +89,7 @@ class StoreCashAdvanceRequest extends FormRequest
                 "exists:users,id",
             ],
             'approvals.*.status' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'approvals.*.date_approved' => [
@@ -101,14 +101,9 @@ class StoreCashAdvanceRequest extends FormRequest
                 "string",
             ],
             'request_status' => [
-                "required",
+                "nullable",
                 "string",
                 new Enum(RequestStatusType::class)
-            ],
-            'released_by' => [
-                "required",
-                "integer",
-                "exists:users,id",
             ],
         ];
     }

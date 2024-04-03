@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CashAdvanceResource extends JsonResource
+class OvertimeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,16 +17,15 @@ class CashAdvanceResource extends JsonResource
         return [
             "id" => $this->id,
             "employee_id" => $this->employee_id,
-            "department_id" => $this->department_id,
             "project_id" => $this->project_id,
-            "amount_requested" => $this->amount_requested,
-            "amount_approved" => $this->amount_approved,
-            "purpose" => $this->purpose,
-            "terms_of_cash_advance" => $this->terms_of_cash_advance,
-            "remarks" => $this->remarks,
+            "department_id" => $this->department_id,
+            "overtime_date" => $this->overtime_date,
+            "overtime_start_time" => $this->overtime_start_time,
+            "overtime_end_time" => $this->overtime_end_time,
+            "reason" => $this->reason,
             "request_status" => $this->request_status,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
-            "released_by" => $this->released_by,
+            "prepared_by" => $this->prepared_by,
         ];
     }
 }
