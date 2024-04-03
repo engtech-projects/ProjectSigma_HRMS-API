@@ -130,6 +130,25 @@ class EmployeeLeavesController extends Controller
     }
 
     /**
+     * Show can view all user approvals
+     */
+    public function myFormRequest()
+    {
+        $myApproval = $this->leaveRequestService->getMyLeaveForm();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'LeaveForm Request fetched.',
+            'data' => EmployeeLeaveResource::collection($myApproval)
+        ]);
+    }
+
+    /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
     public function myApprovals()
@@ -143,7 +162,7 @@ class EmployeeLeavesController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
+            'message' => 'LeaveForm Request fetched.',
             'data' => EmployeeLeaveResource::collection($myApproval)
         ]);
     }

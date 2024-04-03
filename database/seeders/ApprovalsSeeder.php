@@ -40,6 +40,22 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 4,
+                    'form' => "Leave",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 5,
+                    'form' => "Cash Advance",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ]
         );
     }

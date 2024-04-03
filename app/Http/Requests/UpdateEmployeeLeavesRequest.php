@@ -98,6 +98,15 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "string",
                 new Enum(LeaveRequestStatusType::class)
             ],
+            'number_of_days' => [
+                "nullable",
+                "integer",
+                "min:1",
+            ],
+            'with_pay' => [
+                "nullable",
+                "boolean",
+            ],
         ];
     }
 }

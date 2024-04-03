@@ -41,6 +41,8 @@ class EmployeeLeaves extends Model
         'reason_for_absence',
         'approvals',
         'request_status',
+        'number_of_days',
+        'with_pay',
     ];
 
     public function scopeRequestStatusPending(Builder $query): void

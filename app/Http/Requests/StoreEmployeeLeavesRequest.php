@@ -105,6 +105,15 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "string",
                 new Enum(LeaveRequestStatusType::class)
             ],
+            'number_of_days' => [
+                "required",
+                "integer",
+                "min:1",
+            ],
+            'with_pay' => [
+                "required",
+                "boolean",
+            ],
         ];
     }
 }

@@ -3,29 +3,29 @@
 namespace App\Http\Services;
 
 use App\Enums\RequestApprovalStatus;
-use App\Models\EmployeeLeaves;
+use App\Models\CashAdvance;
 
-class EmployeeLeaveService
+class CashAdvanceService
 {
     protected $leaveRequest;
-    public function __construct(EmployeeLeaves $leaveRequest)
+    public function __construct(CashAdvance $leaveRequest)
     {
         $this->leaveRequest = $leaveRequest;
     }
 
     public function getAll()
     {
-        return EmployeeLeaves::with(['employee', 'department'])->get();
+        return CashAdvance::with(['employee', 'department'])->get();
     }
 
     public function create($attributes)
     {
-        return EmployeeLeaves::create($attributes);
+        return CashAdvance::create($attributes);
     }
 
     public function getMyRequests()
     {
-        return EmployeeLeaves::with(['employee', 'department'])
+        return CashAdvance::with(['employee', 'department'])
             ->where("created_by", auth()->user()->id)
             ->get();
     }
@@ -33,7 +33,7 @@ class EmployeeLeaveService
     public function getMyLeaveForm()
     {
         $userId = auth()->user()->id;
-        return EmployeeLeaves::requestStatusPending()
+        return CashAdvance::requestStatusPending()
             ->with(['employee', 'department'])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId])
@@ -43,7 +43,7 @@ class EmployeeLeaveService
     public function getAllLeaveRequest()
     {
         $userId = auth()->user()->id;
-        return EmployeeLeaves::requestStatusPending()
+        return CashAdvance::requestStatusPending()
             ->with(['user.employee'])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
@@ -59,7 +59,7 @@ class EmployeeLeaveService
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = EmployeeLeaves::with(['employee', 'department'])
+        $result = CashAdvance::with(['employee', 'department'])
             ->requestStatusPending()
             ->authUserPending()
             ->get();

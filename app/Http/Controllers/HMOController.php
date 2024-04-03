@@ -72,24 +72,35 @@ class HMOController extends Controller
      */
     public function update(UpdateHMORequest $request, $id)
     {
-        $main = HMO::find($id);
         $data = json_decode('{}');
-        if (!is_null($main)) {
+        $main = HMO::find($id);
+
+        if (is_null($main)) {
+            $data->message = "Failed update.";
+            $data->success = false;
+            return response()->json($data, 404);
+        }
+
+        try {
             $main->fill($request->validated());
-            if ($main->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Update failed.";
+            DB::transaction(function () use ($main, $request) {
+                $main->save();
+                foreach ($request->hmo_members as $key) {
+                    $main->savehmoMembers()->upsert(
+                        $key,
+                        uniqueBy: ['id']
+                    );
+                }
+            });
+            $data->message = "Successfully save.";
+            $data->success = true;
+            $data->data = $main;
+            return response()->json($data);
+        } catch (\Exception $th) {
+            $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
-
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404);
     }
 
     /**

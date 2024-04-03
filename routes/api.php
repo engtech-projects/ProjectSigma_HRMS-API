@@ -166,6 +166,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('leave-request')->group(function () {
         Route::resource('resource', EmployeeLeavesController::class);
+        Route::get('get-form-request', [EmployeeLeavesController::class, 'myFormRequest']);
         Route::get('my-request', [EmployeeLeavesController::class, 'myRequests']);
         Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
     });
@@ -183,5 +184,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('cash-advance')->group(function () {
         Route::resource('resource', CashAdvanceController::class);
         Route::post('manual-payment/{ca}', [CashAdvanceController::class, "cashAdvancePayment"]);
+        Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
+        Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
     });
 });

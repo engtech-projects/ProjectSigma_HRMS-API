@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Enums\LoanPaymentPostingStatusType;
+use App\Traits\HasApproval;
 use App\Enums\LoanPaymentsType;
+use App\Enums\PersonelAccessForm;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -19,6 +22,7 @@ class CashAdvance extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+    use HasApproval;
 
     protected $casts = [
         'approvals' => 'array'
@@ -41,12 +45,12 @@ class CashAdvance extends Model
 
     public function employee(): HasOne
     {
-        return $this->hasOne(Employee::class);
+        return $this->hasOne(Employee::class, "id", "employee_id");
     }
 
     public function department(): HasOne
     {
-        return $this->hasOne(Department::class);
+        return $this->hasOne(Department::class, "id", "section_department_id");
     }
 
     public function project(): HasOne
@@ -107,5 +111,10 @@ class CashAdvance extends Model
         }
 
         return true;
+    }
+
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
     }
 }

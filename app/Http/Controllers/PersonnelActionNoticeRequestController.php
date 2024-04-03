@@ -92,7 +92,7 @@ class PersonnelActionNoticeRequestController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
+            'message' => 'Personnel Action Notice Request fetched.',
             'data' => EmployeePersonnelActionNoticeRequestResource::collection($myApproval)
         ]);
     }

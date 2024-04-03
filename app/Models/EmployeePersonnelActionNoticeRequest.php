@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Enums\JobApplicationStatusEnums;
+use App\Enums\ManpowerRequestStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EmployeePersonnelActionNoticeRequest extends Model
@@ -230,6 +232,8 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "date_from" => $this->date_from,
             "salary_grades" => $this->salary_grades,
         ]);
+        $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
+        $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
     }
 
     /** Transfer Employee PAN  request approved

@@ -2,17 +2,15 @@
 
 namespace App\Enums;
 
-use Illuminate\Validation\Rules\Enum;
-
-final class LeaveRequestType extends Enum
+enum LeaveRequestType: string
 {
-    public const SICK_CHECKUP = 'Sick/Checkup';
-    public const SPECIAL = "Special";
-    public const CELEBRATION = "Celebration";
-    public const VACATION = "Vacation";
-    public const MANDATORY = "Mandatory";
-    public const LEAVE = "Leave";
-    public const BEREAVEMENT = "Bereavement";
-    public const MATERNITY_PATERNITY = "Maternity/Paternity";
-    public const OTHER = "Other";
+    case SICK_CHECKUP = 'Sick/Checkup';
+    case SPECIAL = "Special";
+    case CELEBRATION = "Celebration";
+    case VACATION = "Vacation";
+    case MANDATORY = "Mandatory";
+    case LEAVE = "Leave";
+    case BEREAVEMENT = "Bereavement";
+    case MATERNITY_PATERNITY = "Maternity/Paternity";
+    case OTHER = "Other";
 }
