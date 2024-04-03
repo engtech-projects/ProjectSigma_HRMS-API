@@ -49,7 +49,7 @@ class ManpowerRequestController extends Controller
      */
     public function forHiring()
     {
-        $manpowerRequest = $this->manpowerService->getAll();
+        $manpowerRequest = $this->manpowerService->getAllForHiring();
         $manpowerRequest->load(['job_applicants', 'user.employee']);
         if ($manpowerRequest->isEmpty()) {
             return new JsonResponse([

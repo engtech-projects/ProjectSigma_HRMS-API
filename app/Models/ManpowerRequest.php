@@ -95,6 +95,11 @@ class ManpowerRequest extends Model
         $query->where('request_status', 'Pending');
     }
 
+    public function scopeForHiring(Builder $query): void
+    {
+        $query->where('request_status', ManpowerRequestStatus::APPROVED);
+    }
+
     public function completeRequestStatus()
     {
         $this->request_status = ManpowerRequestStatus::APPROVED;
