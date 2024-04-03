@@ -52,6 +52,7 @@ use App\Http\Controllers\Actions\ProjectMember\AttachProjectEmployee;
 
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
+use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 
@@ -183,7 +184,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('cash-advance')->group(function () {
         Route::resource('resource', CashAdvanceController::class);
-        Route::post('manual-payment/{ca}', [CashAdvanceController::class, "cashAdvancePayment"]);
+        Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
         Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
         Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
     });
@@ -193,5 +194,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('overtime-employee', OvertimeEmployeesController::class);
         Route::get('my-request', [OvertimeController::class, 'myRequests']);
         Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
+    });
+
+    Route::prefix('other-deduction')->group(function () {
+        Route::resource('resource', OtherDeductionController::class);
+        Route::post('manual-payment/{cash}', [OtherDeductionController::class, "cashAdvancePayment"]);
     });
 });

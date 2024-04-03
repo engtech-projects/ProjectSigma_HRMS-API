@@ -11,7 +11,7 @@ class UpdateOvertimeEmployeesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,16 @@ class UpdateOvertimeEmployeesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'overtime_id' => [
+                "nullable",
+                "integer",
+                "exists:overtime",
+            ],
+            'employee_id' => [
+                "nullable",
+                "integer",
+                "exists:employees",
+            ],
         ];
     }
 }
