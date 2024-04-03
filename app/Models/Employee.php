@@ -103,7 +103,7 @@ class Employee extends Model
             ->with("employee_salarygrade", "employee_department");
     }
 
-    public function employee_internal(): HasOne
+    public function employee_internal(): hasMany
     {
         return $this->hasMany(InternalWorkExperience::class)
             ->with("employee_salarygrade", "employee_department");
