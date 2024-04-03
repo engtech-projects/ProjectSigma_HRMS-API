@@ -233,7 +233,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "salary_grades" => $this->salary_grades,
         ]);
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
-        $this->jobapplicantonly()->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
+        $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
     }
 
     /** Transfer Employee PAN  request approved
