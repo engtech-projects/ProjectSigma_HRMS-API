@@ -132,9 +132,9 @@ class EmployeeLeavesController extends Controller
     /**
      * Show can view all user approvals
      */
-    public function getFormRequest()
+    public function myFormRequest()
     {
-        $myApproval = $this->leaveRequestService->getMyApprovals();
+        $myApproval = $this->leaveRequestService->getMyLeaveForm();
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,

@@ -30,6 +30,16 @@ class EmployeeLeaveService
             ->get();
     }
 
+    public function getMyLeaveForm()
+    {
+        $userId = auth()->user()->id;
+        return EmployeeLeaves::requestStatusPending()
+            ->with(['employee', 'department'])
+            ->whereJsonLength('approvals', '>', 0)
+            ->whereJsonContains('approvals', ['user_id' => $userId])
+            ->get();
+    }
+
     public function getAllLeaveRequest()
     {
         $userId = auth()->user()->id;
