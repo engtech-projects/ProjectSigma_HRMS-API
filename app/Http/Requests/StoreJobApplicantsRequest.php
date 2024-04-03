@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\JobApplicationStatusEnums;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreJobApplicantsRequest extends FormRequest
 {
@@ -53,7 +55,7 @@ class StoreJobApplicantsRequest extends FormRequest
             'status' => [
                 "required",
                 "string",
-                'in:Contact Extended,Pending,Interviewed,Rejected,Hired,For Hiring,Test,Interview,Reference Checking,Medical Examination,Contract Signed'
+                new Enum(JobApplicationStatusEnums::class),
             ],
             'lastname' => [
                 "required",
