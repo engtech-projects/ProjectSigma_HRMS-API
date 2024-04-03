@@ -2,22 +2,24 @@
 
 namespace App\Models;
 
-use App\Enums\EmployeeCompanyEmploymentsStatus;
+use Exception;
 use App\Traits\HasUser;
 use App\Traits\HasApproval;
 use App\Enums\PersonelAccessForm;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
+use App\Enums\ManpowerRequestStatus;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\EmployeeRelatedPersonType;
+use App\Enums\JobApplicationStatusEnums;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
-use App\Enums\JobApplicationStatusEnums;
-use App\Enums\ManpowerRequestStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\DB;
 
 class EmployeePersonnelActionNoticeRequest extends Model
 {
@@ -225,18 +227,48 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $jobApplicant["first_name"] = $jobApplicant->firstname;
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $employee = Employee::create($jobApplicant->toArray());
-        $employee->employee_internal()->create([
-            "position_title" => $this->designation_position,
-            "employment_status" => "status",
-            "department" => $this->section_department_id,
-            "immediate_supervisor" => $this->immediate_supervisor ?? "N/A",
-            "actual_salary" => $this->salarygrade?->monthly_salary_amount,
-            "work_location" => $this->work_location,
-            "hire_source" => $this->hire_source,
-            "date_from" => $this->date_of_effictivity,
-            "salary_grades" => $this->salary_grades,
-        ]);
-        $employee->company_employments->create([
+        /*         $employee = Employee::create([
+            "employee" => $this->lastname,
+            "family_name" => $jobApplicant->lastname,
+            "first_name" => $jobApplicant->firstname,
+            "middle_name" => $jobApplicant->middlename,
+            "name_suffix" => $jobApplicant->name_suffix,
+            "gender" => $jobApplicant->gender,
+            "date_of_birth" => $jobApplicant->date_of_birth,
+            "place_of_birth" => $jobApplicant->place_of_birth,
+            "date_of_mdataiage" => $jobApplicant->date_of_mdataiage,
+            "citizenship" => $jobApplicant->citizenship,
+            "blood_type" => $jobApplicant->blood_type,
+            "civil_status" => $jobApplicant->civil_status,
+            "mobile_number" => $jobApplicant->contact_info,
+            "email" => $jobApplicant->email,
+            "religion" => $jobApplicant->religion,
+            "weight" => $jobApplicant->weight,
+            "height" => $jobApplicant->height,
+        ]); */
+        $employeeInternal = $this->toArray();
+        unset($employeeInternal["id"]);
+        $employeeInternal["status"] = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        $employeeInternal['actual_salary'] = $this->salarygrade;
+        $employeeInternal["position_title"] = $this->designation_position;
+        $employeeInternal["employment_status"] = $this->employement_status;
+        $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
+
+        $employee->employee_internal()->create($employeeInternal);
+        /*         $employee->employee_internal()->create([
+            'position_title' => $this->designation_position,
+            'employment_status' => $this->employement_status,
+            'department' => $jobApplicant->section_department_id,
+            'immediate_supervisor' => $jobApplicant->immediate_supervisor ?? "N/A",
+            'actual_salary' => $jobApplicant->salarygrade?->monthly_salary_amount,
+            'work_location' => $jobApplicant->work_location,
+            'hire_source' => $jobApplicant->hire_source,
+            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
+            'date_from' => $jobApplicant->date_from,
+            'date_to' => null,
+            'salary_grades' => $jobApplicant->salary_grades,
+        ]); */
+        /*         $employee->company_employments->create([
             "date_hired" => $this->date_of_effictivity,
             "employeedisplay_id" => "",
             "phic_number" => $jobApplicant->philhealth ?? null,
@@ -244,15 +276,74 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "tin_number" => $jobApplicant->tin ?? null,
             "pagibig_number" => $jobApplicant->pagibig ?? null,
             "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
-        ]);
-        // ADD MOTHER, FATHER, PERSON TO CONTACT, CHILDREN, SPOUSE
-        // $employee->employee_related_person->createMany([
+        ]); */
 
-        // ]);
-        // ADD EXTERNAL WORK EXPERIENCE
-        // ADD ADDRESSES PRESENT, PERMANENT
+        $employeeRelatedPerson = $this->employeeRelatedPersonDetails($employee);
+        $employee->employee_related_person()->create($employeeRelatedPerson);
+
+        if (property_exists("workexperience", $this)) {
+            $employee->employee_externalwork()->createMany([
+                "date_from" => $this->workexperience->inclusive_dates_from ?? null,
+                "date_to" => $this->workexperience->inclusive_dates_to ?? null,
+                "position_title" => $this->workexperience->position_title ?? null,
+                "company_name" => $this->workexperience->dpt_agency_office_company ?? null,
+                "salary" => $this->workexperience->monthly_salary ?? null,
+                "status_of_appointment" => $this->workexperience->status_of_appointment ?? null,
+            ]);
+        }
+        if (property_exists("children", $this)) {
+            $employee->employee_related_person()->createMany([
+                "name" => $this->children->name,
+                "date_of_birth" => $this->children->birthdate ?? null,
+                "type" => EmployeeRelatedPersonType::CHILD,
+            ]);
+        }
+
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
         $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
+    }
+
+    private function employeeRelatedPersonDetails(): array
+    {
+        $jobApplicant = $this->jobapplicantonly;
+        if ($jobApplicant->name_of_spouse) {
+            $spouse = array(
+                "name" => $jobApplicant->name_of_spouse,
+                "date_of_birth" => $jobApplicant->date_of_birth_spouse ?? null,
+                "contact_no" => $jobApplicant->telephone_spouse ?? null,
+                "occupation" => $jobApplicant->occupation_spouse ?? null,
+                "type" => EmployeeRelatedPersonType::SPOUSE,
+            );
+        }
+
+        if ($jobApplicant->father_name) {
+            $father = array(
+                "name" => $jobApplicant->father_name,
+                "type" => EmployeeRelatedPersonType::FATHER,
+            );
+        }
+
+        if ($jobApplicant->mother_name) {
+            $mother = array(
+                "name" => $jobApplicant->mother_name,
+                "type" => EmployeeRelatedPersonType::MOTHER,
+            );
+        }
+
+        if ($jobApplicant->icoe_name) {
+            $icoe_name = array(
+                "name" => $jobApplicant->icoe_name ?? null,
+                "street" => $jobApplicant->icoe_street ?? null,
+                "brgy" => $jobApplicant->icoe_brgy ?? null,
+                "city" => $jobApplicant->icoe_city ?? null,
+                "zip" => $jobApplicant->icoe_zip ?? null,
+                "province" => $jobApplicant->icoe_province ?? null,
+                "relationship" => $jobApplicant->icoe_relationship ?? null,
+                "contact_no" => $jobApplicant->telephone_icoe ?? null,
+                "type" => EmployeeRelatedPersonType::CONTACT_PERSON
+            );
+        }
+        return array_merge($spouse, $father, $mother, $icoe_name);
     }
 
     /** Transfer Employee PAN  request approved
@@ -268,8 +359,22 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "date_to" => null
         ]);
         $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
-        $interWorkExp->fill($this->toArray());
         $interWorkExp->save();
+
+        InternalWorkExperience::create([
+            'department' => $this->new_section,
+            'immediate_supervisor' => $this->immediate_supervisor ?? "N/A",
+            'work_location' => $this->new_location,
+            'date_from' => $this->date_of_effictivity,
+            'employee_id' => $this->employee_id,
+            'position_title' => $this->position_title,
+            'employment_status' => $this->employment_status,
+            'actual_salary' => $this->actual_salary,
+            'hire_source' => $this->hire_source,
+            'salary_grades' => $this->salary_grades,
+            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
+            'date_to' => null,
+        ]);
     }
 
     /** Promotion Employee PAN request approved
@@ -283,15 +388,23 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "date_to" => null,
             "status" => EmployeeInternalWorkExperiencesStatus::CURRENT
         ]);
-        unset($interWorkExp->id);
-        $interWorkExp->position_title = $this->designation_position;
-        $interWorkExp->employment_status = $this->new_employment_status;
-        $interWorkExp->immediate_supervisor = $interWorkExp->immediate_supervisor ?? "N/A";
-        $interWorkExp->actual_salary = $this->salarygrade?->monthly_salary_amount;
-        $interWorkExp->salary_grades = $this->salary_grades;
-        $interWorkExp->date_from = $this->date_from;
-        $interWorkExp->date_to = null;
+        $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
         $interWorkExp->save();
+
+        InternalWorkExperience::create([
+            'employee_id' => $interWorkExp->employee_id,
+            'position_title' => $this->designation_position,
+            'employment_status' => $this->new_employment_status,
+            'department' => $interWorkExp->department,
+            'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
+            'actual_salary' => $this->salarygrade->monthly_salary_amount,
+            'salary_grades' => $this->salary_grades,
+            'date_from' => $this->date_from,
+            'work_location' => $interWorkExp->work_location,
+            'hire_source' => $interWorkExp->hire_source,
+            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
+            'date_to' => null,
+        ]);
     }
     /** Termination Employee PAN  request approved
      * to terminate proccessed.
@@ -300,11 +413,16 @@ class EmployeePersonnelActionNoticeRequest extends Model
      */
     public function terminationRequest()
     {
+
         $interWorkExp = $this->getInternalWorkExp($this->employee_id);
-        $this->work_location = $interWorkExp->work_location;
-        $this->hire_source = $interWorkExp->hire_source;
-        $this->salary_grades = $interWorkExp->salary_grades;
-        $interWorkExp->fill($this->toArray());
+        $interWorkExp->date_to = date('Y-m-d');
         $interWorkExp->save();
+
+        Termination::create([
+            'employee_id' => $interWorkExp->id,
+            'type_of_termination' => $this->type_of_termination,
+            'reason_for_termination' => $this->reasons_for_termination,
+            'eligible_for_rehire' => $this->eligible_for_rehire,
+        ]);
     }
 }
