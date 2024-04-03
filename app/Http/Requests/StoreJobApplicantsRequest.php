@@ -161,6 +161,11 @@ class StoreJobApplicantsRequest extends FormRequest
                 "min:11",
                 "max:11",
             ],
+            "children" => [
+                "present",
+                "nullable",
+                "array"
+            ],
             'children.*' => [
                 "nullable",
                 "array",
@@ -187,6 +192,11 @@ class StoreJobApplicantsRequest extends FormRequest
                 "string",
                 "min:11",
                 "max:11",
+            ],
+            "education" => [
+                "present",
+                "nullable",
+                "array"
             ],
             'education.*' => [
                 "required",
