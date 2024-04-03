@@ -226,6 +226,11 @@ class StoreJobApplicantsRequest extends FormRequest
                 "required",
                 "string",
             ],
+            "workexperience" => [
+                "present",
+                "nullable",
+                "array"
+            ],
             'workexperience.*' => [
                 "nullable",
                 "array",
