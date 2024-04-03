@@ -100,11 +100,12 @@ class JobApplicantsController extends Controller
     public function store(StoreJobApplicantsRequest $request)
     {
         $main = new JobApplicants();
-        $main->fill($request->validated());
+        $validatedData = $request->validated();
+        $main->fill($validatedData);
         $data = json_decode('{}');
 
-        $resume_attachment = $request->file('resume_attachment');
-        $application_letter_attachmentfile = $request->file('application_letter_attachment');
+        $resume_attachment = $validatedData["resume_attachment"];
+        $application_letter_attachmentfile = $validatedData['application_letter_attachment'];
 
         $hashmake = Hash::make('secret');
         $hashname = hash('sha256', $hashmake);
@@ -117,9 +118,9 @@ class JobApplicantsController extends Controller
 
         $main->resume_attachment = JobApplicantsController::RADIR . $hashname . "/" . $name1;
         $main->application_letter_attachment = JobApplicantsController::ALADIR . $hashname . "/" . $name2;
-        $main->education = json_encode($request->education);
-        $main->workexperience = json_encode($request->workexperience);
-        $main->children = json_encode($request->children);
+        $main->education = json_encode($validatedData['education']);
+        $main->workexperience = json_encode($validatedData['workexperience']);
+        $main->children = json_encode($validatedData['children']);
 
         if (!$main->save()) {
             $data->message = "Save failed.";
