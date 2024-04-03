@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeCompanyEmploymentsStatus;
 use App\Traits\HasUser;
 use App\Traits\HasApproval;
 use App\Enums\PersonelAccessForm;
@@ -16,6 +17,7 @@ use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Enums\JobApplicationStatusEnums;
 use App\Enums\ManpowerRequestStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 class EmployeePersonnelActionNoticeRequest extends Model
 {
@@ -147,23 +149,25 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
     public function completeRequestStatus()
     {
-        switch ($this->type) {
-            case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
-                $this->hireRequest();
-                break;
-            case EmployeePersonnelActionNoticeRequest::TRANSFER:
-                $this->transferRequest();
-                break;
-            case EmployeePersonnelActionNoticeRequest::PROMOTION:
-                $this->promotionRequest();
-                break;
-            case EmployeePersonnelActionNoticeRequest::TERMINATION:
-                $this->terminationRequest();
-                break;
-        }
-        $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
-        $this->save();
-        $this->refresh();
+        DB::transaction(function () {
+            switch ($this->type) {
+                case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
+                    $this->hireRequest();
+                    break;
+                case EmployeePersonnelActionNoticeRequest::TRANSFER:
+                    $this->transferRequest();
+                    break;
+                case EmployeePersonnelActionNoticeRequest::PROMOTION:
+                    $this->promotionRequest();
+                    break;
+                case EmployeePersonnelActionNoticeRequest::TERMINATION:
+                    $this->terminationRequest();
+                    break;
+            }
+            $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
+            $this->save();
+            $this->refresh();
+        });
     }
     public function denyRequestStatus()
     {
@@ -229,9 +233,24 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "actual_salary" => $this->salarygrade?->monthly_salary_amount,
             "work_location" => $this->work_location,
             "hire_source" => $this->hire_source,
-            "date_from" => $this->date_from,
+            "date_from" => $this->date_of_effictivity,
             "salary_grades" => $this->salary_grades,
         ]);
+        $employee->company_employments->create([
+            "date_hired" => $this->date_of_effictivity,
+            "employeedisplay_id" => "",
+            "phic_number" => $jobApplicant->philhealth ?? null,
+            "sss_number" => $jobApplicant->sss ?? null,
+            "tin_number" => $jobApplicant->tin ?? null,
+            "pagibig_number" => $jobApplicant->pagibig ?? null,
+            "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
+        ]);
+        // ADD MOTHER, FATHER, PERSON TO CONTACT, CHILDREN, SPOUSE
+        // $employee->employee_related_person->createMany([
+
+        // ]);
+        // ADD EXTERNAL WORK EXPERIENCE
+        // ADD ADDRESSES PRESENT, PERMANENT
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
         $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
     }

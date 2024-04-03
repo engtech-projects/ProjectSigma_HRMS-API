@@ -21,6 +21,10 @@ class ManpowerServices
     {
         return $this->manpowerRequest->get();
     }
+    public function getAllForHiring()
+    {
+        return $this->manpowerRequest->forHiring()->get();
+    }
 
     public function getAllManpowerRequest()
     {
