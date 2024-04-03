@@ -52,6 +52,8 @@ use App\Http\Controllers\Actions\ProjectMember\AttachProjectEmployee;
 
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
+use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\OvertimeEmployeesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -184,5 +186,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('manual-payment/{ca}', [CashAdvanceController::class, "cashAdvancePayment"]);
         Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
         Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
+    });
+
+    Route::prefix('overtime')->group(function () {
+        Route::resource('resource', OvertimeController::class);
+        Route::resource('overtime-employee', OvertimeEmployeesController::class);
+        Route::get('my-request', [OvertimeController::class, 'myRequests']);
+        Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
     });
 });

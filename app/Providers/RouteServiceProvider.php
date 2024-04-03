@@ -8,6 +8,7 @@ use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Models\FailureToLog;
 use App\Models\Leave;
 use App\Models\ManpowerRequest;
+use App\Models\Overtime;
 use App\Models\TravelOrder;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -61,6 +62,7 @@ class RouteServiceProvider extends ServiceProvider
             'LeaveEmployeeRequest' => EmployeeLeaves::class,
             'TravelOrder' => TravelOrder::class,
             'CashAdvance' => CashAdvance::class,
+            'Overtime' => Overtime::class,
         ];
         try {
             array_key_exists($modelName, $modelHasApprovals);
