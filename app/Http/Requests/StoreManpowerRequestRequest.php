@@ -94,14 +94,13 @@ class StoreManpowerRequestRequest extends FormRequest
             'approvals.*' => [
                 "required",
                 "array",
-                "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
             'approvals.*.type' => [
                 "required",
                 "string",
             ],
             'approvals.*.user_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:users,id",
             ],

@@ -49,7 +49,7 @@ class InternalWorkExperience extends Model
 
     public function employee_department(): HasOne
     {
-        return $this->hasOne(InternalWorkExperience::class, "id", "department_id");
+        return $this->hasOne(Department::class, "id", "department_id");
     }
 
 

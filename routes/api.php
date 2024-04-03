@@ -84,8 +84,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('announcement', AnnouncementsController::class);
     Route::get('announcement-list', [AnnouncementsController::class, 'currentAnnouncements']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
-    Route::resource('position', PositionController::class);
-    Route::get('position-list', [PositionController::class, 'get']);
+    Route::prefix("position")->group(function () {
+        Route::resource('resource', PositionController::class);
+        Route::get('list', [PositionController::class, 'get']);
+    });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
     Route::resource('departments', DepartmentController::class);

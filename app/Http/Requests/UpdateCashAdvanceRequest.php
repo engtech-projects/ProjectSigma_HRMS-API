@@ -71,7 +71,6 @@ class UpdateCashAdvanceRequest extends FormRequest
             'approvals.*' => [
                 "nullable",
                 "array",
-                new Enum(RequestApprovalStatus::class)
             ],
             'approvals.*.type' => [
                 "nullable",
@@ -85,6 +84,7 @@ class UpdateCashAdvanceRequest extends FormRequest
             'approvals.*.status' => [
                 "nullable",
                 "string",
+                new Enum(RequestApprovalStatus::class)
             ],
             'approvals.*.date_approved' => [
                 "nullable",
