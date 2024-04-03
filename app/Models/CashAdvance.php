@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
@@ -111,6 +112,11 @@ class CashAdvance extends Model
         }
 
         return true;
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'released_by');
     }
 
     public function scopeRequestStatusPending(Builder $query): void

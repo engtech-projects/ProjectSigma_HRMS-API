@@ -7,7 +7,7 @@ use App\Http\Requests\cashAdvanceRequest;
 use App\Models\CashAdvance;
 use App\Http\Requests\StoreCashAdvanceRequest;
 use App\Http\Requests\UpdateCashAdvanceRequest;
-use App\Http\Resources\EmployeeLeaveResource;
+use App\Http\Resources\CashAdvanceResource;
 use App\Http\Services\CashAdvanceService;
 use Illuminate\Http\JsonResponse;
 
@@ -161,7 +161,7 @@ class CashAdvanceController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Leave Request fetched.',
-            'data' => EmployeeLeaveResource::collection($myRequest)
+            'data' => CashAdvanceResource::collection($myRequest)
         ]);
     }
 
@@ -180,7 +180,7 @@ class CashAdvanceController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => EmployeeLeaveResource::collection($myApproval)
+            'data' => CashAdvanceResource::collection($myApproval)
         ]);
     }
 }
