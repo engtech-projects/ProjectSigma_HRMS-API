@@ -143,7 +143,7 @@ class EmployeeLeavesController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
+            'message' => 'LeaveForm Request fetched.',
             'data' => EmployeeLeaveResource::collection($myApproval)
         ]);
     }
@@ -162,7 +162,7 @@ class EmployeeLeavesController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
+            'message' => 'LeaveForm Request fetched.',
             'data' => EmployeeLeaveResource::collection($myApproval)
         ]);
     }

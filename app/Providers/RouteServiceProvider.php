@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\CashAdvance;
 use App\Models\EmployeeLeaves;
 use App\Models\EmployeePersonnelActionNoticeRequest;
 use App\Models\FailureToLog;
@@ -59,6 +60,7 @@ class RouteServiceProvider extends ServiceProvider
             'EmployeePanRequest' => EmployeePersonnelActionNoticeRequest::class,
             'LeaveEmployeeRequest' => EmployeeLeaves::class,
             'TravelOrder' => TravelOrder::class,
+            'CashAdvance' => CashAdvance::class,
         ];
         try {
             array_key_exists($modelName, $modelHasApprovals);
