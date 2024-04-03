@@ -16,9 +16,11 @@ class UpdateHMORequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        $this->merge([
-            "hmo_members" => json_decode($this->hmo_members, true)
-        ]);
+        if (gettype($this->hmo_members) == "string") {
+            $this->merge([
+                "hmo_members" => json_decode($this->hmo_members, true)
+            ]);
+        }
     }
 
     /**
@@ -65,12 +67,8 @@ class UpdateHMORequest extends FormRequest
                 "nullable",
                 "array",
             ],
-            'hmo_members.*.hmo_id' => [
-                "required",
-                "integer",
-            ],
             'hmo_members.*.member_type' => [
-                "required",
+                "nullable",
                 "string",
                 'in:employee,external(addon)'
             ],
@@ -81,7 +79,7 @@ class UpdateHMORequest extends FormRequest
                 'required_if:hmo_members.*.member_type,employee',
             ],
             'hmo_members.*.member_name' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'hmo_members.*.member_belongs_to' => [

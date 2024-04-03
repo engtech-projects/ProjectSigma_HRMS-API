@@ -245,7 +245,4 @@ class Employee extends Model
     {
         return Users::where("id", $id)->first();
     }
-
-
-
 }
