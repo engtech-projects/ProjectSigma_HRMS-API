@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\JobApplicationEnums;
+use App\Enums\JobApplicationStatusEnums;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\JobApplicants;
 use App\Http\Requests\StoreJobApplicantsRequest;
@@ -45,7 +45,7 @@ class JobApplicantsController extends Controller
                     ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
                     ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
             })
-            ->where("status", JobApplicationEnums::APPLICATION_STATUS_FOR_HIRING)
+            ->where("status", JobApplicationStatusEnums::FOR_HIRING)
             ->limit(25)
             ->orderBy('lastname')
             ->get();

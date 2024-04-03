@@ -97,9 +97,15 @@ class Employee extends Model
         return $this->hasMany(EmployeeAddress::class);
     }
 
-    public function employee_internal(): HasOne
+    public function current_employement(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class)->where("status", "=", "current")
+            ->with("employee_salarygrade", "employee_department");
+    }
+
+    public function employee_internal(): HasOne
+    {
+        return $this->hasMany(InternalWorkExperience::class)
             ->with("employee_salarygrade", "employee_department");
     }
 
