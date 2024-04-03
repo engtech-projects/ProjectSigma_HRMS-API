@@ -223,29 +223,13 @@ class EmployeePersonnelActionNoticeRequest extends Model
      */
     public function hireRequest()
     {
+        // duplicate jobApplicant data to employee
         $jobApplicant = $this->jobapplicantonly;
         $jobApplicant["first_name"] = $jobApplicant->firstname;
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $employee = Employee::create($jobApplicant->toArray());
-        /*         $employee = Employee::create([
-            "employee" => $this->lastname,
-            "family_name" => $jobApplicant->lastname,
-            "first_name" => $jobApplicant->firstname,
-            "middle_name" => $jobApplicant->middlename,
-            "name_suffix" => $jobApplicant->name_suffix,
-            "gender" => $jobApplicant->gender,
-            "date_of_birth" => $jobApplicant->date_of_birth,
-            "place_of_birth" => $jobApplicant->place_of_birth,
-            "date_of_mdataiage" => $jobApplicant->date_of_mdataiage,
-            "citizenship" => $jobApplicant->citizenship,
-            "blood_type" => $jobApplicant->blood_type,
-            "civil_status" => $jobApplicant->civil_status,
-            "mobile_number" => $jobApplicant->contact_info,
-            "email" => $jobApplicant->email,
-            "religion" => $jobApplicant->religion,
-            "weight" => $jobApplicant->weight,
-            "height" => $jobApplicant->height,
-        ]); */
+
+        // pan request details to internal work experience
         $employeeInternal = $this->toArray();
         unset($employeeInternal["id"]);
         $employeeInternal["status"] = EmployeeInternalWorkExperiencesStatus::CURRENT;
@@ -253,31 +237,9 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employeeInternal["position_title"] = $this->designation_position;
         $employeeInternal["employment_status"] = $this->employement_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
-
         $employee->employee_internal()->create($employeeInternal);
-        /*         $employee->employee_internal()->create([
-            'position_title' => $this->designation_position,
-            'employment_status' => $this->employement_status,
-            'department' => $jobApplicant->section_department_id,
-            'immediate_supervisor' => $jobApplicant->immediate_supervisor ?? "N/A",
-            'actual_salary' => $jobApplicant->salarygrade?->monthly_salary_amount,
-            'work_location' => $jobApplicant->work_location,
-            'hire_source' => $jobApplicant->hire_source,
-            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
-            'date_from' => $jobApplicant->date_from,
-            'date_to' => null,
-            'salary_grades' => $jobApplicant->salary_grades,
-        ]); */
-        /*         $employee->company_employments->create([
-            "date_hired" => $this->date_of_effictivity,
-            "employeedisplay_id" => "",
-            "phic_number" => $jobApplicant->philhealth ?? null,
-            "sss_number" => $jobApplicant->sss ?? null,
-            "tin_number" => $jobApplicant->tin ?? null,
-            "pagibig_number" => $jobApplicant->pagibig ?? null,
-            "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
-        ]); */
 
+        // employee related person details
         $employeeRelatedPerson = $this->employeeRelatedPersonDetails($employee);
         $employee->employee_related_person()->create($employeeRelatedPerson);
 
@@ -299,6 +261,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             ]);
         }
 
+        // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
         $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
     }
