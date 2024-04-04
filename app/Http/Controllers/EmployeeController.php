@@ -122,7 +122,7 @@ class EmployeeController extends Controller
             "doctorstudies",
             "professionalstudies",
             "employee_seminartraining",
-            "employee_internal",
+            "employee_internal.employee_salarygrade.salary_grade_level",
             "employee_externalwork",
         )->get()->find($id);
 
