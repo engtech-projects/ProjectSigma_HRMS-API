@@ -271,6 +271,9 @@ class EmployeePersonnelActionNoticeRequest extends Model
                 "type" => EmployeeRelatedPersonType::CHILD,
             ]);
         }
+        // NOT WORKING FIELDS ADDRESSES
+        // NOT WORKING FIELDS EMPLOYEE RELATED PEOPLE, Mother, Father, Children, Spouse, Contact Person
+        // NOT WORKING FIELDS External Work Experience
 
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
