@@ -100,6 +100,7 @@ class EmployeeController extends Controller
             "company_employments",
             "employment_records",
             "employee_address",
+            "current_employment",
             "employee_affiliation",
             "employee_education",
             "employee_education_elementary",
