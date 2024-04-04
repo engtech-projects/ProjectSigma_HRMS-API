@@ -240,6 +240,16 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employee->employee_internal()->create($employeeInternal);
 
+        $employee->company_employments()->create([
+            "employeedisplay_id" => null,
+            "date_hired" => $this->date_of_effictivity,
+            "phic_number" => $jobApplicant->philhealth,
+            "sss_number" => $jobApplicant->sss,
+            "tin_number" => $jobApplicant->tin,
+            "pagibig_number" => $jobApplicant->pagibig,
+            "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
+        ]);
+
         // employee related person details
         $employeeRelatedPerson = $this->employeeRelatedPersonDetails($employee);
         $employee->employee_related_person()->create($employeeRelatedPerson);
