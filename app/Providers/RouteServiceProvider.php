@@ -43,7 +43,7 @@ class RouteServiceProvider extends ServiceProvider
             try {
                 $project = Project::where('project_monitoring_id', $value)->firstOrfail();
             } catch (\Exception $e) {
-                throw new TransactionFailedException("Project not found.");
+                throw new NotFoundHttpException("Project not found.");
             }
             return $project;
         });
@@ -79,7 +79,7 @@ class RouteServiceProvider extends ServiceProvider
             array_key_exists($modelName, $modelHasApprovals);
             return $modelHasApprovals[$modelName];
         } catch (\Exception $e) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException("Resource not found");
         }
     }
 }

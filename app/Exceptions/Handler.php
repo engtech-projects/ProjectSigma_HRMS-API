@@ -45,7 +45,7 @@ class Handler extends ExceptionHandler
         $response = null;
         if ($e instanceof NotFoundHttpException) {
             if ($request->is('api/*')) {
-                $response = new JsonResponse(["success" => false, 'message' => "Resource not found."], JsonResponse::HTTP_NOT_FOUND);
+                $response = new JsonResponse(["success" => false, 'message' => $e->getMessage()], JsonResponse::HTTP_NOT_FOUND);
             }
         }
         if ($e instanceof ModelNotFoundException) {
