@@ -69,6 +69,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
         'new_salary_grades',
         'pan_job_applicant_id',
         'salary_grades',
+        'employment_status'
     ];
 
 
@@ -235,7 +236,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employeeInternal["status"] = EmployeeInternalWorkExperiencesStatus::CURRENT;
         $employeeInternal['actual_salary'] = $this->salarygrade;
         $employeeInternal["position_title"] = $this->designation_position;
-        $employeeInternal["employment_status"] = $this->employement_status;
+        $employeeInternal["employment_status"] = $this->employment_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employee->employee_internal()->create($employeeInternal);
 
@@ -322,6 +323,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "date_to" => null
         ]);
         $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
+        $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
         InternalWorkExperience::create([
@@ -352,6 +354,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "status" => EmployeeInternalWorkExperiencesStatus::CURRENT
         ]);
         $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
+        $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
         InternalWorkExperience::create([
@@ -376,10 +379,13 @@ class EmployeePersonnelActionNoticeRequest extends Model
      */
     public function terminationRequest()
     {
-
+        $companyEmployment = $this->employee->company_employments;
         $interWorkExp = $this->getInternalWorkExp($this->employee_id);
-        $interWorkExp->date_to = date('Y-m-d');
+        $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
+        $companyEmployment->update([
+            'status' => EmployeeCompanyEmploymentsStatus::INACTIVE->value
+        ]);
 
         Termination::create([
             'employee_id' => $interWorkExp->id,
