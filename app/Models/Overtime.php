@@ -21,7 +21,6 @@ class Overtime extends Model
     use Notifiable;
     use SoftDeletes;
     use HasApproval;
-
     protected $casts = [
         'approvals' => 'array'
     ];

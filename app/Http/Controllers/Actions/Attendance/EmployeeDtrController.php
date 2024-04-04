@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Actions\Attendance;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterDtrRequest;
-use App\Http\Resources\ProjectResource;
+use App\Http\Resources\AttendanceLogResource;
+use App\Http\Resources\EmployeeLeaveResource;
+use App\Http\Resources\InternalWorkExpResource;
+use App\Http\Resources\OvertimeResource;
 use App\Models\Employee;
-use App\Models\Schedule;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+
 
 class EmployeeDtrController extends Controller
 {
@@ -35,14 +36,12 @@ class EmployeeDtrController extends Controller
 
     private function getSchedule(array $filter = [])
     {
-        $employee = $this->employee->with(['employee_internal', 'employee_has_projects', 'employee_schedule' => function ($query) use ($filter) {
+        $employee = $this->employee->with(['employee_internal', 'employee_overtime', 'employee_has_projects', 'employee_schedule' => function ($query) use ($filter) {
             $query->where(function ($query) use ($filter) {
                 $query->where('startRecur', '>=', $filter['start_date']);
             });
         }])->where('id', $filter['employee_id'])
             ->first();
-
-        dd($employee);
 
         $schedule = $this->mapResultSchedule($employee);
         return $schedule;
@@ -58,18 +57,18 @@ class EmployeeDtrController extends Controller
         $employee->employee_schedule = collect($employee->employee_schedule)->map(function ($schedule) {
             return $schedule;
         });
-
-        /* $employee->employee_schedule = $this->filterScheduleByType($employee->employee_schedule); */
+        $employee->employee_leave = $employee->employee_leave->where('with_pay', true);
+        $employee->employee_schedule = $this->filterScheduleByType($employee->employee_schedule);
 
 
         return [
             "id" => $employee->id,
             "employee_name" => $employee->fullname_first,
-            "employee_internal_exp" => $employee->employee_internal,
+            "employee_internal_exp" => InternalWorkExpResource::collection($employee->employee_internal),
             "employee_schedule" => $employee->employee_schedule,
-            "attendance" => $employee->attendance_log,
-            "leave" => $employee->employee_leave,
-            "overtime" => [],
+            "attendance" => AttendanceLogResource::collection($employee->attendance_log),
+            "leave" => EmployeeLeaveResource::collection($employee->employee_leave),
+            "overtime" => OvertimeResource::collection($employee->employee_overtime),
             "employee_projects" => $employee->employee_has_projects,
         ];
     }

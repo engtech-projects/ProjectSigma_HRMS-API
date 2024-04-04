@@ -110,9 +110,9 @@ class EmployeePersonnelActionNoticeRequest extends Model
     {
         return $query->where("request_status", "=", "Pending");
     }
-    public function scopeCreatedBy(Builder $query, $id): Builder
+    public function scopeCreatedBy(Builder $query, $id): void
     {
-        return $query->where("created_by", $id);
+        $query->where("created_by", $id);
     }
 
     public function jobapplicant(): HasOne

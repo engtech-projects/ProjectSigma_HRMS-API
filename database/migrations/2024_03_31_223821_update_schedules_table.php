@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::table('schedules', function (Blueprint $table) {
             $table->unsignedBigInteger('project_id')
                 ->after('department_id')
-                ->change();
+                ->change()
+                ->nullable();
             $table->foreign('project_id')->references('id')
                 ->on('projects');
         });
@@ -28,7 +29,6 @@ return new class extends Migration
         Schema::table('schedules', function (Blueprint $table) {
             $table->dropForeign(['project_id']);
             $table->dropIndex('schedules_project_id_foreign');
-            $table->dropColumn('project_id');
         });
     }
 };

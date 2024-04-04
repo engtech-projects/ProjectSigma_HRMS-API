@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('employee_personnel_action_notice_requests', function (Blueprint $table) {
-            $table->enum("employment_status", ['Probationary', 'Regular', 'Project Based']);
+            if (Schema::hasColumn('employee_personnel_action_notice_requests','employement_status')) {
+                $table->dropColumn('employement_status');
+                $table->enum("employment_status", ['Probationary', 'Regular', 'Project Based']);
+            }
         });
     }
 
@@ -22,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('employee_personnel_action_notice_requests', function (Blueprint $table) {
-            $table->dropColumn('employment_status');
+
         });
     }
 };

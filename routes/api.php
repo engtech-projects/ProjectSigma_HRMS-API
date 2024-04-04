@@ -47,19 +47,17 @@ use App\Http\Controllers\Actions\{
     Approvals\DisapproveApproval,
     Approvals\ApproveApproval,
     SalaryGrade\SalaryGradeLevelListController,
-    Attendance\EmployeeDtrController
+    Attendance\EmployeeDtrController,
     ProjectMember\AttachProjectEmployee,
     ProjectMember\ProjectEmployeeList,
     ProjectMember\ProjectMemberList
 };
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
-<<<<<<< Updated upstream
-use App\Http\Controllers\EmployeeDtrController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
->>>>>>> Stashed changes
+
 
 /*
 |--------------------------------------------------------------------------
@@ -163,7 +161,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
             Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
         });
-        Route::get('dtr', EmployeeDtrController::class);
+        Route::post('dtr', EmployeeDtrController::class);
     });
 
     Route::prefix('project-monitoring')->group(function () {

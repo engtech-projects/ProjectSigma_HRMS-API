@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Schedule as EmployeeSchedule;
 
 class Employee extends Model
 {
@@ -249,7 +250,7 @@ class Employee extends Model
 
     public function employee_schedule(): HasMany
     {
-        return $this->hasMany(Schedule::class);
+        return $this->hasMany(EmployeeSchedule::class);
     }
 
     public function attendance_log(): HasMany
@@ -259,6 +260,11 @@ class Employee extends Model
     public function employee_leave(): HasMany
     {
         return $this->hasMany(Leave::class);
+    }
+
+    public function employee_overtime(): HasMany
+    {
+        return $this->hasMany(Overtime::class, 'employee_id', 'id');
     }
 
     public function scopeUser($query, $id)
