@@ -54,10 +54,12 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             'date_of_absence_from' => [
                 "nullable",
                 "date",
+                "date_format:Y-m-d",
             ],
             'date_of_absence_to' => [
                 "nullable",
                 "date",
+                "date_format:Y-m-d",
                 "after:date_of_absence_from"
             ],
             'reason_for_absence' => [
