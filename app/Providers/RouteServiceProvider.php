@@ -42,8 +42,8 @@ class RouteServiceProvider extends ServiceProvider
         Route::bind('projectMonitoringId', function ($value) {
             try {
                 $project = Project::where('project_monitoring_id', $value)->firstOrfail();
-            } catch (\Exception $e) {
-                throw new NotFoundHttpException("Project not found.");
+            } catch (\Throwable $e) {
+                throw new NotFoundHttpException("Project not found.", $e, 404);
             }
             return $project;
         });
