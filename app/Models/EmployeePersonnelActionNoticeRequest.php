@@ -44,7 +44,8 @@ class EmployeePersonnelActionNoticeRequest extends Model
     protected $casts = [
         "approvals" => "array",
         "created_at" => "date:Y-m-d",
-        "date_of_effictivity" => "date:Y-m-d"
+        "date_of_effictivity" => "date:Y-m-d",
+        "children" => "array",
     ];
 
     protected $fillable = [
@@ -240,36 +241,47 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employee->employee_internal()->create($employeeInternal);
 
+        /*         dd($jobApplicant); */
         $employee->company_employments()->create([
             "employeedisplay_id" => null,
             "date_hired" => $this->date_of_effictivity,
-            "phic_number" => $jobApplicant->philhealth,
-            "sss_number" => $jobApplicant->sss,
-            "tin_number" => $jobApplicant->tin,
-            "pagibig_number" => $jobApplicant->pagibig,
+            "phic_number" => $jobApplicant->philhealth ?: "N/A",
+            "sss_number" => $jobApplicant->sss ?: "N/A",
+            "tin_number" => $jobApplicant->tin ?: "N/A",
+            "pagibig_number" => $jobApplicant->pagibig ?: "N/A",
             "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
         ]);
 
         // employee related person details
         $employeeRelatedPerson = $this->employeeRelatedPersonDetails($employee);
-        $employee->employee_related_person()->create($employeeRelatedPerson);
+        $employee->employee_related_person()->createMany($employeeRelatedPerson);
 
-        if (property_exists("workexperience", $this)) {
-            $employee->employee_externalwork()->createMany([
-                "date_from" => $this->workexperience->inclusive_dates_from ?? null,
-                "date_to" => $this->workexperience->inclusive_dates_to ?? null,
-                "position_title" => $this->workexperience->position_title ?? null,
-                "company_name" => $this->workexperience->dpt_agency_office_company ?? null,
-                "salary" => $this->workexperience->monthly_salary ?? null,
-                "status_of_appointment" => $this->workexperience->status_of_appointment ?? null,
-            ]);
+        if ($this->jobapplicantonly->workexperience) {
+            try {
+                $employee->employee_externalwork()->createMany([
+                    [
+                        "date_from" => $this->workexperience->inclusive_dates_from ?? null,
+                        "date_to" => $this->workexperience->inclusive_dates_to ?? null,
+                        "position_title" => $this->workexperience->position_title ?? null,
+                        "company_name" => $this->workexperience->dpt_agency_office_company ?? null,
+                        "salary" => $this->workexperience->monthly_salary ?? null,
+                        "status_of_appointment" => $this->workexperience->status_of_appointment ?? null,
+                    ]
+                ]);
+            } catch (\Exception  $e) {
+                throw new Exception($e);
+            }
         }
-        if (property_exists("children", $this)) {
-            $employee->employee_related_person()->createMany([
-                "name" => $this->children->name,
-                "date_of_birth" => $this->children->birthdate ?? null,
-                "type" => EmployeeRelatedPersonType::CHILD,
-            ]);
+        if ($this->jobapplicantonly->children) {
+            $children = collect($this->jobapplicantonly->children)->map(function ($child) {
+                $child["type"] = EmployeeRelatedPersonType::CHILD->value;
+                return [
+                    "name" => $child["name"],
+                    "date_of_birth" => $child["birthdate"],
+                    "type" => EmployeeRelatedPersonType::CHILD->value,
+                ];
+            })->toArray();
+            $employee->employee_related_person()->createMany($children);
         }
         // NOT WORKING FIELDS ADDRESSES
         // NOT WORKING FIELDS EMPLOYEE RELATED PEOPLE, Mother, Father, Children, Spouse, Contact Person
@@ -282,33 +294,34 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
     private function employeeRelatedPersonDetails(): array
     {
+        $employeeRelatedPerson = [];
         $jobApplicant = $this->jobapplicantonly;
         if ($jobApplicant->name_of_spouse) {
-            $spouse = array(
+            array_push($employeeRelatedPerson, [
                 "name" => $jobApplicant->name_of_spouse,
                 "date_of_birth" => $jobApplicant->date_of_birth_spouse ?? null,
                 "contact_no" => $jobApplicant->telephone_spouse ?? null,
                 "occupation" => $jobApplicant->occupation_spouse ?? null,
                 "type" => EmployeeRelatedPersonType::SPOUSE,
-            );
+            ]);
         }
 
         if ($jobApplicant->father_name) {
-            $father = array(
+            array_push($employeeRelatedPerson, [
                 "name" => $jobApplicant->father_name,
                 "type" => EmployeeRelatedPersonType::FATHER,
-            );
+            ]);
         }
 
         if ($jobApplicant->mother_name) {
-            $mother = array(
+            array_push($employeeRelatedPerson, [
                 "name" => $jobApplicant->mother_name,
                 "type" => EmployeeRelatedPersonType::MOTHER,
-            );
+            ]);
         }
 
         if ($jobApplicant->icoe_name) {
-            $icoe_name = array(
+            array_push($employeeRelatedPerson, [
                 "name" => $jobApplicant->icoe_name ?? null,
                 "street" => $jobApplicant->icoe_street ?? null,
                 "brgy" => $jobApplicant->icoe_brgy ?? null,
@@ -318,9 +331,9 @@ class EmployeePersonnelActionNoticeRequest extends Model
                 "relationship" => $jobApplicant->icoe_relationship ?? null,
                 "contact_no" => $jobApplicant->telephone_icoe ?? null,
                 "type" => EmployeeRelatedPersonType::CONTACT_PERSON
-            );
+            ]);
         }
-        return array_merge($spouse, $father, $mother, $icoe_name);
+        return $employeeRelatedPerson;
     }
 
     /** Transfer Employee PAN  request approved
@@ -335,6 +348,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "status" => EmployeeInternalWorkExperiencesStatus::CURRENT,
             "date_to" => null
         ]);
+
         $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
         $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();

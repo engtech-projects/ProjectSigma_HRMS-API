@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\EmployeeRelatedPersonType;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EmployeeRelatedperson extends Model
 {
@@ -23,6 +24,7 @@ class EmployeeRelatedperson extends Model
     protected $casts = [
         'date_of_birth' => 'datetime:Y-m-d',
     ];
+
 
     public function getAgeAttribute()
     {
@@ -59,6 +61,4 @@ class EmployeeRelatedperson extends Model
     {
         return $this->belongsTo(Employee::class);
     }
-
-
 }

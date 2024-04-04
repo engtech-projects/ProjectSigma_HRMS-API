@@ -16,8 +16,9 @@ class JobApplicants extends Model
     use Notifiable;
     use SoftDeletes;
 
+
     protected $fillable = [
-/*         'id', */
+        /*         'id', */
         'manpowerrequests_id',
         'name_suffix',
         'application_letter_attachment',
@@ -81,7 +82,7 @@ class JobApplicants extends Model
     public $casts = [
         "children" => "array",
         "education" => "array",
-        "workexperience" => "array"
+        "workexperience" => "array",
     ];
 
     public function manpower(): BelongsTo

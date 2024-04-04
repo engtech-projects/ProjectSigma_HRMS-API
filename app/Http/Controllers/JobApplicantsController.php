@@ -118,9 +118,9 @@ class JobApplicantsController extends Controller
 
         $main->resume_attachment = JobApplicantsController::RADIR . $hashname . "/" . $name1;
         $main->application_letter_attachment = JobApplicantsController::ALADIR . $hashname . "/" . $name2;
-        $main->education = json_encode($validatedData['education']);
-        $main->workexperience = json_encode($validatedData['workexperience']);
-        $main->children = json_encode($validatedData['children']);
+        $main->education = $validatedData['education'];
+        $main->workexperience = $validatedData['workexperience'];
+        $main->children = $validatedData['children'];
 
         if (!$main->save()) {
             $data->message = "Save failed.";
