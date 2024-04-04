@@ -322,6 +322,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "date_to" => null
         ]);
         $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
+        $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
         InternalWorkExperience::create([
@@ -352,6 +353,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             "status" => EmployeeInternalWorkExperiencesStatus::CURRENT
         ]);
         $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
+        $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
         InternalWorkExperience::create([
@@ -376,10 +378,13 @@ class EmployeePersonnelActionNoticeRequest extends Model
      */
     public function terminationRequest()
     {
-
+        $companyEmployment = $this->employee->company_employments;
         $interWorkExp = $this->getInternalWorkExp($this->employee_id);
-        $interWorkExp->date_to = date('Y-m-d');
+        $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
+        $companyEmployment->update([
+            'status' => EmployeeCompanyEmploymentsStatus::INACTIVE->value
+        ]);
 
         Termination::create([
             'employee_id' => $interWorkExp->id,
