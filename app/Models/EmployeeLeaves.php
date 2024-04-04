@@ -57,11 +57,16 @@ class EmployeeLeaves extends Model
 
     public function department(): HasOne
     {
-        return $this->hasOne(Department::class, "id", "section_department_id");
+        return $this->hasOne(Department::class, "id", "department_id");
     }
 
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
+    }
+
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class, "id", "project_id");
     }
 }

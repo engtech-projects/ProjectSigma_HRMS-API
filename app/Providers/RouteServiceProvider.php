@@ -2,20 +2,22 @@
 
 namespace App\Providers;
 
-use App\Models\CashAdvance;
-use App\Models\EmployeeLeaves;
-use App\Models\EmployeePersonnelActionNoticeRequest;
-use App\Models\FailureToLog;
 use App\Models\Leave;
-use App\Models\ManpowerRequest;
+use App\Models\Project;
 use App\Models\Overtime;
+use App\Models\CashAdvance;
 use App\Models\TravelOrder;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use App\Models\FailureToLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
+use App\Models\EmployeeLeaves;
+use App\Models\ManpowerRequest;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use App\Exceptions\TransactionFailedException;
+use App\Models\EmployeePersonnelActionNoticeRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -35,6 +37,15 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        Route::bind('projectMonitoringId', function ($value) {
+            try {
+                $project = Project::where('project_monitoring_id', $value)->firstOrfail();
+            } catch (\Throwable $e) {
+                throw new NotFoundHttpException("Project not found.", $e, 404);
+            }
+            return $project;
         });
 
         Route::bind('model', function ($value, $route) {
@@ -68,7 +79,7 @@ class RouteServiceProvider extends ServiceProvider
             array_key_exists($modelName, $modelHasApprovals);
             return $modelHasApprovals[$modelName];
         } catch (\Exception $e) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException("Resource not found");
         }
     }
 }

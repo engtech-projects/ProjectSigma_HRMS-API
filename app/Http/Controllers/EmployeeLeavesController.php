@@ -7,6 +7,7 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
+use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 
 class EmployeeLeavesController extends Controller
@@ -22,7 +23,7 @@ class EmployeeLeavesController extends Controller
      */
     public function index()
     {
-        $main = EmployeeLeaves::paginate(15);
+        $main = EmployeeLeaves::with('employee', 'department', 'project')->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -55,7 +56,7 @@ class EmployeeLeavesController extends Controller
      */
     public function show($id)
     {
-        $main = EmployeeLeaves::find($id);
+        $main = EmployeeLeaves::with('employee', 'department', 'project')->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";

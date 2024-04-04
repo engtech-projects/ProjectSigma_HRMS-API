@@ -48,8 +48,8 @@ use App\Http\Controllers\Actions\{
     Approvals\ApproveApproval,
     SalaryGrade\SalaryGradeLevelListController,
     Attendance\EmployeeDtrController
+    ProjectMember\AttachProjectEmployee
 };
-use App\Http\Controllers\Actions\ProjectMember\AttachProjectEmployee;
 
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
@@ -167,13 +167,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
-        Route::put('attach-employee/{project}', AttachProjectEmployee::class);
+        Route::put('attach-employee/{projectMonitoringId}', AttachProjectEmployee::class);
     });
 
     Route::prefix('leave-request')->group(function () {
         Route::resource('resource', EmployeeLeavesController::class);
         Route::get('get-form-request', [EmployeeLeavesController::class, 'myFormRequest']);
-        Route::get('my-request', [EmployeeLeavesController::class, 'myRequests']);
         Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
     });
 

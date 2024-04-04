@@ -29,7 +29,10 @@ class EmployeeLeaveResource extends JsonResource
                     "name" => $user->employee?->fullname_last,
                     "type" => $user->type
                 ];
-            })
+            }),
+            "employee" => $this->employee,
+            "department" => $this->department,
+            "project" => $this->project,
         ];
     }
 }
