@@ -20,8 +20,8 @@ class EmployeeLeaveResource extends JsonResource
             "project_id" => $this->project_id,
             "type" => $this->type,
             "other_absence" => $this->other_absence,
-            "date_of_absence_from" => $this->date_of_absence_from,
-            "date_of_absence_to" => $this->date_of_absence_to,
+            "date_of_absence_from" => $this->date_of_absence_from->format('F j, Y'),
+            "date_of_absence_to" => $this->date_of_absence_to->format('F j, Y'),
             "reason_for_absence" => $this->reason_for_absence,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "requested_by_user" => $this->whenLoaded('user', function ($user) {
@@ -33,6 +33,8 @@ class EmployeeLeaveResource extends JsonResource
             "employee" => $this->employee,
             "department" => $this->department,
             "project" => $this->project,
+            "request_status" => $this->request_status,
+            "with_pay" => $this->with_pay,
         ];
     }
 }
