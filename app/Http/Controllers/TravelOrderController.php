@@ -5,14 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\TravelOrder;
 use App\Http\Requests\StoreTravelOrderRequest;
 use App\Http\Requests\UpdateTravelOrderRequest;
+use App\Http\Resources\TravelOrderResource;
+use App\Http\Services\TravelOrderService;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
 
 class TravelOrderController extends Controller
 {
+    protected $RequestService;
+    public function __construct(TravelOrderService $RequestService)
+    {
+        $this->RequestService = $RequestService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $main = $this->RequestService->getAll();
+        $paginated = TravelOrderResource::collection($main);
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'TravelOrder Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+        ]);
+
         $main = TravelOrder::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
@@ -101,5 +118,41 @@ class TravelOrderController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function myRequests()
+    {
+        $myRequest = $this->RequestService->getMyRequest();
+
+        if ($myRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'TravelOrder Request fetched.',
+            'data' => TravelOrderResource::collection($myRequest)
+        ]);
+    }
+
+    /**
+     * Show can view all pan request to be approved by logged in user (same login in manpower request)
+     */
+    public function myApprovals()
+    {
+        $myApproval = $this->RequestService->getMyApprovals();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'LeaveForm Request fetched.',
+            'data' => TravelOrderResource::collection($myApproval)
+        ]);
     }
 }

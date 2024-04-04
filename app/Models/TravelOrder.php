@@ -9,6 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,11 +25,9 @@ class TravelOrder extends Model
 
     protected $casts = [
         "approvals" => "array",
-        "created_at" => "date:Y-m-d",
         "date_and_time_of_travel" => "date:Y-m-d",
         "date_of_absence_to" => "date:Y-m-d"
     ];
-
 
     protected $fillable = [
         'id',
@@ -42,6 +41,7 @@ class TravelOrder extends Model
         'remarks',
         'requested_by',
         'approvals',
+        'request_status',
     ];
 
     public function scopeRequestStatusPending(Builder $query): void
@@ -56,11 +56,11 @@ class TravelOrder extends Model
 
     public function department(): HasOne
     {
-        return $this->hasOne(Department::class, "id", "section_department_id");
+        return $this->hasOne(Department::class, "id", "requesting_office");
     }
 
-    public function employee(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(Employee::class, "id", "employee_id");
+        return $this->belongsTo(User::class, 'requested_by');
     }
 }
