@@ -18,6 +18,10 @@ class SalaryGradeStep extends Model
         "salary_grade_level_id",
     ];
 
+    protected $hidden = [
+        "monthly_salary_amount"
+    ];
+
     public function salary_grade_level(): BelongsTo
     {
         return $this->belongsTo(SalaryGradeLevel::class);
