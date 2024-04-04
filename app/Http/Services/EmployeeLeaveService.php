@@ -15,7 +15,7 @@ class EmployeeLeaveService
 
     public function getAll()
     {
-        return EmployeeLeaves::with(['employee', 'department'])->get();
+        return EmployeeLeaves::with(['employee', 'department', 'projects'])->get();
     }
 
     public function create($attributes)
@@ -25,7 +25,7 @@ class EmployeeLeaveService
 
     public function getMyRequests()
     {
-        return EmployeeLeaves::with(['employee', 'department'])
+        return EmployeeLeaves::with(['employee', 'department', 'projects'])
             ->where("created_by", auth()->user()->id)
             ->get();
     }
@@ -59,7 +59,7 @@ class EmployeeLeaveService
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = EmployeeLeaves::with(['employee', 'department'])
+        $result = EmployeeLeaves::with(['employee', 'department', 'project'])
             ->requestStatusPending()
             ->authUserPending()
             ->get();
