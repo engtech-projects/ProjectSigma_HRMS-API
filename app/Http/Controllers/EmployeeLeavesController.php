@@ -7,6 +7,7 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
+use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 
 class EmployeeLeavesController extends Controller
