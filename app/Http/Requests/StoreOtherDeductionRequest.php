@@ -16,6 +16,15 @@ class StoreOtherDeductionRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (gettype($this->employees) == "string") {
+            $this->merge([
+                "employees" => json_decode($this->employees, true)
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,7 +33,11 @@ class StoreOtherDeductionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => [
+            'employees' => [
+                "required",
+                "array",
+            ],
+            'employees.*' => [
                 "required",
                 "integer",
                 "exists:employees,id",

@@ -8,6 +8,7 @@ use App\Models\OtherDeduction;
 use App\Http\Requests\StoreOtherDeductionRequest;
 use App\Http\Requests\UpdateOtherDeductionRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class OtherDeductionController extends Controller
 {
@@ -29,19 +30,24 @@ class OtherDeductionController extends Controller
      */
     public function store(StoreOtherDeductionRequest $request)
     {
-        $main = new OtherDeduction();
-        $main->fill($request->validated());
         $data = json_decode('{}');
-
-        if (!$main->save()) {
+        try {
+            DB::transaction(function () use ($request) {
+                foreach ($request->employees as $key) {
+                    $main = new OtherDeduction();
+                    $main->fill($request->validated());
+                    $main->employee_id = $key;
+                    $main->save();
+                }
+            });
+            $data->message = "Successfully save.";
+            $data->success = true;
+            return response()->json($data);
+        } catch (\Throwable $th) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
     }
 
     /**
