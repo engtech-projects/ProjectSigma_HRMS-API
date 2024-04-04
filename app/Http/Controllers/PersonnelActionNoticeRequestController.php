@@ -313,7 +313,7 @@ class PersonnelActionNoticeRequestController extends Controller
 
         // Internal Work Experience
         $internalWork['position_title'] = $request->designation_position;
-        $internalWork['employment_status'] = $request->employement_status;
+        $internalWork['employment_status'] = $request->employment_status;
         $internalWork['department'] = $request->section_department_id;
         $internalWork['immediate_supervisor'] = $request->immediate_supervisor ?? "N/A";
         $internalWork['actual_salary'] = $request->salarygrade->monthly_salary_amount;
