@@ -9,7 +9,7 @@ trait HasProjectMember
 {
     public function employees(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'project_members', 'project_id', 'employee_id')
+        return $this->belongsToMany(Project::class, 'project_employees', 'project_id', 'employee_id')
             ->withPivot([
                 'project_id',
                 'employee_id'

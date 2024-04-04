@@ -37,7 +37,7 @@ class EmployeePersonnelActionNoticeRequestResource extends JsonResource
             "pan_job_applicant_id" => $this->pan_job_applicant_id,
             "salary_grades" => $this->salary_grades,
             "request_status" => $this->request_status,
-            "employement_status" => $this->employement_status,
+            "employment_status" => $this->employment_status,
             "comments" => $this->comments,
             "section_department_id" => $this->section_department_id,
             "new_section_id" => $this->new_section_id,

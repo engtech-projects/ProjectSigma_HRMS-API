@@ -69,6 +69,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
         'new_salary_grades',
         'pan_job_applicant_id',
         'salary_grades',
+        'employment_status'
     ];
 
 
@@ -235,7 +236,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employeeInternal["status"] = EmployeeInternalWorkExperiencesStatus::CURRENT;
         $employeeInternal['actual_salary'] = $this->salarygrade;
         $employeeInternal["position_title"] = $this->designation_position;
-        $employeeInternal["employment_status"] = $this->employement_status;
+        $employeeInternal["employment_status"] = $this->employment_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employee->employee_internal()->create($employeeInternal);
 
