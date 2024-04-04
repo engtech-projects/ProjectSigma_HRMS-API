@@ -9,6 +9,7 @@ use App\Enums\EmployeeStudiesType;
 use App\Http\Requests\BulkValidationRequest;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class EmployeeBulkUploadController extends Controller
@@ -184,277 +185,273 @@ class EmployeeBulkUploadController extends Controller
     public function bulkSave(BulkValidationRequest $request)
     {
         $validatedData = $request->validated();
-        $elementaryDates = [];
-        $highSchoolDates = [];
-        $education = [];
-        $collegeDates = [];
-        $vocationalDates = [];
-        $studies = [];
-        $employeeRelatedPerson = [];
-        foreach (json_decode($validatedData['employees_data'], true) as $data) {
-            if ($data['_status'] == 'unduplicate') {
-                //insert
-                $employee = new Employee();
-                $employee->fill($data)->save();
+        DB::transaction(function () use($validatedData) {
+            foreach (json_decode($validatedData['employees_data'], true) as $data) {
+                $elementaryDates = [];
+                $highSchoolDates = [];
+                $education = [];
+                $collegeDates = [];
+                $vocationalDates = [];
+                $studies = [];
+                $employeeRelatedPerson = [];
+                if ($data['_status'] == 'unduplicate') {
+                    //insert
+                    $employee = new Employee();
+                    $employee->fill($data)->save();
 
-                if ($data['dates_of_school_elementary']) {
-                    $elementaryDates = explode('-', $data['dates_of_school_elementary']);
-                    if ($elementaryDates && count($elementaryDates) > 1) {
-                        $education['elementary_period_attendance_from'] = $elementaryDates[0] ?? 'N/A';
-                        $education['elementary_period_attendance_to'] = $elementaryDates[1] ?? 'N/A';
-                        $education['elementary_year_graduated'] = $elementaryDates[1] ?? 'N/A';
-                    }
-                }
-                if ($data['dates_of_school_highschool']) {
-                    $highSchoolDates = explode('-', $data['dates_of_school_highschool']);
-                    if ($highSchoolDates && count($highSchoolDates) > 1) {
-                        $education['secondary_period_attendance_from'] = $highSchoolDates[0] ?? 'N/A';
-                        $education['secondary_period_attendance_to'] = $highSchoolDates[1] ?? 'N/A';
-                        $education['secondary_year_graduated'] = $highSchoolDates[1] ?? 'N/A';
-                    }
-                }
-                if ($data['dates_of_school_college']) {
-                    $collegeDates = explode('-', $data['dates_of_school_college']);
-                    if ($collegeDates && count($collegeDates) > 1) {
-                        $education['college_period_attendance_from'] = $collegeDates[0] ?? 'N/A';
-                        $education['college_period_attendance_to'] = $collegeDates[1] ?? 'N/A';
-                        $education['college_year_graduated'] = $collegeDates[1] ?? 'N/A';
-                    }
-                }
-                if ($data['dates_of_school_vocational']) {
-                    $vocationalDates = explode('-', $data['dates_of_school_vocational']);
-                    if ($vocationalDates && count($vocationalDates) > 1) {
-                        $education['vocationalcourse_period_attendance_from'] = $vocationalDates[0] ?? 'N/A';
-                        $education['vocationalcourse_period_attendance_to'] = $vocationalDates[1] ?? 'N/A';
-                        $education['vocationalcourse_year_graduated'] = $vocationalDates[1] ?? 'N/A';
-                    }
-                }
-                if ($data['childrens'] && $data['childrens'] != 'N/A') {
-                    $children = explode(',', $data['childrens']);
-                    if ($children) {
-                        foreach ($children as $child) {
-                            $childrenInformation = explode('/', $child);
-                            $employeeRelatedPerson[] = [
-                                'relationship',
-                                'type' => EmployeeRelatedPersonType::CHILD,
-                                'relationship' => EmployeeRelatedPersonType::CHILD,
-                                'name' => $childrenInformation[0] ?? 'N/A',
-                                'date_of_birth' => $childrenInformation[1] ?? null,
-                                'street' => 'N/A',
-                                'brgy' => 'N/A',
-                                'city' => 'N/A',
-                                'zip' => 'N/A',
-                                'province' => 'N/A',
-                                'occupation' => 'N/A',
-                                'contact_no' => 'N/A',
-                            ];
+                    if ($data['dates_of_school_elementary']) {
+                        $elementaryDates = explode('-', $data['dates_of_school_elementary']);
+                        if ($elementaryDates && count($elementaryDates) > 1) {
+                            $education['elementary_period_attendance_from'] = $elementaryDates[0] ?? 'N/A';
+                            $education['elementary_period_attendance_to'] = $elementaryDates[1] ?? 'N/A';
+                            $education['elementary_year_graduated'] = $elementaryDates[1] ?? 'N/A';
                         }
                     }
-                }
+                    if ($data['dates_of_school_highschool']) {
+                        $highSchoolDates = explode('-', $data['dates_of_school_highschool']);
+                        if ($highSchoolDates && count($highSchoolDates) > 1) {
+                            $education['secondary_period_attendance_from'] = $highSchoolDates[0] ?? 'N/A';
+                            $education['secondary_period_attendance_to'] = $highSchoolDates[1] ?? 'N/A';
+                            $education['secondary_year_graduated'] = $highSchoolDates[1] ?? 'N/A';
+                        }
+                    }
+                    if ($data['dates_of_school_college']) {
+                        $collegeDates = explode('-', $data['dates_of_school_college']);
+                        if ($collegeDates && count($collegeDates) > 1) {
+                            $education['college_period_attendance_from'] = $collegeDates[0] ?? 'N/A';
+                            $education['college_period_attendance_to'] = $collegeDates[1] ?? 'N/A';
+                            $education['college_year_graduated'] = $collegeDates[1] ?? 'N/A';
+                        }
+                    }
+                    if ($data['dates_of_school_vocational']) {
+                        $vocationalDates = explode('-', $data['dates_of_school_vocational']);
+                        if ($vocationalDates && count($vocationalDates) > 1) {
+                            $education['vocationalcourse_period_attendance_from'] = $vocationalDates[0] ?? 'N/A';
+                            $education['vocationalcourse_period_attendance_to'] = $vocationalDates[1] ?? 'N/A';
+                            $education['vocationalcourse_year_graduated'] = $vocationalDates[1] ?? 'N/A';
+                        }
+                    }
+                    if ($data['childrens'] && $data['childrens'] != 'N/A') {
+                        $children = explode(',', $data['childrens']);
+                        if ($children) {
+                            foreach ($children as $child) {
+                                $childrenInformation = explode('/', $child);
+                                $employeeRelatedPerson[] = [
+                                    'relationship',
+                                    'type' => EmployeeRelatedPersonType::CHILD,
+                                    'relationship' => EmployeeRelatedPersonType::CHILD,
+                                    'name' => $childrenInformation[0] ?? 'N/A',
+                                    'date_of_birth' => $childrenInformation[1] ?? null,
+                                    'street' => 'N/A',
+                                    'brgy' => 'N/A',
+                                    'city' => 'N/A',
+                                    'zip' => 'N/A',
+                                    'province' => 'N/A',
+                                    'occupation' => 'N/A',
+                                    'contact_no' => 'N/A',
+                                ];
+                            }
+                        }
+                    }
 
-                //permanenet address
-                $address_pre = [
-                    'street' => $data['pre_street'] ?? 'N/A',
-                    'brgy' => $data['pre_brgy'] ?? 'N/A',
-                    'city' => $data['pre_city'] ?? 'N/A',
-                    'zip' => $data['pre_zip'] ?? 'N/A',
-                    'province' => $data['pre_province'] ?? 'N/A',
-                    'type' => EmployeeAddressType::PRESENT,
-                ];
-                $address_per = [
-                    'street' => $data['per_street'] ?? 'N/A',
-                    'brgy' => $data['per_brgy'] ?? 'N/A',
-                    'city' => $data['per_city'] ?? 'N/A',
-                    'zip' => $data['per_zip'] ?? 'N/A',
-                    'province' => $data['per_province'] ?? 'N/A',
-                    'type' => EmployeeAddressType::PERMANENT,
-                ];
+                    //permanenet address
+                    $address_pre = [
+                        'street' => $data['pre_street'] ?? 'N/A',
+                        'brgy' => $data['pre_brgy'] ?? 'N/A',
+                        'city' => $data['pre_city'] ?? 'N/A',
+                        'zip' => $data['pre_zip'] ?? 'N/A',
+                        'province' => $data['pre_province'] ?? 'N/A',
+                        'type' => EmployeeAddressType::PRESENT,
+                    ];
+                    $address_per = [
+                        'street' => $data['per_street'] ?? 'N/A',
+                        'brgy' => $data['per_brgy'] ?? 'N/A',
+                        'city' => $data['per_city'] ?? 'N/A',
+                        'zip' => $data['per_zip'] ?? 'N/A',
+                        'province' => $data['per_province'] ?? 'N/A',
+                        'type' => EmployeeAddressType::PERMANENT,
+                    ];
 
-                //affiliation information
-                $affiliation = [
-                    'club_organization_name' => 'N/A',
-                    'membership_type' => 'N/A',
-                    'status' => 'N/A',
-                    'membership_exp_date' => null,
-                ];
+                    //affiliation information
+                    $affiliation = [
+                        'club_organization_name' => 'N/A',
+                        'membership_type' => 'N/A',
+                        'status' => 'N/A',
+                        'membership_exp_date' => null,
+                    ];
 
-                //employee record information
-                $employeeRecord = [
-                    'date_to' => 'N/A',
-                    'date_from' => 'N/A',
-                    'position_title' => 'N/A',
-                    'company_name' => 'N/A',
-                    'monthly_salary' => 'N/A',
-                    'status_of_appointment' => 'N/A',
-                ];
+                    //employee record information
+                    $employeeRecord = [
+                        'date_to' => 'N/A',
+                        'date_from' => 'N/A',
+                        'position_title' => 'N/A',
+                        'company_name' => 'N/A',
+                        'monthly_salary' => 'N/A',
+                        'status_of_appointment' => 'N/A',
+                    ];
 
-                //elementary
-                $employeeEducation[] = [
-                    'honors_received' => $data['honor_of_school_elementary'] ?? 'N/A',
-                    'degree_earned_of_school' => $data['elementary_degree_earned_of_school'] ?? 'N/A',
-                    'year_graduated' => 'N/A',
-                    'period_attendance_from' => 'N/A',
-                    'period_attendance_to' => 'N/A',
-                    'education' => $data['elementary_education'] ?? 'N/A',
-                    'type' => EmployeeEducationType::ELEMENTARY,
-                    'name' =>  $data['elementary_name'] ?? 'N/A',
-                ];
+                    //elementary
+                    $employeeEducation[] = [
+                        'honors_received' => $data['honor_of_school_elementary'] ?? 'N/A',
+                        'degree_earned_of_school' => $data['elementary_degree_earned_of_school'] ?? 'N/A',
+                        'year_graduated' => 'N/A',
+                        'period_attendance_from' => 'N/A',
+                        'period_attendance_to' => 'N/A',
+                        'education' => $data['elementary_education'] ?? 'N/A',
+                        'type' => EmployeeEducationType::ELEMENTARY,
+                        'name' =>  $data['elementary_name'] ?? 'N/A',
+                    ];
 
-                //secondary
-                $employeeEducation[] = [
-                    'honors_received' => $data['honor_of_school_highschool'] ?? 'N/A',
-                    'degree_earned_of_school' => $data['secondary_degree_earned_of_school'] ?? 'N/A',
-                    'year_graduated' => 'N/A',
-                    'period_attendance_from' => 'N/A',
-                    'period_attendance_to' => 'N/A',
-                    'education' => $data['secondary_education'] ?? 'N/A',
-                    'type' => EmployeeEducationType::SECONDARY,
-                    'name' =>  $data['secondary_name'] ?? 'N/A',
-                ];
+                    //secondary
+                    $employeeEducation[] = [
+                        'honors_received' => $data['honor_of_school_highschool'] ?? 'N/A',
+                        'degree_earned_of_school' => $data['secondary_degree_earned_of_school'] ?? 'N/A',
+                        'year_graduated' => 'N/A',
+                        'period_attendance_from' => 'N/A',
+                        'period_attendance_to' => 'N/A',
+                        'education' => $data['secondary_education'] ?? 'N/A',
+                        'type' => EmployeeEducationType::SECONDARY,
+                        'name' =>  $data['secondary_name'] ?? 'N/A',
+                    ];
 
-                //college
-                $employeeEducation[] = [
-                    'honors_received' => $data['honor_of_school_college'] ?? 'N/A',
-                    'degree_earned_of_school' => $data['college_degree_earned_of_school'] ?? 'N/A',
-                    'year_graduated' => 'N/A',
-                    'period_attendance_from' => 'N/A',
-                    'period_attendance_to' => 'N/A',
-                    'education' => $data['college_education'] ?? 'N/A',
-                    'type' => EmployeeEducationType::COLLEGE,
-                    'name' =>  $data['college_name'] ?? 'N/A',
-                ];
+                    //college
+                    $employeeEducation[] = [
+                        'honors_received' => $data['honor_of_school_college'] ?? 'N/A',
+                        'degree_earned_of_school' => $data['college_degree_earned_of_school'] ?? 'N/A',
+                        'year_graduated' => 'N/A',
+                        'period_attendance_from' => 'N/A',
+                        'period_attendance_to' => 'N/A',
+                        'education' => $data['college_education'] ?? 'N/A',
+                        'type' => EmployeeEducationType::COLLEGE,
+                        'name' =>  $data['college_name'] ?? 'N/A',
+                    ];
 
-                //vocational
-                $employeeEducation[] = [
-                    'honors_received' => $data['honor_of_school_vocational'] ?? 'N/A',
-                    'degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school'] ?? 'N/A',
-                    'year_graduated' => 'N/A',
-                    'period_attendance_from' => 'N/A',
-                    'period_attendance_to' => 'N/A',
-                    'education' => $data['vocationalcourse_education'] ?? 'N/A',
-                    'type' => EmployeeEducationType::VOCATIONAL,
-                    'name' =>  $data['vocationalcourse_name'] ?? 'N/A',
-                ];
-                //father information
-                $employeeRelatedPerson[] = [
-                    'relationship',
-                    'type' => EmployeeRelatedPersonType::FATHER,
-                    'relationship' => EmployeeRelatedPersonType::FATHER,
-                    'name' => $data['father_name'] ?? 'N/A',
-                    'date_of_birth' => null,
-                    'street' => 'N/A',
-                    'brgy' => 'N/A',
-                    'city' => 'N/A',
-                    'zip' => 'N/A',
-                    'province' => 'N/A',
-                    'occupation' => 'N/A',
-                    'contact_no' => 'N/A',
-                ];
-                //contact related information
-                $employeeRelatedPerson[] = [
-                    'relationship',
-                    'type' => EmployeeRelatedPersonType::CONTACT_PERSON,
-                    'relationship' => $data['person_to_contact_relationship'],
-                    'name' => $data['person_to_contact_name'] ?? 'N/A',
-                    'date_of_birth' => null,
-                    'street' => $data['person_to_contact_street'] ?? 'N/A',
-                    'brgy' => $data['person_to_contact_brgy' ?? 'N/A'] ?? 'N/A',
-                    'city' => $data['person_to_contact_city'] ?? 'N/A',
-                    'zip' => $data['person_to_contact_zip'] ?? 'N/A',
-                    'province' => $data['person_to_contact_province'] ?? 'N/A',
-                    'occupation' => $data['person_to_contact_no'] ?? 'N/A',
-                    'contact_no' => 'N/A',
-                ];
-                //mother information
-                $employeeRelatedPerson[] = [
-                    'relationship',
-                    'type' => EmployeeRelatedPersonType::MOTHER,
-                    'relationship' => EmployeeRelatedPersonType::MOTHER,
-                    'name' => $data['mother_name'] ?? 'N/A',
-                    'date_of_birth' => null,
-                    'street' => 'N/A',
-                    'brgy' => 'N/A',
-                    'city' => 'N/A',
-                    'zip' => 'N/A',
-                    'province' => 'N/A',
-                    'occupation' => 'N/A',
-                    'contact_no' => 'N/A',
-                ];
-                //spouse information
-                $employeeRelatedPerson[] = [
-                    'relationship',
-                    'type' => EmployeeRelatedPersonType::SPOUSE,
-                    'relationship' => EmployeeRelatedPersonType::SPOUSE,
-                    'name' => $data['spouse_name'] ?? 'N/A',
-                    'date_of_birth' => $data['spouse_datebirth'],
-                    'street' => 'N/A',
-                    'brgy' => 'N/A',
-                    'city' => 'N/A',
-                    'zip' => 'N/A',
-                    'province' => 'N/A',
-                    'occupation' => $data['spouse_occupation'] ?? 'N/A',
-                    'contact_no' => $data['spouse_contact_no'] ?? 'N/A',
-                ];
+                    //vocational
+                    $employeeEducation[] = [
+                        'honors_received' => $data['honor_of_school_vocational'] ?? 'N/A',
+                        'degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school'] ?? 'N/A',
+                        'year_graduated' => 'N/A',
+                        'period_attendance_from' => 'N/A',
+                        'period_attendance_to' => 'N/A',
+                        'education' => $data['vocationalcourse_education'] ?? 'N/A',
+                        'type' => EmployeeEducationType::VOCATIONAL,
+                        'name' =>  $data['vocationalcourse_name'] ?? 'N/A',
+                    ];
+                    //father information
+                    $employeeRelatedPerson[] = [
+                        'relationship',
+                        'type' => EmployeeRelatedPersonType::FATHER,
+                        'relationship' => EmployeeRelatedPersonType::FATHER,
+                        'name' => $data['father_name'] ?? 'N/A',
+                        'date_of_birth' => null,
+                        'street' => 'N/A',
+                        'brgy' => 'N/A',
+                        'city' => 'N/A',
+                        'zip' => 'N/A',
+                        'province' => 'N/A',
+                        'occupation' => 'N/A',
+                        'contact_no' => 'N/A',
+                    ];
+                    //contact related information
+                    $employeeRelatedPerson[] = [
+                        'relationship',
+                        'type' => EmployeeRelatedPersonType::CONTACT_PERSON,
+                        'relationship' => $data['person_to_contact_relationship'],
+                        'name' => $data['person_to_contact_name'] ?? 'N/A',
+                        'date_of_birth' => null,
+                        'street' => $data['person_to_contact_street'] ?? 'N/A',
+                        'brgy' => $data['person_to_contact_brgy' ?? 'N/A'] ?? 'N/A',
+                        'city' => $data['person_to_contact_city'] ?? 'N/A',
+                        'zip' => $data['person_to_contact_zip'] ?? 'N/A',
+                        'province' => $data['person_to_contact_province'] ?? 'N/A',
+                        'occupation' => $data['person_to_contact_no'] ?? 'N/A',
+                        'contact_no' => 'N/A',
+                    ];
+                    //mother information
+                    $employeeRelatedPerson[] = [
+                        'relationship',
+                        'type' => EmployeeRelatedPersonType::MOTHER,
+                        'relationship' => EmployeeRelatedPersonType::MOTHER,
+                        'name' => $data['mother_name'] ?? 'N/A',
+                        'date_of_birth' => null,
+                        'street' => 'N/A',
+                        'brgy' => 'N/A',
+                        'city' => 'N/A',
+                        'zip' => 'N/A',
+                        'province' => 'N/A',
+                        'occupation' => 'N/A',
+                        'contact_no' => 'N/A',
+                    ];
+                    //spouse information
+                    $employeeRelatedPerson[] = [
+                        'relationship',
+                        'type' => EmployeeRelatedPersonType::SPOUSE,
+                        'relationship' => EmployeeRelatedPersonType::SPOUSE,
+                        'name' => $data['spouse_name'] ?? 'N/A',
+                        'date_of_birth' => $data['spouse_datebirth'],
+                        'street' => 'N/A',
+                        'brgy' => 'N/A',
+                        'city' => 'N/A',
+                        'zip' => 'N/A',
+                        'province' => 'N/A',
+                        'occupation' => $data['spouse_occupation'] ?? 'N/A',
+                        'contact_no' => $data['spouse_contact_no'] ?? 'N/A',
+                    ];
 
-                //master studies
-                $studies[] = [
-                    'title' => $data['master_thesis_name'] ?? 'N/A',
-                    'date' => $data['master_thesis_date'],
-                    'type' => EmployeeStudiesType::MASTER,
-                ];
-                //doctorate studies
-                $studies[] = [
-                    'title' => $data['doctorate_desertation_name'] ?? 'N/A',
-                    'date' => $data['doctorate_desertation_date'],
-                    'type' => EmployeeStudiesType::DOCTOR,
-                ];
-                //professional studies
-                $studies[] = [
-                    'title' => $data['professional_license_name'] ?? 'N/A',
-                    'date' => $data['professional_license_date'],
-                    'type' => EmployeeStudiesType::PROFESSIONAL,
-                ];
+                    //master studies
+                    $studies[] = [
+                        'title' => $data['master_thesis_name'] ?? 'N/A',
+                        'date' => $data['master_thesis_date'],
+                        'type' => EmployeeStudiesType::MASTER,
+                    ];
+                    //doctorate studies
+                    $studies[] = [
+                        'title' => $data['doctorate_desertation_name'] ?? 'N/A',
+                        'date' => $data['doctorate_desertation_date'],
+                        'type' => EmployeeStudiesType::DOCTOR,
+                    ];
+                    //professional studies
+                    $studies[] = [
+                        'title' => $data['professional_license_name'] ?? 'N/A',
+                        'date' => $data['professional_license_date'],
+                        'type' => EmployeeStudiesType::PROFESSIONAL,
+                    ];
 
-                //externalEmployee
-                $externalEmployee[] = [
-                    'position_title' => 'N/A',
-                    'company_name' => $data['company'],
-                    'salary' => 'N/A',
-                    'status_of_appointment' => 'N/A',
-                    'date_from' => 'N/A',
-                    'date_to' => 'N/A',
-                ];
+                    //externalEmployee
+                    $externalEmployee[] = [
+                        'position_title' => 'N/A',
+                        'company_name' => $data['company'],
+                        'salary' => 'N/A',
+                        'status_of_appointment' => 'N/A',
+                        'date_from' => 'N/A',
+                        'date_to' => 'N/A',
+                    ];
 
-                //eligibility
-                $eligibility = [
-                    'program_module' => 'N/A',
-                    'certificate_lvl' => 'N/A',
-                    'status' => 'N/A',
-                    'cert_exp_date' => 'N/A',
-                ];
+                    //eligibility
+                    $eligibility = [
+                        'program_module' => 'N/A',
+                        'certificate_lvl' => 'N/A',
+                        'status' => 'N/A',
+                        'cert_exp_date' => 'N/A',
+                    ];
 
-                //employment
-                $data['atm'] = null;
-                $data['status'] = 'active';
-                $employee->company_employments()->create($data);
+                    //employment
+                    $data['atm'] = null;
+                    $data['status'] = 'active';
+                    $employee->company_employments()->create($data);
 
-                $employee->employee_externalwork()->create($externalEmployee);
-                //$employee->employment_records()->create($employeeRecord);
-                $employee->employee_address()->create($address_pre);
-                $employee->employee_address()->create($address_per);
-                $employee->employee_affiliation()->create($affiliation);
-                //$employee->employee_eligibility()->create($eligibility);
-                foreach ($employeeRelatedPerson as $data) {
-                    $employee->employee_related_person()->create($data);
-                }
-                foreach ($employeeEducation as $data) {
-                    $employee->employee_education()->create($data);
-                }
-                foreach ($studies as $data) {
-                    $employee->employee_studies()->create($data);
+                    $employee->employee_externalwork()->create($externalEmployee);
+                    //$employee->employment_records()->create($employeeRecord);
+                    $employee->employee_address()->create($address_pre);
+                    $employee->employee_address()->create($address_per);
+                    $employee->employee_affiliation()->create($affiliation);
+                    //$employee->employee_eligibility()->create($eligibility);
+                    $employee->employee_related_person()->createMany($employeeRelatedPerson);
+                    $employee->employee_education()->createMany($employeeEducation);
+                    $employee->employee_studies()->createMany($studies);
                 }
             }
-        }
+        });
         return response()->json([
             'message' => 'Done save data',
             'data' => [],

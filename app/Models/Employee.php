@@ -97,7 +97,7 @@ class Employee extends Model
         return $this->hasMany(EmployeeAddress::class);
     }
 
-    public function current_employement(): HasOne
+    public function current_employment(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class)->where("status", "=", "current")
             ->with("employee_salarygrade", "employee_department");
@@ -180,13 +180,13 @@ class Employee extends Model
 
     public function mother(): HasOne
     {
-        $a = $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::MOTHER);
+        $a = $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::MOTHER)->withDefault();
         return $a;
     }
 
     public function father(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::FATHER);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::FATHER)->withDefault();
     }
 
     public function contact_person(): HasOne

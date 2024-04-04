@@ -61,10 +61,12 @@ class StoreEmployeeLeavesRequest extends FormRequest
             'date_of_absence_from' => [
                 "required",
                 "date",
+                "date_format:Y-m-d",
             ],
             'date_of_absence_to' => [
                 "required",
                 "date",
+                "date_format:Y-m-d",
                 "after:date_of_absence_from"
             ],
             'reason_for_absence' => [

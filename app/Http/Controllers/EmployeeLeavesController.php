@@ -7,7 +7,7 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
-use App\Models\Employee;
+use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 
 class EmployeeLeavesController extends Controller
@@ -23,12 +23,13 @@ class EmployeeLeavesController extends Controller
      */
     public function index()
     {
-        $main = EmployeeLeaves::with('employee', 'department', 'project')->paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $main = $this->leaveRequestService->getAll();
+        $paginated = EmployeeLeaveResource::collection($main);
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'LeaveForm Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+        ]);
     }
 
     /**
