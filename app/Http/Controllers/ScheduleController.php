@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FilterByScheduleGroupType;
-use App\Models\ScheduleDepartment;
-use App\Http\Requests\StoreScheduleDepartmentRequest;
-use App\Http\Requests\UpdateScheduleDepartmentRequest;
+use App\Models\Schedule;
+use App\Http\Requests\StoreScheduleRequest;
+use App\Http\Requests\UpdateScheduleRequest;
 
 class ScheduleDepartmentController extends Controller
 {
@@ -14,7 +14,7 @@ class ScheduleDepartmentController extends Controller
      */
     public function index()
     {
-        $main = ScheduleDepartment::with("department", "employee")->paginate(15);
+        $main = Schedule::with("department", "employee")->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -32,9 +32,9 @@ class ScheduleDepartmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreScheduleDepartmentRequest $request)
+    public function store(StoreScheduleRequest $request)
     {
-        $main = new ScheduleDepartment();
+        $main = new Schedule();
         $main->fill($request->validated());
         $data = json_decode('{}');
         $main->daysOfWeek = json_encode($request->daysOfWeek);
@@ -54,7 +54,7 @@ class ScheduleDepartmentController extends Controller
      */
     public function show($id)
     {
-        $main = ScheduleDepartment::with("department", "employee")->find($id);
+        $main = Schedule::with("department", "employee")->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -72,7 +72,7 @@ class ScheduleDepartmentController extends Controller
      */
     public function getGroupType(FilterByScheduleGroupType $request)
     {
-        $main = ScheduleDepartment::with("department", "employee")->where("groupType", $request);
+        $main = Schedule::with("department", "employee")->where("groupType", $request);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
@@ -88,16 +88,16 @@ class ScheduleDepartmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ScheduleDepartment $scheduleDepartment)
+    public function edit(Schedule $scheduleDepartment)
     {
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateScheduleDepartmentRequest $request, $id)
+    public function update(UpdateScheduleRequest $request, $id)
     {
-        $main = ScheduleDepartment::find($id);
+        $main = Schedule::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
@@ -123,7 +123,7 @@ class ScheduleDepartmentController extends Controller
      */
     public function destroy($id)
     {
-        $main = ScheduleDepartment::find($id);
+        $main = Schedule::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             if ($main->delete()) {

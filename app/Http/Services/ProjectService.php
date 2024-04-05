@@ -15,7 +15,9 @@ class ProjectService
 
     public function getAll()
     {
-        return $this->project->get();
+        return $this->project->with([
+            'project_has_employees',
+        ])->get();
     }
 
     public function get(Project $project)

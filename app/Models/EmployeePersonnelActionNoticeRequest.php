@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Exception;
 use App\Traits\HasUser;
 use App\Traits\HasApproval;
 use App\Enums\PersonelAccessForm;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\DB;
 use App\Enums\ManpowerRequestStatus;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
@@ -114,9 +112,9 @@ class EmployeePersonnelActionNoticeRequest extends Model
     {
         return $query->where("request_status", "=", "Pending");
     }
-    public function scopeCreatedBy(Builder $query, $id): Builder
+    public function scopeCreatedBy(Builder $query, $id): void
     {
-        return $query->where("created_by", $id);
+        $query->where("created_by", $id);
     }
 
     public function jobapplicant(): HasOne
@@ -156,25 +154,23 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
     public function completeRequestStatus()
     {
-        DB::transaction(function () {
-            switch ($this->type) {
-                case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
-                    $this->hireRequest();
-                    break;
-                case EmployeePersonnelActionNoticeRequest::TRANSFER:
-                    $this->transferRequest();
-                    break;
-                case EmployeePersonnelActionNoticeRequest::PROMOTION:
-                    $this->promotionRequest();
-                    break;
-                case EmployeePersonnelActionNoticeRequest::TERMINATION:
-                    $this->terminationRequest();
-                    break;
-            }
-            $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
-            $this->save();
-            $this->refresh();
-        });
+        switch ($this->type) {
+            case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
+                $this->hireRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::TRANSFER:
+                $this->transferRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::PROMOTION:
+                $this->promotionRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::TERMINATION:
+                $this->terminationRequest();
+                break;
+        }
+        $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
+        $this->save();
+        $this->refresh();
     }
     public function denyRequestStatus()
     {
@@ -356,16 +352,18 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $interWorkExp->save();
 
         InternalWorkExperience::create([
-            'department' => $this->new_section,
-            'immediate_supervisor' => $this->immediate_supervisor ?? "N/A",
-            'work_location' => $this->new_location,
+            // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
+            'department_id' => $this->new_section_id ?? $interWorkExp->department_id,
+            'work_location' => $this->new_location ?? $interWorkExp->work_location,
             'date_from' => $this->date_of_effictivity,
-            'employee_id' => $this->employee_id,
-            'position_title' => $this->position_title,
-            'employment_status' => $this->employment_status,
-            'actual_salary' => $this->actual_salary,
-            'hire_source' => $this->hire_source,
-            'salary_grades' => $this->salary_grades,
+            // NO CHANGES ( COPY FROM OLD )
+            'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
+            'employee_id' => $interWorkExp->employee_id,
+            'position_title' => $interWorkExp->position_title,
+            'employment_status' => $interWorkExp->employment_status,
+            'hire_source' => $interWorkExp->hire_source,
+            'salary_grades' => $interWorkExp->salary_grades,
+            'actual_salary' => $interWorkExp->actual_salary,
             'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
             'date_to' => null,
         ]);
@@ -387,18 +385,20 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $interWorkExp->save();
 
         InternalWorkExperience::create([
+            // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
+            'position_title' => $this->new_position ?? $interWorkExp->position_title,
+            'employment_status' => $this->new_employment_status ?? $interWorkExp->position_title,
+            'salary_grades' => $this->new_salary_grades ?? $interWorkExp->salary_grades,
+            'actual_salary' => $this->salarygrade?->monthly_salary_amount ?? "",
+            'date_from' => $this->date_of_effictivity,
+            // NO CHANGES ( COPY FROM OLD )
             'employee_id' => $interWorkExp->employee_id,
-            'position_title' => $this->designation_position,
-            'employment_status' => $this->new_employment_status,
-            'department' => $interWorkExp->department,
+            'department_id' => $interWorkExp->department_id,
             'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
-            'actual_salary' => $this->salarygrade?->monthly_salary_amount,
-            'salary_grades' => $this->salary_grades,
-            'date_from' => $this->date_from,
             'work_location' => $interWorkExp->work_location,
             'hire_source' => $interWorkExp->hire_source,
-            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
             'date_to' => null,
+            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
         ]);
     }
     /** Termination Employee PAN  request approved
@@ -422,5 +422,9 @@ class EmployeePersonnelActionNoticeRequest extends Model
             'reason_for_termination' => $this->reasons_for_termination,
             'eligible_for_rehire' => $this->eligible_for_rehire,
         ]);
+    }
+    public function rehire()
+    {
+        // JUST A PLACEHOLDER WILL PROBABLY BE USED SOON
     }
 }

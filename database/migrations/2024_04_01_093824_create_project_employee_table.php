@@ -15,7 +15,7 @@ return new class () extends Migration {
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('employee_id');
             $table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade');
-            $table->foreign('employee_id')->references('id')->on('projects')->onUpdate('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onUpdate('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

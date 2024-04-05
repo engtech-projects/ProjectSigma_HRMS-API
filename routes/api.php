@@ -47,6 +47,7 @@ use App\Http\Controllers\Actions\{
     Approvals\DisapproveApproval,
     Approvals\ApproveApproval,
     SalaryGrade\SalaryGradeLevelListController,
+    Attendance\EmployeeDtrController,
     ProjectMember\AttachProjectEmployee,
     ProjectMember\ProjectEmployeeList,
     ProjectMember\ProjectMemberList
@@ -56,6 +57,7 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -159,6 +161,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
             Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
         });
+        Route::post('dtr', EmployeeDtrController::class);
     });
 
     Route::prefix('project-monitoring')->group(function () {

@@ -2,10 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\ScheduleDepartment;
+use App\Models\Schedule;
 use App\Models\User;
 
-class ScheduleDepartmentPolicy
+class SchedulePolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -18,7 +18,7 @@ class ScheduleDepartmentPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, ScheduleDepartment $scheduleDepartment): bool
+    public function view(User $user, Schedule $scheduleDepartment): bool
     {
         //
     }
@@ -34,7 +34,7 @@ class ScheduleDepartmentPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, ScheduleDepartment $scheduleDepartment): bool
+    public function update(User $user, Schedule $scheduleDepartment): bool
     {
         //
     }
@@ -42,7 +42,7 @@ class ScheduleDepartmentPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, ScheduleDepartment $scheduleDepartment): bool
+    public function delete(User $user, Schedule $scheduleDepartment): bool
     {
         //
     }
@@ -50,7 +50,7 @@ class ScheduleDepartmentPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, ScheduleDepartment $scheduleDepartment): bool
+    public function restore(User $user, Schedule $scheduleDepartment): bool
     {
         //
     }
@@ -58,7 +58,7 @@ class ScheduleDepartmentPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, ScheduleDepartment $scheduleDepartment): bool
+    public function forceDelete(User $user, Schedule $scheduleDepartment): bool
     {
         //
     }

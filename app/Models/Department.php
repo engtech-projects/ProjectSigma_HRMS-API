@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasAttendanceLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -22,4 +23,10 @@ class Department extends Model
         'created_at',
     ];
 
+
+    /**
+     * MODEL
+     * RELATED
+     * RELATION
+     */
 }

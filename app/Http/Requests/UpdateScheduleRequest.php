@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreScheduleDepartmentRequest extends FormRequest
+class UpdateScheduleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,7 @@ class StoreScheduleDepartmentRequest extends FormRequest
     {
         return [
             'groupType' => [
-                "required",
+                "nullable",
                 "string",
                 "in:department,project,employee"
             ],
@@ -48,7 +48,7 @@ class StoreScheduleDepartmentRequest extends FormRequest
                 "exclude_if:groupType,department,project",
             ],
             'scheduleType' => [
-                "required",
+                "nullable",
                 "string",
                 "in:Regular,Irregular",
             ],
@@ -59,26 +59,26 @@ class StoreScheduleDepartmentRequest extends FormRequest
                 "exclude_if:scheduleType,!=,Regular"
             ],
             'daysOfWeek.*' => [
-                "required",
+                "nullable",
                 "integer",
                 "min:0",
                 "max:6",
             ],
             'startTime' => [
-                "required",
+                "nullable",
                 "date_format:H:i:s",
             ],
             'endTime' => [
-                "required",
+                "nullable",
                 "date_format:H:i:s",
                 "after:startTime",
             ],
             'startRecur' => [
-                "required",
+                "nullable",
                 "date_format:Y-m-d",
             ],
             'endRecur' => [
-                "required",
+                "nullable",
                 "date_format:Y-m-d",
                 "after_or_equal:startRecur"
             ],
