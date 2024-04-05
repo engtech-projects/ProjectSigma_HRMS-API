@@ -53,14 +53,14 @@ class EmployeeDtrController extends Controller
             $dateSchedule = $schedule->startRecur->format('F j, Y');
             return $dateSchedule;
         })->toArray();
+        $employee->employee_leave = $employee->employee_leave->where('with_pay', true);
 
         $employee->employee_schedule = collect($employee->employee_schedule)->map(function ($schedule) {
             return $schedule;
         });
-        $employee->employee_leave = $employee->employee_leave->where('with_pay', true);
-        $employee->employee_schedule = $this->filterScheduleByType($employee->employee_schedule);
 
 
+        $employee->employee_schedule = $this->filterScheduleByGroupType($employee->employee_schedule);
         return [
             "id" => $employee->id,
             "employee_name" => $employee->fullname_first,
@@ -71,16 +71,29 @@ class EmployeeDtrController extends Controller
             "overtime" => OvertimeResource::collection($employee->employee_overtime),
             "employee_projects" => $employee->employee_has_projects,
         ];
+        return $employee->employee_schedule;
     }
 
     private function filterScheduleByType($schedule)
     {
-        $hasIrregularSchedule = collect($schedule)->flatten(1)->contains('scheduleType', 'Irregular');
 
-        $schedule = collect($schedule)->map(function ($schedule) use ($hasIrregularSchedule) {
-            return $hasIrregularSchedule ? collect($schedule)->where('scheduleType', 'Irregular')->all() : $schedule;
-        })->toArray();
-        $filterSchedule = array_filter($schedule);
-        return $filterSchedule;
+        $schedule = collect($schedule)->map(function ($val) use ($schedule) {
+            $hasIrregSchedule = collect($val)->contains('scheduleType', 'Irregular');
+            $sched = collect($val);
+            return $hasIrregSchedule ? $sched->where('scheduleType', 'Irregular')->values() : $sched->where('scheduleType', 'Regular')->values();
+        })->all();
+        return array_filter($schedule);
+    }
+
+    private function filterScheduleByGroupType($schedule)
+    {
+        $newSched = collect($schedule)->map(function ($schedule) {
+
+            $groupSched = collect($schedule)->groupBy('groupType');
+
+            $groupSched = $this->filterScheduleByType($groupSched);
+            return $groupSched;
+        })->all();
+        return array_filter($newSched);
     }
 }
