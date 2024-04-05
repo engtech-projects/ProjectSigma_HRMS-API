@@ -19,9 +19,11 @@ class StoreEmployeeLeavesRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        $this->merge([
-            "approvals" => json_decode($this->approvals, true)
-        ]);
+        if (gettype($this->hmo_members) == "string") {
+            $this->merge([
+                "approvals" => json_decode($this->approvals, true)
+            ]);
+        }
     }
 
     /**
