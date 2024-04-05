@@ -353,7 +353,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
         InternalWorkExperience::create([
             // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
-            'department_id' => $this->new_section ?? $interWorkExp->department_id,
+            'department_id' => $this->new_section_id ?? $interWorkExp->department_id,
             'work_location' => $this->new_location ?? $interWorkExp->work_location,
             'date_from' => $this->date_of_effictivity,
             // NO CHANGES ( COPY FROM OLD )
