@@ -386,9 +386,9 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
         InternalWorkExperience::create([
             // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
-            'position_title' => $this->designation_position ?? $interWorkExp->position_title,
+            'position_title' => $this->new_position ?? $interWorkExp->position_title,
             'employment_status' => $this->new_employment_status ?? $interWorkExp->position_title,
-            'salary_grades' => $this->salary_grades ?? $interWorkExp->salary_grades,
+            'salary_grades' => $this->new_salary_grades ?? $interWorkExp->salary_grades,
             'actual_salary' => $this->salarygrade?->monthly_salary_amount ?? "",
             'date_from' => $this->date_of_effictivity,
             // NO CHANGES ( COPY FROM OLD )
