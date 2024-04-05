@@ -7,6 +7,7 @@ use App\Enums\RequestApprovalStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 trait HasApproval
 {
@@ -93,6 +94,7 @@ trait HasApproval
                 "message" => "Failed to {$data['status']}. Your approval is for later or already done.",
             ];
         }
+        DB::beginTransaction();
         // SET NEW MAN POWER REQUEST APPROVAL FOR RESOURCE UPDATE
         $approvalToUpdate = collect($this->approvals)->search($userApproval);
         $newApproval = $this->setNewApproval($approvalToUpdate, $data);
@@ -106,6 +108,7 @@ trait HasApproval
         if (collect($newApproval)->last()['status'] === RequestApprovalStatus::APPROVED) {
             $this->completeRequestStatus();
         }
+        DB::commit();
         return [
             "approvals" => $newApproval,
             'success' => true,
