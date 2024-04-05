@@ -6,7 +6,6 @@ use App\Traits\HasUser;
 use App\Traits\HasApproval;
 use App\Enums\PersonelAccessForm;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\DB;
 use App\Enums\ManpowerRequestStatus;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
@@ -155,25 +154,23 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
     public function completeRequestStatus()
     {
-        DB::transaction(function () {
-            switch ($this->type) {
-                case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
-                    $this->hireRequest();
-                    break;
-                case EmployeePersonnelActionNoticeRequest::TRANSFER:
-                    $this->transferRequest();
-                    break;
-                case EmployeePersonnelActionNoticeRequest::PROMOTION:
-                    $this->promotionRequest();
-                    break;
-                case EmployeePersonnelActionNoticeRequest::TERMINATION:
-                    $this->terminationRequest();
-                    break;
-            }
-            $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
-            $this->save();
-            $this->refresh();
-        });
+        switch ($this->type) {
+            case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
+                $this->hireRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::TRANSFER:
+                $this->transferRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::PROMOTION:
+                $this->promotionRequest();
+                break;
+            case EmployeePersonnelActionNoticeRequest::TERMINATION:
+                $this->terminationRequest();
+                break;
+        }
+        $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
+        $this->save();
+        $this->refresh();
     }
     public function denyRequestStatus()
     {
