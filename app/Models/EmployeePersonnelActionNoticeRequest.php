@@ -390,7 +390,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
             'employment_status' => $this->new_employment_status,
             'department' => $interWorkExp->department,
             'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
-            'actual_salary' => $this->salarygrade->monthly_salary_amount,
+            'actual_salary' => $this->salarygrade?->monthly_salary_amount,
             'salary_grades' => $this->salary_grades,
             'date_from' => $this->date_from,
             'work_location' => $interWorkExp->work_location,
