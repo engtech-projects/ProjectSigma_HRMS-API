@@ -47,6 +47,8 @@ class EmployeePersonnelActionNoticeRequest extends Model
         "created_at" => "date:Y-m-d",
         "date_of_effictivity" => "date:Y-m-d",
         "children" => "array",
+        "workexperience" => "array",
+        "education" => "array",
     ];
 
     protected $fillable = [
