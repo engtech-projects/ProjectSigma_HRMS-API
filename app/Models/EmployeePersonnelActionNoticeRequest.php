@@ -19,6 +19,7 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EmployeePersonnelActionNoticeRequest extends Model
@@ -257,20 +258,19 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employee->employee_related_person()->createMany($employeeRelatedPerson);
 
         if ($this->jobapplicantonly->workexperience) {
-            try {
-                $employee->employee_externalwork()->createMany([
-                    [
-                        "date_from" => $this->workexperience->inclusive_dates_from ?? null,
-                        "date_to" => $this->workexperience->inclusive_dates_to ?? null,
-                        "position_title" => $this->workexperience->position_title ?? null,
-                        "company_name" => $this->workexperience->dpt_agency_office_company ?? null,
-                        "salary" => $this->workexperience->monthly_salary ?? null,
-                        "status_of_appointment" => $this->workexperience->status_of_appointment ?? null,
-                    ]
-                ]);
-            } catch (\Exception  $e) {
-                throw new Exception($e);
-            }
+            $externalWorkExp = collect($this->jobapplicantonly->workexperience)->map(function ($workExp) {
+                $dateFrom = Carbon::parse($workExp["inclusive_dates_from"])->format('Y-m-d');
+                $dateTo = Carbon::parse($workExp["inclusive_dates_from"])->format('Y-m-d');
+                return [
+                    "date_from" => $dateFrom ?? null,
+                    "date_to" => $dateTo ?? null,
+                    "position_title" => $workExp["position_title"] ?? null,
+                    "company_name" => $workExp["dpt_agency_office_company"] ?? null,
+                    "salary" => $workExp["monthly_salary"] ?? null,
+                    "status_of_appointment" => $workExp["status_of_appointment"] ?? null,
+                ];
+            });
+            $employee->employee_externalwork()->createMany($externalWorkExp);
         }
         if ($this->jobapplicantonly->children) {
             $children = collect($this->jobapplicantonly->children)->map(function ($child) {
