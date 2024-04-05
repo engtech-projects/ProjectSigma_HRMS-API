@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\RequestStatusType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreTravelOrderRequest extends FormRequest
 {
@@ -96,6 +98,11 @@ class StoreTravelOrderRequest extends FormRequest
             'approvals.*.remarks' => [
                 "nullable",
                 "string",
+            ],
+            'request_status' => [
+                "required",
+                "string",
+                new Enum(RequestStatusType::class)
             ],
         ];
     }

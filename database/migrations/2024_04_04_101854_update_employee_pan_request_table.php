@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('employee_personnel_action_notice_requests', function (Blueprint $table) {
-            if (Schema::hasColumn('employee_personnel_action_notice_requests','employement_status')) {
+            if (Schema::hasColumn('employee_personnel_action_notice_requests', 'employement_status')) {
                 $table->dropColumn('employement_status');
                 $table->enum("employment_status", ['Probationary', 'Regular', 'Project Based']);
             }

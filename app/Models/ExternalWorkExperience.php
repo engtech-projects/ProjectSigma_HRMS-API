@@ -25,4 +25,9 @@ class ExternalWorkExperience extends Model
         'date_from',
         'date_to',
     ];
+
+    protected $casts = [
+        "date_from" => "date:Y-m-d",
+        "date_to" => "date:Y-m-d",
+    ];
 }

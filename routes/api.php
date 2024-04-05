@@ -182,6 +182,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-request', [TravelOrderController::class, 'myRequests']);
         Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
     });
+
     Route::prefix('loans')->group(function () {
         Route::resource('resource', LoansController::class);
         Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
