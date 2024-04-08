@@ -14,7 +14,7 @@ class ProjectEmployeeList extends Controller
      */
     public function __invoke($project)
     {
-        $employee = $project->project_employee->map(function ($employee) {
+        $employee = $project->project_has_employee->map(function ($employee) {
             return $employee->pivot->employee_id;
         });
         return new JsonResponse([
