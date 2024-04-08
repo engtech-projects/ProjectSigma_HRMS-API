@@ -18,13 +18,13 @@ trait HasProjectEmployee
             ])
             ->withtimestamps();
     }
-/*     public function employee_has_projects(): BelongsToMany
+    public function employee_has_projects(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, 'project_employees')
+        return $this->belongsToMany(Project::class, 'project_employees')
             ->withPivot([
                 'project_id',
                 'employee_id'
             ])
             ->withtimestamps();
-    } */
+    }
 }
