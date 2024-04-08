@@ -7,7 +7,7 @@ use App\Models\Schedule;
 use App\Http\Requests\StoreScheduleRequest;
 use App\Http\Requests\UpdateScheduleRequest;
 
-class ScheduleDepartmentController extends Controller
+class ScheduleController extends Controller
 {
     /**
      * Display a listing of the resource.

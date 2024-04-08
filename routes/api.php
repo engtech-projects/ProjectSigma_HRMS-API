@@ -29,7 +29,7 @@ use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\SalaryGradeLevelController;
 use App\Http\Controllers\EmployeeEducationController;
 use App\Http\Controllers\EmployeeBulkUploadController;
-use App\Http\Controllers\ScheduleDepartmentController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\EmployeeAffiliationController;
 use App\Http\Controllers\EmployeeEligibilityController;
 use App\Http\Controllers\PagibigContributionController;
@@ -144,8 +144,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', HMOController::class);
         Route::resource('members', HMOMembersController::class);
     });
-    Route::resource('schedule', ScheduleDepartmentController::class);
-    Route::get('schedules', [ScheduleDepartmentController::class, 'getGroupType']);
+    Route::resource('schedule', ScheduleController::class);
+    Route::get('schedules', [ScheduleController::class, 'getGroupType']);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
     Route::prefix('pan')->group(function () {
