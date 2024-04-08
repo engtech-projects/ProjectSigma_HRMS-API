@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StringRequestApprovalStatus;
 use App\Models\TravelOrder;
 use App\Http\Requests\StoreTravelOrderRequest;
 use App\Http\Requests\UpdateTravelOrderRequest;
@@ -45,6 +46,7 @@ class TravelOrderController extends Controller
     {
         $main = new TravelOrder();
         $main->fill($request->validated());
+        $main->request_status = StringRequestApprovalStatus::PENDING;
         $data = json_decode('{}');
 
         if (!$main->save()) {
