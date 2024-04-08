@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\RequestApprovalStatus;
+use App\Enums\StringRequestApprovalStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -102,7 +103,7 @@ class StoreOvertimeRequest extends FormRequest
             'request_status' => [
                 "required",
                 "string",
-                new Enum(RequestApprovalStatus::class)
+                new Enum(StringRequestApprovalStatus::class)
             ],
         ];
     }

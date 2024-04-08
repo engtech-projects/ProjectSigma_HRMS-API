@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\RequestApprovalStatus;
+use App\Enums\StringRequestApprovalStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -18,7 +19,7 @@ class StoreTravelOrderRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->hmo_members) == "string") {
+        if (gettype($this->approvals) == "string") {
             $this->merge([
                 "approvals" => json_decode($this->approvals, true)
             ]);
@@ -104,7 +105,7 @@ class StoreTravelOrderRequest extends FormRequest
             'request_status' => [
                 "required",
                 "string",
-                new Enum(RequestApprovalStatus::class)
+                new Enum(StringRequestApprovalStatus::class)
             ],
         ];
     }
