@@ -21,7 +21,12 @@ class StoreOvertimeRequest extends FormRequest
     {
         if (gettype($this->approvals) == "string") {
             $this->merge([
-                "approvals" => json_decode($this->approvals, true)
+                "approvals" => json_decode($this->approvals, true),
+            ]);
+        }
+        if (gettype($this->employees) == "string") {
+            $this->merge([
+                "employees" => json_decode($this->employees, true),
             ]);
         }
     }
@@ -33,10 +38,14 @@ class StoreOvertimeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => [
+            'employees' => [
+                "required",
+                "array",
+            ],
+            'employees.*' => [
                 "required",
                 "integer",
-                "exists:employees,id"
+                "exists:employees,id",
             ],
             'project_id' => [
                 "required",

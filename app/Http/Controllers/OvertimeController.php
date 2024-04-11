@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StringRequestApprovalStatus;
 use App\Models\Overtime;
 use App\Http\Requests\StoreOvertimeRequest;
 use App\Http\Requests\UpdateOvertimeRequest;
 use App\Http\Resources\OvertimeResource;
 use App\Http\Services\OvertimeService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class OvertimeController extends Controller
 {
@@ -34,19 +36,25 @@ class OvertimeController extends Controller
      */
     public function store(StoreOvertimeRequest $request)
     {
-        $main = new Overtime();
-        $main->fill($request->validated());
         $data = json_decode('{}');
-
-        if (!$main->save()) {
+        try {
+            DB::transaction(function () use ($request) {
+                foreach ($request->employees as $key) {
+                    $main = new Overtime();
+                    $main->fill($request->validated());
+                    $main->employee_id = $key;
+                    $main->request_status = StringRequestApprovalStatus::PENDING;
+                    $main->save();
+                }
+            });
+            $data->message = "Successfully save.";
+            $data->success = true;
+            return response()->json($data);
+        } catch (\Throwable $th) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
     }
 
     /**
