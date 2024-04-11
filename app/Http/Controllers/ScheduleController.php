@@ -14,7 +14,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $main = Schedule::with("department", "employee")->paginate(15);
+        $main = Schedule::with("department", "employee");
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
