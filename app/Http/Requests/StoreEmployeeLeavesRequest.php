@@ -40,7 +40,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "exists:employees,id",
             ],
             'department_id' => [
-                "required",
+                "nullable",
                 "integer",
                 "exists:departments,id",
             ],
