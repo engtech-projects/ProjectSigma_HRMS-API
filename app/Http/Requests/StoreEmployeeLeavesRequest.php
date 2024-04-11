@@ -19,7 +19,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->hmo_members) == "string") {
+        if (gettype($this->approvals) == "string") {
             $this->merge([
                 "approvals" => json_decode($this->approvals, true)
             ]);
