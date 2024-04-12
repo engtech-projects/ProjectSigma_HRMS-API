@@ -37,7 +37,7 @@ class Loans extends Model
 
     public function employee(): HasOne
     {
-        return $this->hasOne(Employee::class);
+        return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
 
     public function loanPayments(): HasMany
