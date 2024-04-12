@@ -47,6 +47,7 @@ class TravelOrderController extends Controller
         $main = new TravelOrder();
         $main->fill($request->validated());
         $main->request_status = StringRequestApprovalStatus::PENDING;
+        $main->requested_by = auth()->user()->id;
         $data = json_decode('{}');
 
         if (!$main->save()) {

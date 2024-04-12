@@ -66,11 +66,6 @@ class StoreOvertimeRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'prepared_by' => [
-                "required",
-                "integer",
-                "exists:users,id",
-            ],
             'approvals' => [
                 "required",
                 "array",

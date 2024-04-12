@@ -36,6 +36,7 @@ class OvertimeController extends Controller
     {
         $main = new Overtime();
         $main->fill($request->validated());
+        $main->prepared_by = auth()->user()->id;
         $data = json_decode('{}');
 
         if (!$main->save()) {
