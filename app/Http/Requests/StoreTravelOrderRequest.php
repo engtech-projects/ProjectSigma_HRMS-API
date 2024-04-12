@@ -97,11 +97,6 @@ class StoreTravelOrderRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'request_status' => [
-                "nullable",
-                "string",
-                new Enum(StringRequestApprovalStatus::class)
-            ],
         ];
     }
 }
