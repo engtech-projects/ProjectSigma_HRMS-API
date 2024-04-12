@@ -33,10 +33,14 @@ class UpdateOvertimeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => [
+            'employees' => [
                 "nullable",
+                "array",
+            ],
+            'employees.*' => [
+                "required",
                 "integer",
-                "exists:employees,id"
+                "exists:employees,id",
             ],
             'project_id' => [
                 "nullable",

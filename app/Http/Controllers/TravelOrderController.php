@@ -45,9 +45,11 @@ class TravelOrderController extends Controller
     public function store(StoreTravelOrderRequest $request)
     {
         $main = new TravelOrder();
-        $main->fill($request->validated());
+        $validdata = $request->validated();
+        $main->fill($validdata);
         $main->request_status = StringRequestApprovalStatus::PENDING;
         $main->requested_by = auth()->user()->id;
+        $main->employees->attach($validdata["employees"]);
         $data = json_decode('{}');
 
         if (!$main->save()) {

@@ -36,20 +36,14 @@ class OvertimeController extends Controller
      */
     public function store(StoreOvertimeRequest $request)
     {
-        $main = new Overtime();
-        $main->fill($request->validated());
-        $data = json_decode('{}');
         try {
             DB::transaction(function () use ($request) {
-                foreach ($request->employees as $key) {
-                    $main = new Overtime();
-                    $main->fill($request->validated());
-                    $main->employee_id = $key;
-                    $main->request_status = StringRequestApprovalStatus::PENDING;
-                    $main->prepared_by = auth()->user()->id;
-                    $main->save();
-                }
+                $main = new Overtime();
+                $validdata = $request->validated();
+                $main->fill($request->validated());
+                $main->employees->attach($validdata["employees"]);
             });
+            $data = json_decode('{}');
             $data->message = "Successfully save.";
             $data->success = true;
             return response()->json($data);

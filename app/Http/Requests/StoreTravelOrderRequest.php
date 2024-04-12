@@ -93,6 +93,15 @@ class StoreTravelOrderRequest extends FormRequest
                 "nullable",
                 "date",
             ],
+            'employees' => [
+                "nullable",
+                "array",
+            ],
+            'employees.*' => [
+                "nullable",
+                "integer",
+                "exists:employees,id",
+            ],
             'approvals.*.remarks' => [
                 "nullable",
                 "string",
