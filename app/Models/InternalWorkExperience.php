@@ -53,6 +53,12 @@ class InternalWorkExperience extends Model
     }
 
 
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'id', 'employee_id');
+    }
+
+
     public function scopeByEmployee(Builder $query, $id): Builder
     {
         return $this->where('employee_id', $id);

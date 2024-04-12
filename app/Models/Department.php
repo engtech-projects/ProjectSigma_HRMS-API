@@ -29,4 +29,9 @@ class Department extends Model
      * RELATED
      * RELATION
      */
+
+    public function internal_work_exp()
+    {
+        return $this->hasMany(InternalWorkExperience::class);
+    }
 }

@@ -6,6 +6,8 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Department;
+use App\Models\InternalWorkExperience;
 
 class CountEmployeeDepartmentController extends Controller
 {
@@ -14,20 +16,22 @@ class CountEmployeeDepartmentController extends Controller
      */
     public function __invoke()
     {
-        $total = Employee::get(['gender']);
-
-        $total = collect($total)->map(function ($employee) {
-            return [
-                'gender' => strtolower($employee['gender'])
-            ];
-        })->groupBy('gender')->map(function ($employee) {
-            return $employee->count();
+        $employeeByDepartment = Department::with(['internal_work_exp'])->get();
+        $employeeNoDepartment = InternalWorkExperience::whereNull('department_id')->count();
+        $employeeByDepartment = collect($employeeByDepartment)->groupBy(function ($department) {
+            $deptName = $department->department_name;
+            return $deptName;
+        })->map(function ($val) {
+            return $val[0]->internal_work_exp->count();
         });
+
+        $employeeByDepartment->put('No Department', $employeeNoDepartment);
+
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Employee total of employee by gender successfully fetched.',
-            'data' => $total
+            'message' => 'Successfully fetched.',
+            'data' => $employeeByDepartment
         ]);
     }
 }
