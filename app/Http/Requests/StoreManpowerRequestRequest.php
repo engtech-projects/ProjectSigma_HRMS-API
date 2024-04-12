@@ -116,11 +116,6 @@ class StoreManpowerRequestRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'requested_by' => [
-                "required",
-                "integer",
-                "exists:users,id",
-            ],
         ];
     }
 }
