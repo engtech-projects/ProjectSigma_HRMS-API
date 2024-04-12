@@ -15,7 +15,7 @@ class Leave extends Model
     use SoftDeletes;
     use HasApproval;
 
-    protected $table = "employee_leaves";
+    protected $table = "leaves";
 
     protected $fillable = [
         'id',
@@ -25,7 +25,7 @@ class Leave extends Model
     ];
 
     protected $casts = [
-        'approvals' => 'array'
+        'employment_type' => 'array'
     ];
 
     /**
@@ -33,9 +33,4 @@ class Leave extends Model
      * LOCAL
      * SCOPES
      */
-
-    public function scopeWithPayLeave(Builder $query): void
-    {
-        $query->where('with_pay', true);
-    }
 }

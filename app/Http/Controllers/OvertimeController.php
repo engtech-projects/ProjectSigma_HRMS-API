@@ -36,6 +36,9 @@ class OvertimeController extends Controller
      */
     public function store(StoreOvertimeRequest $request)
     {
+        $main = new Overtime();
+        $main->fill($request->validated());
+        $main->prepared_by = auth()->user()->id;
         $data = json_decode('{}');
         try {
             DB::transaction(function () use ($request) {
