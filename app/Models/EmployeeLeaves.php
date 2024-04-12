@@ -70,4 +70,9 @@ class EmployeeLeaves extends Model
     {
         return $this->hasOne(Project::class, "id", "project_id");
     }
+
+    public function scopeWithPayLeave(Builder $query): void
+    {
+        $query->where('with_pay', true);
+    }
 }

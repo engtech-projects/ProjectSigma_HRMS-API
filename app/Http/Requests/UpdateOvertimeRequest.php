@@ -66,11 +66,6 @@ class UpdateOvertimeRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'prepared_by' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
             'approvals' => [
                 "nullable",
                 "array",

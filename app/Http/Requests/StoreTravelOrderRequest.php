@@ -68,11 +68,6 @@ class StoreTravelOrderRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'requested_by' => [
-                "required",
-                "integer",
-                "exists:departments,id",
-            ],
             'approvals' => [
                 "nullable",
                 "array",

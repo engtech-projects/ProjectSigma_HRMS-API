@@ -19,7 +19,7 @@ class UpdateTravelOrderRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->hmo_members) == "string") {
+        if (gettype($this->approvals) == "string") {
             $this->merge([
                 "approvals" => json_decode($this->approvals, true)
             ]);
@@ -67,11 +67,6 @@ class UpdateTravelOrderRequest extends FormRequest
             'remarks' => [
                 "nullable",
                 "string",
-            ],
-            'requested_by' => [
-                "nullable",
-                "integer",
-                "exists:departments,id",
             ],
             'approvals' => [
                 "nullable",
