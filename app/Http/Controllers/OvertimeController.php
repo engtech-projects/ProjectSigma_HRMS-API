@@ -38,7 +38,6 @@ class OvertimeController extends Controller
     {
         $main = new Overtime();
         $main->fill($request->validated());
-        $main->prepared_by = auth()->user()->id;
         $data = json_decode('{}');
         try {
             DB::transaction(function () use ($request) {
@@ -47,6 +46,7 @@ class OvertimeController extends Controller
                     $main->fill($request->validated());
                     $main->employee_id = $key;
                     $main->request_status = StringRequestApprovalStatus::PENDING;
+                    $main->prepared_by = auth()->user()->id;
                     $main->save();
                 }
             });
