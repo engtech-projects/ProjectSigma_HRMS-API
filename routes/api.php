@@ -52,6 +52,8 @@ use App\Http\Controllers\Actions\{
     ProjectMember\ProjectEmployeeList,
     ProjectMember\ProjectMemberList
 };
+use App\Http\Controllers\Actions\Employee\CountEmployeeDepartmentController;
+use App\Http\Controllers\Actions\Employee\CountEmployeeGenderController;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
@@ -118,6 +120,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('seminartraining', EmployeeSeminartrainingController::class);
         Route::resource('internalwork-experience', InternalWorkExperienceController::class);
         Route::resource('termination', TerminationController::class);
+
+        Route::prefix('count')->group(function () {
+            Route::get('gender', CountEmployeeGenderController::class);
+            Route::get('department', CountEmployeeDepartmentController::class);
+        });
+
     });
 
     Route::resource('approvals', ApprovalsController::class);
