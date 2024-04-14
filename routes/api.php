@@ -43,17 +43,26 @@ use App\Http\Controllers\PersonnelActionNoticeRequestController;
 use App\Http\Controllers\EmployeeLeavesController;
 use App\Http\Controllers\TravelOrderController;
 
-use App\Http\Controllers\Actions\{
-    Approvals\DisapproveApproval,
-    Approvals\ApproveApproval,
-    SalaryGrade\SalaryGradeLevelListController,
-    Attendance\EmployeeDtrController,
-    ProjectMember\AttachProjectEmployee,
-    ProjectMember\ProjectEmployeeList,
-    ProjectMember\ProjectMemberList
+use App\Http\Controllers\Actions\Approvals\{
+    DisapproveApproval,
+    ApproveApproval,
 };
-use App\Http\Controllers\Actions\Employee\CountEmployeeDepartmentController;
-use App\Http\Controllers\Actions\Employee\CountEmployeeGenderController;
+use App\Http\Controllers\Actions\SalaryGrade\{
+    SalaryGradeLevelListController,
+};
+use App\Http\Controllers\Actions\Attendance\{
+    EmployeeDtrController,
+};
+use App\Http\Controllers\Actions\ProjectMember\{
+    AttachProjectEmployee,
+    ProjectEmployeeList,
+    ProjectMemberList
+};
+use App\Http\Controllers\Actions\Employee\{
+    CountEmployeeDepartmentController,
+    CountEmployeeGenderController,
+    MonthlyBirthdaysController
+};
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
@@ -125,7 +134,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('gender', CountEmployeeGenderController::class);
             Route::get('department', CountEmployeeDepartmentController::class);
         });
-
+        Route::get('monthly-birthdays', MonthlyBirthdaysController::class);
     });
 
     Route::resource('approvals', ApprovalsController::class);
