@@ -86,7 +86,7 @@ class EmployeeController extends Controller
                 "project" => [
                     "id" => $project->id,
                     "code" => $project->code,
-                    "project_monitoring_id" => $project->code,
+                    "project_monitoring_id" => $project->project_monitoring_id,
                     "project_created_at" => $project->pivot->created_at,
                 ]
             ];
