@@ -40,6 +40,11 @@ class Loans extends Model
         return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
 
+    public function loan_payment_employee(): HasMany
+    {
+        return $this->hasMany(LoanPayments::class);
+    }
+
     public function loanPayments(): HasMany
     {
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::POSTED);

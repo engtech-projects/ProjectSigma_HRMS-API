@@ -16,7 +16,7 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $main = Loans::with("employee")->paginate(15);
+        $main = Loans::with("employee", "loan_payment_employee")->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
