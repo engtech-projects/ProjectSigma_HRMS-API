@@ -23,17 +23,17 @@ class UpdateEmployeeEducationRequest extends FormRequest
     {
         return [
             'employee_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:employees,id",
             ],
             'type' => [
-                "nullable",
+                "required",
                 "string",
                 "in:elementary,secondary,vocational_course,college,graduate_studies",
             ],
             'name' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'education' => [
@@ -41,23 +41,23 @@ class UpdateEmployeeEducationRequest extends FormRequest
                 "string",
             ],
             'period_attendance_to' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'period_attendance_from' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'year_graduated' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'degree_earned_of_school' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'honors_received' => [
-                "nullable",
+                "required",
                 "string",
             ],
         ];
