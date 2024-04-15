@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('manpower_requests', function (Blueprint $table) {
             $table->dropColumn('position');
-            $table->unsignedBigInteger('position_id')->default('1');
+            $table->unsignedBigInteger('position_id');
             $table->foreign('position_id')->references('id')->on('positions');
         });
     }
