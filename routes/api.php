@@ -139,10 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('gender', CountEmployeeGenderController::class);
             Route::get('department', CountEmployeeDepartmentController::class);
         });
-<<<<<<< Updated upstream
         Route::get('monthly-birthdays', MonthlyBirthdaysController::class);
-=======
->>>>>>> Stashed changes
     });
 
     Route::resource('approvals', ApprovalsController::class);
