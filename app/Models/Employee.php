@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule as EmployeeSchedule;
+use Illuminate\Console\Scheduling\Schedule;
 
 class Employee extends Model
 {
@@ -130,32 +131,32 @@ class Employee extends Model
         return $this->hasMany(EmployeeEducation::class);
     }
 
-    public function employee_education_elementary(): HasMany
+    public function employee_education_elementary(): HasOne
     {
-        return $this->hasMany(EmployeeEducation::class)->where("type", "elementary");
+        return $this->hasOne(EmployeeEducation::class)->where("type", "elementary");
         // return $this->hasMany(EmployeeEducation::class)->select('elementary_name','elementary_education','elementary_period_attendance_to','elementary_period_attendance_from','elementary_year_graduated');
     }
 
-    public function employee_education_secondary(): HasMany
+    public function employee_education_secondary(): HasOne
     {
-        return $this->hasMany(EmployeeEducation::class)->where("type", "secondary");
+        return $this->hasOne(EmployeeEducation::class)->where("type", "secondary");
         // return $this->hasMany(EmployeeEducation::class)->select('secondary_name','secondary_education','secondary_period_attendance_to','secondary_period_attendance_from','secondary_year_graduated');
     }
 
-    public function employee_education_vocationalcourse(): HasMany
+    public function employee_education_vocationalcourse(): HasOne
     {
-        return $this->hasMany(EmployeeEducation::class)->where("type", "vocational_course");
+        return $this->hasOne(EmployeeEducation::class)->where("type", "vocational_course");
         // return $this->hasMany(EmployeeEducation::class)->select('vocationalcourse_name','vocationalcourse_education','vocationalcourse_period_attendance_to','vocationalcourse_period_attendance_from','vocationalcourse_year_graduated');
     }
 
-    public function employee_education_college(): HasMany
+    public function employee_education_college(): HasOne
     {
-        return $this->hasMany(EmployeeEducation::class)->where("type", "college");
+        return $this->hasOne(EmployeeEducation::class)->where("type", "college");
         // return $this->hasMany(EmployeeEducation::class)->select('college_name','college_education','college_period_attendance_to','college_period_attendance_from','college_year_graduated');
     }
-    public function employee_education_graduatestudies(): HasMany
+    public function employee_education_graduatestudies(): HasOne
     {
-        return $this->hasMany(EmployeeEducation::class)->where("type", "graduate_studies");
+        return $this->hasOne(EmployeeEducation::class)->where("type", "graduate_studies");
         // return $this->hasMany(EmployeeEducation::class)->select('graduatestudies_name','graduatestudies_education','graduatestudies_period_attendance_to','graduatestudies_period_attendance_from','graduatestudies_year_graduated');
     }
 
@@ -270,5 +271,21 @@ class Employee extends Model
     public function scopeUser($query, $id)
     {
         return Users::where("id", $id)->first();
+    }
+
+    public function filter_employee_schedule($start_range, $end_range)
+    {
+        $data = Schedule::find($this->id)->where([
+            ['startRecur', '>=', $start_range],
+            ['endRecur', '<=', $end_range],
+        ])->get();
+
+        return $data;
+    }
+
+    public function employee_late($start, $end)
+    {
+        $data = $this->filter_employee_schedule($start, $end);
+        return $data;
     }
 }
