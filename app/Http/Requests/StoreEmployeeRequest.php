@@ -81,8 +81,6 @@ class StoreEmployeeRequest extends FormRequest
             'mobile_number' => [
                 "required",
                 "string",
-                "min:11",
-                "max:11"
             ],
             'email' => [
                 "required",
