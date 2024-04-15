@@ -42,7 +42,7 @@ class OvertimeController extends Controller
                 $main = new Overtime();
                 $validdata = $request->validated();
                 $main->fill($request->validated());
-                $main->request_status = RequestStatusType::PENDING;
+                $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->employees->attach($validdata["employees"]);
             });
             $data = json_decode('{}');
