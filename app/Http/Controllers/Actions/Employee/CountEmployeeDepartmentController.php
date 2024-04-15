@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Actions\Employee;
 
-use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
