@@ -104,11 +104,6 @@ class StoreOvertimeRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'request_status' => [
-                "required",
-                "string",
-                new Enum(StringRequestApprovalStatus::class)
-            ],
         ];
     }
 }

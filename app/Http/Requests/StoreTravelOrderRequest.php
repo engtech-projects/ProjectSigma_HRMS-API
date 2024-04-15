@@ -93,11 +93,11 @@ class StoreTravelOrderRequest extends FormRequest
                 "nullable",
                 "date",
             ],
-            'employees' => [
+            'employee_ids' => [
                 "nullable",
                 "array",
             ],
-            'employees.*' => [
+            'employee_ids.*' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",

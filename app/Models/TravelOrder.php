@@ -57,7 +57,7 @@ class TravelOrder extends Model
 
     public function employees(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class);
+        return $this->belongsToMany(Employee::class, TravelOrderMembers::class);
     }
 
     public function department(): HasOne

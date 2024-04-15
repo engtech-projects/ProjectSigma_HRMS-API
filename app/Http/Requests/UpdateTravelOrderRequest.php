@@ -97,14 +97,14 @@ class UpdateTravelOrderRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'employees' => [
+            'employee_ids' => [
                 "nullable",
                 "array",
             ],
-            'employees.*' => [
+            'employee_ids.*' => [
                 "required",
                 "integer",
-                "exists:users,id",
+                "exists:employees,id",
             ],
             'request_status' => [
                 "nullable",
