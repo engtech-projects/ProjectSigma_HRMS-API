@@ -79,6 +79,8 @@ class EmployeeController extends Controller
                 "first_name" => $employee->first_name,
                 "middle_name" => $employee->middle_name,
                 "family_name" => $employee->family_name,
+                "fullname_last" => $employee->fullname_last,
+                "fullname_first" => $employee->fullname_first,
                 "name_suffix" => $employee->name_suffix,
                 "nick_name" => $employee->nick_name,
                 "gender" => $employee->gender,
