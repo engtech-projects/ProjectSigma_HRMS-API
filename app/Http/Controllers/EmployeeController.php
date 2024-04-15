@@ -67,7 +67,7 @@ class EmployeeController extends Controller
     {
         $employeeList = Employee::with(['current_employment', 'employee_has_projects'])->get();
         $employeeCollection = collect($employeeList)->map(function ($employee) {
-            $department = $employee->current_employment->employee_department;
+            $department = $employee->current_employment?->employee_department;
             $project = $employee->employee_has_projects->last();
             return [
                 "id" => $employee->id,
