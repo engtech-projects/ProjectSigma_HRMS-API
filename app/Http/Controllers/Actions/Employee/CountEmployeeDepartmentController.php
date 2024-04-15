@@ -2,31 +2,30 @@
 
 namespace App\Http\Controllers\Actions\Employee;
 
-use App\Models\Employee;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Models\InternalWorkExperience;
 
 class CountEmployeeDepartmentController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
+
     public function __invoke()
     {
-        $total = Employee::get(['gender']);
+        $total = InternalWorkExperience::with(['department'])->get();
 
-        $total = collect($total)->map(function ($employee) {
+        /* $total = collect($total)->map(function ($employee) {
             return [
                 'gender' => strtolower($employee['gender'])
             ];
         })->groupBy('gender')->map(function ($employee) {
             return $employee->count();
-        });
+        }); */
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Employee total of employee by gender successfully fetched.',
+            'message' => 'Successfully fetched.',
             'data' => $total
         ]);
     }
