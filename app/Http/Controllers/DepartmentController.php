@@ -26,38 +26,12 @@ class DepartmentController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::whereHas('employee_internal', function ($query) {
-            $query->statusCurrent();
-        })->with(['employee_internal' => function ($query) {
-            $query->withOut(['employee_salarygrade']);
-        }, 'employee_has_projects'])->get();
-
-        $employeeCollection = collect($employeeList)->map(function ($employee) {
-            $department = $employee->employee_internal->first()->employee_department;
-            return [
-                "id" => $employee->id,
-                "first_name" => $employee->first_name,
-                "middle_name" => $employee->middle_name,
-                "family_name" => $employee->family_name,
-                "name_suffix" => $employee->name_suffix,
-                "nick_name" => $employee->nick_name,
-                "gender" => $employee->gender,
-                "department" => $department,
-                "project" => $employee->employee_has_projects
-            ];
-        });
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Successfully fetched.',
-            'data' => $employeeCollection,
-        ]);
-        /* $main = Department::get();
+        $main = Department::get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
-        return response()->json($data); */
+        return response()->json($data);
     }
 
     /**
