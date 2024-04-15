@@ -17,10 +17,12 @@ class Project extends Model
     protected $fillable = [
         'code',
         'project_monitoring_id',
+        'project_code',
+        'status'
     ];
 
     protected $casts = [
-        'code' => 'string',
+        'project_code' => 'string',
         'project_monitoring_id' => 'integer',
         'created_at' => 'datetime:Y-m-d'
     ];

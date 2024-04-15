@@ -63,6 +63,7 @@ use App\Http\Controllers\Actions\Employee\{
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
+use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
@@ -191,6 +192,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
+        Route::get('list', ProjectListController::class);
         Route::put('attach-employee/{projectMonitoringId}', AttachProjectEmployee::class);
         Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
         Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);
