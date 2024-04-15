@@ -178,7 +178,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('attendance')->group(function () {
-        Route::get('download-template', [AttendanceBulkUpload::class, 'getTemplate']);
         Route::post('bulk-upload', [AttendanceBulkUpload::class, 'bulkUpload']);
         Route::post('bulk-save', [AttendanceBulkUpload::class, 'bulkSave']);
         Route::resource('log', AttendanceLogController::class);
