@@ -57,7 +57,7 @@ class UpdateEmployeeEducationRequest extends FormRequest
                 "string",
             ],
             'honors_received' => [
-                "nullable",
+                "required",
                 "string",
             ],
         ];
