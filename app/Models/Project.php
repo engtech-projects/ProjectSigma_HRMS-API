@@ -19,9 +19,10 @@ class Project extends Model
         'project_monitoring_id',
     ];
 
-    protected $cast = [
+    protected $casts = [
         'code' => 'string',
         'project_monitoring_id' => 'integer',
+        'created_at' => 'datetime:Y-m-d'
     ];
 
     /**

@@ -27,11 +27,7 @@ trait HasProjectEmployee
                 'project_id',
                 'employee_id'
             ])
+            ->orderBy('created_at', 'desc')
             ->withtimestamps();
-    }
-
-    public function scopeEmployeeLastestProject(Builder $query): Builder
-    {
-        return $query->latest('created_at');
     }
 }

@@ -12,8 +12,13 @@ class ProjectMemberPivot extends Pivot
     use HasProject;
     protected $table = "project_employees";
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d'
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);
     }
+
 }
