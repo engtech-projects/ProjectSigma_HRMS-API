@@ -85,6 +85,11 @@ class ManpowerRequest extends Model
         return $this->hasMany(JobApplicants::class, 'manpowerrequests_id', 'id');
     }
 
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
+
     /**
      * MODEL
      * LOCAL SCOPES

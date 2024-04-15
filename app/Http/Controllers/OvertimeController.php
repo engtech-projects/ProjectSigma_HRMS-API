@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RequestStatusType;
 use App\Enums\StringRequestApprovalStatus;
 use App\Models\Overtime;
 use App\Http\Requests\StoreOvertimeRequest;
@@ -41,6 +42,7 @@ class OvertimeController extends Controller
                 $main = new Overtime();
                 $validdata = $request->validated();
                 $main->fill($request->validated());
+                $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->employees->attach($validdata["employees"]);
             });
             $data = json_decode('{}');

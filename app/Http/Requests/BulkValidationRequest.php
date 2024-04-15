@@ -29,7 +29,7 @@ class BulkValidationRequest extends FormRequest
     {
         return [
             "employees_data" => 'present',
-            "employees_data*.status" => 'present|in:'.Employee::EMPLOYEE_BULK_STATUS_DUPLICATE.','.Employee::EMPLOYEE_BULK_STATUS_UNDUPLICATE,
+            "employees_data*.status" => 'present|in:' . Employee::EMPLOYEE_BULK_STATUS_DUPLICATE . ',' . Employee::EMPLOYEE_BULK_STATUS_UNDUPLICATE,
             "employees_data*.family_name" => 'present',
             "employees_data*.first_name" => 'present',
             "employees_data*.middle_name" => 'present',

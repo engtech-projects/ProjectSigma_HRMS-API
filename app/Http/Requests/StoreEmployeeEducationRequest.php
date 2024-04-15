@@ -37,7 +37,7 @@ class StoreEmployeeEducationRequest extends FormRequest
                 "string",
             ],
             'education' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'period_attendance_to' => [

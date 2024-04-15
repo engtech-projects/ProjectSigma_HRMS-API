@@ -53,7 +53,7 @@ class UpdateEmployeeRequest extends FormRequest
             ],
             'place_of_birth' => [
                 "nullable",
-                "date",
+                "string",
             ],
             'date_of_marriage' => [
                 "nullable",
@@ -81,8 +81,6 @@ class UpdateEmployeeRequest extends FormRequest
             'mobile_number' => [
                 "nullable",
                 "string",
-                "min:11",
-                "max:11"
             ],
             'email' => [
                 "nullable",

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
+use App\Models\Employee;
+use App\Models\InternalWorkExperience;
+use Illuminate\Http\JsonResponse;
 
 class DepartmentController extends Controller
 {

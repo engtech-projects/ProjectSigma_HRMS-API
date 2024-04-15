@@ -14,7 +14,7 @@ class TravelOrderService
 
     public function getAll()
     {
-        return TravelOrder::with(['department'])->get();
+        return TravelOrder::with(['department',"employees"])->get();
     }
 
     public function getMyRequest()

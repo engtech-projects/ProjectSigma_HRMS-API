@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::table('overtime', function (Blueprint $table) {
-            $table->dropForeign(['overtime_employee_id_foreign']);
-            $table->dropColumn('employee_id');
+            if (Schema::hasColumn('overtime', 'employee_id')) {
+                $table->dropForeign('overtime_employee_id_foreign');
+                $table->dropColumn('employee_id');
+            }
         });
     }
 
@@ -23,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('overtime', function (Blueprint $table) {
-            $table->foreignId('employee_id');
+            $table->foreignId('employee_id')->nullable();
             $table->foreign('employee_id')->references('id')->on('employees');
         });
     }

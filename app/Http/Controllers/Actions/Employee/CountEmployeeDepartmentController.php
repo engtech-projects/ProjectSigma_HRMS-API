@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Actions\Employee;
 
-use App\Models\Employee;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -11,9 +11,7 @@ use App\Models\InternalWorkExperience;
 
 class CountEmployeeDepartmentController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
+
     public function __invoke()
     {
         $employeeByDepartment = Department::with(['internal_work_exp'])->get();

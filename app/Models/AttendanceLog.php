@@ -23,6 +23,7 @@ class AttendanceLog extends Model
         'attendance_type',
         'project_id',
         'department_id',
+        'employee_id',
     ];
 
     protected $cast = [
@@ -32,6 +33,7 @@ class AttendanceLog extends Model
         'log_type' => AttendanceLogType::class,
         'project_id' => 'integer',
         'department_id' => 'integer',
+        'employee_id' => 'integer',
     ];
 
     public function project(): BelongsTo

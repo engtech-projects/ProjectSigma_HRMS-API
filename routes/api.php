@@ -43,17 +43,28 @@ use App\Http\Controllers\PersonnelActionNoticeRequestController;
 use App\Http\Controllers\EmployeeLeavesController;
 use App\Http\Controllers\TravelOrderController;
 
-use App\Http\Controllers\Actions\{
-    Approvals\DisapproveApproval,
-    Approvals\ApproveApproval,
-    SalaryGrade\SalaryGradeLevelListController,
-    Attendance\EmployeeDtrController,
-    ProjectMember\AttachProjectEmployee,
-    ProjectMember\ProjectEmployeeList,
-    ProjectMember\ProjectMemberList
+use App\Http\Controllers\Actions\Approvals\{
+    DisapproveApproval,
+    ApproveApproval,
 };
-use App\Http\Controllers\Actions\Employee\CountEmployeeDepartmentController;
-use App\Http\Controllers\Actions\Employee\CountEmployeeGenderController;
+use App\Http\Controllers\Actions\SalaryGrade\{
+    SalaryGradeLevelListController,
+};
+use App\Http\Controllers\Actions\Attendance\{
+    EmployeeDtrController,
+};
+use App\Http\Controllers\Actions\ProjectMember\{
+    AttachProjectEmployee,
+    ProjectEmployeeList,
+    ProjectMemberList
+};
+use App\Http\Controllers\Actions\Employee\{
+    CountEmployeeDepartmentController,
+    CountEmployeeGenderController,
+    MonthlyBirthdaysController
+};
+use App\Http\Controllers\Actions\Project\ProjectListController;
+use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
@@ -97,8 +108,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
-    Route::resource('departments', DepartmentController::class);
-    Route::get('department-list', [DepartmentController::class, 'get']);
+
+
+    Route::prefix('department')->group(function () {
+        Route::resource('resource', DepartmentController::class);
+        Route::get('list', [DepartmentController::class, 'get']);
+    });
+
     Route::resource('job-applicants', JobApplicantsController::class);
     Route::resource('pagibig', PagibigContributionController::class);
 
@@ -125,7 +141,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('gender', CountEmployeeGenderController::class);
             Route::get('department', CountEmployeeDepartmentController::class);
         });
-
+        Route::get('monthly-birthdays', MonthlyBirthdaysController::class);
     });
 
     Route::resource('approvals', ApprovalsController::class);
@@ -135,8 +151,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::prefix('manpower')->group(function () {
+        Route::resource('resource', ManpowerRequestController::class);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
@@ -163,6 +179,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('attendance')->group(function () {
+        Route::post('bulk-upload', [AttendanceBulkUpload::class, 'bulkUpload']);
+        Route::post('bulk-save', [AttendanceBulkUpload::class, 'bulkSave']);
         Route::resource('log', AttendanceLogController::class);
         Route::resource('failed-log', FailureToLogController::class);
         Route::prefix('failure-to-log')->group(function () {
@@ -174,6 +192,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
+        Route::get('list', ProjectListController::class);
         Route::put('attach-employee/{projectMonitoringId}', AttachProjectEmployee::class);
         Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
         Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);

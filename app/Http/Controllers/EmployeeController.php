@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\SearchTypes;
-use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\Employee;
-use App\Http\Requests\StoreEmployeeRequest;
-use App\Http\Requests\UpdateEmployeeRequest;
-use Illuminate\Database\Eloquent\Builder;
+use App\Enums\SearchTypes;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\SearchEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Resources\ProjectResource;
 
 class EmployeeController extends Controller
 {
@@ -63,12 +65,40 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $main = Employee::with("company_employments", "employment_records")->get();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $employeeList = Employee::whereHas('employee_internal', function ($query) {
+            $query->statusCurrent();
+        })->with(['employee_internal' => function ($query) {
+            $query->withOut(['employee_salarygrade']);
+        }, 'employee_has_projects'])->get();
+
+        $employeeCollection = collect($employeeList)->map(function ($employee) {
+            $department = $employee->employee_internal->first()->employee_department;
+            $project = $employee->employee_has_projects->last();
+            return [
+                "id" => $employee->id,
+                "first_name" => $employee->first_name,
+                "middle_name" => $employee->middle_name,
+                "family_name" => $employee->family_name,
+                "fullname_last" => $employee->fullname_last,
+                "fullname_first" => $employee->fullname_first,
+                "name_suffix" => $employee->name_suffix,
+                "nick_name" => $employee->nick_name,
+                "gender" => $employee->gender,
+                "department" => $department,
+                "project" => $project ? [
+                    "id" => $project->id,
+                    "code" => $project->code,
+                    "project_monitoring_id" => $project->project_monitoring_id,
+                    "project_created_at" => $project->pivot->created_at,
+                ] : null,
+            ];
+        });
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Successfully fetched.',
+            'data' => $employeeCollection,
+        ]);
     }
 
     /**

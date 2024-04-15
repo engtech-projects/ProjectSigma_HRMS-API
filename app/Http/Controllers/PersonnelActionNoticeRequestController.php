@@ -25,10 +25,10 @@ use App\Http\Requests\UpdateEmployeePersonnelActionNoticeRequestRequest;
 
 class PersonnelActionNoticeRequestController extends Controller
 {
-    protected $panelRequestService;
-    public function __construct(EmployeePanRequestService $panelRequestService)
+    protected $panRequestService;
+    public function __construct(EmployeePanRequestService $panRequestService)
     {
-        $this->panelRequestService = $panelRequestService;
+        $this->panRequestService = $panRequestService;
     }
 
     /**
@@ -36,7 +36,7 @@ class PersonnelActionNoticeRequestController extends Controller
      */
     public function index()
     {
-        $panRequest = $this->panelRequestService->getAll();
+        $panRequest = $this->panRequestService->getAll();
         $paginated = EmployeePersonnelActionNoticeRequestResource::collection($panRequest);
         return new JsonResponse([
             "success" => true,
@@ -51,7 +51,7 @@ class PersonnelActionNoticeRequestController extends Controller
     public function store(StoreEmployeePersonnelActionNoticeRequestRequest $request)
     {
         try {
-            $this->panelRequestService->create($request->validated());
+            $this->panRequestService->create($request->validated());
         } catch (\Exception $e) {
             throw new TransactionFailedException("Create transaction failed.", 500, $e);
         }
@@ -64,7 +64,7 @@ class PersonnelActionNoticeRequestController extends Controller
     // can view all pan request made by logged in user
     public function myRequests()
     {
-        $noticeRequest = $this->panelRequestService->getMyRequests();
+        $noticeRequest = $this->panRequestService->getMyRequests();
         if (empty($noticeRequest)) {
             return new JsonResponse([
                 "success" => false,
@@ -83,7 +83,7 @@ class PersonnelActionNoticeRequestController extends Controller
      */
     public function myApprovals()
     {
-        $myApproval = $this->panelRequestService->getMyApprovals();
+        $myApproval = $this->panRequestService->getMyApprovals();
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,

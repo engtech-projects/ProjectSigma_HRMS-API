@@ -30,15 +30,6 @@ class UpdateManpowerRequestRequest extends FormRequest
      */
     public function rules(): array
     {
-        $keyMessageForJson = [
-            'type' => 'The type field is required.',
-            'status' => 'The status field is required.',
-            'user_id' => 'The user_id field is required.',
-            'userselector' => 'The userselector field is required.',
-            'date_approved' => 'The date_approved field is required.',
-            'remarks' => 'The remarks field is required.',
-            'name' => 'The name field is required.',
-        ];
         return [
             'requesting_department' => [
                 "nullable",
@@ -53,9 +44,10 @@ class UpdateManpowerRequestRequest extends FormRequest
                 "nullable",
                 "date",
             ],
-            'position' => [
-                "nullable",
-                "string",
+            'position_id' => [
+                "required",
+                "integer",
+                "exists:positions,id"
             ],
             'employment_type' => [
                 "nullable",
@@ -97,12 +89,6 @@ class UpdateManpowerRequestRequest extends FormRequest
             'preferred_qualifications' => [
                 "nullable",
                 "string",
-            ],
-            'approvals' => [
-                "nullable",
-                "json",
-                new JsonStringValidation($keyMessageForJson)
-
             ],
             'request_status' => [
                 "nullable",
