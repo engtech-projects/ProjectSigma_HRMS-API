@@ -40,7 +40,7 @@ class Loans extends Model
         return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
 
-    public function loan_payment_employee(): HasMany
+    public function loan_payments_employee(): HasMany
     {
         return $this->hasMany(LoanPayments::class);
     }
