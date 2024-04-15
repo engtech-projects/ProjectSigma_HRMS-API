@@ -20,9 +20,16 @@ class TravelOrderResource extends JsonResource
                 "type" => $this->user->type
             ];
         });
+        $employees = $this->whenLoaded('employees', function () {
+            return [
+                "id" => $this->employee?->id,
+                "name" => $this->employee?->fullname_last,
+            ];
+        });
         return [
             "id" => $this->id,
             "name" => $this->name,
+            "employees" => $employees,
             "requesting_office" => $this->requesting_office,
             "destination" => $this->destination,
             "purpose_of_travel" => $this->purpose_of_travel,
