@@ -135,8 +135,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    Route::resource('manpower-requests', ManpowerRequestController::class);
     Route::prefix('manpower')->group(function () {
+        Route::resource('resource', ManpowerRequestController::class);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);

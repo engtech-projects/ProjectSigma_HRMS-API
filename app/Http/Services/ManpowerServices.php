@@ -19,7 +19,7 @@ class ManpowerServices
     }
     public function getAll()
     {
-        return $this->manpowerRequest->get();
+        return $this->manpowerRequest->with(["position"])->get();
     }
     public function getAllForHiring()
     {
@@ -30,7 +30,7 @@ class ManpowerServices
     {
         $userId = auth()->user()->id;
         return ManpowerRequest::requestStatusPending()
-            ->with(['user.employee'])
+            ->with(['user.employee', "position"])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
