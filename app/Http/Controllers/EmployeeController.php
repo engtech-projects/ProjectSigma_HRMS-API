@@ -97,13 +97,6 @@ class EmployeeController extends Controller
             'message' => 'Successfully fetched.',
             'data' => $employeeCollection,
         ]);
-
-        /* $main = Employee::with("company_employments", "employment_records")->get();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data); */
     }
 
     /**
