@@ -65,14 +65,9 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::whereHas('employee_internal', function ($query) {
-            $query->statusCurrent();
-        })->with(['employee_internal' => function ($query) {
-            $query->withOut(['employee_salarygrade']);
-        }, 'employee_has_projects'])->get();
-
+        $employeeList = Employee::with(['current_employment', 'employee_has_projects'])->get();
         $employeeCollection = collect($employeeList)->map(function ($employee) {
-            $department = $employee->employee_internal->first()->employee_department;
+            $department = $employee->current_employment->employee_department;
             $project = $employee->employee_has_projects->last();
             return [
                 "id" => $employee->id,
