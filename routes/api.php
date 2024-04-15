@@ -106,8 +106,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
-    Route::resource('departments', DepartmentController::class);
-    Route::get('department-list', [DepartmentController::class, 'get']);
+
+
+    Route::prefix('department')->group(function () {
+        Route::resource('resource', DepartmentController::class);
+        Route::get('list', [DepartmentController::class, 'get']);
+    });
+
     Route::resource('job-applicants', JobApplicantsController::class);
     Route::resource('pagibig', PagibigContributionController::class);
 
@@ -134,7 +139,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('gender', CountEmployeeGenderController::class);
             Route::get('department', CountEmployeeDepartmentController::class);
         });
+<<<<<<< Updated upstream
         Route::get('monthly-birthdays', MonthlyBirthdaysController::class);
+=======
+>>>>>>> Stashed changes
     });
 
     Route::resource('approvals', ApprovalsController::class);

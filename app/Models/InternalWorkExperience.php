@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Enums\InternalWorkExpStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -56,5 +57,10 @@ class InternalWorkExperience extends Model
     public function scopeByEmployee(Builder $query, $id): Builder
     {
         return $this->where('employee_id', $id);
+    }
+
+    public function scopeStatusCurrent(Builder $query): Builder
+    {
+        return $query->where('status', InternalWorkExpStatus::CURRENT);
     }
 }

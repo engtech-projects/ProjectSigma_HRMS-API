@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::table('overtime', function (Blueprint $table) {
-            $table->dropForeign(['overtime_employee_id_foreign']);
-            $table->dropColumn('employee_id');
+            $table->unsignedBigInteger('employee_id');
+            $table->foreign('employee_id')->references('id')->on('employees');
         });
     }
 
