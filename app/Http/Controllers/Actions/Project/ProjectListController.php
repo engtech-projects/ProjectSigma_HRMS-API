@@ -20,7 +20,8 @@ class ProjectListController extends Controller
         $url = config()->get('services.url.projects_api_url');
         $response = Http::acceptJson()->throw()->withToken($token)->withQueryParameters([
             'completion_status' => 'ongoing'
-        ])->get($url . '/api/projects/');
+        ])->get($url . 'api/projects/');
+
         $projects = $response->json('data');
         if ($response->successful()) {
             foreach ($projects as $project) {
