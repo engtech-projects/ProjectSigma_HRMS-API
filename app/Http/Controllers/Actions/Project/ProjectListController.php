@@ -20,7 +20,6 @@ class ProjectListController extends Controller
             'completion_status' => 'ongoing'
         ])->get('http://projectsigma_projects-api.test/api/projects');
         $projects = $response->json('data');
-        dd($projects);
         if ($response->successful()) {
             foreach ($projects as $project) {
                 $model = Project::where('project_monitoring_id', $project["id"])->first();
