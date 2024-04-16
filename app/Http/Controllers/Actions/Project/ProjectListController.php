@@ -37,8 +37,7 @@ class ProjectListController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => "Successfully fetched.",
-            'data' => $response->json('data')
+            'message' => "Projects successfully updated.",
         ]);
     }
 }
