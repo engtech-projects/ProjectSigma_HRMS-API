@@ -17,9 +17,8 @@ class ProjectListController extends Controller
     {
         $token = $request->bearerToken();
         $response = Http::withToken($token)->get('https://projectsigma-projectsapi-staging.engtechglobalsolutions.com//api/projects?completion_status=ongoing');
+        $projects = $response->json('data');
         if ($response->successful()) {
-            $projects = $response->json('data');
-            dd($projects);
             foreach ($projects as $project) {
                 $model = Project::where('project_monitoring_id', $project["id"])->first();
                 if ($model) {
@@ -39,6 +38,7 @@ class ProjectListController extends Controller
             return new JsonResponse([
                 'success' => true,
                 'message' => "Projects successfully updated.",
+                'data' => $projects
             ]);
         }
     }
