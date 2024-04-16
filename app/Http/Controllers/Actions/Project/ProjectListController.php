@@ -16,28 +16,30 @@ class ProjectListController extends Controller
     public function __invoke(Request $request)
     {
         $token = $request->bearerToken();
-        $response = Http::withToken($token)->get('https://projectsigma-projectsapi-staging.engtechglobalsolutions.com/api/projects?completion_status=ongoing');
-        $projects = $response->json('data');
-
-        foreach ($projects as $project) {
-            $model = Project::where('project_monitoring_id', $project["id"])->first();
-            if ($model) {
-                $model->update([
-                    "project_monitoring_id" => $project['id'],
-                    "project_code" => $project["project_code"],
-                    "status" => $project["status"]
-                ]);
-            } else {
-                Project::create([
-                    "project_monitoring_id" => $project['id'],
-                    "project_code" => $project["project_code"],
-                    "status" => $project["status"]
-                ]);
+        $response = Http::withToken($token)->get('https://projectsigma-projectsapi-staging.engtechglobalsolutions.com//api/projects?completion_status=ongoing');
+        if ($response->successful()) {
+            $projects = $response->json('data');
+            dd($projects);
+            foreach ($projects as $project) {
+                $model = Project::where('project_monitoring_id', $project["id"])->first();
+                if ($model) {
+                    $model->update([
+                        "project_monitoring_id" => $project['id'],
+                        "project_code" => $project["project_code"],
+                        "status" => $project["status"]
+                    ]);
+                } else {
+                    Project::create([
+                        "project_monitoring_id" => $project['id'],
+                        "project_code" => $project["project_code"],
+                        "status" => $project["status"]
+                    ]);
+                }
             }
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Projects successfully updated.",
+            ]);
         }
-        return new JsonResponse([
-            'success' => true,
-            'message' => "Projects successfully updated.",
-        ]);
     }
 }
