@@ -16,7 +16,7 @@ class ProjectListController extends Controller
     public function __invoke(Request $request)
     {
         $token = $request->bearerToken();
-        $response = Http::withToken($token)->get('https://projectsigma-projectsapi-staging.engtechglobalsolutions.com//api/projects?completion_status=ongoing');
+        $response = Http::withToken($token)->get('https://projectsigma-projectsapi-staging.engtechglobalsolutions.com/api/projects?completion_status=ongoing');
         $projects = $response->json('data');
         if ($response->successful()) {
             foreach ($projects as $project) {
