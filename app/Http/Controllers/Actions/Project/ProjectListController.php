@@ -35,11 +35,12 @@ class ProjectListController extends Controller
                     ]);
                 }
             }
-            return new JsonResponse([
-                'success' => true,
-                'message' => "Projects successfully updated.",
-                'data' => $projects
-            ]);
         }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Projects successfully updated.",
+            'data' => $projects
+        ]);
     }
 }
