@@ -44,7 +44,7 @@ class AuthController extends Controller
     {
         if ($request->user()) {
 
-            return response()->json(Auth::user->with("employee"), 200);
+            return response()->json(Auth::user(), 200);
         }
         return  response()->json('Unauthenticated', 401);
     }
