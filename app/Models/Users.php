@@ -17,7 +17,9 @@ class Users extends Model
     use SoftDeletes;
 
     protected $primaryKey = 'id';
-
+    protected $with = [
+        "employee"
+    ];
     protected $fillable = [
         'id',
         'name',
