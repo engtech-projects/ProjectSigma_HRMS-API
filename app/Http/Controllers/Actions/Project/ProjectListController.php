@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Actions\Project;
 
-use App\Http\Controllers\Controller;
 use App\Models\Project;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class ProjectListController extends Controller
 {
@@ -16,6 +17,7 @@ class ProjectListController extends Controller
     public function __invoke(Request $request)
     {
         $token = $request->bearerToken();
+        $token = PersonalAccessToken::findToken($token);
         $url = config()->get('services.url.projects_api_url');
         $response = Http::acceptJson()->throw()->withToken($token)->withQueryParameters([
             'completion_status' => 'ongoing'
