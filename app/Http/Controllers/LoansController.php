@@ -69,15 +69,15 @@ class LoansController extends Controller
     {
         $valid = true;
         $msg = "";
-
+        $validatedData = $request->validated();
         if ($loan->loanPaid()) {
             $valid = false;
             $msg = "Payment already paid.";
-        } elseif ($loan->paymentWillOverpay($request->paymentAmount)) {
+        } elseif ($loan->paymentWillOverpay($validatedData['paymentAmount'])) {
             $valid = false;
             $msg = "Payment will overpay.";
         } else {
-            $loan->loanPayment($request->paymentAmount, LoanPaymentsType::MANUAL->value);
+            $loan->loanPayment($validatedData['paymentAmount'], LoanPaymentsType::MANUAL->value);
             $valid = true;
             $msg = "Payment successfully.";
         }
