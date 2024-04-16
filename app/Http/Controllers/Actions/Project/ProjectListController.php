@@ -16,10 +16,10 @@ class ProjectListController extends Controller
     public function __invoke(Request $request)
     {
         $token = $request->bearerToken();
-        $url = config()->get('url.projects_api_url');
-        $response = Http::acceptJson()->withToken($token)->withQueryParameters([
+        $url = config()->get('services.url.projects_api_url');
+        $response = Http::acceptJson()->throw()->withToken($token)->withQueryParameters([
             'completion_status' => 'ongoing'
-        ])->get($url);
+        ])->get($url . '/api/projects/');
         $projects = $response->json('data');
         if ($response->successful()) {
             foreach ($projects as $project) {
