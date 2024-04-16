@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('manpower_requests', function (Blueprint $table) {
-            $table->dropColumn('position');
-            $table->unsignedBigInteger('position_id');
+            if (Schema::hasColumn('manpower_requests', 'position')) {
+                $table->dropColumn('position');
+            }
+            $table->unsignedBigInteger('position_id')->nullable();
             $table->foreign('position_id')->references('id')->on('positions');
         });
     }
