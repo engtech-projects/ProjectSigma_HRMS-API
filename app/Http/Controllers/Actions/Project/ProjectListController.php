@@ -19,12 +19,8 @@ class ProjectListController extends Controller
     {
         $token = $request->bearerToken();
         $url = config()->get('services.url.projects_api_url');
-        Log::info($token);
         $response = Http::acceptJson()->withToken($token)->get($url . 'api/projects?completion_status=ongoing');
-
-
         $projects = $response->json();
-        return $projects;
         if ($response->successful()) {
             foreach ($projects as $project) {
                 $model = Project::where('project_monitoring_id', $project["id"])->first();
