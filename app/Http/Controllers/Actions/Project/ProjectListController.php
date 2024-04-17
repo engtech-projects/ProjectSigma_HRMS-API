@@ -44,7 +44,7 @@ class ProjectListController extends Controller
                 if ($project["project_monitoring_id"] == $value['id']) {
                     return $value;
                 }
-            })->all();
+            })->first();
             return $project;
         })->all();
 
