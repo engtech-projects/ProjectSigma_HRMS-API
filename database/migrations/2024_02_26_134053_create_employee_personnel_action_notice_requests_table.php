@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,14 +14,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('employees');
-            $table->enum('type', ['New Hire','Termination','Transfer','Promotion']);
+            $table->enum('type', ['New Hire', 'Termination', 'Transfer', 'Promotion']);
             $table->date("date_of_effictivity");
             $table->string("section_department");
             $table->string("designation_position");
             $table->string("salary_grade");
             $table->string("salary_grade_step");
-            $table->enum("salary_type",["Fixed Rate","Non Fixed","Monthly","Weekly"]);
-            $table->enum("hire_source",["Internal","External"]);
+            $table->enum("salary_type", ["Fixed Rate", "Non Fixed", "Monthly", "Weekly"]);
+            $table->enum("hire_source", ["Internal", "External"]);
             $table->string("work_location");
             $table->string("new_section");
             $table->string("new_location");

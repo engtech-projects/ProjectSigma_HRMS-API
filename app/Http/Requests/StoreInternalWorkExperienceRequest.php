@@ -22,57 +22,57 @@ class StoreInternalWorkExperienceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'position_title'=>[
+            'position_title' => [
                 "required",
                 "string"
             ],
-            'employment_status'=>[
+            'employment_status' => [
                 "required",
                 "string"
             ],
-            'department'=>[
+            'department_id' => [
+                "required",
+                "integer",
+                "exists:departments,id"
+            ],
+            'immediate_supervisor' => [
                 "required",
                 "string"
             ],
-            'immediate_supervisor'=>[
+            'salary_grades' => [
+                "required",
+                "integer",
+                "exists:salary_grade_steps,id",
+            ],
+            'actual_salary' => [
                 "required",
                 "string"
             ],
-            'salary_type'=>[
+            'work_location' => [
                 "required",
-                "string"
+                "string",
+                'in:pms,office,project_code'
             ],
-            'salary_grade'=>[
+            'hire_source' => [
                 "required",
-                "string"
+                "string",
+                'in:internal,external'
             ],
-            'actual_salary'=>[
+            'status' => [
                 "required",
-                "string"
+                'in:current,previous'
             ],
-            'work_location'=>[
-                "required",
-                "string"
-            ],
-            'hire_source'=>[
-                "required",
-                "string"
-            ],
-            'status'=>[
-                "required",
-                'in:active,inactive'
-            ],
-            'date_from'=>[
+            'date_from' => [
                 "required",
                 "date",
             ],
-            'date_to'=>[
-                "required",
+            'date_to' => [
+                "nullable",
                 "date",
             ],
         ];

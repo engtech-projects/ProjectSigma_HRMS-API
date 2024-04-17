@@ -3,17 +3,21 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\EmployeeRelatedPersonType;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EmployeeRelatedperson extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $appends = ['age'];
 
@@ -21,10 +25,11 @@ class EmployeeRelatedperson extends Model
         'date_of_birth' => 'datetime:Y-m-d',
     ];
 
+
     public function getAgeAttribute()
     {
         $a = $this->date_of_birth;
-        if($a){
+        if ($a) {
             return Carbon::createFromFormat("ymd", $a->format('ymd'))->age;
         }
         return null;
@@ -56,6 +61,4 @@ class EmployeeRelatedperson extends Model
     {
         return $this->belongsTo(Employee::class);
     }
-
-
 }

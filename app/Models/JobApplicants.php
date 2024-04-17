@@ -5,20 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
 class JobApplicants extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+
 
     protected $fillable = [
-        'id',
+        /*         'id', */
         'manpowerrequests_id',
-        'application_name',
+        'name_suffix',
         'application_letter_attachment',
         'resume_attachment',
         'status',
@@ -52,12 +54,39 @@ class JobApplicants extends Model
         'icoe_relationship',
         'telephone_icoe',
         'workexperience',
-        'education'
+        'education',
+        'place_of_birth',
+        'blood_type',
+        'date_of_marriage',
+        'sss',
+        'philhealth',
+        'pagibig',
+        'tin',
+        'citizenship',
+        'religion',
+        'height',
+        'weight',
+        'father_name',
+        'mother_name',
+        'gender',
+        'civil_status',
+        'icoe_street',
+        'icoe_brgy',
+        'icoe_city',
+        'icoe_zip',
+        'icoe_province',
+        'remarks'
+    ];
+
+
+    public $casts = [
+        "children" => "array",
+        "education" => "array",
+        "workexperience" => "array",
     ];
 
     public function manpower(): BelongsTo
     {
-        return $this->belongsTo(ManpowerRequest::class,'manpowerrequests_id','id');
+        return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');
     }
-
 }

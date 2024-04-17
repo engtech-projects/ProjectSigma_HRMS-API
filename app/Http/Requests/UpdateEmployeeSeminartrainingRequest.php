@@ -22,24 +22,24 @@ class UpdateEmployeeSeminartrainingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'name_title_training'=>[
+            'name_title_training' => [
                 "nullable",
                 "string",
             ],
-            'inclusive_dates'=>[
+            'inclusive_dates' => [
                 "nullable",
                 "date",
             ],
-            'venue'=>[
+            'venue' => [
                 "nullable",
                 "string",
             ],
-            'training_provider'=>[
+            'training_provider' => [
                 "nullable",
                 "string",
             ],

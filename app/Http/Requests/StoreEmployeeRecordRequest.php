@@ -22,32 +22,33 @@ class StoreEmployeeRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'date_to'=>[
+            'date_from' => [
                 "required",
                 "date",
             ],
-            'date_from'=>[
+            'date_to' => [
                 "required",
                 "date",
+                "after:date_from"
             ],
-            'position_title'=>[
+            'position_title' => [
                 "required",
                 "string",
             ],
-            'company_name'=>[
+            'company_name' => [
                 "required",
                 "string",
             ],
-            'monthly_salary'=>[
+            'monthly_salary' => [
                 "required",
                 "string",
             ],
-            'status_of_appointment'=>[
+            'status_of_appointment' => [
                 "required",
                 "string",
             ],

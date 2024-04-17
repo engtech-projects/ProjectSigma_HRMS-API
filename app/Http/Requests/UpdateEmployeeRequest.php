@@ -23,82 +23,80 @@ class UpdateEmployeeRequest extends FormRequest
     {
         return [
             //
-            'first_name'=> [
+            'first_name' => [
                 "nullable",
                 "string",
             ],
-            'middle_name'=>[
+            'middle_name' => [
                 "nullable",
                 "string",
             ],
-            'family_name'=>[
+            'family_name' => [
                 "nullable",
                 "string",
             ],
-            'nick_name'=>[
+            'nick_name' => [
                 "nullable",
                 "string",
             ],
-            'name_suffix'=>[
+            'name_suffix' => [
                 "nullable",
                 "string",
             ],
-            'gender'=>[
+            'gender' => [
                 "nullable",
                 "string",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "nullable",
                 "date",
             ],
-            'place_of_birth'=>[
-                "nullable",
-                "date",
-            ],
-            'date_of_marriage'=>[
-                "nullable",
-                "date",
-            ],
-            'citizenship'=>[
+            'place_of_birth' => [
                 "nullable",
                 "string",
             ],
-            'blood_type'=>[
+            'date_of_marriage' => [
+                "nullable",
+                "date",
+            ],
+            'citizenship' => [
+                "nullable",
+                "string",
+            ],
+            'blood_type' => [
                 "nullable",
                 "string",
                 "max:55"
             ],
-            'civil_status'=>[
+            'civil_status' => [
                 "nullable",
                 "string",
                 "max:55"
             ],
-            'telephone_number'=>[
+            'telephone_number' => [
                 "nullable",
                 "string",
                 "max:15"
             ],
-            'mobile_number'=>[
+            'mobile_number' => [
                 "nullable",
                 "string",
-                "min:11",
-                "max:11"
             ],
-            'email'=>[
-                "nullable",
-                "string",
-                "max:35"
-            ],
-            'religion'=>[
+            'email' => [
                 "nullable",
                 "string",
                 "max:35"
             ],
-            'weight'=>[
+            'religion' => [
+                "nullable",
+                "string",
+                "max:35"
+            ],
+            'weight' => [
                 "nullable",
                 "string",
             ],
-            'height'=>[
+            'height' => [
                 "nullable",
                 "string",
             ],

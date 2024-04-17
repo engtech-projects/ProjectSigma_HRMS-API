@@ -22,57 +22,56 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'position_title'=>[
+            'position_title' => [
                 "nullable",
                 "string"
             ],
-            'employment_status'=>[
+            'employment_status' => [
                 "nullable",
                 "string"
             ],
-            'department'=>[
+            'department_id' => [
+                "nullable",
+                "integer",
+                "exists:departments,id"
+            ],
+            'immediate_supervisor' => [
                 "nullable",
                 "string"
             ],
-            'immediate_supervisor'=>[
+            'salary_grades' => [
+                "nullable",
+                "integer",
+                "exists:salary_grade_steps,id",
+            ],
+            'actual_salary' => [
                 "nullable",
                 "string"
             ],
-            'salary_type'=>[
+            'work_location' => [
                 "nullable",
-                "string"
+                "string",
+                'in:pms,office,project_code'
             ],
-            'salary_grade'=>[
+            'hire_source' => [
                 "nullable",
-                "string"
+                "string",
+                'in:internal,external'
             ],
-            'actual_salary'=>[
-                "nullable",
-                "string"
-            ],
-            'work_location'=>[
-                "nullable",
-                "string"
-            ],
-            'hire_source'=>[
-                "nullable",
-                "string"
-            ],
-            'status'=>[
+            'status' => [
                 "nullable",
                 'in:active,inactive'
             ],
-            'date_from'=>[
+            'date_from' => [
                 "nullable",
                 "date",
             ],
-            'date_to'=>[
+            'date_to' => [
                 "nullable",
                 "date",
             ],

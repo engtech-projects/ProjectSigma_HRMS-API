@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Rules\JsonStringValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateManpowerRequestRequest extends FormRequest
@@ -12,12 +13,14 @@ class UpdateManpowerRequestRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+        ;
     }
 
-    protected function prepareForValidation() {
-        $this->merge([
-            "approvals" => json_decode($this->approvals,true)
-        ]);
+    protected function prepareForValidation()
+    {
+        /*       $this->merge([
+            "approvals" => $this->approvals
+        ]); */
     }
 
     /**
@@ -28,101 +31,76 @@ class UpdateManpowerRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'requesting_department'=> [
+            'requesting_department' => [
                 "nullable",
                 "integer",
                 "exists:departments,id",
             ],
-            'date_requested'=>[
+            'date_requested' => [
                 "nullable",
                 "date",
             ],
-            'date_required'=>[
+            'date_required' => [
                 "nullable",
                 "date",
             ],
-            'position'=>[
-                "nullable",
-                "string",
+            'position_id' => [
+                "required",
+                "integer",
+                "exists:positions,id"
             ],
-            'employment_type'=>[
+            'employment_type' => [
                 "nullable",
                 "string",
                 'in:Student Trainee,Project Hire,Contractual,Regular'
             ],
-            'brief_description'=>[
+            'brief_description' => [
                 "nullable",
                 "string",
             ],
-            'job_description_attachment'=>[
+            'job_description_attachment' => [
                 "nullable",
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'nature_of_request'=>[
+            'nature_of_request' => [
                 "nullable",
                 "string",
                 'in:New/Addition,Replacement'
             ],
-            'age_range'=>[
+            'age_range' => [
                 "nullable",
                 "string",
             ],
-            'status'=>[
+            'status' => [
                 "nullable",
                 "string",
                 'in:Single,Married,No Preference'
             ],
-            'gender'=>[
+            'gender' => [
                 "nullable",
                 "string",
                 'in:Male,Female,No Preference'
             ],
-            'educational_requirement'=>[
+            'educational_requirement' => [
                 "nullable",
                 "string",
             ],
-            'preferred_qualifications'=>[
+            'preferred_qualifications' => [
                 "nullable",
                 "string",
             ],
-            'approvals.*'=>[
-                "nullable",
-                "array",
-                "required_array_keys:type,user_id,status,date_approved,remarks",
-            ],
-            'approvals.*.type'=>[
-                "nullable",
-                "string",
-            ],
-            'approvals.*.user_id'=>[
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status'=>[
-                "nullable",
-                "string",
-            ],
-            'approvals.*.date_approved'=>[
-                "nullable",
-                "date",
-            ],
-            'remarks'=>[
-                "nullable",
-                "string",
-            ],
-            'request_status'=>[
+            'request_status' => [
                 "nullable",
                 "string",
                 'in:Pending,Approved,Filled,Hold,Cancelled,Disapproved'
             ],
-            'charged_to'=>[
+            'charged_to' => [
                 "nullable",
                 "integer",
                 "exists:departments,id",
             ],
-            'breakdown_details'=>[
+            'breakdown_details' => [
                 "nullable",
                 "string",
             ],

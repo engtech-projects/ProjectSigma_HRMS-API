@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EmploymentStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
 {
@@ -14,9 +16,11 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
         return true;
     }
 
-    protected function prepareForValidation() {
+    protected function prepareForValidation()
+    {
         $this->merge([
-            "approvals" => json_decode($this->approvals,true)
+            "approvals" => json_decode($this->approvals, true)
+
         ]);
     }
 
@@ -28,120 +32,139 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
-                "required",
+            'employee_id' => [
+                "nullable",
                 "integer",
                 "exists:employees,id",
+                'required_if:type,==,Termination,Transfer,Promotion',
             ],
-            'type'=>[
+            'type' => [
                 "required",
                 "string",
                 'in:New Hire,Termination,Transfer,Promotion'
             ],
-            'date_of_effictivity'=>[
+            'date_of_effictivity' => [
                 "required",
                 "date",
             ],
-            'section_department'=>[
-                "required",
-                "string"
+            'section_department_id' => [
+                "nullable",
+                "integer",
+                "exists:departments,id",
+                'required_if:type,==,New Hire',
             ],
-            'designation_position'=>[
-                "required",
-                "string"
-            ],
-            'salary_grade'=>[
-                "required",
-                "string"
-            ],
-            'salary_grade_step'=>[
-                "required",
-                "string"
-            ],
-            'salary_type'=>[
-                "required",
+            'designation_position' => [
+                "nullable",
                 "string",
-                'in:Fixed Rate,Non Fixed,Monthly,Weekly'
+                'required_if:type,==,New Hire',
             ],
-            'hire_source'=>[
-                "required",
+            'salary_grades' => [
+                "nullable",
+                "integer",
+                "exists:salary_grade_steps,id",
+                'required_if:type,==,New Hire',
+            ],
+            'new_salary_grades' => [
+                "nullable",
+                "integer",
+                "exists:salary_grade_steps,id",
+                'required_if:type,==,Promotion',
+            ],
+            'pan_job_applicant_id' => [
+                "nullable",
+                "integer",
+                "exists:job_applicants,id",
+                'required_if:type,==,New Hire',
+            ],
+            'hire_source' => [
+                "nullable",
                 "string",
-                'in:Internal,External'
+                'in:Internal,External',
+                'required_if:type,==,New Hire',
             ],
-            'work_location'=>[
-                "required",
+            'work_location' => [
+                "nullable",
                 "string",
+                'required_if:type,==,New Hire,Transfer',
             ],
-            'new_section'=>[
-                "required",
+            'new_section_id' => [
+                "nullable",
+                "integer",
+                "exists:departments,id",
+                'required_if:type,==,Transfer',
+            ],
+            'new_location' => [
+                "nullable",
                 "string",
+                'required_if:type,==,Transfer'
             ],
-            'new_location'=>[
-                "required",
+            'new_employment_status' => [
+                "nullable",
                 "string",
+                'required_if:type,==,Promotion'
             ],
-            'new_employment_status'=>[
-                "required",
-                "string",
-            ],
-            'new_position'=>[
-                "required",
-                "string",
-            ],
-            'new_salary_grade'=>[
-                "required",
-                "string",
-            ],
-            'new_salary_grade_step'=>[
-                "required",
-                "string",
-            ],
-            'type_of_termination'=>[
-                "required",
-                "string",
-            ],
-            'reasons_for_termination'=>[
-                "required",
+            'new_position' => [
+                "nullable",
                 "string",
             ],
-            'eligible_for_rehire'=>[
-                "required",
+            'type_of_termination' => [
+                "nullable",
                 "string",
+                'required_if:type,==,Termination'
             ],
-            'last_day_worked'=>[
-                "required",
+            'reasons_for_termination' => [
+                "nullable",
                 "string",
+                'required_if:type,==,Termination'
             ],
-            'approvals.*'=>[
+            'eligible_for_rehire' => [
+                "nullable",
+                "string",
+                'required_if:type,==,Termination'
+            ],
+            'last_day_worked' => [
+                "nullable",
+                "string",
+                'required_if:type,==,Termination'
+            ],
+            'approvals' => [
                 "required",
                 "array",
-                "required_array_keys:type,user_id,status,date_approved,remarks",
             ],
-            'approvals.*.type'=>[
+            'approvals.*' => [
+                "required",
+                "array",
+            ],
+            'approvals.*.type' => [
                 "required",
                 "string",
             ],
-            'approvals.*.user_id'=>[
+            'approvals.*.user_id' => [
                 "nullable",
                 "integer",
                 "exists:users,id",
             ],
-            'approvals.*.status'=>[
+            'approvals.*.status' => [
                 "required",
                 "string",
             ],
-            'approvals.*.date_approved'=>[
+            'approvals.*.date_approved' => [
                 "nullable",
                 "date",
             ],
-            'approvals.*.remarks'=>[
+            'approvals.*.remarks' => [
                 "nullable",
                 "string",
             ],
-            'created_by'=> [
-                "required",
-                "integer",
-                "exists:users,id",
+            'comments' => [
+                "nullable",
+                "string",
+            ],
+            'employment_status' => [
+                "nullable",
+                "string",
+                'required_if:type,==,New Hire',
+                new Enum(EmploymentStatus::class)
             ],
         ];
     }

@@ -23,20 +23,20 @@ class UpdateEmployeeAffiliationRequest extends FormRequest
     {
         return [
             //
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'club_organization_name'=>[
+            'club_organization_name' => [
                 "nullable",
                 "string",
             ],
-            'membership_type'=>[
+            'membership_type' => [
                 "nullable",
                 "string",
             ],
-            'membership_exp_date'=>[
+            'membership_exp_date' => [
                 "nullable",
                 "date",
             ],

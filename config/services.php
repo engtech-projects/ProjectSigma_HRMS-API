@@ -24,6 +24,10 @@ return [
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
+    'url' => [
+        'hrms_app_url' => env('HRMS_APP_URL'),
+        'projects_api_url' => env('PROJECTS_API_URL')
+    ],
 
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),

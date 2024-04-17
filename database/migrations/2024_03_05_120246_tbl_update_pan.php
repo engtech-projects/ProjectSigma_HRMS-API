@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,7 +13,7 @@ return new class extends Migration
         Schema::table('employee_personnel_action_notice_requests', function (Blueprint $table) {
             $table->dropColumn('new_salary_grade Step');
             $table->string('new_salary_grade_step');
-            $table->json('approvals');
+            $table->json('approvals')->change();
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users');
         });

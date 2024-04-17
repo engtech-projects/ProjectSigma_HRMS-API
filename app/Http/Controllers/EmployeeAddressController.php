@@ -22,23 +22,15 @@ class EmployeeAddressController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeAddressRequest $request)
     {
-        $main = new EmployeeAddress;
+        $main = new EmployeeAddress();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -54,10 +46,9 @@ class EmployeeAddressController extends Controller
      */
     public function show($id)
     {
-        //
         $main = EmployeeAddress::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -69,23 +60,15 @@ class EmployeeAddressController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(EmployeeAddress $employeeAddress)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeAddressRequest $request,  $id)
+    public function update(UpdateEmployeeAddressRequest $request, $id)
     {
         $main = EmployeeAddress::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -108,8 +91,8 @@ class EmployeeAddressController extends Controller
     {
         $main = EmployeeAddress::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -117,10 +100,10 @@ class EmployeeAddressController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

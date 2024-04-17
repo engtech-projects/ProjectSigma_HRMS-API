@@ -22,142 +22,42 @@ class UpdateEmployeeEducationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-            'employee_id'=> [
-                "nullable",
+            'employee_id' => [
+                "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'elementary_name'=>[
+            'type' => [
+                "required",
+                "string",
+                "in:elementary,secondary,vocational_course,college,graduate_studies",
+            ],
+            'name' => [
+                "required",
+                "string",
+            ],
+            'education' => [
                 "nullable",
                 "string",
             ],
-            'elementary_education'=>[
-                "nullable",
+            'period_attendance_to' => [
+                "required",
                 "string",
             ],
-            'elementary_period_attendance_to'=>[
-                "nullable",
+            'period_attendance_from' => [
+                "required",
                 "string",
             ],
-            'elementary_period_attendance_from'=>[
-                "nullable",
+            'year_graduated' => [
+                "required",
                 "string",
             ],
-            'elementary_year_graduated'=>[
-                "nullable",
+            'degree_earned_of_school' => [
+                "required",
                 "string",
             ],
-            'secondary_name'=>[
-                "nullable",
-                "string",
-            ],
-            'secondary_education'=>[
-                "nullable",
-                "string",
-            ],
-            'secondary_period_attendance_to'=>[
-                "nullable",
-                "string",
-            ],
-            'secondary_period_attendance_from'=>[
-                "nullable",
-                "string",
-            ],
-            'secondary_year_graduated'=>[
-                "nullable",
-                "string",
-            ],
-            'vocationalcourse_name'=>[
-                "nullable",
-                "string",
-            ],
-            'vocationalcourse_education'=>[
-                "nullable",
-                "string",
-            ],
-            'vocationalcourse_period_attendance_to'=>[
-                "nullable",
-                "string",
-            ],
-            'vocationalcourse_period_attendance_from'=>[
-                "nullable",
-                "string",
-            ],
-            'vocationalcourse_year_graduated'=>[
-                "nullable",
-                "string",
-            ],
-            'college_name'=>[
-                "nullable",
-                "string",
-            ],
-            'college_education'=>[
-                "nullable",
-                "string",
-            ],
-            'college_period_attendance_to'=>[
-                "nullable",
-                "string",
-            ],
-            'college_period_attendance_from'=>[
-                "nullable",
-                "string",
-            ],
-            'college_year_graduated'=>[
-                "nullable",
-                "string",
-            ],
-            'graduatestudies_name'=>[
-                "nullable",
-                "string",
-            ],
-            'graduatestudies_education'=>[
-                "nullable",
-                "string",
-            ],
-            'graduatestudies_period_attendance_to'=>[
-                "nullable",
-                "string",
-            ],
-            'graduatestudies_period_attendance_from'=>[
-                "nullable",
-                "string",
-            ],
-            'graduatestudies_year_graduated'=>[
-                "nullable",
-                "string",
-            ],
-            'elementary_degree_earned_of_school'=>[
-                "nullable",
-                "string",
-            ],
-            'elementary_honors_received'=>[
-                "nullable",
-                "string",
-            ],
-            'secondary_degree_earned_of_school'=>[
-                "nullable",
-                "string",
-            ],
-            'secondary_honors_received'=>[
-                "nullable",
-                "string",
-            ],
-            'college_degree_earned_of_school'=>[
-                "nullable",
-                "string",
-            ],
-            'college_honors_received'=>[
-                "nullable",
-                "string",
-            ],
-            'vocationalcourse_degree_earned_of_school'=>[
-                "nullable",
-                "string",
-            ],
-            'vocationalcourse_honors_received'=>[
-                "nullable",
+            'honors_received' => [
+                "required",
                 "string",
             ],
         ];

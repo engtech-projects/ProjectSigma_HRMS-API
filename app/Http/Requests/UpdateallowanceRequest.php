@@ -22,12 +22,12 @@ class UpdateallowanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'position_id'=> [
+            'position_id' => [
                 "nullable",
                 "integer",
                 "exists:positions,id",
             ],
-            'amount'=>[
+            'amount' => [
                 "nullable",
                 "numeric",
                 'max:999999',

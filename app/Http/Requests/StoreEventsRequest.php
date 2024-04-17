@@ -22,35 +22,35 @@ class StoreEventsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'=> [
+            'title' => [
                 "required",
                 "string",
             ],
-            'event_type'=>[
+            'event_type' => [
                 "required",
                 'in:Holiday,Company Event'
             ],
-            'repetition_type'=>[
+            'repetition_type' => [
                 "required",
                 'in:One Day,Long Event'
             ],
-            'with_pay'=>[
+            'with_pay' => [
                 "required",
                 "boolean",
             ],
-            'with_work'=>[
+            'with_work' => [
                 "required",
                 "boolean",
             ],
-            'start_date'=>[
+            'start_date' => [
                 "required",
                 "date",
             ],
-            'end_date'=>[
+            'end_date' => [
                 "required",
                 "date",
             ],
-            'description'=>[
+            'description' => [
                 "required",
                 "string",
             ],

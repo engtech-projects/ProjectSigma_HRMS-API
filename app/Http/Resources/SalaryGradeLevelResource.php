@@ -18,6 +18,7 @@ class SalaryGradeLevelResource extends JsonResource
             "id" => $this->id,
             "salary_grade_level" => $this->salary_grade_level,
             "salary_grade_step" => SalaryGradeStepResource::collection($this->whenLoaded('salary_grade_step')) ?? [],
+            "step_name" => $this->whenNotNull($this->step_name),
         ];
         //return parent::toArray($request);
     }

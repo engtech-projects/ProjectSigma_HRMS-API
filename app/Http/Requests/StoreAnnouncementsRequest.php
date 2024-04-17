@@ -22,19 +22,19 @@ class StoreAnnouncementsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'=> [
+            'title' => [
                 "required",
                 "string",
             ],
-            'content'=>[
+            'content' => [
                 "nullable",
                 "string",
             ],
-            'start_date'=>[
+            'start_date' => [
                 "required",
                 "date",
             ],
-            'end_date'=>[
+            'end_date' => [
                 "nullable",
                 "date",
                 "after_or_equal:start_date"

@@ -10,7 +10,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Accessibilities extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $fillable = [
         'id',

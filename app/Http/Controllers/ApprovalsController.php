@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Approvals;
-use App\Models\Users;
 use App\Http\Requests\StoreApprovalsRequest;
 use App\Http\Requests\UpdateApprovalsRequest;
-use Illuminate\Http\Request;
+use App\Http\Resources\ApprovalAttributeResource;
+use App\Http\Resources\ApprovalResource;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ApprovalsController extends Controller
 {
@@ -15,52 +18,31 @@ class ApprovalsController extends Controller
      */
     public function index()
     {
-        $main = Approvals::simplePaginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $approvals = Approvals::get();
+        $collection = collect(ApprovalResource::collection($approvals));
+
+        return new JsonResponse([
+            'success' => 'true',
+            'message' => 'Successfully fetched.',
+            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
+        ]);
     }
 
 
     public function get($request)
     {
-        $main = Approvals::where("form","=",$request)->first();
-        if(!is_null($main)){
-            $fetchdata = $main->approvals;
-            $a = json_decode($fetchdata);
-            $c = 0;
-            foreach($a as $x){
-
-                if($x->user_id==null || $x->userselector=="true"){
-                    $data = json_decode('{}');
-                    $data->message = "Successfully fetch.";
-                    $data->success = true;
-                    $data->data = $main;
-                }else{
-                    $fetchuser = Users::find($x->user_id);
-                    $a[$c]->name = $fetchuser->name;
-                }
-                $c+=1;
-
-            }
-            $fetchdata = $a;
+        $formRequest = Approvals::where("form", "=", $request)->first();
+        if (empty($formRequest)) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "No data found.",
+            ]);
         }
-        $main->approvals = $fetchdata;
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => new ApprovalResource($formRequest)
+        ]);
     }
 
     /**
@@ -68,11 +50,11 @@ class ApprovalsController extends Controller
      */
     public function store(StoreApprovalsRequest $request)
     {
-        $main = new Approvals;
+        $main = new Approvals();
         $main->fill($request->validated());
         $data = json_decode('{}');
         $main->approvals = json_encode($request->approvals);
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -90,7 +72,7 @@ class ApprovalsController extends Controller
     {
         $main = Approvals::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -102,23 +84,15 @@ class ApprovalsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Approvals $approvals)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateApprovalsRequest $request, $id)
     {
         $main = Approvals::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -141,8 +115,8 @@ class ApprovalsController extends Controller
     {
         $main = Approvals::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -150,10 +124,10 @@ class ApprovalsController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

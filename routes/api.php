@@ -1,39 +1,76 @@
 <?php
 
-use App\Http\Controllers\EmployeeBulkUploadController;
-use App\Http\Controllers\SalaryGradeLevelController;
-use Illuminate\Http\Request;
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AccessibilitiesController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\SSSContributionController;
-use App\Http\Controllers\PhilhealthContributionController;
-use App\Http\Controllers\WitholdingTaxContributionController;
-use App\Http\Controllers\EventsController;
+use App\Http\Controllers\HMOController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeaveController;
-use App\Http\Controllers\PagibigContributionController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\EventsController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\AllowanceController;
-use App\Http\Controllers\PositionController;
-use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ApprovalsController;
-use App\Http\Controllers\ManpowerRequestController;
-use App\Http\Controllers\JobApplicantsController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\CompanyEmployeeController;
-use App\Http\Controllers\EmployeeUploadsController;
-use App\Http\Controllers\EmployeeRecordController;
-use App\Http\Controllers\EmployeeAddressController;
-use App\Http\Controllers\EmployeeAffiliationController;
-use App\Http\Controllers\EmployeeEducationController;
-use App\Http\Controllers\EmployeeEligibilityController;
-use App\Http\Controllers\EmployeePersonnelActionNoticeRequestController;
-use App\Http\Controllers\EmployeeRelatedpersonController;
-use App\Http\Controllers\EmployeeSeminartrainingController;
-use App\Http\Controllers\InternalWorkExperienceController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\HMOMembersController;
 use App\Http\Controllers\TerminationController;
+use App\Http\Controllers\FailureToLogController;
+use App\Http\Controllers\AnnouncementsController;
+use App\Http\Controllers\AttendanceLogController;
+use App\Http\Controllers\JobApplicantsController;
+use App\Http\Controllers\EmployeeRecordController;
+use App\Http\Controllers\AccessibilitiesController;
+use App\Http\Controllers\CompanyEmployeeController;
+use App\Http\Controllers\EmployeeAddressController;
+use App\Http\Controllers\EmployeeUploadsController;
+use App\Http\Controllers\ManpowerRequestController;
+use App\Http\Controllers\SSSContributionController;
+use App\Http\Controllers\SalaryGradeLevelController;
+use App\Http\Controllers\EmployeeEducationController;
+use App\Http\Controllers\EmployeeBulkUploadController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\EmployeeAffiliationController;
+use App\Http\Controllers\EmployeeEligibilityController;
+use App\Http\Controllers\PagibigContributionController;
+use App\Http\Controllers\EmployeeRelatedpersonController;
+use App\Http\Controllers\InternalWorkExperienceController;
+use App\Http\Controllers\PhilhealthContributionController;
+use App\Http\Controllers\EmployeeSeminartrainingController;
+use App\Http\Controllers\WitholdingTaxContributionController;
+
+use App\Http\Controllers\PersonnelActionNoticeRequestController;
+use App\Http\Controllers\EmployeeLeavesController;
+use App\Http\Controllers\TravelOrderController;
+
+use App\Http\Controllers\Actions\Approvals\{
+    DisapproveApproval,
+    ApproveApproval,
+};
+use App\Http\Controllers\Actions\SalaryGrade\{
+    SalaryGradeLevelListController,
+};
+use App\Http\Controllers\Actions\Attendance\{
+    EmployeeDtrController,
+};
+use App\Http\Controllers\Actions\ProjectMember\{
+    AttachProjectEmployee,
+    ProjectEmployeeList,
+    ProjectMemberList
+};
+use App\Http\Controllers\Actions\Employee\{
+    CountEmployeeDepartmentController,
+    CountEmployeeGenderController,
+    MonthlyBirthdaysController
+};
+use App\Http\Controllers\Actions\Project\ProjectListController;
+use App\Http\Controllers\AttendanceBulkUpload;
+use App\Http\Controllers\CashAdvanceController;
+use App\Http\Controllers\LoansController;
+use App\Http\Controllers\OtherDeductionController;
+use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\OvertimeEmployeesController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -51,63 +88,149 @@ Route::middleware('auth:sanctum')->group(function () {
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/session', [AuthController::class, 'session']);
-    Route::resource('sss', SSSContributionController::class);
-    Route::resource('witholdingtax', WitholdingTaxContributionController::class);
-    Route::resource('leave', LeaveController::class);
+    Route::put('update-user', [UsersController::class, 'updateUserCredential']);
+    Route::resource('users', UsersController::class);
     Route::resource('accessibilities', AccessibilitiesController::class);
+    Route::resource('sss', SSSContributionController::class);
+    Route::resource('philhealth', PhilhealthContributionController::class);
+    Route::resource('witholdingtax', WitholdingTaxContributionController::class);
+
     Route::resource('settings', SettingsController::class);
     Route::resource('allowance', AllowanceController::class);
+    Route::resource('leave', LeaveController::class);
     Route::resource('events', EventsController::class);
     Route::resource('announcement', AnnouncementsController::class);
-    Route::get('users-employees-list', [UsersController::class, 'get']);
-    Route::get('department-list', [DepartmentController::class, 'get']);
-    Route::get('user-list', [UsersController::class, 'get']);
-    Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::get('announcement-list', [AnnouncementsController::class, 'currentAnnouncements']);
-    Route::resource('philhealth', PhilhealthContributionController::class);
-    Route::resource('position', PositionController::class);
-    Route::get('position-list', [PositionController::class, 'get']);
+    Route::get('allowance-list', [AllowanceController::class, 'get']);
+    Route::prefix("position")->group(function () {
+        Route::resource('resource', PositionController::class);
+        Route::get('list', [PositionController::class, 'get']);
+    });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
-    Route::resource('users', UsersController::class);
-    Route::resource('approvals', ApprovalsController::class);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
-    Route::post('employee-bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
-    Route::post('employee-bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
-    Route::resource('departments', DepartmentController::class);
+
+
+    Route::prefix('department')->group(function () {
+        Route::resource('resource', DepartmentController::class);
+        Route::get('list', [DepartmentController::class, 'get']);
+    });
+
     Route::resource('job-applicants', JobApplicantsController::class);
-    Route::get('employee-list', [EmployeeController::class, 'get']);
     Route::resource('pagibig', PagibigContributionController::class);
-    Route::resource('manpower-requests', ManpowerRequestController::class);
-    Route::post('employee-search', [EmployeeController::class, 'search']);
 
-    Route::resource('employee', EmployeeController::class);
-    Route::resource('company-employee', CompanyEmployeeController::class);
-    Route::resource('employee-records', EmployeeRecordController::class);
-    Route::resource('employee-uploads', EmployeeUploadsController::class);
-    Route::resource('employee-address', EmployeeAddressController::class);
-    Route::resource('employee-affiliation', EmployeeAffiliationController::class);
-    Route::resource('employee-education', EmployeeEducationController::class);
-    Route::resource('employee-eligibility', EmployeeEligibilityController::class);
-    Route::resource('employee-relatedperson', EmployeeRelatedpersonController::class);
-    Route::resource('employee-seminartraining', EmployeeSeminartrainingController::class);
+    Route::prefix("employee")->group(function () {
+        Route::get('users-list', [UsersController::class, 'get']);
+        Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
+        Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
+        Route::get('list', [EmployeeController::class, 'get']);
+        Route::post('search', [EmployeeController::class, 'search']);
+        Route::resource('resource', EmployeeController::class);
+        Route::resource('companyemployment', CompanyEmployeeController::class);
+        Route::resource('records', EmployeeRecordController::class);
+        Route::resource('uploads', EmployeeUploadsController::class);
+        Route::resource('address', EmployeeAddressController::class);
+        Route::resource('affiliation', EmployeeAffiliationController::class);
+        Route::resource('education', EmployeeEducationController::class);
+        Route::resource('eligibility', EmployeeEligibilityController::class);
+        Route::resource('relatedperson', EmployeeRelatedpersonController::class);
+        Route::resource('seminartraining', EmployeeSeminartrainingController::class);
+        Route::resource('internalwork-experience', InternalWorkExperienceController::class);
+        Route::resource('termination', TerminationController::class);
 
-    Route::get('get-request', [ManpowerRequestController::class, 'get']);
-    Route::get('get-approve-request', [ManpowerRequestController::class, 'get_approve']);
-    Route::put('approve-approval-form/{formid}', [ManpowerRequestController::class, 'approve_approval']);
-    Route::put('deny-approval-form/{formid}', [ManpowerRequestController::class, 'deny_approval']);
-    Route::get('manpower-for-hiring', [ManpowerRequestController::class, 'get_hiring']);
-    Route::get('manpower-with-applicant', [ManpowerRequestController::class, 'get_manpower_with_applicant']);
-    Route::get('job-applicants-get', [JobApplicantsController::class, 'get']);
+        Route::prefix('count')->group(function () {
+            Route::get('gender', CountEmployeeGenderController::class);
+            Route::get('department', CountEmployeeDepartmentController::class);
+        });
+        Route::get('monthly-birthdays', MonthlyBirthdaysController::class);
+    });
 
-    Route::resource('internalwork-experience', InternalWorkExperienceController::class);
-    Route::resource('termination', TerminationController::class);
+    Route::resource('approvals', ApprovalsController::class);
+    Route::prefix('approvals')->group(function () {
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
+    });
 
-    Route::resource('salary-grade-level', SalaryGradeLevelController::class);
-    Route::get('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
-    Route::resource('employee-panrequest', EmployeePersonnelActionNoticeRequestController::class);
-    Route::get('get-panrequest', [EmployeePersonnelActionNoticeRequestController::class, 'get_panrequest']);
-    Route::post('hire_approved', [EmployeePersonnelActionNoticeRequestController::class, 'hire_approved']);
 
+    Route::prefix('manpower')->group(function () {
+        Route::resource('resource', ManpowerRequestController::class);
+        Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
+        Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
+        Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
+    });
+
+
+    Route::prefix('salary')->group(function () {
+        Route::resource('resource', SalaryGradeLevelController::class);
+        Route::get('list', SalaryGradeLevelListController::class);
+    });
+
+    Route::prefix("hmo")->group(function () {
+        Route::resource('resource', HMOController::class);
+        Route::resource('members', HMOMembersController::class);
+    });
+    Route::resource('schedule', ScheduleController::class);
+    Route::get('schedules', [ScheduleController::class, 'getGroupType']);
+    Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
+    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+    Route::prefix('pan')->group(function () {
+        Route::resource('resource', PersonnelActionNoticeRequestController::class);
+        Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
+        Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
+    });
+
+    Route::prefix('attendance')->group(function () {
+        Route::post('bulk-upload', [AttendanceBulkUpload::class, 'bulkUpload']);
+        Route::post('bulk-save', [AttendanceBulkUpload::class, 'bulkSave']);
+        Route::resource('log', AttendanceLogController::class);
+        Route::resource('failed-log', FailureToLogController::class);
+        Route::prefix('failure-to-log')->group(function () {
+            Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
+            Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
+        });
+        Route::post('dtr', EmployeeDtrController::class);
+    });
+
+    Route::prefix('project-monitoring')->group(function () {
+        Route::resource('project', ProjectController::class);
+        Route::get('list', ProjectListController::class);
+        Route::put('attach-employee/{projectMonitoringId}', AttachProjectEmployee::class);
+        Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
+        Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);
+    });
+
+    Route::prefix('leave-request')->group(function () {
+        Route::resource('resource', EmployeeLeavesController::class);
+        Route::get('get-form-request', [EmployeeLeavesController::class, 'myFormRequest']);
+        Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
+    });
+
+    Route::prefix('travelorder-request')->group(function () {
+        Route::resource('resource', TravelOrderController::class);
+        Route::get('my-request', [TravelOrderController::class, 'myRequests']);
+        Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
+    });
+
+    Route::prefix('loans')->group(function () {
+        Route::resource('resource', LoansController::class);
+        Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
+    });
+
+    Route::prefix('cash-advance')->group(function () {
+        Route::resource('resource', CashAdvanceController::class);
+        Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
+        Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
+        Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
+    });
+
+    Route::prefix('overtime')->group(function () {
+        Route::resource('resource', OvertimeController::class);
+        Route::resource('overtime-employee', OvertimeEmployeesController::class);
+        Route::get('my-request', [OvertimeController::class, 'myRequests']);
+        Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
+    });
+
+    Route::prefix('other-deduction')->group(function () {
+        Route::resource('resource', OtherDeductionController::class);
+        Route::post('manual-payment/{cash}', [OtherDeductionController::class, "cashAdvancePayment"]);
+    });
 });
-
-

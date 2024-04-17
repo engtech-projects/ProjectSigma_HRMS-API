@@ -22,16 +22,16 @@ class StorepositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=> [
+            'name' => [
                 "required",
                 "string",
             ],
-            'department_id'=> [
+            'department_id' => [
                 "required",
                 "integer",
                 "exists:departments,id",
             ],
-            'position_type'=>[
+            'position_type' => [
                 "required",
                 "in:Head,Staff",
             ],

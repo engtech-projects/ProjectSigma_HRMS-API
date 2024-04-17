@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Enums;
 
-enum EmployeeAffiliationMemberType:string
+enum EmployeeAffiliationMemberType: string
 {
     case FILE = "File";
 }

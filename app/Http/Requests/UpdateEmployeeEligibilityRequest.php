@@ -22,24 +22,24 @@ class UpdateEmployeeEligibilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'program_module'=>[
+            'program_module' => [
                 "nullable",
                 "string",
             ],
-            'certificate_lvl'=>[
+            'certificate_lvl' => [
                 "nullable",
                 "string",
             ],
-            'status'=>[
+            'status' => [
                 "nullable",
                 "string",
             ],
-            'cert_exp_date'=>[
+            'cert_exp_date' => [
                 "nullable",
                 "date",
             ],

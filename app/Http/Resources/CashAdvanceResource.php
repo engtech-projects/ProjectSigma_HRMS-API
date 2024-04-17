@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class CashAdvanceResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            "id" => $this->id,
+            "employee_id" => $this->employee_id,
+            "department_id" => $this->department_id,
+            "project_id" => $this->project_id,
+            "amount_requested" => $this->amount_requested,
+            "amount_approved" => $this->amount_approved,
+            "purpose" => $this->purpose,
+            "terms_of_cash_advance" => $this->terms_of_cash_advance,
+            "remarks" => $this->remarks,
+            "request_status" => $this->request_status,
+            "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "released_by" => $this->released_by,
+        ];
+    }
+}

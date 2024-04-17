@@ -22,32 +22,32 @@ class StoreEmployeeAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "required",
                 "integer",
                 "exists:employees,id",
             ],
-            'street'=>[
+            'street' => [
                 "required",
                 "string",
             ],
-            'brgy'=>[
+            'brgy' => [
                 "required",
                 "string",
             ],
-            'city'=>[
+            'city' => [
                 "required",
                 "string",
             ],
-            'zip'=>[
+            'zip' => [
                 "required",
                 "string",
             ],
-            'province'=>[
+            'province' => [
                 "required",
                 "string",
             ],
-            'type'=>[
+            'type' => [
                 "string",
                 "required",
                 'in:present,permanent,same'

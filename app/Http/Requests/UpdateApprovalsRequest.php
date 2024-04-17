@@ -22,23 +22,23 @@ class UpdateApprovalsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'form'=> [
+            'form' => [
                 "nullable",
                 "string",
             ],
-            'approvals'=> [
+            'approvals' => [
                 "nullable",
                 "array",
             ],
-            'approvals.*.type'=> [
+            'approvals.*.type' => [
                 "nullable",
                 "string",
             ],
-            'approvals.*.userselector'=> [
+            'approvals.*.userselector' => [
                 "nullable",
                 "boolean",
             ],
-            'approvals.*.user_id'=> [
+            'approvals.*.user_id' => [
                 "nullable",
                 "exists:users,id",
                 "required_if:users.type,Employee,"

@@ -2,17 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\ManpowerRequestStatus;
+use App\Traits\HasApproval;
+use Illuminate\Database\Eloquent\Builder;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ManpowerRequest extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+    use HasApproval;
 
     protected $fillable = [
         'id',
@@ -37,8 +44,104 @@ class ManpowerRequest extends Model
         'requested_by',
     ];
 
-    public function job_applicants(): HasMany
+    protected $casts = [
+        'approvals' => 'array'
+    ];
+
+    /**
+     * MODEL
+     * STATIC METHODS
+     */
+    public static function boot()
     {
-        return $this->hasMany(JobApplicants::class,'manpowerrequests_id','id');
+        parent::boot();
+        static::deleted(function ($model) {
+            $attachment = explode("/", $model->job_description_attachment);
+            Storage::deleteDirectory("public/" . $attachment[0] . "/" . $attachment[1]);
+        });
+    }
+
+    /**
+     * MODEL
+     * ATTRIBUTES
+     */
+
+    public function getDataUserIdAttribute()
+    {
+        return $this->data['user_id'] ?? null;
+    }
+
+    /**
+     * MODEL
+     * RELATED RELATIONS
+     * */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function job_applicants()
+    {
+        return $this->hasMany(JobApplicants::class, 'manpowerrequests_id', 'id');
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
+
+    /**
+     * MODEL
+     * LOCAL SCOPES
+     */
+
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', 'Pending');
+    }
+
+    public function scopeForHiring(Builder $query): void
+    {
+        $query->where('request_status', ManpowerRequestStatus::APPROVED);
+    }
+
+    public function completeRequestStatus()
+    {
+        $this->request_status = ManpowerRequestStatus::APPROVED;
+        $this->save();
+        $this->refresh();
+    }
+    public function denyRequestStatus()
+    {
+
+        $this->request_status = ManpowerRequestStatus::DISAPPROVED;
+        $this->save();
+        $this->refresh();
+    }
+
+    public function requestStatusCompleted(): bool
+    {
+        if ($this->request_status == ManpowerRequestStatus::APPROVED) {
+            return true;
+        }
+        return false;
+    }
+
+    public function requestStatusEnded(): bool
+    {
+        if (
+            in_array(
+                $this->request_status,
+                [
+                    ManpowerRequestStatus::DISAPPROVED,
+                    ManpowerRequestStatus::FILLED,
+                    ManpowerRequestStatus::HOLD,
+                    ManpowerRequestStatus::CANCELLED,
+                ]
+            )
+        ) {
+            return true;
+        }
+        return false;
     }
 }

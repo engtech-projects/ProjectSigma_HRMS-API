@@ -13,9 +13,7 @@ class PositionController extends Controller
      */
     public function index()
     {
-        //
-        // $main = Position::simplePaginate(15);
-        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->simplePaginate(15);
+        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -25,10 +23,8 @@ class PositionController extends Controller
 
     public function get()
     {
-        //
         $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->get();
         $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
@@ -47,11 +43,11 @@ class PositionController extends Controller
      */
     public function store(StorepositionRequest $request)
     {
-        $main = new Position;
+        $main = new Position();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -67,10 +63,9 @@ class PositionController extends Controller
      */
     public function show($id)
     {
-        //
         $main = Position::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -92,14 +87,13 @@ class PositionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatepositionRequest $request,  $id)
+    public function update(UpdatepositionRequest $request, $id)
     {
-        //
         $main = Position::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -118,12 +112,12 @@ class PositionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy( $id)
+    public function destroy($id)
     {
         $main = Position::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -131,10 +125,10 @@ class PositionController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

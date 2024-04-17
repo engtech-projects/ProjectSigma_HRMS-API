@@ -22,38 +22,44 @@ class StoreSSSContributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'range_from'=> [
+            'range_from' => [
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'range_to'=>[
+            'range_to' => [
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employee_share'=>[
+            'employee_share' => [
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employer_share'=>[
+            'employer_share' => [
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employee_contribution'=>[
+            'employee_contribution' => [
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",
             ],
-            'employer_contribution'=>[
+            'employer_contribution' => [
                 "required",
+                "min:0",
                 'max:999999',
                 'decimal:0,2',
                 "numeric",

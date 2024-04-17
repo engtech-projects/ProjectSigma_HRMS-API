@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SalaryGradeLevel extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
+
     protected $table = "salary_grade_levels";
     protected $primaryKey = "id";
     protected $fillable = [

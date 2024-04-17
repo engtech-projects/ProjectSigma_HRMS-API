@@ -22,32 +22,32 @@ class UpdateEmployeeRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id'=> [
+            'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
             ],
-            'date_to'=>[
+            'date_to' => [
                 "nullable",
                 "date",
             ],
-            'date_from'=>[
+            'date_from' => [
                 "nullable",
                 "date",
             ],
-            'position_title'=>[
+            'position_title' => [
                 "nullable",
                 "string",
             ],
-            'company_name'=>[
+            'company_name' => [
                 "nullable",
                 "string",
             ],
-            'monthly_salary'=>[
+            'monthly_salary' => [
                 "nullable",
                 "string",
             ],
-            'status_of_appointment'=>[
+            'status_of_appointment' => [
                 "nullable",
                 "string",
             ],
