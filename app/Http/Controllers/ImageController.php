@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Traits\UploadImageTrait;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Log;
 
 class ImageController extends Controller
 {
@@ -16,6 +17,7 @@ class ImageController extends Controller
     {
         $employee_id = Employee::findOrFail($id);
         $profileImage = $this->uploadImage($request, 'profile_picture');
+        Log::info($profileImage);
         if ($profileImage) {
             Image::create([
                 'url' => $profileImage,
@@ -33,6 +35,7 @@ class ImageController extends Controller
     {
         $employee_id = Employee::findOrFail($id);
         $file = $this->uploadImage($request, 'digital_signature');
+        Log::info($file);
         $url = 'images/digital_signature/' . $file->hashName() . '/' . $file->getClientOriginalName();
         if ($file) {
             Image::create([
