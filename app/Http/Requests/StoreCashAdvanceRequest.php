@@ -43,7 +43,7 @@ class StoreCashAdvanceRequest extends FormRequest
                 "exists:departments,id",
             ],
             'project_id' => [
-                "required",
+                "nullable",
                 "integer",
                 "exists:projects,id",
             ],
@@ -99,12 +99,7 @@ class StoreCashAdvanceRequest extends FormRequest
             'approvals.*.remarks' => [
                 "nullable",
                 "string",
-            ],
-            'released_by' => [
-                "required",
-                "integer",
-                "exists:users,id",
-            ],
+            ]
         ];
     }
 }

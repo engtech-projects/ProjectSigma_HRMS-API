@@ -40,6 +40,7 @@ class CashAdvanceController extends Controller
         $main = new CashAdvance();
         $main->fill($request->validated());
         $main->request_status = RequestStatusType::PENDING;
+        $main->released_by = auth()->user()->id;;
         $data = json_decode('{}');
 
         if (!$main->save()) {
