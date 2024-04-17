@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 trait UploadImageTrait
@@ -10,6 +11,7 @@ trait UploadImageTrait
     {
         if ($request->hasfile('image_file')) {
             $file = $request->file('image_file');
+            Log::info($file);
             $hashName = $file->hashName();
             $filename = $file->getClientOriginalName();
             $file->storePubliclyAs('images/' . $path . '/' . $hashName, $filename, 'public');
