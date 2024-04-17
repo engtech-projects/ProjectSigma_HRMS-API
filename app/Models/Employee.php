@@ -84,6 +84,12 @@ class Employee extends Model
         'height',
     ];
 
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'parentable');
+    }
+
+
     public function company_employments(): HasOne
     {
         return $this->hasOne(CompanyEmployee::class);
