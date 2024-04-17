@@ -39,11 +39,19 @@ class ProjectListController extends Controller
                 }
             }
         }
+        $result = collect(Project::all())->map(function ($project) use ($projects) {
+            $project["projects"] = collect($projects)->filter(function ($value) use ($project) {
+                if ($project["project_monitoring_id"] == $value['id']) {
+                    return $value;
+                }
+            })->all();
+            return $project;
+        })->all();
 
         return new JsonResponse([
             'success' => true,
             'message' => "Projects successfully updated.",
-            'data' => $projects
+            'data' => $result
         ]);
     }
 }
