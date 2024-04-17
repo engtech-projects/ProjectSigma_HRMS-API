@@ -32,10 +32,11 @@ class ImageController extends Controller
     public function uploadDigitalSignature(Request $request, $id)
     {
         $employee_id = Employee::findOrFail($id);
-        $profileImage = $this->uploadImage($request, 'digital_signature');
-        if ($profileImage) {
+        $file = $this->uploadImage($request, 'digital_signature');
+        $url = 'images/digital_signature/' . $file->hashName() . '/' . $file->getClientOriginalName();
+        if ($file) {
             Image::create([
-                'url' => $profileImage,
+                'url' => $url,
                 'image_type' => "signature",
                 'parentable_id' => $employee_id->id,
                 'parentable_type' => Employee::class
