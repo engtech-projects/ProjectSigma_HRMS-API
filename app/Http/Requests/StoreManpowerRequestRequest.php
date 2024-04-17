@@ -44,9 +44,10 @@ class StoreManpowerRequestRequest extends FormRequest
                 "required",
                 "date",
             ],
-            'position' => [
+            'position_id' => [
                 "required",
-                "string",
+                "integer",
+                "exists:positions,id",
             ],
             'employment_type' => [
                 "required",

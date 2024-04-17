@@ -20,7 +20,7 @@ class ProjectListController extends Controller
         $token = $request->bearerToken();
         $url = config()->get('services.url.projects_api_url');
         $response = Http::acceptJson()->withToken($token)->get($url . 'api/projects?completion_status=ongoing');
-        $projects = $response->json();
+        $projects = $response->json('data');
         if ($response->successful()) {
             foreach ($projects as $project) {
                 $model = Project::where('project_monitoring_id', $project["id"])->first();
@@ -39,11 +39,19 @@ class ProjectListController extends Controller
                 }
             }
         }
+        $result = collect(Project::all())->map(function ($project) use ($projects) {
+            $project["projects"] = collect($projects)->filter(function ($value) use ($project) {
+                if ($project["project_monitoring_id"] == $value['id']) {
+                    return $value;
+                }
+            })->first();
+            return $project;
+        })->all();
 
         return new JsonResponse([
             'success' => true,
             'message' => "Projects successfully updated.",
-            'data' => $projects
+            'data' => $result
         ]);
     }
 }
