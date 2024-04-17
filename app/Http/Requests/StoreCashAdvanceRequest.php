@@ -100,11 +100,6 @@ class StoreCashAdvanceRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'request_status' => [
-                "required",
-                "string",
-                new Enum(RequestStatusType::class)
-            ],
             'released_by' => [
                 "required",
                 "integer",

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LoanPaymentsType;
+use App\Enums\RequestStatusType;
 use App\Http\Requests\cashAdvanceRequest;
 use App\Models\CashAdvance;
 use App\Http\Requests\StoreCashAdvanceRequest;
@@ -23,7 +24,7 @@ class CashAdvanceController extends Controller
      */
     public function index()
     {
-        $main = CashAdvance::with("employee", "department", "project")->paginate(15);
+        $main = CashAdvance::with("employee", "department", "project", "released")->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -38,6 +39,7 @@ class CashAdvanceController extends Controller
     {
         $main = new CashAdvance();
         $main->fill($request->validated());
+        $main->request_status = RequestStatusType::PENDING;
         $data = json_decode('{}');
 
         if (!$main->save()) {
@@ -83,7 +85,7 @@ class CashAdvanceController extends Controller
      */
     public function show($id)
     {
-        $main = CashAdvance::with("employee", "department", "project")->find($id);
+        $main = CashAdvance::with("employee", "department", "project", "released")->find($id);
         $data = json_decode('{}');
 
         if (!is_null($main)) {
