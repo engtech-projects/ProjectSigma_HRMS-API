@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,7 +24,7 @@ trait UploadImageTrait
             $hashmake = Hash::make('secret');
             $hashname = hash('sha256', $hashmake);
             $randName = mt_rand().time();
-            return Storage::put('images/' . $path . '/' . $hashName . '/' . $randName . $type, $file);
+            return Storage::put('images/' . $path . '/' . $hashname . '/' . $randName . $type, $file);
         }
     }
 }
