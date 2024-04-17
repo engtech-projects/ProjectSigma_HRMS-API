@@ -121,6 +121,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix("employee")->group(function () {
         Route::get('users-list', [UsersController::class, 'get']);
+        Route::get('get-late', [EmployeeController::class, 'getLateThisMonth']);
+        Route::get('get-absent', [EmployeeController::class, 'getAbsenceThisMonth']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
         Route::get('list', [EmployeeController::class, 'get']);

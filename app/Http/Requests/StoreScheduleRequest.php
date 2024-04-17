@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ScheduleGroupType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreScheduleRequest extends FormRequest
 {
@@ -25,7 +27,7 @@ class StoreScheduleRequest extends FormRequest
             'groupType' => [
                 "required",
                 "string",
-                "in:department,project,employee"
+                new Enum(ScheduleGroupType::class)
             ],
             'department_id' => [
                 "nullable",

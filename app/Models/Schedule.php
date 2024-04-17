@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ScheduleGroupType;
 use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -56,7 +57,6 @@ class Schedule extends Model
         return $this->hasOne(Employee::class, "id", "employee_id");
     }
 
-
     /**
      * MODEL
      * LOCAL
@@ -69,5 +69,16 @@ class Schedule extends Model
             $query->where('startRecur', '>=', $filter['start_date'])
                 ->orWhereNull('endRecur');
         })->where('endRecur', '<', $filter['end_date']);
+    }
+
+    public function scheduleEmployeeThisMonth($query)
+    {
+        return $query->with('employee')->where('groupType', ScheduleGroupType::EMPLOYEE)->whereBetween(
+            'startRecur',
+            [
+                Carbon::now()->startOfMonth()->format('Y-m-d'),
+                Carbon::now()->endOfMonth()->format('Y-m-d')
+            ]
+        )->get();
     }
 }

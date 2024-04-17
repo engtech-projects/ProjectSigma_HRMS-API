@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule as EmployeeSchedule;
-use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\DB;
 
 class Employee extends Model
 {
@@ -281,17 +281,13 @@ class Employee extends Model
 
     public function filter_employee_schedule($start_range, $end_range)
     {
-        $data = Schedule::find($this->id)->where([
+        $data = EmployeeSchedule::select('employee_id', 'startTime', 'endTime', 'startRecur', 'endRecur')->where([
             ['startRecur', '>=', $start_range],
             ['endRecur', '<=', $end_range],
-        ])->get();
-
-        return $data;
-    }
-
-    public function employee_late($start, $end)
-    {
-        $data = $this->filter_employee_schedule($start, $end);
-        return $data;
+        ])->with([
+            'employee' => function ($query) {
+                return $query->select(['first_name', 'middle_name', 'family_name', 'id']);
+            }
+        ])->addSelect(DB::raw('startTime as late'))->get();
     }
 }

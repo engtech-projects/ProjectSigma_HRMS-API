@@ -11,6 +11,9 @@ use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\ProjectResource;
+use App\Models\AttendanceLog;
+use App\Models\Schedule;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
@@ -210,5 +213,43 @@ class EmployeeController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function getAbsenceThisMonth(Schedule $req, AttendanceLog $log)
+    {
+        $getemployeeschedule = $req->scheduleEmployeeThisMonth($req);
+        $absenceEmployeeData = [];
+        foreach ($getemployeeschedule as $key => $value) {
+            $maxDays = date('t');
+            $EmployeeAbsence = $log->getAttendance($log, $value->employee_id);
+            $absenceEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
+            $absenceEmployeeData[$key]["absences"] = $maxDays - $EmployeeAbsence;
+            if ($EmployeeAbsence >= $maxDays) {
+                $absenceEmployeeData[$key]["absences"] = $maxDays;
+            }
+        }
+        $dataval = collect($absenceEmployeeData)->unique();
+        return new JsonResponse([
+            'success' => 'true',
+            'message' => 'Successfully fetched.',
+            'data' => $dataval
+        ]);
+    }
+
+    public function getLateThisMonth(Schedule $req, AttendanceLog $log)
+    {
+        $getemployeeschedule = $req->scheduleEmployeeThisMonth($req);
+        $lateEmployeeData = [];
+        foreach ($getemployeeschedule as $key => $value) {
+            $EmployeeLate = $log->getLate($log, $value->employee_id, $value->startTime);
+            $lateEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
+            $lateEmployeeData[$key]["lates"] = $EmployeeLate;
+        }
+        $dataval = collect($lateEmployeeData)->unique();
+        return new JsonResponse([
+            'success' => 'true',
+            'message' => 'Successfully fetched.',
+            'data' => $dataval
+        ]);
     }
 }
