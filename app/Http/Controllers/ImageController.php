@@ -23,7 +23,7 @@ class ImageController extends Controller
         Log::info($profileImage);
         if ($profileImage) {
             Image::create([
-                'url' => $profileImage,
+                'url' => $url,
                 'image_type' => "profile_image",
                 'parentable_id' => $employee_id->id,
                 'parentable_type' => Employee::class
