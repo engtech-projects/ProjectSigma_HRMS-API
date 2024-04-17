@@ -35,6 +35,7 @@ class ImageController extends Controller
     {
         $employee_id = Employee::findOrFail($id);
         $file = $this->uploadImage($request, 'digital_signature');
+        Log::info($file);
         $url = 'images/digital_signature/' . $file->hashName() . '/' . $file->getClientOriginalName();
         if ($file) {
             Image::create([
