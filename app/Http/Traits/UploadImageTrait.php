@@ -9,7 +9,9 @@ trait UploadImageTrait
 {
     public function uploadImage($request, $path)
     {
-        if ($request->hasfile('image_file')) {
+        Log::info("Inside UploadImage Trait");
+        if ($request->hasFile('image_file')) {
+            Log::info("Inside UploadImage Trait - true fasfile image_file");
             $file = $request->file('image_file');
             Log::info($file);
             $hashName = $file->hashName();
