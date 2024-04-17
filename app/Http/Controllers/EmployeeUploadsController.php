@@ -5,15 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\EmployeeUploads;
 use App\Http\Requests\StoreEmployeeUploadsRequest;
 use App\Http\Requests\UpdateEmployeeUploadsRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class EmployeeUploadsController extends Controller
 {
     public const EMPLOYEEDIR = "employee_folder/";
-    public const EMPLOYEEDIR201 = "employee_201/";
-    public const EMPLOYEEDIRSIGNATURE = "employee_signature/";
 
     /**
      * Display a listing of the resource.
@@ -137,64 +134,5 @@ class EmployeeUploadsController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
-    }
-
-
-    public function imageUpload201(Request $request)
-    {
-
-        if (!request()->hasFile('image')) {
-            return response()->json(['message' => 'no image file'], 422);
-        }
-
-        $request->validate([
-            'image' => 'required|image|mimes:png,jpg,jpeg|max:2048'
-        ]);
-
-        $hashmake = Hash::make('secret');
-        $hashname = hash('sha256', $hashmake);
-
-        $file_location = $request->file('image');
-        $name = $request->file('image')->getClientOriginalName();
-
-        $file_location->storePubliclyAs(EmployeeUploadsController::EMPLOYEEDIR201 . $hashname, $name, 'public');
-
-        // db save
-        // $main->file_location = EmployeeUploadsController::EMPLOYEEDIR . $hashname . "/" . $name;
-
-        $data = json_decode('{}');
-        $data->message = "Image uploaded Successfully!";
-        $data->success = true;
-        $data->data = EmployeeUploadsController::EMPLOYEEDIR201 . $hashname . "/" . $name;
-        return response()->json($data);
-    }
-
-    public function imageUploadSignature(Request $request)
-    {
-
-        if (!request()->hasFile('image_signature')) {
-            return response()->json(['message' => 'no image file'], 422);
-        }
-
-        $request->validate([
-            'image_signature' => 'required|image|mimes:png,jpg,jpeg|max:2048'
-        ]);
-
-        $hashmake = Hash::make('secret');
-        $hashname = hash('sha256', $hashmake);
-
-        $file_location = $request->file('image_signature');
-        $name = $request->file('image_signature')->getClientOriginalName();
-
-        $file_location->storePubliclyAs(EmployeeUploadsController::EMPLOYEEDIRSIGNATURE . $hashname, $name, 'public');
-
-        // db save
-        // $main->file_location = EmployeeUploadsController::EMPLOYEEDIR . $hashname . "/" . $name;
-
-        $data = json_decode('{}');
-        $data->message = "Image uploaded Successfully!";
-        $data->success = true;
-        $data->data = EmployeeUploadsController::EMPLOYEEDIRSIGNATURE . $hashname . "/" . $name;
-        return response()->json($data);
     }
 }

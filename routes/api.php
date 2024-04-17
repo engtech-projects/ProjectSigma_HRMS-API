@@ -120,10 +120,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
-        Route::post('employee-201-imageupload', [EmployeeUploadsController::class, 'imageUpload201']);
-        Route::post('employee-signature-imageupload', [EmployeeUploadsController::class, 'imageUploadSignature']);
-        // Route::get('employee-late', [EmployeeController::class, 'getLate']);
-        // Route::get('employee-late-month', [EmployeeController::class, 'getLateMonth']);
         Route::get('users-list', [UsersController::class, 'get']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
