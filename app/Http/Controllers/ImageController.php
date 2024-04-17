@@ -17,7 +17,7 @@ class ImageController extends Controller
     {
         $employee_id = Employee::findOrFail($id);
         $profileImage = $this->uploadImage($request, 'profile_picture');
-        $url = 'images/digital_signature/' . $profileImage->hashName() . '/' . $profileImage->getClientOriginalName();
+        $url = 'images/profile_picture/' . $profileImage->hashName() . '/' . $profileImage->getClientOriginalName();
         if ($profileImage) {
             Image::create([
                 'url' => $url,
