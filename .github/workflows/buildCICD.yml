@@ -29,6 +29,15 @@ jobs:
 
   build-staging:
     runs-on: ubuntu-latest
+    env:
+      HRMS_API_URL: 'https://projectsigma-hrmsapi-staging.engtechglobalsolutions.com'
+      APP_ENV: 'local'
+      DB_CONNECTION: 'mysql'
+      DB_HOST: '143.95.243.191'
+      DB_PORT: '3306'
+      DB_DATABASE: 'engtechg_projectsigma_staging'
+      DB_USERNAME: 'engtechg_projectsigma'
+      DB_PASSWORD: 'engtechg_projectsigma'
     if: github.ref == 'refs/heads/staging'
     steps:
       - uses: shivammathur/setup-php@v2
@@ -44,6 +53,8 @@ jobs:
       - name: Build Laravel
         run: |
               composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+              php artisan key:generate
+              php artisan migrate
               rm -rf .git
               rm -rf .gitignore
               git config --global user.email "engtechsolutions2020@gmail.com"
