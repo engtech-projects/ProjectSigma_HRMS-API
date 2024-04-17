@@ -16,10 +16,7 @@ class ImageController extends Controller
     public function uploadProfileImage(Request $request, $id)
     {
         $employee_id = Employee::findOrFail($id);
-        Log::info("Request In uploadProfileImage");
-        Log::info($request);
         $profileImage = $this->uploadImage($request, 'profile_picture');
-        Log::info($profileImage);
         if ($profileImage) {
             Image::create([
                 'url' => $profileImage,
@@ -36,10 +33,7 @@ class ImageController extends Controller
     public function uploadDigitalSignature(Request $request, $id)
     {
         $employee_id = Employee::findOrFail($id);
-        Log::info("Request In uploadDigitalSignature");
-        Log::info($request);
         $file = $this->uploadImage($request, 'digital_signature');
-        Log::info($file);
         $url = 'images/digital_signature/' . $file->hashName() . '/' . $file->getClientOriginalName();
         if ($file) {
             Image::create([
