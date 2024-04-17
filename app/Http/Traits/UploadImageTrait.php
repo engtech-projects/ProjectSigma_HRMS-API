@@ -23,7 +23,7 @@ trait UploadImageTrait
             $hashmake = Hash::make('secret');
             $hashname = hash('sha256', $hashmake);
             $randName = mt_rand().time();
-            return Storage::put('images/' . $path . '/' . $hashName . '/' . $randName . $type, $file)
+            return Storage::put('images/' . $path . '/' . $hashName . '/' . $randName . $type, $file);
         }
     }
 }
