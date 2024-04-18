@@ -245,8 +245,10 @@ class EmployeeController extends Controller
         $lateEmployeeData = [];
         foreach ($getemployeeschedule as $key => $value) {
             $EmployeeLate = $log->getLate($log, $value->employee_id, $value->startTime);
-            $lateEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
-            $lateEmployeeData[$key]["lates"] = $EmployeeLate;
+            if ($EmployeeLate > 0) {
+                $lateEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
+                $lateEmployeeData[$key]["lates"] = $EmployeeLate;
+            }
         }
         $dataval = collect($lateEmployeeData)->unique();
         return new JsonResponse([
