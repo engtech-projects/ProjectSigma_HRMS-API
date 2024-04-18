@@ -46,13 +46,8 @@ class OvertimeController extends Controller
                 $main->prepared_by = auth()->user()->id;
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->save();
-                foreach ($request->employees as $key) {
-                    $overtimeEmployees = new OvertimeEmployees();
-                    $overtimeEmployees->overtime_id = $main->id;
-                    $overtimeEmployees->employee_id = $key;
-                    $overtimeEmployees->save();
-                }
-                // $main->employees->attach($validData["employees"]);
+                $main->employees->attach($validData["employees"]);
+                $main->save();
             });
             $data = json_decode('{}');
             $data->message = "Successfully save.";
