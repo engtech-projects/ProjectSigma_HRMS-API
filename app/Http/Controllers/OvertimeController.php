@@ -47,7 +47,6 @@ class OvertimeController extends Controller
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->save();
                 $main->employees->attach($validData["employees"]);
-                $main->save();
             });
             $data = json_decode('{}');
             $data->message = "Successfully save.";
