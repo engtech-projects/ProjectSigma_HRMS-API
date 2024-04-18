@@ -46,15 +46,16 @@ class OvertimeController extends Controller
                 $main->prepared_by = auth()->user()->id;
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->save();
-                $main->employees->attach($validData["employees"]);
+                $main->employees()->attach($validData["employees"]);
             });
-            $data = json_decode('{}');
-            $data->message = "Successfully save.";
-            $data->success = true;
-            return response()->json($data);
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully save.',
+            ], JsonResponse::HTTP_OK);
         } catch (\Throwable $th) {
             return new JsonResponse([
                 'success' => false,
+                "error" => $th,
                 'message' => 'Save failed.',
             ], 400);
         }
