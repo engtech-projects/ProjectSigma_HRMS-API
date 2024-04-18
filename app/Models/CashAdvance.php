@@ -51,12 +51,17 @@ class CashAdvance extends Model
 
     public function department(): HasOne
     {
-        return $this->hasOne(Department::class, "id", "section_department_id");
+        return $this->hasOne(Department::class, "id", "department_id");
     }
 
     public function project(): HasOne
     {
-        return $this->hasOne(Project::class);
+        return $this->hasOne(Project::class, "id", "project_id");
+    }
+
+    public function released(): HasOne
+    {
+        return $this->hasOne(Users::class, "id", "released_by")->select('id', 'employee_id');
     }
 
     public function cashAdvancePayments(): HasMany
