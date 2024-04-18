@@ -50,9 +50,10 @@ class OvertimeController extends Controller
             $data->success = true;
             return response()->json($data);
         } catch (\Throwable $th) {
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Save failed.',
+            ], 400);
         }
     }
 
