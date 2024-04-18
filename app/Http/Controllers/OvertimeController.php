@@ -9,6 +9,7 @@ use App\Http\Requests\StoreOvertimeRequest;
 use App\Http\Requests\UpdateOvertimeRequest;
 use App\Http\Resources\OvertimeResource;
 use App\Http\Services\OvertimeService;
+use App\Models\OvertimeEmployees;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -40,10 +41,18 @@ class OvertimeController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $main = new Overtime();
-                $validdata = $request->validated();
-                $main->fill($request->validated());
+                $validData = $request->validated();
+                $main->fill($validData);
+                $main->prepared_by = auth()->user()->id;
                 $main->request_status = StringRequestApprovalStatus::PENDING;
-                $main->employees->attach($validdata["employees"]);
+                $main->save();
+                foreach ($request->employees as $key) {
+                    $overtimeEmployees = new OvertimeEmployees();
+                    $overtimeEmployees->overtime_id = $main->id;
+                    $overtimeEmployees->employee_id = $key;
+                    $overtimeEmployees->save();
+                }
+                // $main->employees->attach($validData["employees"]);
             });
             $data = json_decode('{}');
             $data->message = "Successfully save.";
