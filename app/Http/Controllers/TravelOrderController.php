@@ -63,6 +63,7 @@ class TravelOrderController extends Controller
         } catch (\Throwable $th) {
             return new JsonResponse([
                 'success' => false,
+                "error" => $th,
                 'message' => 'Save failed.',
             ], 400);
         }
