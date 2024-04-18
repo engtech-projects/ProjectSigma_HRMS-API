@@ -71,7 +71,7 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
-
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -245,3 +245,11 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 });
+
+if (config()->get('app.artisan') == true) {
+    Route::prefix('artisan')->group(function () {
+        Route::get('storage', function () {
+            return "success";
+        });
+    });
+}

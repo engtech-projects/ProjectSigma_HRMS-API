@@ -53,8 +53,8 @@ class TravelOrderController extends Controller
                 $main->fill($validdata);
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->requested_by = auth()->user()->id;
-                $main->employees()->attach($validdata["employee_ids"]);
                 $main->save();
+                $main->employees()->attach($validdata["employee_ids"]);
             });
             return new JsonResponse([
                 'success' => true,

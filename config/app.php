@@ -18,6 +18,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'artisan' => env('ENABLE_ARTISAN_ROUTES', 'false'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
