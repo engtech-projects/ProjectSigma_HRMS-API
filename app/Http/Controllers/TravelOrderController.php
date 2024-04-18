@@ -55,6 +55,7 @@ class TravelOrderController extends Controller
                 $main->requested_by = auth()->user()->id;
                 $main->save();
                 $main->employees()->attach($validdata["employee_ids"]);
+                $main->save();
             });
             return new JsonResponse([
                 'success' => true,
