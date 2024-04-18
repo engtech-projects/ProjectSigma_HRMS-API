@@ -81,4 +81,15 @@ class Schedule extends Model
             ]
         )->get();
     }
+
+    public function scheduleEmployeeDateFilter($query, $start_date, $end_date)
+    {
+        return $query->with('employee')->where('groupType', ScheduleGroupType::EMPLOYEE)->whereBetween(
+            'startRecur',
+            [
+                $start_date,
+                $end_date
+            ]
+        )->get();
+    }
 }

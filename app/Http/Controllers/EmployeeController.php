@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Enums\SearchTypes;
+use App\Http\Requests\FilterDateRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
@@ -223,8 +224,10 @@ class EmployeeController extends Controller
         $getemployeeschedule = $req->scheduleEmployeeThisMonth($req);
         $absenceEmployeeData = [];
         foreach ($getemployeeschedule as $key => $value) {
-            $maxDays = date('t');
-            $EmployeeAbsence = $log->getAttendance($log, $value->employee_id);
+            $from = $value->startRecur;
+            $to = $value->endRecur;
+            $maxDays = $to->diffInWeekdays($from);
+            $EmployeeAbsence = $log->getAttendance($log, $value->employee_id, $value->startRecur, $value->endRecur);
             $absenceEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
             $absenceEmployeeData[$key]["absences"] = $maxDays - $EmployeeAbsence;
             if ($EmployeeAbsence >= $maxDays) {
@@ -245,6 +248,34 @@ class EmployeeController extends Controller
         $lateEmployeeData = [];
         foreach ($getemployeeschedule as $key => $value) {
             $EmployeeLate = $log->getLate($log, $value->employee_id, $value->startTime);
+            if ($EmployeeLate > 0) {
+                $lateEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
+                $lateEmployeeData[$key]["lates"] = $EmployeeLate;
+            }
+        }
+        $dataval = collect($lateEmployeeData)->unique();
+        return new JsonResponse([
+            'success' => 'true',
+            'message' => 'Successfully fetched.',
+            'data' => $dataval
+        ]);
+    }
+
+    public function getFilterLate(Schedule $req, AttendanceLog $log, FilterDateRequest $request)
+    {
+        $main = $request->validated();
+        if (!array_key_exists("start_date", $main)) {
+            $main["start_date"] = "";
+        }
+        if (!array_key_exists("end_date", $main)) {
+            $main["end_date"] = "";
+        }
+
+        $getemployeeschedule = $req->scheduleEmployeeDateFilter($req, $main["start_date"], $main["end_date"]);
+        $lateEmployeeData = [];
+
+        foreach ($getemployeeschedule as $key => $value) {
+            $EmployeeLate = $log->getFilterLate($log, $value->employee_id, $value->startTime, $value->startRecur, $main["end_date"]);
             if ($EmployeeLate > 0) {
                 $lateEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
                 $lateEmployeeData[$key]["lates"] = $EmployeeLate;
