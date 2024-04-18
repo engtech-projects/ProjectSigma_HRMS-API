@@ -149,11 +149,14 @@ class EmployeeController extends Controller
             "employee_seminartraining",
             "employee_internal.employee_salarygrade.salary_grade_level",
             "employee_externalwork",
+            "images",
         )->get()->find($id);
 
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main["age"] = $main->age;
+            $main["profile_photo"] = $main->profile_photo;
+            $main["digital_signature"] = $main->digital_signature;
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
