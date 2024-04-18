@@ -22,11 +22,11 @@ class StoresettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'setting_name'=> [
+            'setting_name' => [
                 "required",
                 "string",
             ],
-            'value'=> [
+            'value' => [
                 "required",
                 "string",
             ]

@@ -3,147 +3,167 @@
 namespace App\Http\Controllers;
 
 use App\Models\ManpowerRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Http\Services\ManpowerServices;
+use Illuminate\Support\Facades\Storage;
+use App\Utils\PaginateResourceCollection;
+use App\Exceptions\TransactionFailedException;
+use App\Http\Resources\ManpowerRequestResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\File;
-use Illuminate\Support\Facades\Hash;
 
 class ManpowerRequestController extends Controller
 {
-    const JDDIR = "job_description/";
+    protected $manpowerService;
+    protected $manpowerRequestType = null;
+
+    public function __construct(ManpowerServices $manpowerService)
+    {
+        $this->manpowerRequestType = request()->get('type');
+        $this->manpowerService = $manpowerService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $main = ManpowerRequest::simplePaginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $manpowerRequests = $this->manpowerService->getAll();
+        $collection = collect(ManpowerRequestResource::collection($manpowerRequests->load('user.employee')));
+
+        if ($collection->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
+        ]);
+    }
+    /**
+     * Show List Manpower requests that have status “For Hiring“ = Approve
+     */
+    public function forHiring()
+    {
+        $manpowerRequest = $this->manpowerService->getAllForHiring();
+        $manpowerRequest->load(['job_applicants', 'user.employee']);
+        if ($manpowerRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))
+        ]);
+    }
+
+
+    public function myRequest()
+    {
+        $myRequest = $this->manpowerService->getMyRequest();
+        if ($myRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => ManpowerRequestResource::collection($myRequest)
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show all requests to be approved/reviewed by current user
      */
-    public function create()
+    public function myApproval()
     {
-        //
+        $myApproval = $this->manpowerService->getMyApprovals();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => ManpowerRequestResource::collection($myApproval)
+        ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreManpowerRequestRequest $request)
     {
-        $main = new ManpowerRequest;
-        $main->fill($request->validated());
-        $data = json_decode('{}');
-        $main->approvals = json_encode($request->approvals);
-        $file = $request->file('job_description_attachment');
-        $hashmake = Hash::make('secret');
-        $hashname = hash('sha256',$hashmake);
-        $name = $file->getClientOriginalName();
-        $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR.$hashname, $name,'public');
-        $main->job_description_attachment = ManpowerRequestController::JDDIR.$hashname."/".$name;
-        if(!$main->save()){
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        $attributes = $request->validated();
+        $attributes["requested_by"] = auth()->user()->id;
+        try {
+            $this->manpowerService->createManpowerRequest($attributes);
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Create transaction failed.", 400, $e);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully created.",
+        ], JsonResponse::HTTP_CREATED);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(ManpowerRequest $manpowerRequest)
     {
-        $main = ManpowerRequest::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main) ) {
-            $data->message = "Successfully fetch.";
-            $data->success = true;
-            $data->data = $main;
-            return response()->json($data);
-        }
-        $data->message = "No data found.";
-        $data->success = false;
-        return response()->json($data, 404);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ManpowerRequest $manpowerRequest)
-    {
-        //
+        $newManpowerRequest = $manpowerRequest->load('user.employee');
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower request fetched.',
+            'data' => new ManpowerRequestResource($newManpowerRequest)
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateManpowerRequestRequest $request, $id)
+    public function update(UpdateManpowerRequestRequest $request, ManpowerRequest $manpowerRequest)
     {
-        $main = ManpowerRequest::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main) ) {
-            $a = explode("/", $main->job_description_attachment);
-            $main->fill($request->validated());
-            if($request->hasFile("job_description_attachment")){
-                $check = ManpowerRequest::find($id);
-                $file = $request->file('job_description_attachment');
-                $hashmake = Hash::make('secret');
-                $hashname = hash('sha256',$hashmake);
-                $name = $file->getClientOriginalName();
-                $path = $file->storePubliclyAs(ManpowerRequestController::JDDIR.$hashname, $name,'public');
-                Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
-                $main->job_description_attachment = ManpowerRequestController::JDDIR.$hashname."/".$name;
-            }
-
-            if($main->save()){
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Update failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        try {
+            $this->manpowerService->update($request->validated(), $manpowerRequest);
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Update transaction failed.", 400, $e);
         }
-
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully updated."
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(ManpowerRequest $manpowerRequest)
     {
-        $main = ManpowerRequest::find($id);
-        $a = explode("/", $main->job_description_attachment);
-        Storage::deleteDirectory("public/".$a[0]."/".$a[1]);
-        $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
-                $data->message = "Successfully delete.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Failed delete.";
-            $data->success = false;
-            return response()->json($data,400);
+        try {
+            DB::transaction(function () use ($manpowerRequest) {
+                return $manpowerRequest->delete();
+            });
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
-        $data->message = "Failed delete.";
-        $data->success = false;
-        return response()->json($data,404);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully delete."
+        ], JsonResponse::HTTP_OK);
     }
 }

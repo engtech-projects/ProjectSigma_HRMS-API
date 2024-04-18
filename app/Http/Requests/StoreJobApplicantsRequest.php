@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\JobApplicationStatusEnums;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreJobApplicantsRequest extends FormRequest
 {
@@ -14,6 +16,15 @@ class StoreJobApplicantsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            "workexperience" => json_decode($this->workexperience, true),
+            "education" => json_decode($this->education, true),
+            "children" => json_decode($this->children, true),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,267 +33,326 @@ class StoreJobApplicantsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'manpowerrequests_id'=> [
+            'manpowerrequests_id' => [
                 "required",
                 "integer",
                 "exists:manpower_requests,id",
             ],
-            'application_name'=>[
+            'name_suffix' => [
                 "required",
                 "string",
             ],
-            'application_letter_attachment'=>[
+            'application_letter_attachment' => [
                 "required",
                 "max:10000",
-                "mimes:doc,docx,pdf",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'resume_attachment'=>[
+            'resume_attachment' => [
                 "required",
                 "max:10000",
-                "mimes:doc,docx,pdf",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'status'=>[
+            'status' => [
                 "required",
                 "string",
-                'in:Pending,Interviewed,Rejected,Hired'
+                new Enum(JobApplicationStatusEnums::class),
             ],
-            'lastname'=>[
-                "required",
-                "string",
-                "max:35"
-            ],
-            'firstname'=>[
+            'lastname' => [
                 "required",
                 "string",
                 "max:35"
             ],
-            'middlename'=>[
+            'firstname' => [
                 "required",
                 "string",
                 "max:35"
             ],
-            'date_of_application'=>[
+            'middlename' => [
+                "required",
+                "string",
+                "max:35"
+            ],
+            'date_of_application' => [
                 "required",
                 "date",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "required",
                 "date",
             ],
-            'address_street'=>[
+            'pre_address_street' => [
                 "required",
                 "string",
             ],
-            'address_city'=>[
+            'pre_address_brgy' => [
                 "required",
                 "string",
             ],
-            'address_zip'=>[
+            'pre_address_city' => [
                 "required",
                 "string",
             ],
-            'contact_info'=>[
+            'pre_address_zip' => [
+                "required",
+                "string",
+            ],
+            'pre_address_province' => [
+                "required",
+                "string",
+            ],
+            'per_address_street' => [
+                "required",
+                "string",
+            ],
+            'per_address_brgy' => [
+                "required",
+                "string",
+            ],
+            'per_address_city' => [
+                "required",
+                "string",
+            ],
+            'per_address_zip' => [
+                "required",
+                "string",
+            ],
+            'per_address_province' => [
+                "required",
+                "string",
+            ],
+            'contact_info' => [
                 "required",
                 "string",
                 "min:11",
                 "max:11",
             ],
-            'email'=>[
+            'email' => [
                 "required",
                 "string",
                 "max:35"
             ],
-            'how_did_u_learn_about_our_company'=>[
+            'how_did_u_learn_about_our_company' => [
                 "required",
                 "string",
             ],
-            'desired_position'=>[
+            'desired_position' => [
                 "required",
                 "string",
             ],
-            'currently_employed'=>[
+            'currently_employed' => [
                 "required",
                 "string",
                 'in:Yes,No'
             ],
-            'name_of_spouse'=>[
+            'name_of_spouse' => [
                 "nullable",
                 "string",
                 "max:55"
             ],
-            'date_of_birth_spouse'=>[
+            'date_of_birth_spouse' => [
                 "nullable",
                 "date",
             ],
-            'occupation_spouse'=>[
+            'occupation_spouse' => [
                 "nullable",
                 "string",
             ],
-            'telephone_spouse'=>[
+            'telephone_spouse' => [
                 "nullable",
                 "string",
                 "min:11",
                 "max:11",
             ],
-            'children'=>[
+            "children" => [
+                "present",
                 "nullable",
-                "json",
+                "array"
             ],
-            'children.*.name'=>[
-                "required_with:children.*.birthdate",
+            'children.*' => [
+                "nullable",
+                "array",
+                "required_array_keys:name,birthdate"
+            ],
+            'children.*.name' => [
+                "required",
                 "string",
             ],
-            'children.*.birthdate'=>[
-                "required_with:children.*.name",
+            'children.*.birthdate' => [
+                "required",
                 "date",
             ],
-            'icoe_name'=>[
+            'icoe_name' => [
                 "required",
                 "string",
             ],
-            'icoe_address'=>[
+            'icoe_relationship' => [
                 "required",
                 "string",
             ],
-            'icoe_relationship'=>[
-                "required",
-                "string",
-            ],
-            'telephone_icoe'=>[
+            'telephone_icoe' => [
                 "required",
                 "string",
                 "min:11",
                 "max:11",
             ],
-            'education'=>[
-                "required",
-                "json",
-            ],
-            'education.*.elementary_name'=>[
-                "required",
-                "string",
-            ],
-            'education.*.elementary_education'=>[
-                "required",
-                "string",
-            ],
-            'education.*.elementary_period_attendance_to'=>[
-                "required",
-                "date",
-            ],
-            'education.*.elementary_period_attendance_from'=>[
-                "required",
-                "date",
-            ],
-            'education.*.elementary_year_graduated'=>[
-                "required",
-                "date",
-            ],
-            'education.*.secondary_name'=>[
-                "required",
-                "string",
-            ],
-            'education.*.secondary_education'=>[
-                "required",
-                "string",
-            ],
-            'education.*.secondary_period_attendance_to'=>[
-                "required",
-                "date",
-            ],
-            'education.*.secondary_period_attendance_from'=>[
-                "required",
-                "date",
-            ],
-            'education.*.secondary_year_graduated'=>[
-                "required",
-                "date",
-            ],
-            'education.*.vocationalcourse_name'=>[
-                "required",
-                "string",
-            ],
-            'education.*.vocationalcourse_education'=>[
-                "required",
-                "string",
-            ],
-            'education.*.vocationalcourse_period_attendance_to'=>[
-                "required",
-                "date",
-            ],
-            'education.*.vocationalcourse_period_attendance_from'=>[
-                "required",
-                "date",
-            ],
-            'education.*.vocationalcourse_year_graduated'=>[
-                "required",
-                "date",
-            ],
-            'education.*.college_name'=>[
-                "required",
-                "string",
-            ],
-            'education.*.college_education'=>[
-                "required",
-                "string",
-            ],
-            'education.*.college_period_attendance_to'=>[
-                "required",
-                "date",
-            ],
-            'education.*.college_period_attendance_from'=>[
-                "required",
-                "date",
-            ],
-            'education.*.college_year_graduated'=>[
-                "required",
-                "date",
-            ],
-            'education.*.graduatestudies_name'=>[
-                "required",
-                "string",
-            ],
-            'education.*.graduatestudies_education'=>[
-                "required",
-                "string",
-            ],
-            'education.*.graduatestudies_period_attendance_to'=>[
-                "required",
-                "date",
-            ],
-            'education.*.graduatestudies_period_attendance_from'=>[
-                "required",
-                "date",
-            ],
-            'education.*.graduatestudies_year_graduated'=>[
-                "required",
-                "date",
-            ],
-            'workexperience'=>[
+            "education" => [
+                "present",
                 "nullable",
-                "json",
+                "array"
             ],
-            'workexperience.*.inclusive_dates_from'=>[
+            'education.*' => [
+                "required",
+                "array",
+                "required_array_keys:type,name,education,period_attendance_from,period_attendance_to,year_graduated,honors_received"
+            ],
+            'education.*.type' => [
+                "required",
+                "string",
+                "in:elementary,secondary,vocational_course,college,graduate_studies",
+            ],
+            'education.*.name' => [
+                "required",
+                "string",
+            ],
+            'education.*.education' => [
+                "required",
+                "string",
+            ],
+            'education.*.period_attendance_from' => [
+                "required",
+                "string",
+            ],
+            'education.*.period_attendance_to' => [
+                "required",
+                "string",
+            ],
+            'education.*.year_graduated' => [
+                "required",
+                "string",
+            ],
+            'education.*.honors_received' => [
+                "required",
+                "string",
+            ],
+            'education.*.degree_earned_of_school' => [
+                "required",
+                "string",
+            ],
+            "workexperience" => [
+                "present",
+                "nullable",
+                "array"
+            ],
+            'workexperience.*' => [
+                "nullable",
+                "array",
+                "required_array_keys:inclusive_dates_from,inclusive_dates_to,position_title,dpt_agency_office_company,monthly_salary,status_of_appointment"
+            ],
+            'workexperience.*.inclusive_dates_from' => [
                 "nullable",
                 "date",
             ],
-            'workexperience.*.inclusive_dates_to'=>[
+            'workexperience.*.inclusive_dates_to' => [
                 "nullable",
                 "date",
             ],
-            'workexperience.*.position_title'=>[
+            'workexperience.*.position_title' => [
                 "nullable",
                 "string",
             ],
-            'workexperience.*.dpt_agency_office_company'=>[
+            'workexperience.*.dpt_agency_office_company' => [
                 "nullable",
                 "string",
             ],
-            'workexperience.*.monthly_salary'=>[
+            'workexperience.*.monthly_salary' => [
                 "nullable",
-                "float",
+                "string",
             ],
-            'workexperience.*.status_of_appointment'=>[
+            'workexperience.*.status_of_appointment' => [
+                "nullable",
+                "string",
+            ],
+            'place_of_birth' => [
+                "required",
+                "string",
+            ],
+            'blood_type' => [
+                "required",
+                "string",
+            ],
+            'date_of_marriage' => [
+                "nullable",
+                "string",
+            ],
+            'sss' => [
+                "nullable",
+                "string",
+            ],
+            'philhealth' => [
+                "nullable",
+                "string",
+            ],
+            'pagibig' => [
+                "nullable",
+                "string",
+            ],
+            'tin' => [
+                "nullable",
+                "string",
+            ],
+            'citizenship' => [
+                "required",
+                "string",
+            ],
+            'religion' => [
+                "required",
+                "string",
+            ],
+            'height' => [
+                "required",
+                "string",
+            ],
+            'weight' => [
+                "required",
+                "string",
+            ],
+            'father_name' => [
+                "required",
+                "string",
+            ],
+            'mother_name' => [
+                "required",
+                "string",
+            ],
+            'gender' => [
+                "required",
+                "string",
+            ],
+            'civil_status' => [
+                "required",
+                "string",
+            ],
+            'icoe_street' => [
+                "required",
+                "string",
+            ],
+            'icoe_brgy' => [
+                "required",
+                "string",
+            ],
+            'icoe_city' => [
+                "required",
+                "string",
+            ],
+            'icoe_zip' => [
+                "required",
+                "string",
+            ],
+            'icoe_province' => [
+                "required",
+                "string",
+            ],
+            'remarks' => [
                 "nullable",
                 "string",
             ],

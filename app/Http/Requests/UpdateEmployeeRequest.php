@@ -23,181 +23,80 @@ class UpdateEmployeeRequest extends FormRequest
     {
         return [
             //
-            'first_name'=> [
+            'first_name' => [
                 "nullable",
                 "string",
             ],
-            'middle_name'=>[
+            'middle_name' => [
                 "nullable",
                 "string",
             ],
-            'family_name'=>[
+            'family_name' => [
                 "nullable",
                 "string",
             ],
-            'nick_name'=>[
+            'nick_name' => [
                 "nullable",
                 "string",
             ],
-            'name_suffix'=>[
+            'name_suffix' => [
                 "nullable",
                 "string",
             ],
-            'gender'=>[
+            'gender' => [
                 "nullable",
                 "string",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "nullable",
                 "date",
             ],
-            'place_of_birth'=>[
-                "nullable",
-                "date",
-            ],
-            'citizenship'=>[
+            'place_of_birth' => [
                 "nullable",
                 "string",
             ],
-            'blood_type'=>[
+            'date_of_marriage' => [
+                "nullable",
+                "date",
+            ],
+            'citizenship' => [
+                "nullable",
+                "string",
+            ],
+            'blood_type' => [
                 "nullable",
                 "string",
                 "max:55"
             ],
-            'civil_status'=>[
+            'civil_status' => [
                 "nullable",
                 "string",
                 "max:55"
             ],
-            'telephone_number'=>[
+            'telephone_number' => [
                 "nullable",
                 "string",
                 "max:15"
             ],
-            'mobile_number'=>[
+            'mobile_number' => [
                 "nullable",
                 "string",
-                "min:11",
-                "max:11"
             ],
-            'email'=>[
+            'email' => [
                 "nullable",
                 "string",
                 "max:35"
             ],
-            'religion'=>[
+            'religion' => [
                 "nullable",
                 "string",
                 "max:35"
             ],
-            'pre_street'=>[
+            'weight' => [
                 "nullable",
                 "string",
             ],
-            'pre_brgy'=>[
-                "nullable",
-                "string",
-            ],
-            'pre_city'=>[
-                "nullable",
-                "string",
-            ],
-            'pre_zip'=>[
-                "nullable",
-                "string",
-            ],
-            'pre_province'=>[
-                "nullable",
-                "string",
-            ],
-            'per_street'=>[
-                "nullable",
-                "string",
-            ],
-            'per_brgy'=>[
-                "nullable",
-                "string",
-            ],
-            'per_city'=>[
-                "nullable",
-                "string",
-            ],
-            'per_zip'=>[
-                "nullable",
-                "string",
-            ],
-            'per_province'=>[
-                "nullable",
-                "string",
-            ],
-            'father_name'=>[
-                "nullable",
-                "string",
-                "max:35"
-            ],
-            'mother_name'=>[
-                "nullable",
-                "string",
-                "max:35"
-            ],
-            'spouse_name'=>[
-                "nullable",
-                "string",
-                "max:35"
-            ],
-            'date_of_marriage'=>[
-                "nullable",
-                "date",
-            ],
-            'spouse_datebirth'=>[
-                "nullable",
-                "date",
-            ],
-            'spouse_occupation'=>[
-                "nullable",
-                "string",
-            ],
-            'spouse_contact_no'=>[
-                "nullable",
-                "string",
-                "min:11",
-                "max:11"
-            ],
-            'childrens'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_contact_name'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_contact_street'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_contact_brgy'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_contact_city'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_contact_zip'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_province'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_contact_no'=>[
-                "nullable",
-                "string",
-                "min:11",
-                "max:11"
-            ],
-            'person_to_contact_relationship'=>[
+            'height' => [
                 "nullable",
                 "string",
             ],

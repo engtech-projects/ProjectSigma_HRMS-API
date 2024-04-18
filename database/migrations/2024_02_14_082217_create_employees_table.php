@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -24,7 +23,7 @@ return new class extends Migration
             $table->string("citizenship");
             $table->string("blood_type");
             $table->string("civil_status");
-            $table->string("date_of_marriage");
+            $table->string("date_of_marriage")->nullable();
             $table->string("telephone_number");
             $table->string("mobile_number");
             $table->string("email");
@@ -47,7 +46,6 @@ return new class extends Migration
             $table->string("spouse_contact_no");
             $table->string("childrens");
             $table->string("person_to_contact_name");
-            // $table->string("person_to_contact_address");
             $table->string("person_to_contact_street");
             $table->string("person_to_contact_brgy");
             $table->string("person_to_contact_city");

@@ -23,15 +23,15 @@ class UpdateLeaveRequest extends FormRequest
     {
         return [
             //
-            'leave_name'=> [
+            'leave_name' => [
                 "nullable",
                 "string",
             ],
-            'amt_of_leave'=>[
+            'amt_of_leave' => [
                 "nullable",
                 "integer",
             ],
-            'employment_type'=>[
+            'employment_type' => [
                 "nullable",
                 "array",
                 'in:Probationary,Regular/FullTime,Part Time,Project Based,Contractual'

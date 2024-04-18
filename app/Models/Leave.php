@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\HasApproval;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -10,11 +12,25 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Leave extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use SoftDeletes;
+    use HasApproval;
+
+    protected $table = "leaves";
+
     protected $fillable = [
         'id',
         'leave_name',
         'amt_of_leave',
         'employment_type',
     ];
+
+    protected $casts = [
+        'employment_type' => 'array'
+    ];
+
+    /**
+     * MODEL
+     * LOCAL
+     * SCOPES
+     */
 }

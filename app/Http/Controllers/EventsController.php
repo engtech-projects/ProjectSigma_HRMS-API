@@ -13,19 +13,12 @@ class EventsController extends Controller
      */
     public function index()
     {
-        $main = Events::simplePaginate(15); 
-        $data = json_decode('{}'); 
+        $main = Events::paginate(15);
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;     
+        $data->data = $main;
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
     }
 
     /**
@@ -33,11 +26,11 @@ class EventsController extends Controller
      */
     public function store(StoreEventsRequest $request)
     {
-        $main = new Events;
+        $main = new Events();
         $main->fill($request->validated());
-        $data = json_decode('{}'); 
-        
-        if(!$main->save()){
+        $data = json_decode('{}');
+
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -55,7 +48,7 @@ class EventsController extends Controller
     {
         $main = Events::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -67,23 +60,15 @@ class EventsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Events $events)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEventsRequest $request, $id)
     {
         $main = Events::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -106,8 +91,8 @@ class EventsController extends Controller
     {
         $main = Events::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -115,10 +100,10 @@ class EventsController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

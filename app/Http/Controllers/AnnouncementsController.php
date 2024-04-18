@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcements;
 use App\Http\Requests\StoreAnnouncementsRequest;
 use App\Http\Requests\UpdateAnnouncementsRequest;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class AnnouncementsController extends Controller
 {
@@ -14,7 +14,7 @@ class AnnouncementsController extends Controller
      */
     public function index()
     {
-        $main = Announcements::simplePaginate(15);
+        $main = Announcements::paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -22,22 +22,18 @@ class AnnouncementsController extends Controller
         return response()->json($data);
     }
 
-    public function get()
+    public function currentAnnouncements()
     {
-        $main = Announcements::where('start_date', '>=', date('Y-m-d'))->get();
+        $main = Announcements::where('start_date', '<=', date('Y-m-d'))
+            ->where(function (Builder $query) {
+                $query->whereDate("end_date", ">=", date("Y-m-d"));
+                $query->orWhereNull("end_date");
+            })->orderBy("start_date", "desc")->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -45,11 +41,11 @@ class AnnouncementsController extends Controller
      */
     public function store(StoreAnnouncementsRequest $request)
     {
-        $main = new Announcements;
+        $main = new Announcements();
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$main->save()){
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -67,7 +63,7 @@ class AnnouncementsController extends Controller
     {
         $main = Announcements::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -79,23 +75,15 @@ class AnnouncementsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Announcements $announcements)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAnnouncementsRequest $request,$id)
+    public function update(UpdateAnnouncementsRequest $request, $id)
     {
         $main = Announcements::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
+        if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()){
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -118,8 +106,8 @@ class AnnouncementsController extends Controller
     {
         $main = Announcements::find($id);
         $data = json_decode('{}');
-        if (!is_null($main) ) {
-            if($main->delete()){
+        if (!is_null($main)) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
@@ -127,10 +115,10 @@ class AnnouncementsController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;
-        return response()->json($data,404);
+        return response()->json($data, 404);
     }
 }

@@ -10,7 +10,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Announcements extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $fillable = [
         'id',
@@ -18,5 +21,5 @@ class Announcements extends Model
         'content',
         'start_date',
         'end_date',
-    ];    
+    ];
 }

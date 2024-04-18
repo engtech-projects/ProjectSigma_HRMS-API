@@ -14,6 +14,15 @@ class StoreManpowerRequestRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (gettype($this->approvals) == "string") {
+            $this->merge([
+                "approvals" => json_decode($this->approvals, true)
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,93 +31,93 @@ class StoreManpowerRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'requesting_department'=> [
+            'requesting_department' => [
                 "required",
                 "integer",
                 "exists:departments,id",
             ],
-            'date_requested'=>[
+            'date_requested' => [
                 "required",
                 "date",
             ],
-            'date_required'=>[
+            'date_required' => [
                 "required",
                 "date",
             ],
-            'position'=>[
+            'position_id' => [
                 "required",
-                "string",
+                "integer",
+                "exists:positions,id",
             ],
-            'employment_type'=>[
+            'employment_type' => [
                 "required",
                 "string",
                 'in:Student Trainee,Project Hire,Contractual,Regular'
             ],
-            'brief_description'=>[
+            'brief_description' => [
                 "required",
                 "string",
             ],
-            'job_description_attachment'=>[
+            'job_description_attachment' => [
                 "required",
                 "max:10000",
-                "mimes:doc,docx,pdf",
+                "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'nature_of_request'=>[
+            'nature_of_request' => [
                 "required",
                 "string",
                 'in:New/Addition,Replacement'
             ],
-            'age_range'=>[
+            'age_range' => [
                 "required",
                 "string",
             ],
-            'status'=>[
+            'status' => [
                 "required",
                 "string",
                 'in:Single,Married,No Preference'
             ],
-            'gender'=>[
+            'gender' => [
                 "required",
                 "string",
                 'in:Male,Female,No Preference'
             ],
-            'educational_requirement'=>[
+            'educational_requirement' => [
                 "required",
                 "string",
             ],
-            'preferred_qualifications'=>[
+            'preferred_qualifications' => [
                 "required",
                 "string",
             ],
-            'approvals'=>[
-                "nullable",
+            'approvals' => [
+                "required",
                 "array",
             ],
-            'approvals.*.label'=>[
-                "nullable",
+            'approvals.*' => [
+                "required",
+                "array",
+            ],
+            'approvals.*.type' => [
+                "required",
                 "string",
             ],
-            'approvals.*.user_id'=>[
-                "nullable",
+            'approvals.*.user_id' => [
+                "required",
                 "integer",
                 "exists:users,id",
             ],
-            'approvals.*.status'=>[
-                "nullable",
+            'approvals.*.status' => [
+                "required",
                 "string",
             ],
-            'approvals.*.date_approved'=>[
+            'approvals.*.date_approved' => [
                 "nullable",
                 "date",
             ],
-            'approvals.*.remarks'=>[
+            'approvals.*.remarks' => [
                 "nullable",
                 "string",
-            ],
-            'requested_by'=>[
-                "required",
-                "integer",
-                "exists:users,id",
             ],
         ];
     }

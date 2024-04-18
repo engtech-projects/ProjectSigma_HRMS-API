@@ -22,38 +22,38 @@ class StoreWitholdingTaxContributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'range_from'=> [
+            'range_from' => [
                 "required",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
-            'range_to'=>[
+            'range_to' => [
                 "required",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
-            'term'=>[
+            'term' => [
                 "required",
                 "in:Daily,Weekly,Semi-Monthly,Monthly",
             ],
-            'tax_base'=>[
+            'tax_base' => [
                 "required",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
-            'tax_amount'=>[
+            'tax_amount' => [
                 "required",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
-            'tax_percent_over_base'=>[
+            'tax_percent_over_base' => [
                 "required",
                 "numeric",
-                'digits_between:1,8',
+                'max:999999',
                 'decimal:0,2',
             ],
         ];

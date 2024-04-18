@@ -22,38 +22,43 @@ class UpdateWitholdingTaxContributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'range_from'=> [
+            'range_from' => [
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                "min:0",
+                'max:999999',
                 'decimal:0,2',
             ],
-            'range_to'=>[
+            'range_to' => [
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                "min:0",
+                'max:999999',
                 'decimal:0,2',
             ],
-            'term'=>[
+            'term' => [
                 "nullable",
                 "in:Daily,Weekly,Semi-Monthly,Monthly",
             ],
-            'tax_base'=>[
+            'tax_base' => [
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                "min:0",
+                'max:999999',
                 'decimal:0,2',
             ],
-            'tax_amount'=>[
+            'tax_amount' => [
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                "min:0",
+                'max:999999',
                 'decimal:0,2',
             ],
-            'tax_percent_over_base'=>[
+            'tax_percent_over_base' => [
                 "nullable",
                 "numeric",
-                'digits_between:1,8',
+                "min:0",
+                'max:999999',
                 'decimal:0,2',
             ],
         ];

@@ -2,11 +2,22 @@
 
 namespace App\Providers;
 
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use App\Models\Leave;
+use App\Models\Project;
+use App\Models\Overtime;
+use App\Models\CashAdvance;
+use App\Models\TravelOrder;
+use App\Models\FailureToLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
+use App\Models\EmployeeLeaves;
+use App\Models\ManpowerRequest;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use App\Exceptions\TransactionFailedException;
+use App\Models\EmployeePersonnelActionNoticeRequest;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -28,6 +39,21 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        Route::bind('projectMonitoringId', function ($value) {
+            try {
+                $project = Project::where('project_monitoring_id', $value)->firstOrfail();
+            } catch (\Exception $e) {
+                throw new NotFoundHttpException("Project not found.", $e, 404);
+            }
+            return $project;
+        });
+
+        Route::bind('model', function ($value, $route) {
+            $modelName = $route->parameter('modelName');
+            $getModel = $this->getModelClass($modelName);
+            return $getModel::findOrfail($value);
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')
@@ -36,5 +62,24 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+    }
+
+    private function getModelClass($modelName)
+    {
+        $modelHasApprovals = [
+            'ManpowerRequest' => ManpowerRequest::class,
+            'FailureToLog' => FailureToLog::class,
+            'EmployeePanRequest' => EmployeePersonnelActionNoticeRequest::class,
+            'LeaveEmployeeRequest' => EmployeeLeaves::class,
+            'TravelOrder' => TravelOrder::class,
+            'CashAdvance' => CashAdvance::class,
+            'Overtime' => Overtime::class,
+        ];
+        try {
+            array_key_exists($modelName, $modelHasApprovals);
+            return $modelHasApprovals[$modelName];
+        } catch (\Exception $e) {
+            throw new NotFoundHttpException("Resource not found");
+        }
     }
 }

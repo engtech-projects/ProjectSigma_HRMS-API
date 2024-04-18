@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
+use App\Models\Employee;
+use App\Models\InternalWorkExperience;
+use Illuminate\Http\JsonResponse;
 
 class DepartmentController extends Controller
 {
@@ -19,12 +22,10 @@ class DepartmentController extends Controller
         $data->success = true;
         $data->data = $department;
         return response()->json($data);
-        // dd($department);
     }
 
     public function get()
     {
-        //
         $main = Department::get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
@@ -34,22 +35,14 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreDepartmentRequest $request)
     {
-        $department = new Department;
+        $department = new Department();
         $department->fill($request->validated());
         $data = json_decode('{}');
-        if(!$department->save()){
+        if (!$department->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -67,7 +60,7 @@ class DepartmentController extends Controller
     {
         $department = Department::find($id);
         $data = json_decode('{}');
-        if (!is_null($department) ) {
+        if (!is_null($department)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $department;
@@ -79,24 +72,15 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Department $department)
-    {
-        //
-
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateDepartmentRequest $request, $id)
     {
         $department = Department::find($id);
         $data = json_decode('{}');
-        if (!is_null($department) ) {
+        if (!is_null($department)) {
             $department->fill($request->validated());
-            if($department->save()){
+            if ($department->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $department;
@@ -118,8 +102,8 @@ class DepartmentController extends Controller
     {
         $department = Department::find($id);
         $data = json_decode('{}');
-        if (!is_null($department) ) {
-            if($department->delete()){
+        if (!is_null($department)) {
+            if ($department->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $department;
@@ -127,7 +111,7 @@ class DepartmentController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400);
+            return response()->json($data, 400);
         }
         $data->message = "Failed delete.";
         $data->success = false;

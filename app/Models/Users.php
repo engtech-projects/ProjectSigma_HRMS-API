@@ -3,18 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
 class Users extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $primaryKey = 'id';
-
+    protected $with = [
+        "employee"
+    ];
     protected $fillable = [
         'id',
         'name',
@@ -22,6 +27,7 @@ class Users extends Model
         'email',
         'password',
         'type',
+        "employee_id"
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -42,4 +48,9 @@ class Users extends Model
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function Employee(): BelongsTo
+    {
+        return $this->BelongsTo(Employee::class);
+    }
 }

@@ -23,181 +23,80 @@ class StoreEmployeeRequest extends FormRequest
     {
         return [
             //
-            'first_name'=> [
+            'first_name' => [
                 "required",
                 "string",
             ],
-            'middle_name'=>[
+            'middle_name' => [
                 "nullable",
                 "string",
             ],
-            'family_name'=>[
+            'family_name' => [
                 "required",
                 "string",
             ],
-            'nick_name'=>[
-                "required",
-                "string",
-            ],
-            'name_suffix'=>[
+            'nick_name' => [
                 "nullable",
                 "string",
             ],
-            'gender'=>[
+            'name_suffix' => [
+                "nullable",
+                "string",
+            ],
+            'gender' => [
                 "required",
                 "string",
             ],
-            'date_of_birth'=>[
+            'date_of_birth' => [
                 "required",
                 "date",
             ],
-            'place_of_birth'=>[
-                "required",
-                "date",
-            ],
-            'citizenship'=>[
+            'place_of_birth' => [
                 "required",
                 "string",
             ],
-            'blood_type'=>[
+            'date_of_marriage' => [
+                "nullable",
+                "date",
+            ],
+            'citizenship' => [
+                "required",
+                "string",
+            ],
+            'blood_type' => [
                 "required",
                 "string",
                 "max:55"
             ],
-            'civil_status'=>[
+            'civil_status' => [
                 "required",
                 "string",
                 "max:55"
             ],
-            'telephone_number'=>[
-                "required",
+            'telephone_number' => [
+                "nullable",
                 "string",
                 "max:15"
             ],
-            'mobile_number'=>[
+            'mobile_number' => [
                 "required",
                 "string",
-                "min:11",
-                "max:11"
             ],
-            'email'=>[
-                "required",
-                "string",
-                "max:35"
-            ],
-            'religion'=>[
+            'email' => [
                 "required",
                 "string",
                 "max:35"
             ],
-            'pre_street'=>[
-                "required",
-                "string",
-            ],
-            'pre_brgy'=>[
-                "required",
-                "string",
-            ],
-            'pre_city'=>[
-                "required",
-                "string",
-            ],
-            'pre_zip'=>[
-                "required",
-                "string",
-            ],
-            'pre_province'=>[
-                "required",
-                "string",
-            ],
-            'per_street'=>[
-                "required",
-                "string",
-            ],
-            'per_brgy'=>[
-                "required",
-                "string",
-            ],
-            'per_city'=>[
-                "required",
-                "string",
-            ],
-            'per_zip'=>[
-                "required",
-                "string",
-            ],
-            'per_province'=>[
-                "required",
-                "string",
-            ],
-            'father_name'=>[
+            'religion' => [
                 "required",
                 "string",
                 "max:35"
             ],
-            'mother_name'=>[
-                "required",
-                "string",
-                "max:35"
-            ],
-            'date_of_marriage'=>[
-                "nullable",
-                "date",
-            ],
-            'spouse_name'=>[
-                "nullable",
-                "string",
-                "max:35"
-            ],
-            'spouse_datebirth'=>[
-                "nullable",
-                "date",
-            ],
-            'spouse_occupation'=>[
-                "nullable",
-                "string",
-            ],
-            'spouse_contact_no'=>[
-                "nullable",
-                "string",
-                "min:11",
-                "max:11"
-            ],
-            'childrens'=>[
-                "nullable",
-                "string",
-            ],
-            'person_to_contact_name'=>[
+            'weight' => [
                 "required",
                 "string",
             ],
-            'person_to_contact_street'=>[
-                "required",
-                "string",
-            ],
-            'person_to_contact_brgy'=>[
-                "required",
-                "string",
-            ],
-            'person_to_contact_city'=>[
-                "required",
-                "string",
-            ],
-            'person_to_contact_zip'=>[
-                "required",
-                "string",
-            ],
-            'person_to_province'=>[
-                "required",
-                "string",
-            ],
-            'person_to_contact_no'=>[
-                "required",
-                "string",
-                "min:11",
-                "max:11"
-            ],
-            'person_to_contact_relationship'=>[
+            'height' => [
                 "required",
                 "string",
             ],

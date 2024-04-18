@@ -22,16 +22,16 @@ class UpdatepositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=> [
+            'name' => [
                 "nullable",
                 "string",
             ],
-            'department_id'=> [
+            'department_id' => [
                 "nullable",
                 "integer",
                 "exists:positions,id",
             ],
-            'position_type'=>[
+            'position_type' => [
                 "nullable",
                 "in:Head,Staff",
             ],

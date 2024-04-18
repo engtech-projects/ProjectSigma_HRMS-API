@@ -22,15 +22,16 @@ class StoreallowanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'position_id'=> [
+            'position_id' => [
                 "required",
                 "integer",
                 "exists:positions,id",
             ],
-            'amount'=>[
+            'amount' => [
                 "required",
                 "numeric",
                 'max:999999',
+                "min:0",
                 'decimal:0,2',
             ],
         ];

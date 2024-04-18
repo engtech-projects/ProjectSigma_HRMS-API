@@ -14,7 +14,7 @@ class SSSContributionController extends Controller
     public function index()
     {
         $sss = SSSContribution::paginate(15);
-        $data = json_decode('{}'); 
+        $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
         $data->data = $sss;
@@ -34,10 +34,10 @@ class SSSContributionController extends Controller
      */
     public function store(StoreSSSContributionRequest $request)
     {
-        $sss = new SSSContribution;
+        $sss = new SSSContribution();
         $sss->fill($request->validated());
-        $data = json_decode('{}'); 
-        if(!$sss->save()){
+        $data = json_decode('{}');
+        if(!$sss->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -55,12 +55,12 @@ class SSSContributionController extends Controller
     {
         $sss = SSSContribution::find($id);
         $data = json_decode('{}');
-        if (!is_null($sss) ) {
+        if (!is_null($sss)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $sss;
             return response()->json($data);
-        } 
+        }
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
@@ -80,10 +80,10 @@ class SSSContributionController extends Controller
     public function update(UpdateSSSContributionRequest $request, $id)
     {
         $sss = SSSContribution::find($id);
-        $data = json_decode('{}'); 
-        if (!is_null($sss) ) {
+        $data = json_decode('{}');
+        if (!is_null($sss)) {
             $sss->fill($request->validated());
-            if($sss->save()){
+            if($sss->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $sss;
@@ -106,8 +106,8 @@ class SSSContributionController extends Controller
     {
         $sss = SSSContribution::find($id);
         $data = json_decode('{}');
-        if (!is_null($sss) ) {
-            if($sss->delete()){
+        if (!is_null($sss)) {
+            if($sss->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $sss;
@@ -115,8 +115,8 @@ class SSSContributionController extends Controller
             }
             $data->message = "Failed delete.";
             $data->success = false;
-            return response()->json($data,400); 
-        } 
+            return response()->json($data, 400);
+        }
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
