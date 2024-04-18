@@ -16,7 +16,7 @@ class ImageController extends Controller
     public function uploadProfileImage(Request $request, $id)
     {
         $employee = Employee::findOrFail($id);
-        $profileImage = $this->uploadImage($request, 'profile_picture', $employee->id);
+        $profileImage = $this->uploadImage($request, 'profile_picture', $employee);
         if ($profileImage) {
             Image::create([
                 'url' => $profileImage,
@@ -36,7 +36,7 @@ class ImageController extends Controller
         $parentable_type = get_class($employee);
         $file = $this->uploadImage($request, 'digital_signature', $employee);
         if ($file) {
-            $profilePhoto = Image::where('parentable_id', $employee->id)
+            $profilePhoto = Image::where('parentable_id', $employee)
                 ->where('image_type', 'signature')
                 ->where('parentable_type', $parentable_type)
                 ->first();
