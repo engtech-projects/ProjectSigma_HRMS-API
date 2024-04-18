@@ -23,8 +23,9 @@ trait UploadImageTrait
             if ($profilePhoto) {
                 /* unlink(public_path('images/digital_signature/QNdQqUWz5V2YXyMx0NhTN4Zop3fHiPM26QLVVaMs.jpg/luffy.jpg')); */
             }
+            $url = 'images/' . $path . '/' . $hashName . '/' . $filename;
             $file->storePubliclyAs('images/' . $path . '/' . $hashName, $filename, 'public');
-            return $file;
+            return Storage::url($url);
         } else if (gettype($request->input('image_file')) == "string") {
             $img_64 = $request->input('image_file');
             $extension = explode('/', explode(':', substr($img_64, 0, strpos($img_64, ';')))[1])[1];
