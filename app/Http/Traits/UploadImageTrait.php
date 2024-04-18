@@ -25,7 +25,7 @@ trait UploadImageTrait
             }
             $url = 'images/' . $path . '/' . $hashName . '/' . $filename;
             $file->storePubliclyAs('images/' . $path . '/' . $hashName, $filename, 'public');
-            return $url
+            return $url;
         } else if (gettype($request->input('image_file')) == "string") {
             $img_64 = $request->input('image_file');
             $extension = explode('/', explode(':', substr($img_64, 0, strpos($img_64, ';')))[1])[1];
@@ -38,7 +38,7 @@ trait UploadImageTrait
             $randName = mt_rand() . time();
             $url = 'images/' . $path . '/' . $randName . '/' . $imageName;
             Storage::disk('public')->put($url, base64_decode($image));
-            return $url
+            return $url;
             /* list($mime, $data)   = explode(';', $request->input('image_file'));
             list(, $data)       = explode(',', $data);
             list(, $type)       = explode('/', $mime);
