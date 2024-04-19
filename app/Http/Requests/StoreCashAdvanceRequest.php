@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\RequestStatusType;
+use App\Enums\TermsOfPaymentType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -38,7 +39,7 @@ class StoreCashAdvanceRequest extends FormRequest
                 "exists:employees,id",
             ],
             'department_id' => [
-                "required",
+                "nullable",
                 "integer",
                 "exists:departments,id",
             ],
@@ -47,23 +48,34 @@ class StoreCashAdvanceRequest extends FormRequest
                 "integer",
                 "exists:projects,id",
             ],
-            'amount_requested' => [
+            'amount' => [
                 "required",
                 "numeric",
                 "min:1",
                 'decimal:0,2',
             ],
-            'amount_approved' => [
-                "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
-            ],
-            'purpose' => [
+            'terms_of_payment' => [
                 "required",
                 "string",
+                new Enum(TermsOfPaymentType::class)
             ],
-            'terms_of_cash_advance' => [
+            'no_of_installment' => [
+                "required",
+                "integer",
+                "min:1"
+            ],
+            'installment_deduction' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2'
+            ],
+            'deduction_date_start' => [
+                "required",
+                "date",
+                "date_format:Y-m-d",
+            ],
+            'purpose' => [
                 "required",
                 "string",
             ],

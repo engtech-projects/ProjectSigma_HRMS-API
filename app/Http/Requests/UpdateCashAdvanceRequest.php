@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
+use App\Enums\TermsOfPaymentType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -40,23 +41,34 @@ class UpdateCashAdvanceRequest extends FormRequest
                 "integer",
                 "exists:projects,id",
             ],
-            'amount_requested' => [
+            'amount' => [
                 "nullable",
                 "numeric",
                 "min:1",
                 'decimal:0,2',
             ],
-            'amount_approved' => [
-                "nullable",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
-            ],
-            'purpose' => [
+            'terms_of_payment' => [
                 "nullable",
                 "string",
+                new Enum(TermsOfPaymentType::class)
             ],
-            'terms_of_cash_advance' => [
+            'no_of_installment' => [
+                "nullable",
+                "integer",
+                "min:1"
+            ],
+            'installment_deduction' => [
+                "nullable",
+                "numeric",
+                "min:1",
+                'decimal:0,2'
+            ],
+            'deduction_date_start' => [
+                "nullable",
+                "date",
+                "date_format:Y-m-d",
+            ],
+            'purpose' => [
                 "nullable",
                 "string",
             ],
@@ -84,7 +96,6 @@ class UpdateCashAdvanceRequest extends FormRequest
             'approvals.*.status' => [
                 "nullable",
                 "string",
-                new Enum(RequestApprovalStatus::class)
             ],
             'approvals.*.date_approved' => [
                 "nullable",
@@ -93,17 +104,7 @@ class UpdateCashAdvanceRequest extends FormRequest
             'approvals.*.remarks' => [
                 "nullable",
                 "string",
-            ],
-            'request_status' => [
-                "nullable",
-                "string",
-                new Enum(RequestStatusType::class)
-            ],
-            'released_by' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
+            ]
         ];
     }
 }
