@@ -14,37 +14,37 @@ trait UploadImageTrait
     {
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
-            $hashName = $file->hashName();
-            $filename = $file->getClientOriginalName();
-            $profilePhoto = $this->getExistingImage($employee);
-            $url = 'images/' . $path . '/' . $hashName . $filename;
-            if ($profilePhoto) {
-
-                Storage::deleteDirectory('public/' . $profilePhoto->url);
-            }
-            Storage::disk('public')->put($url, $file);
-            return $url;
+            $url = 'images/' . $path . '/';
+            $this->deleteExistingDirectory($employee, $request->image_type);
+            $fileUploaded = Storage::disk('public')->put($url, $file);
+            return $fileUploaded;
         } else if (gettype($request->input('image_file')) == "string") {
             $img_64 = $request->input('image_file');
             $extension = explode('/', explode(':', substr($img_64, 0, strpos($img_64, ';')))[1])[1];
             $replace = substr($img_64, 0, strpos($img_64, ',') + 1);
             $image = str_replace($replace, '', $img_64);
             $image = str_replace(' ', '+', $image);
-
             $imageName = Str::random(10) . '.' . $extension;
-            $url = 'images/' . $path . '/' . $imageName . '/' . $imageName;
-            $randName = mt_rand() . time();
-            $url = 'images/' . $path . '/' . $randName . '/' . $imageName;
+            $url = 'images/' . $path . '/' . $imageName;
+            $this->deleteExistingDirectory($employee, $request->image_type);
             Storage::disk('public')->put($url, base64_decode($image));
             return $url;
         }
     }
 
-    public function getExistingImage($employee)
+    private function deleteExistingDirectory($employee, $type)
+    {
+        $file = $this->getExistingImage($employee, $type);
+        if ($file) {
+            Storage::delete('public/' . $file->url);
+        }
+    }
+
+    public function getExistingImage($employee, $type)
     {
         $parentable_type = get_class($employee);
         return Image::where('parentable_id', $employee->id)
-            ->where('image_type', 'profile_image')
+            ->where('image_type', $type)
             ->where('parentable_type', $parentable_type)
             ->first();
     }

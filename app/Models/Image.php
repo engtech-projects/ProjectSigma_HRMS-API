@@ -10,6 +10,8 @@ class Image extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const PROFILE_IMAGE_TYPE = "profile-picture";
+    const DIGITAL_SIGNATURE_TYPE = "signature";
     protected $fillable = [
         'url',
         'image_type',

@@ -17,9 +17,9 @@ class ImageController extends Controller
     public function uploadProfileImage(UploadImageRequest $request, $id)
     {
         $employee = Employee::findOrFail($id);
-        $profileImage = $this->uploadImage($request, 'profile_picture', $employee, 'profile_image');
+        $profileImage = $this->uploadImage($request, 'profile_picture', $employee);
         if ($profileImage) {
-            $profilePhoto = $this->getExistingImage($employee);
+            $profilePhoto = $this->getExistingImage($employee, $request->image_type);
             if ($profilePhoto) {
                 $profilePhoto->update([
                     'url' => $profileImage,
@@ -46,7 +46,7 @@ class ImageController extends Controller
         $employee = Employee::findOrFail($id);
         $file = $this->uploadImage($request, 'digital_signature', $employee, 'signature');
         if ($file) {
-            $signaturePhoto = $this->getExistingImage($employee);
+            $signaturePhoto = $this->getExistingImage($employee, $request->image_type);
             if ($signaturePhoto) {
                 $signaturePhoto->update([
                     'url' => $file,
