@@ -3,26 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Image;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Traits\UploadImageTrait;
-use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
+use App\Http\Traits\UploadImageTrait;
+use App\Http\Requests\UploadImageRequest;
 
 class ImageController extends Controller
 {
     use UploadImageTrait;
 
-    public function uploadProfileImage(Request $request, $id)
+    public function uploadProfileImage(UploadImageRequest $request, $id)
     {
         $employee = Employee::findOrFail($id);
-        $parentable_type = get_class($employee);
-        $profileImage = $this->uploadImage($request, 'profile_picture', $employee);
+        $profileImage = $this->uploadImage($request, 'profile_picture', $employee, 'profile_image');
         if ($profileImage) {
-            $profilePhoto = Image::where('parentable_id', $employee->id)
-                ->where('image_type', 'profile_image')
-                ->where('parentable_type', $parentable_type)
-                ->first();
+            $profilePhoto = $this->getExistingImage($employee);
             if ($profilePhoto) {
                 $profilePhoto->update([
                     'url' => $profileImage,
@@ -44,18 +41,14 @@ class ImageController extends Controller
             'message' => 'Profile picture successfully uploaded.',
         ]);
     }
-    public function uploadDigitalSignature(Request $request, $id)
+    public function uploadDigitalSignature(UploadImageRequest $request, $id)
     {
         $employee = Employee::findOrFail($id);
-        $parentable_type = get_class($employee);
-        $file = $this->uploadImage($request, 'digital_signature', $employee);
+        $file = $this->uploadImage($request, 'digital_signature', $employee, 'signature');
         if ($file) {
-            $signature = Image::where('parentable_id', $employee->id)
-                ->where('image_type', 'signature')
-                ->where('parentable_type', $parentable_type)
-                ->first();
-            if ($signature) {
-                $signature->update([
+            $signaturePhoto = $this->getExistingImage($employee);
+            if ($signaturePhoto) {
+                $signaturePhoto->update([
                     'url' => $file,
                     'image_type' => "signature",
                     'parentable_id' => $employee->id,

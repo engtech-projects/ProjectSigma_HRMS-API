@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use App\Http\Requests\UploadImageRequest;
 use App\Models\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -15,16 +16,13 @@ trait UploadImageTrait
             $file = $request->file('image_file');
             $hashName = $file->hashName();
             $filename = $file->getClientOriginalName();
-            $parentable_type = get_class($employee);
-            $profilePhoto = Image::where('parentable_id', $employee->id)
-                ->where('image_type', 'signature')
-                ->where('parentable_type', $parentable_type)
-                ->first();
+            $profilePhoto = $this->getExistingImage($employee);
+            $url = 'images/' . $path . '/' . $hashName . $filename;
             if ($profilePhoto) {
-                /* unlink(public_path('images/digital_signature/QNdQqUWz5V2YXyMx0NhTN4Zop3fHiPM26QLVVaMs.jpg/luffy.jpg')); */
+
+                Storage::deleteDirectory('public/' . $profilePhoto->url);
             }
-            $url = 'images/' . $path . '/' . $hashName . '/' . $filename;
-            $file->storePubliclyAs('images/' . $path . '/' . $hashName, $filename, 'public');
+            Storage::disk('public')->put($url, $file);
             return $url;
         } else if (gettype($request->input('image_file')) == "string") {
             $img_64 = $request->input('image_file');
@@ -39,14 +37,15 @@ trait UploadImageTrait
             $url = 'images/' . $path . '/' . $randName . '/' . $imageName;
             Storage::disk('public')->put($url, base64_decode($image));
             return $url;
-            /* list($mime, $data)   = explode(';', $request->input('image_file'));
-            list(, $data)       = explode(',', $data);
-            list(, $type)       = explode('/', $mime);
-            $file = base64_decode($data);
-            $hashmake = Hash::make('secret');
-            $hashname = hash('sha256', $hashmake);
-            $randName = mt_rand() . time();
-            Storage::put('images/' . $path . '/' . $hashname . '/' . $randName . $type, $file); */
         }
+    }
+
+    public function getExistingImage($employee)
+    {
+        $parentable_type = get_class($employee);
+        return Image::where('parentable_id', $employee->id)
+            ->where('image_type', 'profile_image')
+            ->where('parentable_type', $parentable_type)
+            ->first();
     }
 }
