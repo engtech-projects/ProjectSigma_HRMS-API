@@ -46,7 +46,7 @@ class StoreOtherDeductionRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'total_amount' => [
+            'amount' => [
                 "required",
                 "numeric",
                 "min:1",
@@ -61,11 +61,16 @@ class StoreOtherDeductionRequest extends FormRequest
                 "required",
                 "integer",
             ],
-            'installment_amount' => [
+            'installment_deduction' => [
                 "required",
                 "numeric",
                 "min:1",
                 'decimal:0,2',
+            ],
+            'deduction_date_start' => [
+                "required",
+                "date",
+                "date_format:Y-m-d",
             ],
         ];
     }

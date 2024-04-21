@@ -20,15 +20,19 @@ class OtherDeduction extends Model
     use SoftDeletes;
     use HasApiTokens;
 
+    protected $casts = [
+        "deduction_date_start" => "date:Y-m-d",
+    ];
+
     protected $fillable = [
         'id',
         'employee_id',
         'otherdeduction_name',
-        'total_amount',
         'terms_of_payment',
-        'otherdeduction_name',
         'no_of_installments',
-        'installment_amount',
+        'installment_deduction',
+        'amount',
+        'deduction_date_start',
     ];
 
     public function employee(): HasOne
@@ -44,7 +48,7 @@ class OtherDeduction extends Model
     public function cashPaid()
     {
         $totalpaid = $this->otherDeductionPayment()->sum("amount_paid");
-        if ($this->total_amount <= $totalpaid) {
+        if ($this->amount <= $totalpaid) {
             return true;
         }
         return false;
@@ -54,7 +58,7 @@ class OtherDeduction extends Model
     {
         $totalpaid = $this->otherDeductionPayment()->sum('amount_paid');
 
-        if ($this->total_amount < $totalpaid + $amount) {
+        if ($this->amount < $totalpaid + $amount) {
             return true;
         }
         return false;
