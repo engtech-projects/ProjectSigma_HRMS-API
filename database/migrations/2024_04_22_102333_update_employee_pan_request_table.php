@@ -15,7 +15,7 @@ return new class extends Migration
             $tableName = 'employee_pan_requests';
             if (Schema::hasColumn($tableName, 'new_salary_grades')) {
                 $table->dropForeign(['new_salary_grades']);
-                $table->dropIndex('new_salary_grades');
+                $table->dropColumn('new_salary_grades');
             }
             if (Schema::hasColumn($tableName, 'new_section_id')) {
                 $table->dropForeign(['new_section_id']);
