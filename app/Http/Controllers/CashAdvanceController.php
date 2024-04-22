@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\LoanPaymentsType;
 use App\Enums\RequestStatusType;
-use App\Http\Requests\cashAdvanceRequest;
 use App\Models\CashAdvance;
 use App\Http\Requests\StoreCashAdvanceRequest;
 use App\Http\Requests\UpdateCashAdvanceRequest;
+use App\Http\Requests\CashAdvanceRequest;
 use App\Http\Resources\CashAdvanceResource;
 use App\Http\Services\CashAdvanceService;
 use Illuminate\Http\JsonResponse;
