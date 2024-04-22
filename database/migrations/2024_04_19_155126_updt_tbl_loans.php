@@ -17,7 +17,6 @@ return new class extends Migration
             $table->dropColumn('period_end');
             $table->enum("terms_of_payment", ["weekly", "monthly", "bimonthly"]);
             $table->integer("no_of_installment");
-            $table->double("installment_deduction");
             $table->double("amount");
             $table->date('deduction_date_start');
         });
@@ -34,7 +33,6 @@ return new class extends Migration
             $table->date('period_end');
             $table->dropColumn("terms_of_payment");
             $table->dropColumn("no_of_installment");
-            $table->dropColumn("installment_deduction");
             $table->dropColumn("amount");
             $table->dropColumn('deduction_date_start');
         });
