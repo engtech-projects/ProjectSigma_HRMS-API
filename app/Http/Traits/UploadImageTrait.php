@@ -14,7 +14,7 @@ trait UploadImageTrait
     {
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
-            $url = 'images/' . $path . '/' . Str::random(15);
+            $url = 'images/' . $path;
             $this->deleteExistingDirectory($employee, $request->image_type);
             $fileUploaded = Storage::disk('public')->put($url, $file);
             return $fileUploaded;
