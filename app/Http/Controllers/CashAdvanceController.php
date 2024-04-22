@@ -72,11 +72,11 @@ class CashAdvanceController extends Controller
         }
 
         $cash->refresh();
-
+        $data = $cash->with('cashAdvancePayments')->get();
         return new JsonResponse([
             'success' => $valid,
             'message' => $msg,
-            "data" => $cash
+            "data" => $data
         ]);
     }
 
