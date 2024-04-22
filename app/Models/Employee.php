@@ -34,6 +34,11 @@ class Employee extends Model
 
     protected function age(): Attribute
     {
+        if(!$this->date_of_birth){
+            return new Attribute(
+                get: fn () => "Date of birth not set.",
+            );
+        }
         return new Attribute(
             get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
         );
