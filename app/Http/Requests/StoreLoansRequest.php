@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TermsOfPaymentType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreLoansRequest extends FormRequest
 {
@@ -27,7 +29,7 @@ class StoreLoansRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
-            'loan_amount' => [
+            'amount' => [
                 "required",
                 "numeric",
                 "min:1",
@@ -44,16 +46,20 @@ class StoreLoansRequest extends FormRequest
                 "numeric",
                 "min:1",
             ],
-            'period_start' => [
+            'no_of_installment' => [
+                "required",
+                "numeric",
+                "min:1",
+            ],
+            'deduction_date_start' => [
                 "required",
                 "date",
                 "date_format:Y-m-d",
             ],
-            'period_end' => [
+            'terms_of_payment' => [
                 "required",
-                "date",
-                "date_format:Y-m-d",
-                "after:period_start"
+                "string",
+                new Enum(TermsOfPaymentType::class)
             ],
         ];
     }

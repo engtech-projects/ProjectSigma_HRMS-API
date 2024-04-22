@@ -8,6 +8,7 @@ use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\EmployeeStudiesType;
 use App\Http\Requests\BulkValidationRequest;
 use App\Models\Employee;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -126,6 +127,9 @@ class EmployeeBulkUploadController extends Controller
             return response()->json(['message' => 'invalid file'], 422);
         }
         $extractedData = [];
+        $savedData = [];
+        $unsaveData = [];
+
         $spreadsheet = IOFactory::load($file->getRealPath());
         $worksheet = $spreadsheet->getActiveSheet();
 
@@ -164,6 +168,11 @@ class EmployeeBulkUploadController extends Controller
                     foreach (self::HEADER_KEYS as $index => $value) {
                         $tempData[$value] = $data[$index];
                     }
+                    $tempData['phic_number'] = $tempData['phic_number'] ?? "N/A";
+                    $tempData['tin_number'] = $tempData['tin_number'] ?? "N/A";
+                    $tempData['sss_number'] = $tempData['sss_number'] ?? "N/A";
+                    $tempData['pagibig_number'] = $tempData['pagibig_number'] ?? "N/A";
+                    $tempData['place_of_birth'] = $tempData['place_of_birth'] ?? "N/A";
                     $tempData['date_of_birth'] = !$tempData['date_of_birth'] ||
                         $tempData['date_of_birth'] === 'N/A' ?
                         null : $tempData['date_of_birth'];
@@ -174,16 +183,26 @@ class EmployeeBulkUploadController extends Controller
                         $tempData['spouse_datebirth'] === 'N/A' ?
                         null : $tempData['spouse_datebirth'];
                     $extractedData[] = $tempData;
+                    if ($tempData['_status'] === 'duplicate') {
+                        $savedData[] = $tempData;
+                    }else if ($tempData['_status'] === 'unduplicate') {
+                        $unsaveData[] = $tempData;
+                    }
                 }
             }
         }
         return response()->json([
             'message' => 'Done extract data',
-            'data' => $extractedData,
+            'data' => [
+                'save' => $savedData,
+                'unsave' => $unsaveData,
+            ],
         ]);
     }
     public function bulkSave(BulkValidationRequest $request)
     {
+        set_time_limit(99999);
+        $errorList = [];
         $validatedData = $request->validated();
         DB::transaction(function () use($validatedData) {
             foreach (json_decode($validatedData['employees_data'], true) as $data) {
@@ -196,8 +215,12 @@ class EmployeeBulkUploadController extends Controller
                 $employeeRelatedPerson = [];
                 if ($data['_status'] == 'unduplicate') {
                     //insert
-                    $employee = new Employee();
-                    $employee->fill($data)->save();
+                    try {
+                        $employee = new Employee();
+                        $employee->fill($data)->save();
+                    } catch (\Throwable $th) {
+                        continue;
+                    }
 
                     if ($data['dates_of_school_elementary']) {
                         $elementaryDates = explode('-', $data['dates_of_school_elementary']);
@@ -438,23 +461,27 @@ class EmployeeBulkUploadController extends Controller
                     //employment
                     $data['atm'] = null;
                     $data['status'] = 'active';
-                    $employee->company_employments()->create($data);
+                    try {
+                        $employee->company_employments()->create($data);
+                        $employee->employee_externalwork()->create($externalEmployee);
+                        //$employee->employment_records()->create($employeeRecord);
+                        $employee->employee_address()->create($address_pre);
+                        $employee->employee_address()->create($address_per);
+                        $employee->employee_affiliation()->create($affiliation);
+                        //$employee->employee_eligibility()->create($eligibility);
+                        $employee->employee_related_person()->createMany($employeeRelatedPerson);
+                        $employee->employee_education()->createMany($employeeEducation);
+                        $employee->employee_studies()->createMany($studies);
+                    } catch (\Throwable $th) {
+                        continue;
+                    }
 
-                    $employee->employee_externalwork()->create($externalEmployee);
-                    //$employee->employment_records()->create($employeeRecord);
-                    $employee->employee_address()->create($address_pre);
-                    $employee->employee_address()->create($address_per);
-                    $employee->employee_affiliation()->create($affiliation);
-                    //$employee->employee_eligibility()->create($eligibility);
-                    $employee->employee_related_person()->createMany($employeeRelatedPerson);
-                    $employee->employee_education()->createMany($employeeEducation);
-                    $employee->employee_studies()->createMany($studies);
                 }
             }
         });
         return response()->json([
             'message' => 'Done save data',
-            'data' => [],
+            'data' => ['errorList' => $errorList],
         ]);
     }
 }

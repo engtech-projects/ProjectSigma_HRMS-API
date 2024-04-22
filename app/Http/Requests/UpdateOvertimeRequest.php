@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\RequestStatusType;
+use App\Enums\StringRequestApprovalStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -23,6 +24,11 @@ class UpdateOvertimeRequest extends FormRequest
                 "approvals" => json_decode($this->approvals, true)
             ]);
         }
+        if (gettype($this->employees) == "string") {
+            $this->merge([
+                "employees" => json_decode($this->employees, true),
+            ]);
+        }
     }
 
     /**
@@ -38,7 +44,7 @@ class UpdateOvertimeRequest extends FormRequest
                 "array",
             ],
             'employees.*' => [
-                "required",
+                "nullable",
                 "integer",
                 "exists:employees,id",
             ],
@@ -59,11 +65,11 @@ class UpdateOvertimeRequest extends FormRequest
             ],
             'overtime_start_time' => [
                 "nullable",
-                'date_format:H:i:s',
+                'date_format:H:i',
             ],
             'overtime_end_time' => [
                 "nullable",
-                'date_format:H:i:s',
+                'date_format:H:i',
                 'after:overtime_start_time',
             ],
             'reason' => [
@@ -102,7 +108,7 @@ class UpdateOvertimeRequest extends FormRequest
             'request_status' => [
                 "nullable",
                 "string",
-                new Enum(RequestStatusType::class)
+                new Enum(StringRequestApprovalStatus::class)
             ],
         ];
     }

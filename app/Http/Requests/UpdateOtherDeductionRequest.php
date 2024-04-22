@@ -24,7 +24,11 @@ class UpdateOtherDeductionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => [
+            'employees' => [
+                "nullable",
+                "array",
+            ],
+            'employees.*' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
@@ -33,7 +37,7 @@ class UpdateOtherDeductionRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'total_amount' => [
+            'amount' => [
                 "nullable",
                 "numeric",
                 "min:1",
@@ -48,11 +52,16 @@ class UpdateOtherDeductionRequest extends FormRequest
                 "nullable",
                 "integer",
             ],
-            'installment_amount' => [
+            'installment_deduction' => [
                 "nullable",
                 "numeric",
                 "min:1",
                 'decimal:0,2',
+            ],
+            'deduction_date_start' => [
+                "nullable",
+                "date",
+                "date_format:Y-m-d",
             ],
         ];
     }

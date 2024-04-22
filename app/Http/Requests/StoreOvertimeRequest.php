@@ -64,11 +64,11 @@ class StoreOvertimeRequest extends FormRequest
             ],
             'overtime_start_time' => [
                 "required",
-                'date_format:H:i:s',
+                'date_format:H:i',
             ],
             'overtime_end_time' => [
                 "required",
-                'date_format:H:i:s',
+                'date_format:H:i',
                 'after:overtime_start_time',
             ],
             'reason' => [

@@ -21,18 +21,18 @@ class Loans extends Model
     use SoftDeletes;
 
     protected $casts = [
-        "period_start" => "date:Y-m-d",
-        "period_end" => "date:Y-m-d",
+        "deduction_date_start" => "date:Y-m-d",
     ];
 
     protected $fillable = [
         'id',
         'employee_id',
-        'loan_amount',
+        'terms_of_payment',
+        'no_of_installment',
         'installment_deduction',
+        'amount',
+        'deduction_date_start',
         'terms_length',
-        'period_start',
-        'period_end',
     ];
 
     public function employee(): HasOne
@@ -53,7 +53,7 @@ class Loans extends Model
     public function loanPaid()
     {
         $totalpaid = $this->loanPayments()->sum('amount_paid');
-        if ($this->loan_amount <= $totalpaid) {
+        if ($this->amount <= $totalpaid) {
             return true;
         }
         return false;
@@ -63,7 +63,7 @@ class Loans extends Model
     {
         $totalpaid = $this->loanPayments()->sum('amount_paid');
 
-        if ($this->loan_amount < $totalpaid + $paymentAmount) {
+        if ($this->amount < $totalpaid + $paymentAmount) {
             return true;
         }
         return false;

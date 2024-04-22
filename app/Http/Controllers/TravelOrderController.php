@@ -8,8 +8,10 @@ use App\Http\Requests\StoreTravelOrderRequest;
 use App\Http\Requests\UpdateTravelOrderRequest;
 use App\Http\Resources\TravelOrderResource;
 use App\Http\Services\TravelOrderService;
+use App\Models\TravelOrderMembers;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class TravelOrderController extends Controller
 {
@@ -44,23 +46,27 @@ class TravelOrderController extends Controller
      */
     public function store(StoreTravelOrderRequest $request)
     {
-        $main = new TravelOrder();
-        $validdata = $request->validated();
-        $main->fill($validdata);
-        $main->request_status = StringRequestApprovalStatus::PENDING;
-        $main->requested_by = auth()->user()->id;
-        $main->employees->attach($validdata["employee_ids"]);
-        $data = json_decode('{}');
-
-        if (!$main->save()) {
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        try {
+            DB::transaction(function () use ($request) {
+                $main = new TravelOrder();
+                $validdata = $request->validated();
+                $main->fill($validdata);
+                $main->request_status = StringRequestApprovalStatus::PENDING;
+                $main->requested_by = auth()->user()->id;
+                $main->save();
+                $main->employees()->attach($validdata["employee_ids"]);
+            });
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully save.',
+            ], JsonResponse::HTTP_OK);
+        } catch (\Throwable $th) {
+            return new JsonResponse([
+                'success' => false,
+                "error" => $th,
+                'message' => 'Save failed.',
+            ], 400);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
     }
 
     /**

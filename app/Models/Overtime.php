@@ -49,7 +49,7 @@ class Overtime extends Model
 
     public function employees(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class);
+        return $this->belongsToMany(Employee::class, OvertimeEmployees::class);
     }
 
     public function department(): HasOne

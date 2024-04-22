@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
@@ -26,7 +25,8 @@ class CashAdvance extends Model
     use HasApproval;
 
     protected $casts = [
-        'approvals' => 'array'
+        'approvals' => 'array',
+        "deduction_date_start" => "date:Y-m-d",
     ];
 
     protected $fillable = [
@@ -34,14 +34,15 @@ class CashAdvance extends Model
         'employee_id',
         'department_id',
         'project_id',
-        'amount_requested',
-        'amount_approved',
+        'terms_of_payment',
+        'no_of_installment',
+        'installment_deduction',
+        'deduction_date_start',
+        'amount',
         'purpose',
-        'terms_of_cash_advance',
         'remarks',
         'request_status',
         'approvals',
-        'released_by',
     ];
 
     public function employee(): HasOne
@@ -59,11 +60,6 @@ class CashAdvance extends Model
         return $this->hasOne(Project::class, "id", "project_id");
     }
 
-    public function released(): HasOne
-    {
-        return $this->hasOne(Users::class, "id", "released_by")->select('id', 'employee_id');
-    }
-
     public function cashAdvancePayments(): HasMany
     {
         return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id');
@@ -72,7 +68,7 @@ class CashAdvance extends Model
     public function cashPaid()
     {
         $totalpaid = $this->cashAdvancePayments()->sum("amount_paid");
-        if ($this->amount_requested <= $totalpaid) {
+        if ($this->amount <= $totalpaid) {
             return true;
         }
         return false;
@@ -118,11 +114,6 @@ class CashAdvance extends Model
         }
 
         return true;
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'released_by');
     }
 
     public function scopeRequestStatusPending(Builder $query): void

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,7 +33,6 @@ class TravelOrder extends Model
 
     protected $fillable = [
         'id',
-        'name',
         'requesting_office',
         'destination',
         'purpose_of_travel',
@@ -63,6 +63,11 @@ class TravelOrder extends Model
     public function department(): HasOne
     {
         return $this->hasOne(Department::class, "id", "requesting_office");
+    }
+
+    public function travelOrders(): HasMany
+    {
+        return $this->hasMany(TravelOrderMembers::class, "id", "travel_order_id");
     }
 
     public function user(): BelongsTo

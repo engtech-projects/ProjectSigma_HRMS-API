@@ -24,6 +24,11 @@ class StoreTravelOrderRequest extends FormRequest
                 "approvals" => json_decode($this->approvals, true)
             ]);
         }
+        if (gettype($this->employee_ids) == "string") {
+            $this->merge([
+                "employee_ids" => json_decode($this->employee_ids, true)
+            ]);
+        }
     }
 
     /**
@@ -34,10 +39,6 @@ class StoreTravelOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                "required",
-                "string",
-            ],
             'requesting_office' => [
                 "required",
                 "integer",
@@ -93,18 +94,18 @@ class StoreTravelOrderRequest extends FormRequest
                 "nullable",
                 "date",
             ],
-            'employee_ids' => [
-                "nullable",
-                "array",
-            ],
-            'employee_ids.*' => [
-                "nullable",
-                "integer",
-                "exists:employees,id",
-            ],
             'approvals.*.remarks' => [
                 "nullable",
                 "string",
+            ],
+            'employee_ids' => [
+                "required",
+                "array",
+            ],
+            'employee_ids.*' => [
+                "required",
+                "integer",
+                "exists:employees,id",
             ],
         ];
     }
