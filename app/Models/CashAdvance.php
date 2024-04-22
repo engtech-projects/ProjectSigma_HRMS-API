@@ -79,7 +79,7 @@ class CashAdvance extends Model
         // $totalpaid = $this->loanPayments()->sum('amount_paid');
         $totalpaid = $this->cashAdvancePayments()->sum('amount_paid');
 
-        if ($this->amount_requested < $totalpaid + $amount) {
+        if ($this->amount < $totalpaid + $amount) {
             return true;
         }
         return false;
