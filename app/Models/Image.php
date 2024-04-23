@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\File;
 
 class Image extends Model
 {
@@ -18,9 +20,20 @@ class Image extends Model
         'parentable_id',
         'parentable_type',
     ];
+    protected $appends = [
+        'base64'
+    ];
 
     public function parentable()
     {
         return $this->morphTo();
+    }
+
+    protected function base64(): Attribute
+    {
+        $mimeType = File::mimeType('storage/' . $this->url);
+        return Attribute::make(
+            get: fn () => "data:" . $mimeType . ";base64," . base64_encode(file_get_contents("storage/" . $this->url))
+        );
     }
 }
