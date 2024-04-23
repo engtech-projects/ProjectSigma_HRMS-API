@@ -69,6 +69,10 @@ class Employee extends Model
 
     public const EMPLOYEE_BULK_STATUS_DUPLICATE = 'duplicate';
     public const EMPLOYEE_BULK_STATUS_UNDUPLICATE = 'unduplicate';
+    protected $attributes = [
+        'profile_photo_base64',
+        'digital_signature_base64'
+    ];
     protected $fillable = [
         'first_name',
         'middle_name',
@@ -94,21 +98,31 @@ class Employee extends Model
     {
         return $this->morphMany(Image::class, 'parentable');
     }
-    public function profile_photo()
+    public function profile_photo_images()
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'profile_image');
     }
-    public function digital_signature()
+    public function digital_signature_images()
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'signature');
     }
-    public function profile_photo_base64()
+    public function profilePhotoBase64(): Attribute
     {
-        return $this->profile_photo ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->profile_photo->url)) : null;
+        if ($this->profile_photo_images) {
+            return Attribute::make(
+                get: fn () => $this->profile_photo_images ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->profile_photo_images['url'])) : null
+            );
+        }
+        return null;
     }
-    public function digital_signature_base64()
+    public function digitalSignatureBase64(): Attribute
     {
-        return $this->digital_signature ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->digital_signature->url)) : null;
+        if ($this->digital_signature_images) {
+            return Attribute::make(
+                get: fn () => $this->digital_signature_images ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->digital_signature_images['url'])) : null
+            );
+        }
+        return null;
     }
 
 
