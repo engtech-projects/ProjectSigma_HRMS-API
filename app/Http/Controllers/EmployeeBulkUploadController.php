@@ -311,11 +311,12 @@ class EmployeeBulkUploadController extends Controller
                         'status' => 'N/A',
                         'membership_exp_date' => null,
                     ];
-
+                    $departmentId = $this->getDepartmentId($data['department']);
+                    $postionId = $this->getPositionId($data['position'], $departmentId);
                     $internalRecord = [
-                        'position_id' => $this->getPositionId($data['position']),
+                        'position_id' => $postionId,
                         'employment_status' => $data['employment_status'],
-                        'department_id' => $this->getDepartmentId($data['department']),
+                        'department_id' => $departmentId,
                         'immediate_supervisor' => $data['imidiate_supervisor'],
                         'actual_salary' => null,
                         'salary_grades' => null,
@@ -503,8 +504,8 @@ class EmployeeBulkUploadController extends Controller
             'data' => ['errorList' => $errorList],
         ]);
     }
-    public function getPositionId($position = null) {
-        $data = Position::where('name', $position)->first();
+    public function getPositionId($position = null, $departmentId) {
+        $data = Position::where('name', $position)->where('department_id', $departmentId)->first();
         return $data ? $data->id : null;
     }
     public function getDepartmentId($department = null) {
