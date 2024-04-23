@@ -13,7 +13,7 @@ class PositionController extends Controller
      */
     public function index()
     {
-        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->paginate(15);
+        $main = Position::with('departments')->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -89,8 +89,9 @@ class PositionController extends Controller
      */
     public function update(UpdatepositionRequest $request, $id)
     {
-        $main = Position::find($id);
+        $main = Position::find(2);
         $data = json_decode('{}');
+        dd($main);
         if (!is_null($main)) {
             $main->fill($request->validated());
             if ($main->save()) {
