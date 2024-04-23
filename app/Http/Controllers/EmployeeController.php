@@ -159,11 +159,11 @@ class EmployeeController extends Controller
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main["age"] = $main->age;
-            $main["profile"] = [
+            $main["profile_photo"] = [
                 "url" => $main->profile_photo ? $main->profile_photo->url : null,
                 "base64" => $main->profile_photo_base64(),
             ];
-            $main["signature"] = [
+            $main["digital_signature"] = [
                 "url" => $main->digital_signature ? $main->digital_signature->url : null,
                 "base64" => $main->digital_signature_base64(),
             ];
