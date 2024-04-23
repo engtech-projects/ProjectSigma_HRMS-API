@@ -71,10 +71,6 @@ class Employee extends Model
 
     public const EMPLOYEE_BULK_STATUS_DUPLICATE = 'duplicate';
     public const EMPLOYEE_BULK_STATUS_UNDUPLICATE = 'unduplicate';
-    protected $attributes = [
-        'profile_photo_base64',
-        'digital_signature_base64'
-    ];
     protected $fillable = [
         'first_name',
         'middle_name',
@@ -108,24 +104,6 @@ class Employee extends Model
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'signature');
     }
-    public function profilePhotoBase64(): Attribute
-    {
-        $mimeType = File::mimeType('storage/' . $this->profile_photo_images['url']);
-        return Attribute::make(
-            get: fn () => $this->profile_photo_images ? "data:" . $mimeType . ";base64," . base64_encode(file_get_contents("storage/" . $this->profile_photo_images['url'])) : null
-        );
-        return null;
-    }
-    public function digitalSignatureBase64(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->digital_signature_images ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->digital_signature_images['url'])) : null
-        );
-
-        return null;
-    }
-
-
     public function company_employments(): HasOne
     {
         return $this->hasOne(CompanyEmployee::class);
