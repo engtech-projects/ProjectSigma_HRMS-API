@@ -96,11 +96,11 @@ class Employee extends Model
     {
         return $this->morphMany(Image::class, 'parentable');
     }
-    public function profile_photo_images()
+    public function profile_photo()
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'profile_image');
     }
-    public function digital_signature_images()
+    public function digital_signature()
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'signature');
     }
