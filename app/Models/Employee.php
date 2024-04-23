@@ -35,7 +35,7 @@ class Employee extends Model
 
     protected function age(): Attribute
     {
-        if(!$this->date_of_birth){
+        if (!$this->date_of_birth) {
             return new Attribute(
                 get: fn () => "Date of birth not set.",
             );
