@@ -45,12 +45,12 @@ class StoreInternalWorkExperienceRequest extends FormRequest
                 "string"
             ],
             'salary_grades' => [
-                "required",
+                "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
             ],
             'actual_salary' => [
-                "required",
+                "nullable",
                 "string"
             ],
             'work_location' => [
@@ -68,7 +68,7 @@ class StoreInternalWorkExperienceRequest extends FormRequest
                 'in:current,previous'
             ],
             'date_from' => [
-                "required",
+                "nullable",
                 "date",
             ],
             'date_to' => [
