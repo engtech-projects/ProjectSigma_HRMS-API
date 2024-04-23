@@ -159,14 +159,8 @@ class EmployeeController extends Controller
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main["age"] = $main->age;
-            $main["profile_photo"] = [
-                "url" => $main->profile_photo_images ? $main->profile_photo_images->url : null,
-                "base64" => $main->profilePhotoBase64,
-            ];
-            $main["digital_signature"] = [
-                "url" => $main->digital_signature_images ? $main->digital_signature_images->url : null,
-                "base64" => $main->profile_photo_base64,
-            ];
+            $main["profile_photo"] = $main->profile_photo;
+            $main["digital_signature"] = $main->digital_signature;
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
