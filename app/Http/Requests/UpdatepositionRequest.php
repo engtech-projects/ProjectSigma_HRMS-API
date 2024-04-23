@@ -29,7 +29,7 @@ class UpdatepositionRequest extends FormRequest
             'department_id' => [
                 "nullable",
                 "integer",
-                "exists:positions,id",
+                "exists:departments,id",
             ],
             'position_type' => [
                 "nullable",
