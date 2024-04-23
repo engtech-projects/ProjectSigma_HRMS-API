@@ -6,9 +6,7 @@ use App\Enums\AssignTypes;
 use App\Models\EmployeeAllowances;
 use App\Http\Requests\StoreEmployeeAllowancesRequest;
 use App\Http\Requests\UpdateEmployeeAllowancesRequest;
-use App\Models\Department;
 use App\Models\Employee;
-use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 
 class EmployeeAllowancesController extends Controller
@@ -97,55 +95,5 @@ class EmployeeAllowancesController extends Controller
     public function destroy(EmployeeAllowances $employeeAllowances)
     {
         //
-    }
-
-    // public function pushAllowances(StoreEmployeeAllowancesRequest $request)
-    // {
-
-    // }
-    public function saveAllowance()
-    {
-        $valData =
-            // $data = Employee::with('curr_employment.position.allowances')->find($request["employee_id"]);
-            $data = Employee::find()->with('curr_employment.position.allowances')->get();
-        foreach ($data as $key) {
-            $employee_allowance = new EmployeeAllowances();
-            $employee_allowance->charge_assignment_type = '';
-            $employee_allowance->charge_assignment_id = '';
-            $employee_allowance->allowance_date = '';
-            $employee_allowance->allowance_amount = '';
-        }
-
-        // return new JsonResponse([
-        //     'success' => true,
-        //     'data' => $data,
-        //     'message' => 'Successfully fetch.',
-        // ], JsonResponse::HTTP_OK);
-
-        // $val = $request->validated();
-        // if ($val) {
-        //     switch ($val["group_type"]) {
-        //         case AssignTypes::DEPARTMENT->value:
-        //             $data = Department::find($val["department_id"])->employee_allowance();
-        //             return new JsonResponse([
-        //                 'success' => true,
-        //                 'data' => $data,
-        //                 'message' => 'Successfully fetch.',
-        //             ], JsonResponse::HTTP_OK);
-        //             break;
-        //         case AssignTypes::PROJECT->value:
-        //             $data = Project::find($val["project_id"])->employee_allowance();
-        //             return new JsonResponse([
-        //                 'success' => true,
-        //                 'data' => $data,
-        //                 'message' => 'Successfully fetch.',
-        //             ], JsonResponse::HTTP_OK);
-        //             break;
-        //         default:
-        //             dd("false");
-        //             break;
-        //     }
-        // }
-        // return response()->json($data);
     }
 }
