@@ -66,6 +66,7 @@ use App\Http\Controllers\Actions\Employee\{
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\CashAdvanceController;
+use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
@@ -243,6 +244,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('digital-signature/{id}', [ImageController::class, "uploadDigitalSignature"]);
             Route::post('profile-picture/{id}', [ImageController::class, "uploadProfileImage"]);
         });
+    });
+
+    Route::prefix('employee-allowance')->group(function () {
+        Route::resource('resource', EmployeeAllowancesController::class);
     });
 });
 

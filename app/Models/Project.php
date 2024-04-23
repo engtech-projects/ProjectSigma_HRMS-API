@@ -6,6 +6,7 @@ use App\Models\Traits\HasProjectEmployee;
 use App\Models\Traits\HasProjectMember;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
@@ -32,4 +33,8 @@ class Project extends Model
      * RELATED
      * RELATION
      */
+    public function employee_allowance(): MorphOne
+    {
+        return $this->morphOne(EmployeeAllowances::class, 'charge_assignment');
+    }
 }

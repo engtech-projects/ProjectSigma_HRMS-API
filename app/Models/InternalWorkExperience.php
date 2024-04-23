@@ -21,6 +21,7 @@ class InternalWorkExperience extends Model
     protected $fillable = [
         'id',
         'employee_id',
+        'position_id',
         'position_title',
         'employment_status',
         'department_id',
@@ -51,6 +52,11 @@ class InternalWorkExperience extends Model
     public function employee_department(): HasOne
     {
         return $this->hasOne(Department::class, "id", "department_id");
+    }
+
+    public function position(): HasOne
+    {
+        return $this->hasOne(Position::class, "id", "position_id");
     }
 
 

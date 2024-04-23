@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule as EmployeeSchedule;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class Employee extends Model
@@ -34,6 +35,11 @@ class Employee extends Model
 
     protected function age(): Attribute
     {
+        if(!$this->date_of_birth){
+            return new Attribute(
+                get: fn () => "Date of birth not set.",
+            );
+        }
         return new Attribute(
             get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
         );

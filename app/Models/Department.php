@@ -6,6 +6,7 @@ use App\Models\Traits\HasAttendanceLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -35,6 +36,11 @@ class Department extends Model
 
     public function internal_work_exp(): HasMany
     {
-        return $this->hasMany(ExternalWorkExperience::class, 'id','department_id');
+        return $this->hasMany(ExternalWorkExperience::class, 'id', 'department_id');
+    }
+
+    public function employee_allowance(): MorphOne
+    {
+        return $this->morphOne(EmployeeAllowances::class, 'charge_assignment');
     }
 }

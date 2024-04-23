@@ -154,7 +154,7 @@ class EmployeeController extends Controller
             "employee_internal.employee_salarygrade.salary_grade_level",
             "employee_externalwork",
             "images",
-        )->get()->find($id);
+        )->find($id);
 
         $data = json_decode('{}');
         if (!is_null($main)) {

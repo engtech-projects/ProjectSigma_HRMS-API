@@ -204,8 +204,9 @@ class EmployeeBulkUploadController extends Controller
         set_time_limit(99999);
         $errorList = [];
         $validatedData = $request->validated();
-        DB::transaction(function () use($validatedData) {
+        if ($validatedData['employees_data']) {
             foreach (json_decode($validatedData['employees_data'], true) as $data) {
+                DB::beginTransaction();
                 $elementaryDates = [];
                 $highSchoolDates = [];
                 $education = [];
@@ -218,7 +219,13 @@ class EmployeeBulkUploadController extends Controller
                     try {
                         $employee = new Employee();
                         $employee->fill($data)->save();
-                    } catch (\Throwable $th) {
+                        DB::commit();
+                    } catch (Exception $th) {
+                        array_push($errorList, [
+                            json_encode(['name'=> $data['family_name'],
+                            'message' => $th->getMessage()])
+                        ]);
+                        DB::rollback();
                         continue;
                     }
 
@@ -472,13 +479,19 @@ class EmployeeBulkUploadController extends Controller
                         $employee->employee_related_person()->createMany($employeeRelatedPerson);
                         $employee->employee_education()->createMany($employeeEducation);
                         $employee->employee_studies()->createMany($studies);
-                    } catch (\Throwable $th) {
+                        DB::commit();
+                    } catch (Exception $th) {
+                        array_push($errorList, [
+                            json_encode(['name'=> $data['family_name'],
+                            'message' => $th->getMessage()])
+                        ]);
+                        DB::rollback();
                         continue;
                     }
 
                 }
             }
-        });
+        }
         return response()->json([
             'message' => 'Done save data',
             'data' => ['errorList' => $errorList],

@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\LoanPaymentsType;
 use App\Enums\RequestStatusType;
-use App\Http\Requests\cashAdvanceRequest;
 use App\Models\CashAdvance;
 use App\Http\Requests\StoreCashAdvanceRequest;
 use App\Http\Requests\UpdateCashAdvanceRequest;
+use App\Http\Requests\CashAdvanceRequest;
 use App\Http\Resources\CashAdvanceResource;
 use App\Http\Services\CashAdvanceService;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +24,7 @@ class CashAdvanceController extends Controller
      */
     public function index()
     {
-        $main = CashAdvance::with("employee", "department", "project")->paginate(15);
+        $main = CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->paginate(15);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -73,10 +73,12 @@ class CashAdvanceController extends Controller
 
         $cash->refresh();
 
+        $data = $cash->with('cashAdvancePayments')->get();
+
         return new JsonResponse([
             'success' => $valid,
             'message' => $msg,
-            "data" => $cash
+            "data" => $data
         ]);
     }
 
