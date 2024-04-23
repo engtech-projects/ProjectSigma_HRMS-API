@@ -111,21 +111,17 @@ class Employee extends Model
     public function profilePhotoBase64(): Attribute
     {
         $mimeType = File::mimeType('storage/' . $this->profile_photo_images['url']);
-        if ($this->profile_photo_images) {
-            return Attribute::make(
-                get: fn () => $this->profile_photo_images ? "data:" . $mimeType . ";base64," . base64_encode(file_get_contents("storage/" . $this->profile_photo_images['url'])) : null
-            );
-        }
+        return Attribute::make(
+            get: fn () => $this->profile_photo_images ? "data:" . $mimeType . ";base64," . base64_encode(file_get_contents("storage/" . $this->profile_photo_images['url'])) : null
+        );
         return null;
     }
     public function digitalSignatureBase64(): Attribute
     {
-        $url = Storage::url($this->profile_photo_images->url);
-        if ($this->digital_signature_images) {
-            return Attribute::make(
-                get: fn () => $this->digital_signature_images ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->digital_signature_images['url'])) : null
-            );
-        }
+        return Attribute::make(
+            get: fn () => $this->digital_signature_images ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->digital_signature_images['url'])) : null
+        );
+
         return null;
     }
 
