@@ -15,9 +15,9 @@ class Cors
      */
     public function handle(Request $request, Closure $next): Response
     {
-        header('Access-Control-Allow-Origin:  http://localhost:4200');
+/*         header('Access-Control-Allow-Origin:  http://localhost:4200');
         header('Access-Control-Allow-Headers:  Content-Type, X-Auth-Token, Authorization, Origin');
-        header('Access-Control-Allow-Methods:  POST, PUT');
+        header('Access-Control-Allow-Methods:  POST, PUT'); */
         return $next($request);
     }
 }
