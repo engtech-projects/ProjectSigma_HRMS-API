@@ -89,9 +89,8 @@ class PositionController extends Controller
      */
     public function update(UpdatepositionRequest $request, $id)
     {
-        $main = Position::find(2);
+        $main = Position::find($id);
         $data = json_decode('{}');
-        dd($main);
         if (!is_null($main)) {
             $main->fill($request->validated());
             if ($main->save()) {
