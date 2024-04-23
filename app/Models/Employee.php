@@ -102,14 +102,13 @@ class Employee extends Model
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'signature');
     }
-    public function base64_images()
+    public function profile_photo_base64()
     {
-        $profileImage = $this->profile_photo() ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->profile_photo->url)) : null;
-        $digitalSignature = $this->digital_signature ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->digital_signature->url)) : null;
-        return [
-            'profile_photo' => $profileImage,
-            'digital_signature' => $digitalSignature,
-        ];
+        return $this->profile_photo ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->profile_photo->url)) : null;
+    }
+    public function digital_signature_base64()
+    {
+        return $this->digital_signature ? "data:image/png;base64," . base64_encode(file_get_contents("storage/" . $this->digital_signature->url)) : null;
     }
 
 
