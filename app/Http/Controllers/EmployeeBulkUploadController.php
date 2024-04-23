@@ -7,7 +7,9 @@ use App\Enums\EmployeeEducationType;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\EmployeeStudiesType;
 use App\Http\Requests\BulkValidationRequest;
+use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Position;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -310,14 +312,18 @@ class EmployeeBulkUploadController extends Controller
                         'membership_exp_date' => null,
                     ];
 
-                    //employee record information
-                    $employeeRecord = [
-                        'date_to' => 'N/A',
-                        'date_from' => 'N/A',
-                        'position_title' => 'N/A',
-                        'company_name' => 'N/A',
-                        'monthly_salary' => 'N/A',
-                        'status_of_appointment' => 'N/A',
+                    $internalRecord = [
+                        'position_id' => $this->getPositionId($data['position']),
+                        'employment_status' => $data['employment_status'],
+                        'department_id' => $this->getDepartmentId($data['department']),
+                        'immediate_supervisor' => $data['imidiate_supervisor'],
+                        'actual_salary' => null,
+                        'salary_grades' => null,
+                        'work_location' => 'N/A',
+                        'hire_source' => 'Internal',
+                        'status' => $data['employment_status'],
+                        'date_from' => null,
+                        'date_to' => null,
                     ];
 
                     //elementary
@@ -471,7 +477,7 @@ class EmployeeBulkUploadController extends Controller
                     try {
                         $employee->company_employments()->create($data);
                         $employee->employee_externalwork()->create($externalEmployee);
-                        //$employee->employment_records()->create($employeeRecord);
+                        $employee->employee_internal()->create($internalRecord);
                         $employee->employee_address()->create($address_pre);
                         $employee->employee_address()->create($address_per);
                         $employee->employee_affiliation()->create($affiliation);
@@ -496,5 +502,13 @@ class EmployeeBulkUploadController extends Controller
             'message' => 'Done save data',
             'data' => ['errorList' => $errorList],
         ]);
+    }
+    public function getPositionId($position = null) {
+        $data = Position::where('name', $position)->first();
+        return $data ? $data->id : null;
+    }
+    public function getDepartmentId($department = null) {
+        $data = Department::where('department_name', $department)->first();
+        return $data ? $data->id : null;
     }
 }
