@@ -63,9 +63,9 @@ class SalaryGradeLevelController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(SalaryGradeLevel $salaryGradeLevel)
+    public function show(SalaryGradeLevel $resource)
     {
-        return new SalaryGradeLevelResource($salaryGradeLevel->load('salary_grade_step'));
+        return new SalaryGradeLevelResource($resource->load('salary_grade_step'));
     }
 
 
@@ -104,10 +104,10 @@ class SalaryGradeLevelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SalaryGradeLevel $salaryGradeLevel)
+    public function destroy(SalaryGradeLevel $resource)
     {
         try {
-            $salaryGradeLevel->delete();
+            $resource->delete();
         } catch (Exception $e) {
             throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
