@@ -27,17 +27,22 @@ class EmployeeSeminartrainingController extends Controller
     public function store(StoreEmployeeSeminartrainingRequest $request)
     {
         $main = new EmployeeSeminartraining();
-        $main->fill($request->validated());
+        $validdata = $request->validated();
         $data = json_decode('{}');
-
-        if (!$main->save()) {
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        if ($validdata) {
+            $main->fill($validdata);
+            if (!$main->save()) {
+                $data->message = "Save failed.";
+                $data->success = false;
+                return response()->json($data, 400);
+            }
+            $data->message = "Successfully save.";
+            $data->success = true;
+            $data->data = $main;
+            return response()->json($data);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
+        $data->message = "Failed save.";
+        $data->success = false;
         return response()->json($data);
     }
 
@@ -46,7 +51,6 @@ class EmployeeSeminartrainingController extends Controller
      */
     public function show($id)
     {
-        //
         $main = EmployeeSeminartraining::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
