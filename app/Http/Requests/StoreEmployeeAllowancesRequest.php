@@ -49,6 +49,20 @@ class StoreEmployeeAllowancesRequest extends FormRequest
                 "date",
                 'date_format:Y-m-d'
             ],
+            'cutoff_start' => [
+                "required",
+                "date",
+                'date_format:Y-m-d'
+            ],
+            'cutoff_end' => [
+                "required",
+                "date",
+                'date_format:Y-m-d'
+            ],
+            'total_days' => [
+                "required",
+                "integer",
+            ],
         ];
     }
 }
