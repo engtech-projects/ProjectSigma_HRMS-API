@@ -28,7 +28,7 @@ class UpdateDepartmentRequest extends FormRequest
                 "nullable",
                 "string",
                 "max:35",
-                Rule::unique("departments", "department_name")->ignore($this->route("department"), 'id')->whereNull('deleted_at'),
+                Rule::unique("departments", "department_name")->ignore($this->route("resource"), 'id')->whereNull('deleted_at'),
             ],
         ];
     }
