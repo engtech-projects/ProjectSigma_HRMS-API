@@ -63,6 +63,7 @@ use App\Http\Controllers\Actions\Employee\{
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
+use App\Http\Controllers\Actions\GeneratePayrollController;
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\CashAdvanceController;
@@ -248,6 +249,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('employee-allowance')->group(function () {
         Route::resource('resource', EmployeeAllowancesController::class);
+    });
+
+    Route::prefix('payroll')->group(function () {
+        Route::post('generate-payroll', GeneratePayrollController::class);
     });
 });
 

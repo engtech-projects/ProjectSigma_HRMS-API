@@ -49,4 +49,11 @@ class AttendanceLogService
             throw new TransactionFailedException("Delete transaction failed.", 500, $e);
         }
     }
+
+    public function getEmployeeAttendance($employeeId)
+    {
+        $attendances = AttendanceLog::whereIn('employee_id', $employeeId)->get();
+
+        return $attendances;
+    }
 }

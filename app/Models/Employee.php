@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Schedule as EmployeeSchedule;
+use App\Models\Schedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -271,7 +271,7 @@ class Employee extends Model
 
     public function employee_schedule(): HasMany
     {
-        return $this->hasMany(EmployeeSchedule::class);
+        return $this->hasMany(Schedule::class);
     }
 
     public function attendance_log(): HasMany
@@ -295,7 +295,7 @@ class Employee extends Model
 
     public function filter_employee_schedule($start_range, $end_range)
     {
-        $data = EmployeeSchedule::select('employee_id', 'startTime', 'endTime', 'startRecur', 'endRecur')->where([
+        $data = Schedule::select('employee_id', 'startTime', 'endTime', 'startRecur', 'endRecur')->where([
             ['startRecur', '>=', $start_range],
             ['endRecur', '<=', $end_range],
         ])->with([
