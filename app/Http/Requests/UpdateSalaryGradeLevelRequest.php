@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class UpdateSalaryGradeLevelRequest extends FormRequest
 {
@@ -22,6 +23,7 @@ class UpdateSalaryGradeLevelRequest extends FormRequest
      */
     public function rules(): array
     {
+        Log::info("SALARY GRADE UPDATE ROUTE".$this->route('salary_grade_level'));
         $id = $this->route('salary_grade_level');
         return [
             'salary_grade_level' => [
