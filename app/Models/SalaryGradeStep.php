@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,5 +26,19 @@ class SalaryGradeStep extends Model
     public function salary_grade_level(): BelongsTo
     {
         return $this->belongsTo(SalaryGradeLevel::class);
+    }
+
+    protected function dailyRate(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->monthly_salary_amount / 26,
+        );
+    }
+
+    protected function latePerMinDeduction(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => ($this->dailyRate / 8) / 60,
+        );
     }
 }
