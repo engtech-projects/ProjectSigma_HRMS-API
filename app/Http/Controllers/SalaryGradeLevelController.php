@@ -21,7 +21,10 @@ class SalaryGradeLevelController extends Controller
     {
         $salaryGradeLevel = SalaryGradeLevel::with(['salary_grade_step' => function ($query) {
             $query->orderBy('step_name');
-        }])->orderBy('salary_grade_level')->get();
+        }])
+        ->orderByRaw('LENGTH(salary_grade_level)')
+        ->orderBy('salary_grade_level')
+        ->get();
 
         if ($salaryGradeLevel->isEmpty()) {
             return response()->json([
