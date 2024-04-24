@@ -22,7 +22,7 @@ class UpdateSalaryGradeLevelRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('salary_grade_level')->id;
+        $id = $this->route('salary_grade_level');
         return [
             'salary_grade_level' => [
                 'required',
