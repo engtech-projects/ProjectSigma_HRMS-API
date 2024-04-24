@@ -65,29 +65,29 @@ class LoansController extends Controller
         return response()->json($data, 404);
     }
 
-    public function loanPayment(Loans $loan, LoanPaymentRequest $request)
+    public function loanPayment(Loans $resource, LoanPaymentRequest $request)
     {
         $valid = true;
         $msg = "";
         $validatedData = $request->validated();
-        if ($loan->loanPaid()) {
+        if ($resource->loanPaid()) {
             $valid = false;
             $msg = "Payment already paid.";
-        } elseif ($loan->paymentWillOverpay($validatedData['paymentAmount'])) {
+        } elseif ($resource->paymentWillOverpay($validatedData['paymentAmount'])) {
             $valid = false;
             $msg = "Payment will overpay.";
         } else {
-            $loan->loanPayment($validatedData['paymentAmount'], LoanPaymentsType::MANUAL->value);
+            $resource->loanPayment($validatedData['paymentAmount'], LoanPaymentsType::MANUAL->value);
             $valid = true;
             $msg = "Payment successfully.";
         }
 
-        $loan->refresh();
+        $resource->refresh();
 
         return new JsonResponse([
             'success' => $valid,
             'message' => $msg,
-            "data" => $loan
+            "data" => $resource
         ]);
     }
 

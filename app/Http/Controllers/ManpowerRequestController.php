@@ -123,9 +123,9 @@ class ManpowerRequestController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ManpowerRequest $manpowerRequest)
+    public function show(ManpowerRequest $resource)
     {
-        $newManpowerRequest = $manpowerRequest->load('user.employee');
+        $newManpowerRequest = $resource->load('user.employee');
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower request fetched.',
@@ -136,10 +136,10 @@ class ManpowerRequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateManpowerRequestRequest $request, ManpowerRequest $manpowerRequest)
+    public function update(UpdateManpowerRequestRequest $request, ManpowerRequest $resource)
     {
         try {
-            $this->manpowerService->update($request->validated(), $manpowerRequest);
+            $this->manpowerService->update($request->validated(), $resource);
         } catch (\Exception $e) {
             throw new TransactionFailedException("Update transaction failed.", 400, $e);
         }
@@ -152,11 +152,11 @@ class ManpowerRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ManpowerRequest $manpowerRequest)
+    public function destroy(ManpowerRequest $resource)
     {
         try {
-            DB::transaction(function () use ($manpowerRequest) {
-                return $manpowerRequest->delete();
+            DB::transaction(function () use ($resource) {
+                return $resource->delete();
             });
         } catch (\Exception $e) {
             throw new TransactionFailedException("Delete transaction failed.", 400, $e);

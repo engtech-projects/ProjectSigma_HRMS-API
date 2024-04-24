@@ -21,7 +21,10 @@ class SalaryGradeLevelController extends Controller
     {
         $salaryGradeLevel = SalaryGradeLevel::with(['salary_grade_step' => function ($query) {
             $query->orderBy('step_name');
-        }])->orderBy('salary_grade_level')->get();
+        }])
+        ->orderByRaw('LENGTH(salary_grade_level)')
+        ->orderBy('salary_grade_level')
+        ->get();
 
         if ($salaryGradeLevel->isEmpty()) {
             return response()->json([
@@ -60,24 +63,24 @@ class SalaryGradeLevelController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(SalaryGradeLevel $salaryGradeLevel)
+    public function show(SalaryGradeLevel $resource)
     {
-        return new SalaryGradeLevelResource($salaryGradeLevel->load('salary_grade_step'));
+        return new SalaryGradeLevelResource($resource->load('salary_grade_step'));
     }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSalaryGradeLevelRequest $request, SalaryGradeLevel $salaryGradeLevel)
+    public function update(UpdateSalaryGradeLevelRequest $request, SalaryGradeLevel $resource)
     {
         $attributes = $request->validated();
         try {
-            DB::transaction(function () use ($attributes, $salaryGradeLevel) {
-                $salaryGradeLevel = $salaryGradeLevel->fill($attributes);
-                $salaryGradeLevel->update();
+            DB::transaction(function () use ($attributes, $resource) {
+                $resource = $resource->fill($attributes);
+                $resource->update();
 
-                $salaryGradeStep = $salaryGradeLevel->salary_grade_step;
+                $salaryGradeStep = $resource->salary_grade_step;
                 foreach ($attributes["salary_grade_step"] as $attribute) {
                     $salaryGradeStep = SalaryGradeStep::find($attribute["id"]);
                     if ($salaryGradeStep) {
@@ -101,10 +104,10 @@ class SalaryGradeLevelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SalaryGradeLevel $salaryGradeLevel)
+    public function destroy(SalaryGradeLevel $resource)
     {
         try {
-            $salaryGradeLevel->delete();
+            $resource->delete();
         } catch (Exception $e) {
             throw new TransactionFailedException("Delete transaction failed.", 400, $e);
         }
