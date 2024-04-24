@@ -11,6 +11,13 @@ class EmployeeAllowances extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $appends = ['total_amount'];
+
+    public function getTotalAmountAttribute()
+    {
+        return $this->allowance_amount * $this->total_days;
+    }
+
     protected $casts = [
         "deduction_date_start" => "date:Y-m-d",
         "cutoff_start" => "date:Y-m-d",
