@@ -14,6 +14,12 @@ class ManpowerRequestResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $user = $this->whenLoaded('user', function () {
+            return [
+                "name" => $this->user->employee?->fullname_last,
+                "type" => $this->user->type
+            ];
+        });
         return [
             "id" => $this->id,
             "requesting_department" => $this->requesting_department,
@@ -35,12 +41,7 @@ class ManpowerRequestResource extends JsonResource
             "request_status" => $this->request_status,
             "charged_to" => $this->charged_to,
             "breakdown_details" => $this->breakdown_details,
-            "requested_by_user" => $this->whenLoaded('user', function ($user) {
-                return [
-                    "name" => $user->employee?->fullname_last,
-                    "type" => $user->type
-                ];
-            })
+            "requested_by_user" => $user
         ];
         //return parent::toArray($request);
     }
