@@ -66,7 +66,7 @@ use App\Http\Controllers\Actions\Employee\{
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\CashAdvanceController;
-// use App\Http\Controllers\EmployeeAllowancesController;
+use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ExternalWorkExperienceController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LoansController;
@@ -248,10 +248,10 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    // Route::prefix('employee-allowance')->group(function () {
-    //     Route::post('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
-    //     Route::resource('resource', EmployeeAllowancesController::class);
-    // });
+    Route::prefix('employee-allowance')->group(function () {
+        Route::post('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
+        Route::resource('resource', EmployeeAllowancesController::class);
+    });
 });
 
 if (config()->get('app.artisan') == true) {

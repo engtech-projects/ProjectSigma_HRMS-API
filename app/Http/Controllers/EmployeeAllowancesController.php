@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
+use App\Http\Requests\FilterEmployeeAllowancesRequest;
 use App\Models\EmployeeAllowances;
 use App\Http\Requests\StoreEmployeeAllowancesRequest;
 use App\Http\Requests\UpdateEmployeeAllowancesRequest;
@@ -11,6 +12,9 @@ use Illuminate\Http\JsonResponse;
 
 class EmployeeAllowancesController extends Controller
 {
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
+
     /**
      * Display a listing of the resource.
      */
@@ -28,6 +32,48 @@ class EmployeeAllowancesController extends Controller
     }
 
     /**
+     * Show resource.
+     */
+    public function viewAllowanceRecords(FilterEmployeeAllowancesRequest $request)
+    {
+        $valData = $request->validated();
+        try {
+            if ($valData) {
+                $id = null;
+                $group_type = $request["group_type"];
+                switch ($group_type) {
+                    case AssignTypes::DEPARTMENT->value:
+                        $id = $request["department_id"];
+                        $group_type = EmployeeAllowancesController::DEPARTMENT;
+                        break;
+                    case AssignTypes::PROJECT->value:
+                        $id = $request["project_id"];
+                        $group_type = EmployeeAllowancesController::PROJECT;
+                        break;
+                }
+                $allowance_date = $request["allowance_date"];
+                $data = EmployeeAllowances::with('charge_assignment')->where([
+                    ['charge_assignment_id', $id],
+                    ["charge_assignment_type", $group_type],
+                    ["allowance_date", $allowance_date],
+                ])->get();
+
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Successfully save.',
+                    'data' => $data,
+                ], JsonResponse::HTTP_OK);
+            }
+        } catch (\Throwable $th) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $th->getMessage(),
+                'message' => 'Failed fetch.',
+            ], 400);
+        }
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreEmployeeAllowancesRequest $request)
@@ -39,16 +85,20 @@ class EmployeeAllowancesController extends Controller
                 $data_amt = $data->current_employment->position->allowances->amount;
                 $employee_allowance = new EmployeeAllowances();
                 $type = $request["group_type"];
-                $employee_allowance->charge_assignment_type = $type;
                 switch ($type) {
                     case AssignTypes::DEPARTMENT->value:
+                        $employee_allowance->charge_assignment_type = EmployeeAllowancesController::DEPARTMENT;
                         $employee_allowance->charge_assignment_id = $request["department_id"];
                         break;
                     case AssignTypes::PROJECT->value:
+                        $employee_allowance->charge_assignment_type = EmployeeAllowancesController::PROJECT;
                         $employee_allowance->charge_assignment_id = $request["project_id"];
                         break;
                 }
                 $employee_allowance->allowance_date = $request["allowance_date"];
+                $employee_allowance->cutoff_start = $request["cutoff_start"];
+                $employee_allowance->cutoff_end = $request["cutoff_end"];
+                $employee_allowance->total_days = $request["total_days"];
                 $employee_allowance->allowance_amount = $data_amt;
                 $employee_allowance->save();
                 return new JsonResponse([
