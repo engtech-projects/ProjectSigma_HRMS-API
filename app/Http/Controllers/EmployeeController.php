@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LeaveRequestType;
 use App\Models\Employee;
 use App\Enums\SearchTypes;
 use App\Http\Requests\FilterDateRequest;
@@ -13,8 +14,11 @@ use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\AttendanceLog;
+use App\Models\EmployeeLeaves;
+use App\Models\Leave;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Type\Integer;
 
 class EmployeeController extends Controller
 {
@@ -286,6 +290,41 @@ class EmployeeController extends Controller
             'success' => 'true',
             'message' => 'Successfully fetched.',
             'data' => $dataval
+        ]);
+    }
+
+    public function getLeaveCredits($id)
+    {
+        $val = Employee::find($id);
+        if ($val) {
+            $main = [];
+            foreach (LeaveRequestType::cases() as $key) {
+                $data = json_decode('{}');
+                $count = EmployeeLeaves::where([
+                    ["type", $key],
+                    ["request_status", "Approved"],
+                ])->count();
+                $leave = Leave::where("employment_type", $key)->get();
+                if (!$leave->isEmpty()) {
+                    $data->leavename = $leave->leave_name;
+                    $data->total_credits = $leave->amt_of_leave;
+                    $data->used = $count;
+                    $data->balance = $leave->amt_of_leave - $count;
+                    dd($leave->leave_name);
+                    array_push($main, $data);
+                }
+            }
+            if ($main) {
+                return new JsonResponse([
+                    'success' => 'true',
+                    'message' => 'Successfully fetch.',
+                    'data' => $main,
+                ]);
+            }
+        }
+        return new JsonResponse([
+            'success' => 'false',
+            'message' => 'No data found.',
         ]);
     }
 }
