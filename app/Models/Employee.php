@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule as EmployeeSchedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class Employee extends Model
 {
@@ -35,7 +37,7 @@ class Employee extends Model
 
     protected function age(): Attribute
     {
-        if(!$this->date_of_birth){
+        if (!$this->date_of_birth) {
             return new Attribute(
                 get: fn () => "Date of birth not set.",
             );
@@ -102,8 +104,6 @@ class Employee extends Model
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'signature');
     }
-
-
     public function company_employments(): HasOne
     {
         return $this->hasOne(CompanyEmployee::class);
