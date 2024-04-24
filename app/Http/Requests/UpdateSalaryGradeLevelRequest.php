@@ -26,7 +26,8 @@ class UpdateSalaryGradeLevelRequest extends FormRequest
         Log::info("SALARY GRADE UPDATE ROUTE");
         Log::info($this);
         Log::info($this->route("salaryGradeLevel"));
-        Log::info(var_dump($this->route()));
+        Log::info($this->route("salary_grade_level"));
+        Log::info($this->route("id"));
         $id = $this->route('salary_grade_level');
         return [
             'salary_grade_level' => [
