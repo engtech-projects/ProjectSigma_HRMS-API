@@ -72,15 +72,15 @@ class SalaryGradeLevelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSalaryGradeLevelRequest $request, SalaryGradeLevel $salaryGradeLevel)
+    public function update(UpdateSalaryGradeLevelRequest $request, SalaryGradeLevel $resource)
     {
         $attributes = $request->validated();
         try {
-            DB::transaction(function () use ($attributes, $salaryGradeLevel) {
-                $salaryGradeLevel = $salaryGradeLevel->fill($attributes);
-                $salaryGradeLevel->update();
+            DB::transaction(function () use ($attributes, $resource) {
+                $resource = $resource->fill($attributes);
+                $resource->update();
 
-                $salaryGradeStep = $salaryGradeLevel->salary_grade_step;
+                $salaryGradeStep = $resource->salary_grade_step;
                 foreach ($attributes["salary_grade_step"] as $attribute) {
                     $salaryGradeStep = SalaryGradeStep::find($attribute["id"]);
                     if ($salaryGradeStep) {
