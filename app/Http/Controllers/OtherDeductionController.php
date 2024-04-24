@@ -116,29 +116,29 @@ class OtherDeductionController extends Controller
         return response()->json($data, 404);
     }
 
-    public function cashAdvancePayment(OtherDeduction $cash, CashAdvanceRequest $request)
+    public function cashAdvancePayment(OtherDeduction $resource, CashAdvanceRequest $request)
     {
         $valid = true;
         $msg = "";
 
-        if ($cash->cashPaid()) {
+        if ($resource->cashPaid()) {
             $valid = false;
             $msg = "Payment already paid.";
-        } elseif ($cash->paymentWillOverpay($request->paymentAmount)) {
+        } elseif ($resource->paymentWillOverpay($request->paymentAmount)) {
             $valid = false;
             $msg = "Payment will overpay.";
         } else {
-            $cash->cashAdvance($request->paymentAmount, LoanPaymentsType::MANUAL->value);
+            $resource->cashAdvance($request->paymentAmount, LoanPaymentsType::MANUAL->value);
             $valid = true;
             $msg = "Payment successfully.";
         }
 
-        $cash->refresh();
+        $resource->refresh();
 
         return new JsonResponse([
             'success' => $valid,
             'message' => $msg,
-            "data" => $cash
+            "data" => $resource
         ]);
     }
 }

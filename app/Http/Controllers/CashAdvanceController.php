@@ -54,26 +54,26 @@ class CashAdvanceController extends Controller
         return response()->json($data);
     }
 
-    public function cashAdvancePayment(CashAdvance $cash, CashAdvanceRequest $request)
+    public function cashAdvancePayment(CashAdvance $resource, CashAdvanceRequest $request)
     {
         $valid = true;
         $msg = "";
 
-        if ($cash->cashPaid()) {
+        if ($resource->cashPaid()) {
             $valid = false;
             $msg = "Payment already paid.";
-        } elseif ($cash->paymentWillOverpay($request->paymentAmount)) {
+        } elseif ($resource->paymentWillOverpay($request->paymentAmount)) {
             $valid = false;
             $msg = "Payment will overpay.";
         } else {
-            $cash->cashAdvance($request->paymentAmount, LoanPaymentsType::MANUAL->value);
+            $resource->cashAdvance($request->paymentAmount, LoanPaymentsType::MANUAL->value);
             $valid = true;
             $msg = "Payment successfully.";
         }
 
-        $cash->refresh();
+        $resource->refresh();
 
-        $data = $cash->with('cashAdvancePayments')->get();
+        $data = $resource->with('cashAdvancePayments')->get();
 
         return new JsonResponse([
             'success' => $valid,
