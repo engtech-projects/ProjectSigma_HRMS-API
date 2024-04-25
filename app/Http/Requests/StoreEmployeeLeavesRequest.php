@@ -104,11 +104,6 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'request_status' => [
-                "required",
-                "string",
-                new Enum(LeaveRequestStatusType::class)
-            ],
             'number_of_days' => [
                 "required",
                 "integer",
