@@ -26,7 +26,7 @@ class ManpowerRequest extends Model
         'requesting_department',
         'date_requested',
         'date_required',
-        'position',
+        'position_id',
         'employment_type',
         'brief_description',
         'job_description_attachment',

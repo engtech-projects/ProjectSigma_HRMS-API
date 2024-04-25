@@ -71,6 +71,7 @@ class EmployeePersonnelActionNoticeRequest extends Model
         'new_salary_grades',
         'pan_job_applicant_id',
         'salary_grades',
+        'salary_type',
         'employment_status'
     ];
 

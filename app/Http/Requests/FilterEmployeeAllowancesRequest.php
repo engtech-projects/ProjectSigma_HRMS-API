@@ -6,7 +6,7 @@ use App\Enums\AssignTypes;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class UpdateEmployeeAllowancesRequest extends FormRequest
+class FilterEmployeeAllowancesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,14 +25,9 @@ class UpdateEmployeeAllowancesRequest extends FormRequest
     {
         return [
             'group_type' => [
-                "nullable",
+                "required",
                 "string",
                 new Enum(AssignTypes::class)
-            ],
-            'employee_id' => [
-                'nullable',
-                "integer",
-                "exists:employees,id",
             ],
             'project_id' => [
                 'required_if:group_type,==,project',
@@ -45,23 +40,9 @@ class UpdateEmployeeAllowancesRequest extends FormRequest
                 "exists:departments,id",
             ],
             'allowance_date' => [
-                "nullable",
+                "required",
                 "date",
                 'date_format:Y-m-d'
-            ],
-            'cutoff_start' => [
-                "nullable",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'cutoff_end' => [
-                "nullable",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'total_days' => [
-                "nullable",
-                "integer",
             ],
         ];
     }

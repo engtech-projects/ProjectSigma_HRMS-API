@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PersonelAccessForm;
+use App\Enums\SalaryRequestType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateInternalWorkExperienceRequest extends FormRequest
 {
@@ -74,6 +77,11 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
             'date_to' => [
                 "nullable",
                 "date",
+            ],
+            'salary_type' => [
+                "nullable",
+                "string",
+                new Enum(SalaryRequestType::class)
             ],
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RequestStatusType;
 use App\Models\EmployeeLeaves;
 use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
@@ -39,6 +40,7 @@ class EmployeeLeavesController extends Controller
     {
         $main = new EmployeeLeaves();
         $main->fill($request->validated());
+        $main->request_status = RequestStatusType::PENDING;
         $data = json_decode('{}');
 
         if (!$main->save()) {
