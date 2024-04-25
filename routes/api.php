@@ -254,6 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
 if (config()->get('app.artisan') == true) {
     Route::prefix('artisan')->group(function () {
         Route::get('storage', function () {
+            Artisan::call("storage:link");
             return "success";
         });
     });
