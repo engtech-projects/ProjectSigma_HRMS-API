@@ -511,8 +511,22 @@ class EmployeeBulkUploadController extends Controller
         ]);
     }
     public function getPositionId($position = null, $departmentId) {
-        $data = Position::where('name', $position)->where('department_id', $departmentId)->first();
-        return $data ? $data->id : null;
+        $query = Position::getQuery();
+        $query->where('name', $position);
+        $data = $query->get();
+        if($data) {
+            if (count($data) > 1) {
+                $query->where('department_id', $departmentId)->first();
+                if ($data) {
+                    return $data->id;
+                }else {
+                    return null;
+                }
+            }else {
+                $data = $query->first();
+                return $data ? $data->id : null;
+            }
+        }
     }
     public function getDepartmentId($department = null) {
         $data = Department::where('department_name', $department)->first();
