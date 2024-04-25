@@ -39,8 +39,8 @@ class GeneratePayrollRequest extends FormRequest
                 'required',
                 new Enum(GroupType::class)
             ],
-            'project_id' => 'required|integer',
-            'department_id' => 'required|integer',
+            'project_id' => 'required_if:group_type,project|integer',
+            'department_id' => 'required_if:group_type,department|integer',
             'payroll_type' => [
                 'required',
                 'string',

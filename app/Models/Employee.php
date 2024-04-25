@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -274,23 +275,27 @@ class Employee extends Model
         return $this->hasMany(Schedule::class);
     }
 
+
     public function attendance_log(): HasMany
     {
         return $this->hasMany(AttendanceLog::class);
     }
+
+
     public function employee_leave(): HasMany
     {
-        return $this->hasMany(Leave::class);
+        return $this->hasMany(EmployeeLeaves::class);
     }
 
     public function employee_overtime(): HasMany
     {
-        return $this->hasMany(Overtime::class, 'employee_id', 'id');
+        return $this->hasMany(Overtime::class);
     }
 
-    public function scopeUser($query, $id)
+    public function employee_has_overtime(): BelongsToMany
     {
-        return Users::where("id", $id)->first();
+        return $this->belongsToMany(Overtime::class, 'overtime_employees','id','employee_id')
+            ->withtimestamps();
     }
 
     public function filter_employee_schedule($start_range, $end_range)

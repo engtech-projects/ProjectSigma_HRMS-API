@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonelAccessForm;
+use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,7 +22,7 @@ class EmployeeLeaves extends Model
     use Notifiable;
     use SoftDeletes;
     use HasApproval;
-    use HasUser;
+    use HasUser, StatusScope;
 
     protected $casts = [
         "approvals" => "array",
@@ -74,5 +75,15 @@ class EmployeeLeaves extends Model
     public function scopeWithPayLeave(Builder $query): void
     {
         $query->where('with_pay', true);
+    }
+    public function scopePayrollLeave(Builder $query, array $filters = [])
+    {
+        $query->whereBetween('date_of_absence_from', array($filters['cutoff_start'], $filters['cutoff_end']))
+            ->where(function ($query) use ($filters) {
+                if (array_key_exists('department_id', $filters)) {
+                    return $query->where('department_id', $filters['department_id']);
+                }
+                return $query->where('project_id', $filters['project_id']);
+            });
     }
 }

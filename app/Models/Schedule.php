@@ -71,6 +71,18 @@ class Schedule extends Model
         })->where('endRecur', '<', $filter['end_date']);
     }
 
+
+    public function scopePayrollSchedule(Builder $query, array $filters = [])
+    {
+        $query->whereBetween('startRecur', array($filters['cutoff_start'], $filters['cutoff_end']))
+            ->where(function ($query) use ($filters) {
+                if (array_key_exists('department_id', $filters)) {
+                    return $query->where('department_id', $filters['department_id']);
+                }
+                return $query->where('project_id', $filters['project_id']);
+            });
+    }
+
     public function scheduleEmployeeThisMonth($query)
     {
         return $query->with('employee')->where('groupType', ScheduleGroupType::EMPLOYEE)->whereBetween(
