@@ -10,6 +10,8 @@ use App\Http\Requests\BulkValidationRequest;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\SalaryGradeLevel;
+use App\Models\SalaryGradeStep;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -113,7 +115,12 @@ class EmployeeBulkUploadController extends Controller
         'section_program',
         'department',
         'division',
-        'imidiate_supervisor'
+        'immediate_supervisor',
+        'salary_grade_level',
+        'salary_grade_step',
+        'work_location',
+        'hire_source',
+        'salary_type',
     ];
     public function bulkUpload(Request $request)
     {
@@ -136,11 +143,11 @@ class EmployeeBulkUploadController extends Controller
         $worksheet = $spreadsheet->getActiveSheet();
 
         $totalData = $worksheet->getHighestDataRow('A') - self::START_ROW;
-        $headerColumnKey = 'A' . (self::START_ROW - 1) . ':CQ' . (self::START_ROW - 1);
+        $headerColumnKey = 'A' . (self::START_ROW - 1) . ':CV' . (self::START_ROW - 1);
         $header = $worksheet->rangeToArray($headerColumnKey, null, true, true);
         for ($x = 0; $x < $totalData; $x++) {
             $tempData = [];
-            $columnKey = 'A' . (self::START_ROW + $x) . ':CQ' . (self::START_ROW + $x);
+            $columnKey = 'A' . (self::START_ROW + $x) . ':CV' . (self::START_ROW + $x);
             $extractData = $worksheet->rangeToArray($columnKey, null, true, true);
 
             foreach ($extractData as $data) {
@@ -313,13 +320,14 @@ class EmployeeBulkUploadController extends Controller
                     ];
                     $departmentId = $this->getDepartmentId($data['department']);
                     $postionId = $this->getPositionId($data['position'], $departmentId);
+                    $getSalaryStep = $this->getSalaryStep($this->getSalaryGradeLevelId($data['salary_grade_level']));
                     $internalRecord = [
                         'position_id' => $postionId,
                         'employment_status' => $data['employment_status'],
                         'department_id' => $departmentId,
-                        'immediate_supervisor' => $data['imidiate_supervisor'],
-                        'actual_salary' => null,
-                        'salary_grades' => null,
+                        'immediate_supervisor' => $data['immediate_supervisor'],
+                        'actual_salary' =>  $getSalaryStep ? $getSalaryStep->monthly_salary_amount : null,
+                        'salary_grades' => $getSalaryStep ? $getSalaryStep->id : null,
                         'work_location' => 'N/A',
                         'hire_source' => 'Internal',
                         'status' => $data['employment_status'],
@@ -465,13 +473,12 @@ class EmployeeBulkUploadController extends Controller
                     ];
 
                     //eligibility
-                    $eligibility = [
+                    $eligibility[] = [
                         'program_module' => 'N/A',
                         'certificate_lvl' => 'N/A',
                         'status' => 'N/A',
-                        'cert_exp_date' => 'N/A',
+                        'cert_exp_date' => null,
                     ];
-
                     //employment
                     $data['atm'] = null;
                     $data['status'] = 'active';
@@ -480,9 +487,8 @@ class EmployeeBulkUploadController extends Controller
                         $employee->employee_externalwork()->create($externalEmployee);
                         $employee->employee_internal()->create($internalRecord);
                         $employee->employee_address()->create($address_pre);
-                        $employee->employee_address()->create($address_per);
                         $employee->employee_affiliation()->create($affiliation);
-                        //$employee->employee_eligibility()->create($eligibility);
+                        $employee->employee_eligibility()->createMany($eligibility);
                         $employee->employee_related_person()->createMany($employeeRelatedPerson);
                         $employee->employee_education()->createMany($employeeEducation);
                         $employee->employee_studies()->createMany($studies);
@@ -505,11 +511,35 @@ class EmployeeBulkUploadController extends Controller
         ]);
     }
     public function getPositionId($position = null, $departmentId) {
-        $data = Position::where('name', $position)->where('department_id', $departmentId)->first();
-        return $data ? $data->id : null;
+        $query = Position::getQuery();
+        $query->where('name', $position);
+        $data = $query->get();
+        if($data) {
+            if (count($data) > 1) {
+                $query->where('department_id', $departmentId)->first();
+                if ($data) {
+                    return $data->id;
+                }else {
+                    return null;
+                }
+            }else {
+                $data = $query->first();
+                return $data ? $data->id : null;
+            }
+        }
     }
     public function getDepartmentId($department = null) {
         $data = Department::where('department_name', $department)->first();
         return $data ? $data->id : null;
+    }
+    public function getSalaryGradeLevelId($salaryGradeLevel)
+    {
+        $data = SalaryGradeLevel::where('salary_grade_level', $salaryGradeLevel)->first();
+        return $data ? $data->id : null;
+    }
+    public function getSalaryStep($salaryGradeLevelId)
+    {
+        $data = SalaryGradeStep::where('salary_grade_level_id', $salaryGradeLevelId)->first();
+        return $data;
     }
 }

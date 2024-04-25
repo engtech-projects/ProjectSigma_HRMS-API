@@ -33,7 +33,8 @@ class UpdateEmployeeSeminartrainingRequest extends FormRequest
             ],
             'inclusive_dates' => [
                 "nullable",
-                "date",
+                'date',
+                'date_format:Y-m-d'
             ],
             'venue' => [
                 "nullable",

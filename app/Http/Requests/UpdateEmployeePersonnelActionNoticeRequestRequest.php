@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\EmploymentStatus;
+use App\Enums\SalaryRequestType;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -161,6 +162,11 @@ class UpdateEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "string",
                 'required_if:type,==,New Hire|required_if:type,==,Promotion',
                 new Enum(EmploymentStatus::class)
+            ],
+            'salary_type' => [
+                "nullable",
+                "string",
+                new Enum(SalaryRequestType::class)
             ],
         ];
     }

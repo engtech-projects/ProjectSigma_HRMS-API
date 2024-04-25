@@ -23,24 +23,25 @@ class StoreEmployeeSeminartrainingRequest extends FormRequest
     {
         return [
             'employee_id' => [
-                "required`",
+                "required",
                 "integer",
                 "exists:employees,id",
             ],
             'name_title_training' => [
-                "required`",
+                "required",
                 "string",
             ],
             'inclusive_dates' => [
-                "required`",
-                "date",
+                "required",
+                'date',
+                'date_format:Y-m-d'
             ],
             'venue' => [
-                "required`",
+                "required",
                 "string",
             ],
             'training_provider' => [
-                "required`",
+                "required",
                 "string",
             ],
         ];
