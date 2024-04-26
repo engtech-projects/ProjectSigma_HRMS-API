@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class PatternRequest extends Model
+class EmployeePattern extends Model
 {
     use HasApiTokens;
     use HasFactory;
@@ -16,11 +16,17 @@ class PatternRequest extends Model
 
     protected $table = 'employee_face_pattern';
 
+    protected $casts = [
+        'patterns' => 'array',
+    ];
     protected $fillable = [
         'employee_id',
         'patterns',
         'created_at',
         'updated_at',
+    ];
+    protected $with = [
+        "employee",
     ];
     public function employee(): HasOne
     {
