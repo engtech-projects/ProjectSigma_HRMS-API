@@ -16,6 +16,15 @@ class StoreEmployeeAllowancesRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (gettype($this->employees) == "string") {
+            $this->merge([
+                "employees" => json_decode($this->employees, true),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -29,18 +38,22 @@ class StoreEmployeeAllowancesRequest extends FormRequest
                 "string",
                 new Enum(AssignTypes::class)
             ],
-            'employee_id' => [
-                'required',
+            'employees' => [
+                "required",
+                "array",
+            ],
+            'employees.*' => [
+                "required",
                 "integer",
                 "exists:employees,id",
             ],
             'project_id' => [
-                'required_if:group_type,==,project',
+                'required_if:group_type,==,Project',
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
-                'required_if:group_type,==,department',
+                'required_if:group_type,==,Department',
                 "integer",
                 "exists:departments,id",
             ],
