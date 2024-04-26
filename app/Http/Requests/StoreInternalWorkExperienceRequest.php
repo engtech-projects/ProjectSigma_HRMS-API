@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PersonelAccessForm;
+use App\Enums\SalaryRequestType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreInternalWorkExperienceRequest extends FormRequest
 {
@@ -48,6 +51,11 @@ class StoreInternalWorkExperienceRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
+            ],
+            'salary_type' => [
+                "nullable",
+                "string",
+                new Enum(SalaryRequestType::class)
             ],
             'actual_salary' => [
                 "nullable",

@@ -122,6 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
+        Route::post('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
         Route::get('users-list', [UsersController::class, 'get']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
@@ -257,9 +258,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-if (config()->get('app.artisan') == true) {
+if (config()->get('app.artisan') == 'true') {
     Route::prefix('artisan')->group(function () {
         Route::get('storage', function () {
+            Artisan::call("storage:link");
             return "success";
         });
     });

@@ -58,15 +58,19 @@ class CashAdvanceController extends Controller
     {
         $valid = true;
         $msg = "";
+        $status = 200;
 
         if ($resource->cashPaid()) {
+            $status = 422;
             $valid = false;
-            $msg = "Payment already paid.";
+            $msg = "Cash advance already fully paid.";
         } elseif ($resource->paymentWillOverpay($request->paymentAmount)) {
+            $status = 422;
             $valid = false;
-            $msg = "Payment will overpay.";
+            $msg = "Payment will overpay. Please dont exceed remaining balance";
         } else {
             $resource->cashAdvance($request->paymentAmount, LoanPaymentsType::MANUAL->value);
+            $status = 200;
             $valid = true;
             $msg = "Payment successfully.";
         }
@@ -79,7 +83,7 @@ class CashAdvanceController extends Controller
             'success' => $valid,
             'message' => $msg,
             "data" => $data
-        ]);
+        ], $status);
     }
 
     /**
