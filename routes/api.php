@@ -123,9 +123,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix("employee")->group(function () {
         Route::get('users-list', [UsersController::class, 'get']);
-        Route::get('get-late', [EmployeeController::class, 'getLateThisMonth']);
-        Route::get('get-absent', [EmployeeController::class, 'getAbsenceThisMonth']);
-        Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
         Route::get('list', [EmployeeController::class, 'get']);
@@ -144,11 +141,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('termination', TerminationController::class);
         Route::resource('externalwork-experience', ExternalWorkExperienceController::class);
 
-        Route::prefix('count')->group(function () {
+        Route::prefix('statistics')->group(function () {
+            Route::get('attendance-infractions', CountEmployeeGenderController::class);
             Route::get('gender', CountEmployeeGenderController::class);
             Route::get('department', CountEmployeeDepartmentController::class);
         });
-        Route::get('monthly-birthdays', MonthlyBirthdaysController::class);
+        Route::prefix('monthly')->group(function () {
+            Route::get('birthdays', MonthlyBirthdaysController::class);
+            Route::get('lates', [EmployeeController::class, 'getLateThisMonth']);
+            Route::get('absences', [EmployeeController::class, 'getAbsenceThisMonth']);
+            Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
+        });
     });
 
     Route::resource('approvals', ApprovalsController::class);
