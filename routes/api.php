@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeFacePattern;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HMOController;
 use App\Http\Controllers\AuthController;
@@ -173,6 +174,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('salary')->group(function () {
         Route::resource('resource', SalaryGradeLevelController::class);
         Route::get('list', SalaryGradeLevelListController::class);
+    });
+
+    Route::prefix('face-pattern')->group(function () {
+        Route::resource('resource', EmployeeFacePattern::class);
     });
 
     Route::prefix("hmo")->group(function () {
