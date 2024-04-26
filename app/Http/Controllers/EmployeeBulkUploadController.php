@@ -179,6 +179,7 @@ class EmployeeBulkUploadController extends Controller
                     }
                     $tempData['phic_number'] = $tempData['phic_number'] ?? "N/A";
                     $tempData['tin_number'] = $tempData['tin_number'] ?? "N/A";
+                    $tempData['name_suffix'] = ($tempData['name_suffix'] === "N/A" ) ? null : $tempData['name_suffix'];
                     $tempData['sss_number'] = $tempData['sss_number'] ?? "N/A";
                     $tempData['pagibig_number'] = $tempData['pagibig_number'] ?? "N/A";
                     $tempData['place_of_birth'] = $tempData['place_of_birth'] ?? "N/A";

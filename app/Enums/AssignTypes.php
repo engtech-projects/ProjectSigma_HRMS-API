@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum AssignTypes: string
 {
-    case DEPARTMENT = 'department';
-    case PROJECT = 'project';
+    case DEPARTMENT = 'Department';
+    case PROJECT = 'Project';
 }
