@@ -21,10 +21,7 @@ class MonthlyBirthdaysController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => [
-                'month' => Carbon::now()->format('F'),
-                'employees' => $employees
-            ]
+            'data' => $employees,
         ]);
     }
 }
