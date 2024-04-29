@@ -188,6 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+
     Route::prefix('pan')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class);
         Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
@@ -262,6 +263,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', EmployeeAllowancesController::class);
     });
 });
+
+Route::prefix('attendance')->group(
+    function () {
+        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+    }
+);
 
 if (config()->get('app.artisan') == 'true') {
     Route::prefix('artisan')->group(function () {
