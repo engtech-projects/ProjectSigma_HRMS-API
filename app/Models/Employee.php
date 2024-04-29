@@ -289,12 +289,12 @@ class Employee extends Model
 
     public function employee_overtime(): HasMany
     {
-        return $this->hasMany(Overtime::class);
+        return $this->hasMany(Overtime::class, 'id', 'employee_id');
     }
 
     public function employee_has_overtime(): BelongsToMany
     {
-        return $this->belongsToMany(Overtime::class, 'overtime_employees','id','employee_id')
+        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'id', 'employee_id')
             ->withtimestamps();
     }
 

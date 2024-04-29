@@ -38,7 +38,7 @@ class EmployeeDtrController extends Controller
     {
         $employee = $this->employee->with(['employee_internal', 'employee_overtime', 'employee_has_projects', 'employee_schedule' => function ($query) use ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('startRecur', '>=', $filter['start_date']);
+                $query->where('startRecur', '>=', $filter['period_start']);
             });
         }])->where('id', $filter['employee_id'])->first();
 
@@ -64,14 +64,13 @@ class EmployeeDtrController extends Controller
             "id" => $employee->id,
             "employee_name" => $employee->fullname_first,
             "employee_internal_exp" => InternalWorkExpResource::collection($employee->employee_internal),
-
             "employee_schedule" => collect($employee->employee_schedule)->map(function ($schedule) use ($employee) {
                 return collect($schedule)->map(function ($value) use ($employee) {
                     return [
                         "schedule" => $value,
-                        "logs" => AttendanceLogResource::collection($employee->attendance_log),
-                        "leaves" => EmployeeLeaveResource::collection($employee->employee_leave),
-                        "overtime" => OvertimeResource::collection($employee->employee_overtime),
+                        "logs" => $employee->attendance_log, //AttendanceLogResource::collection($employee->attendance_log),
+                        "leaves" => $employee->employee_leave,  //EmployeeLeaveResource::collection($employee->employee_leave),
+                        "overtime" => $employee->employee_overtime, //OvertimeResource::collection($employee->employee_overtime),
                     ];
                 });
             }),
@@ -87,9 +86,9 @@ class EmployeeDtrController extends Controller
             $hasIrregSchedule = collect($schedule)->contains('scheduleType', 'Irregular');
             $employeeGroupFiltered = collect($schedule)->filter(function ($value) use ($hasIrregSchedule) {
                 if ($hasIrregSchedule) {
-                    return $value["groupType"] == 'employee' && $value["scheduleType"] === 'Irregular';
+                    return $value["groupType"] == 'employee' && $value["scheduleType"] == 'Irregular';
                 }
-                return  $value["groupType"] == 'employee' &&  $value["scheduleType"] === 'Regular';
+                return  $value["groupType"] == 'employee' &&  $value["scheduleType"] == 'Regular';
             })->values();
 
             if (empty($employeeGroupFiltered)) {
@@ -97,6 +96,7 @@ class EmployeeDtrController extends Controller
                     return $value["groupType"] != 'employee';
                 })->all();
             }
+
             return $employeeGroupFiltered->map(function ($schedule) {
                 return [
                     "groupType" => $schedule["groupType"],

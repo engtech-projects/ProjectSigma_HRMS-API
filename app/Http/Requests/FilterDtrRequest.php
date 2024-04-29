@@ -22,8 +22,8 @@ class FilterDtrRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start_date' => 'date_format:Y-m-d',
-            'end_date' => 'date_format:Y-m-d',
+            'period_start' => 'date_format:Y-m-d',
+            'period_end' => 'date_format:Y-m-d',
             'employee_id' => 'required|integer',
         ];
     }
