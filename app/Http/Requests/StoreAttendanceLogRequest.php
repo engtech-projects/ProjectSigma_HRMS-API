@@ -37,8 +37,16 @@ class StoreAttendanceLogRequest extends FormRequest
                 'string',
                 new Enum(AttendanceType::class)
             ],
-            'project_id'  => 'required|integer',
-            'department_id' => 'required|integer',
+            'project_id' => [
+                'required_if:group_type,==,Project',
+                "integer",
+                "exists:projects,id",
+            ],
+            'department_id' => [
+                'required_if:group_type,==,Department',
+                "integer",
+                "exists:departments,id",
+            ],
         ];
     }
 }

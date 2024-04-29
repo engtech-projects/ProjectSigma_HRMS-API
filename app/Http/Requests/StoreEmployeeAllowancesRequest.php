@@ -49,11 +49,13 @@ class StoreEmployeeAllowancesRequest extends FormRequest
             ],
             'project_id' => [
                 'required_if:group_type,==,Project',
+                'nullable',
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
                 'required_if:group_type,==,Department',
+                'nullable',
                 "integer",
                 "exists:departments,id",
             ],

@@ -36,7 +36,7 @@ class EmployeeDtrController extends Controller
 
     private function getSchedule(array $filter = [])
     {
-        $employee = $this->employee->with(['employee_internal', 'employee_overtime', 'employee_has_projects', 'employee_schedule' => function ($query) use ($filter) {
+        $employee = $this->employee->with(['employee_internal', 'employee_leave', 'employee_overtime', 'employee_has_projects', 'employee_schedule' => function ($query) use ($filter) {
             $query->where(function ($query) use ($filter) {
                 $query->where('startRecur', '>=', $filter['start_date']);
             });
@@ -52,6 +52,7 @@ class EmployeeDtrController extends Controller
             $dateSchedule = $schedule->startRecur->format('F j, Y');
             return $dateSchedule;
         })->toArray();
+
         $employee->employee_leave = $employee->employee_leave->where('with_pay', true);
 
         $employee->employee_schedule = collect($employee->employee_schedule)->map(function ($schedule) {
