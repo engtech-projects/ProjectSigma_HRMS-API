@@ -64,14 +64,14 @@ class ApprovalsSeeder extends Seeder
                 //     'created_at' => Carbon::now(),
                 //     'updated_at' => Carbon::now(),
                 // ],
-                // [
-                //     'id' => 7,
-                //     'form' => "Generate Allowance",
-                //     'approvals' => "[]",
-                //     'deleted_at' => null,
-                //     'created_at' => Carbon::now(),
-                //     'updated_at' => Carbon::now(),
-                // ],
+                [
+                    'id' => 7,
+                    'form' => "Generate Allowance",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
                 [
                     'id' => 8,
                     'form' => "Payroll",
