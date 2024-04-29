@@ -10,12 +10,15 @@ use Illuminate\Support\Collection;
 
 trait Attendance
 {
-    public function calculateAttendanceLog(Collection $attendances)
+    public function calculateAttendanceLog($attendances)
     {
         $duration = 0;
         $totalLateDuration = 0;
         $lastTimeIn = null;
-        foreach ($attendances as $attendance) {
+        foreach ($attendances as $key => $attendance) {
+            foreach($attendance as $value) {
+                dd($value);
+            }
             $time = Carbon::parse($attendance->time);
             if ($attendance->log_type === AttendanceLogType::TIME_IN->value) {
                 $lastTimeIn = $time;
