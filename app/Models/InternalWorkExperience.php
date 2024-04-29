@@ -28,6 +28,7 @@ class InternalWorkExperience extends Model
         'immediate_supervisor',
         'actual_salary',
         'salary_grades',
+        'salary_type',
         'work_location',
         'hire_source',
         'status',

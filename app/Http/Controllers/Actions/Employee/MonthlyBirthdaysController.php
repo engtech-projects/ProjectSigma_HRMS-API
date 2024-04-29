@@ -16,15 +16,15 @@ class MonthlyBirthdaysController extends Controller
     public function __invoke()
     {
         $month = Carbon::now()->format('m');
-        $employees = Employee::select(['first_name', 'family_name', 'middle_name', 'date_of_birth'])->whereMonth('date_of_birth', $month)->get();
+        $employees = Employee::select(['first_name', 'family_name', 'middle_name', 'date_of_birth'])
+        ->whereMonth('date_of_birth', $month)
+        ->orderByRaw('DAY(date_of_birth)')
+        ->get();
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => [
-                'month' => Carbon::now()->format('F'),
-                'employees' => $employees
-            ]
+            'data' => $employees,
         ]);
     }
 }
