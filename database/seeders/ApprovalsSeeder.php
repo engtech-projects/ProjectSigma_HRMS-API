@@ -14,56 +14,56 @@ class ApprovalsSeeder extends Seeder
     public function run(): void
     {
         //
-        DB::table('approvals')->insert(
+        DB::table('approvals')->upsert(
             [
-                // [
-                //     'id' => 1,
-                //     'form' => "Personnel Action Notice",
-                //     'approvals' => "[]",
-                //     'deleted_at' => null,
-                //     'created_at' => Carbon::now(),
-                //     'updated_at' => Carbon::now(),
-                // ],
-                // [
-                //     'id' => 2,
-                //     'form' => "Manpower Request",
-                //     'approvals' => "[]",
-                //     'deleted_at' => null,
-                //     'created_at' => Carbon::now(),
-                //     'updated_at' => Carbon::now(),
-                // ],
-                // [
-                //     'id' => 3,
-                //     'form' => "Overtime",
-                //     'approvals' => "[]",
-                //     'deleted_at' => null,
-                //     'created_at' => Carbon::now(),
-                //     'updated_at' => Carbon::now(),
-                // ],
-                // [
-                //     'id' => 4,
-                //     'form' => "Leave",
-                //     'approvals' => "[]",
-                //     'deleted_at' => null,
-                //     'created_at' => Carbon::now(),
-                //     'updated_at' => Carbon::now(),
-                // ],
-                // [
-                //     'id' => 5,
-                //     'form' => "Cash Advance",
-                //     'approvals' => "[]",
-                //     'deleted_at' => null,
-                //     'created_at' => Carbon::now(),
-                //     'updated_at' => Carbon::now(),
-                // ],
-                // [
-                //     'id' => 6,
-                //     'form' => "Travel Order",
-                //     'approvals' => "[]",
-                //     'deleted_at' => null,
-                //     'created_at' => Carbon::now(),
-                //     'updated_at' => Carbon::now(),
-                // ],
+                [
+                    'id' => 1,
+                    'form' => "Personnel Action Notice",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2,
+                    'form' => "Manpower Request",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3,
+                    'form' => "Overtime",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 4,
+                    'form' => "Leave",
+                    'approvals' => '[{"type": null, "user_id": null, "userselector": true}]',
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 5,
+                    'form' => "Cash Advance",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 6,
+                    'form' => "Travel Order",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
                 [
                     'id' => 7,
                     'form' => "Generate Allowance",
@@ -88,6 +88,12 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+            ],
+            [
+                'id', 'form'
+            ],
+            [
+                'approvals'
             ]
         );
     }
