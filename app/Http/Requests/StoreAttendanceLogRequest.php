@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AssignTypes;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
 use Illuminate\Validation\Rules\Enum;
@@ -38,12 +39,14 @@ class StoreAttendanceLogRequest extends FormRequest
                 new Enum(AttendanceType::class)
             ],
             'project_id' => [
-                'required_if:group_type,==,Project',
+                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
+                'nullable',
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
-                'required_if:group_type,==,Department',
+                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
+                'nullable',
                 "integer",
                 "exists:departments,id",
             ],

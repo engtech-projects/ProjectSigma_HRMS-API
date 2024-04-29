@@ -48,13 +48,13 @@ class StoreEmployeeAllowancesRequest extends FormRequest
                 "exists:employees,id",
             ],
             'project_id' => [
-                'required_if:group_type,==,Project',
+                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
                 'nullable',
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
-                'required_if:group_type,==,Department',
+                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
                 'nullable',
                 "integer",
                 "exists:departments,id",
