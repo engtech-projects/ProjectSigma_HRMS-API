@@ -123,7 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
-        Route::post('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
+        Route::get('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
         Route::get('users-list', [UsersController::class, 'get']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
