@@ -12,7 +12,7 @@ class SettingsSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('settings')->insert(
+        DB::table('settings')->upsert(
             [
                 [
                     'id' => 1,
@@ -25,6 +25,12 @@ class SettingsSeeder extends Seeder
                     'value' => '30',
                 ]
             ],
+            [
+                'id', 'setting_name'
+            ],
+            [
+                'value'
+            ]
         );
     }
 }
