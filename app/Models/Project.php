@@ -16,7 +16,6 @@ class Project extends Model
     use HasProjectEmployee;
 
     protected $fillable = [
-        'code',
         'project_monitoring_id',
         'project_code',
         'status'
