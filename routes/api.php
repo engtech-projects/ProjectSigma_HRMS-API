@@ -266,6 +266,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::prefix('attendance')->group(
     function () {
+        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
         Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
     }
 );
