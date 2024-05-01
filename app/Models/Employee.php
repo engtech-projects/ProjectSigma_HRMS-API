@@ -287,9 +287,9 @@ class Employee extends Model
         return $this->hasMany(EmployeeLeaves::class);
     }
 
-    public function employee_overtime(): HasMany
+    public function employee_overtime(): BelongsToMany
     {
-        return $this->hasMany(Overtime::class, 'id', 'employee_id');
+        return $this->belongsToMany(Overtime::class,);
     }
 
     public function employee_has_overtime(): BelongsToMany

@@ -10,17 +10,14 @@ use Illuminate\Support\Collection;
 
 trait Attendance
 {
-    public function calculateAttendanceLog($attendances)
+    public function getWorkingInterval($attendances)
     {
         $duration = 0;
         $totalLateDuration = 0;
         $lastTimeIn = null;
-        foreach ($attendances as $key => $attendance) {
-            foreach($attendance as $value) {
-                dd($value);
-            }
-            $time = Carbon::parse($attendance->time);
-            if ($attendance->log_type === AttendanceLogType::TIME_IN->value) {
+        foreach ($attendances as $attendance) {
+            $time = Carbon::parse($attendance["time"]);
+            if ($attendance["log_type"] === AttendanceLogType::TIME_IN->value) {
                 $lastTimeIn = $time;
             } else {
                 if ($lastTimeIn !== null) {
@@ -35,11 +32,26 @@ trait Attendance
             }
         }
         $workingInterval = CarbonInterval::seconds($duration);
-        $lateInterval = CarbonInterval::seconds($totalLateDuration);
         return $workingInterval;
     }
+    public function getRegHoliday()
+    {
+    }
 
-    public function calculateAttedanceLate(Collection $attendances, Collection $schedules)
+    public function getRegOvertime()
+    {
+    }
+
+
+    public function getRegHolidayOT()
+    {
+    }
+
+    public function getRestOT()
+    {
+    }
+
+    public function getSpecHolidayOT()
     {
     }
 }

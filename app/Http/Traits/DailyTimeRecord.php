@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use App\Helpers;
 use App\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -11,11 +12,7 @@ trait DailyTimeRecord
     use Attendance;
     public function generateDTR(Employee $employee, array $period = [])
     {
-        return [
-
-            "regular_time" => $this->mapEmployeeAttendance($employee->attendance_log),
-            "over_time" => [],
-        ];
+        return $this->mapEmployeeAttendance($employee->attendance_log);
     }
     private function mapEmployeeAttendance(Collection $attendances)
     {
@@ -28,21 +25,33 @@ trait DailyTimeRecord
                     return collect($value)->map(function ($value) {
                         return [
                             "time" => $value->time,
-                            "type" => $value->attendance_type
+                            "type" => $value->attendance_type,
+                            "log_type" => $value->log_type
                         ];
                     });
                 });
             });
-        })->map(function ($attendance){
-            $attendance["total_hours"] = $this->getTotalOfHours($attendance);
+        })->map(function ($attendance) {
+            $attendance["total"] = $this->getTotalOfHours($attendance);
             return $attendance;
         });
         return $result;
     }
     private function getTotalOfHours($attendances)
     {
+        $totalHours = 0;
+        $totalDays = 0;
+        $totalMinutes = 0;
         foreach ($attendances as $key => $attendance) {
-            return $this->calculateAttendanceLog($attendance);
+            $interval = $this->calculateAttendanceLog($attendance);
+            $totalHours += $interval->totalHours;
+            $totalDays += $interval->totalDays;
+            $totalMinutes += $interval->totalMinutes;
         }
+        return [
+            "hours" => $totalHours,
+            "days" => $totalDays,
+            "minutes" => $totalMinutes,
+        ];
     }
 }
