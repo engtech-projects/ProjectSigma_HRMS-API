@@ -3,10 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Enums\AssignTypes;
+use App\Enums\AttendanceLogType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreEmployeeAllowancesRequest extends FormRequest
+class StoreFacialAttendanceLog extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,15 +15,6 @@ class StoreEmployeeAllowancesRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
-    }
-
-    protected function prepareForValidation()
-    {
-        if (gettype($this->employees) == "string") {
-            $this->merge([
-                "employees" => json_decode($this->employees, true),
-            ]);
-        }
     }
 
     /**
@@ -33,50 +25,32 @@ class StoreEmployeeAllowancesRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'employee_id' => [
+                "required",
+                "integer",
+                "exists:employees,id",
+            ],
             'group_type' => [
                 "required",
                 "string",
                 new Enum(AssignTypes::class)
             ],
-            'employees' => [
-                "required",
-                "array",
-            ],
-            'employees.*' => [
-                "required",
-                "integer",
-                "exists:employees,id",
-            ],
             'project_id' => [
                 'required_if:group_type,==,' . AssignTypes::PROJECT->value,
-                'nullable',
                 "integer",
+                'nullable',
                 "exists:projects,id",
             ],
             'department_id' => [
                 'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
-                'nullable',
                 "integer",
+                'nullable',
                 "exists:departments,id",
             ],
-            'allowance_date' => [
+            'log_type' => [
                 "required",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'cutoff_start' => [
-                "required",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'cutoff_end' => [
-                "required",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'total_days' => [
-                "required",
-                "integer",
+                "string",
+                new Enum(AttendanceLogType::class)
             ],
         ];
     }

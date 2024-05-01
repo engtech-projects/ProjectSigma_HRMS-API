@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeFacePattern;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HMOController;
 use App\Http\Controllers\AuthController;
@@ -123,11 +124,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
-        Route::post('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
+        Route::get('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
         Route::get('users-list', [UsersController::class, 'get']);
-        Route::get('get-late', [EmployeeController::class, 'getLateThisMonth']);
-        Route::get('get-absent', [EmployeeController::class, 'getAbsenceThisMonth']);
-        Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
         Route::get('list', [EmployeeController::class, 'get']);
@@ -146,11 +144,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('termination', TerminationController::class);
         Route::resource('externalwork-experience', ExternalWorkExperienceController::class);
 
-        Route::prefix('count')->group(function () {
+        Route::prefix('statistics')->group(function () {
+            Route::get('attendance-infractions', CountEmployeeGenderController::class);
             Route::get('gender', CountEmployeeGenderController::class);
             Route::get('department', CountEmployeeDepartmentController::class);
         });
-        Route::get('monthly-birthdays', MonthlyBirthdaysController::class);
+        Route::prefix('monthly')->group(function () {
+            Route::get('birthdays', MonthlyBirthdaysController::class);
+            Route::get('lates', [EmployeeController::class, 'getLateThisMonth']);
+            Route::get('absences', [EmployeeController::class, 'getAbsenceThisMonth']);
+            Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
+        });
     });
 
     Route::resource('approvals', ApprovalsController::class);
@@ -173,6 +177,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('list', SalaryGradeLevelListController::class);
     });
 
+    Route::prefix('face-pattern')->group(function () {
+        Route::resource('resource', EmployeeFacePattern::class);
+    });
+
     Route::prefix("hmo")->group(function () {
         Route::resource('resource', HMOController::class);
         Route::resource('members', HMOMembersController::class);
@@ -181,6 +189,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+
     Route::prefix('pan')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class);
         Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
@@ -259,6 +268,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('generate-payroll', GeneratePayrollController::class);
     });
 });
+
+Route::prefix('attendance')->group(
+    function () {
+        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+    }
+);
 
 if (config()->get('app.artisan') == 'true') {
     Route::prefix('artisan')->group(function () {

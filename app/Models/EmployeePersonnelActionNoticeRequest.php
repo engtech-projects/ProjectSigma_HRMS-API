@@ -40,6 +40,8 @@ class EmployeePersonnelActionNoticeRequest extends Model
         "request_created_at"
     ];
 
+    protected $table = "employee_pan_requests";
+
     protected $casts = [
         "approvals" => "array",
         "created_at" => "date:Y-m-d",

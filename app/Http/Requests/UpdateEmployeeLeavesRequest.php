@@ -41,9 +41,9 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "exists:projects,id",
             ],
             'type' => [
-                "nullable",
-                "string",
-                new Enum(LeaveRequestType::class)
+                "integer",
+                "required",
+                "exists:leaves,id",
             ],
             'other_absence' => [
                 "nullable",

@@ -50,9 +50,9 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "exists:projects,id",
             ],
             'type' => [
+                "integer",
                 "required",
-                "string",
-                new Enum(LeaveRequestType::class)
+                "exists:leaves,id",
             ],
             'other_absence' => [
                 "nullable",

@@ -175,10 +175,11 @@ class EmployeeBulkUploadController extends Controller
                         $tempData['_status'] = 'unduplicate';
                     }
                     foreach (self::HEADER_KEYS as $index => $value) {
-                        $tempData[$value] = $data[$index];
+                        $tempData[$value] = trim($data[$index]);
                     }
                     $tempData['phic_number'] = $tempData['phic_number'] ?? "N/A";
                     $tempData['tin_number'] = $tempData['tin_number'] ?? "N/A";
+                    $tempData['name_suffix'] = ($tempData['name_suffix'] === "N/A" ) ? null : $tempData['name_suffix'];
                     $tempData['sss_number'] = $tempData['sss_number'] ?? "N/A";
                     $tempData['pagibig_number'] = $tempData['pagibig_number'] ?? "N/A";
                     $tempData['place_of_birth'] = $tempData['place_of_birth'] ?? "N/A";

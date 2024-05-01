@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AttendanceLogType;
+use App\Enums\AttendanceType;
 use App\Models\AttendanceLog;
 use Illuminate\Http\JsonResponse;
 use App\Utils\PaginateResourceCollection;
 use App\Http\Services\AttendanceLogService;
 use App\Http\Resources\AttendanceLogResource;
 use App\Http\Requests\StoreAttendanceLogRequest;
+use App\Http\Requests\StoreFacialAttendanceLog;
 use App\Http\Requests\UpdateAttendanceLogRequest;
+use Carbon\Carbon;
 
 class AttendanceLogController extends Controller
 {
@@ -45,6 +49,45 @@ class AttendanceLogController extends Controller
             "success" => true,
             "message" => "Successfully created.",
         ], JsonResponse::HTTP_CREATED);
+    }
+
+    public function facialAttendance(StoreFacialAttendanceLog $request)
+    {
+        $val = $request->validated();
+        if ($val) {
+            $main = new AttendanceLog();
+            $main->fill($val);
+            $main->date = Carbon::now()->format('Y-m-d');
+            $main->time = Carbon::now()->format('H:i:s');
+            $main->attendance_type = AttendanceType::FACIAL->value;
+            if ($main->save()) {
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Successfully save.",
+                    "data" => new AttendanceLogResource($main),
+                ], JsonResponse::HTTP_OK);
+            }
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Failed save.",
+            ], JsonResponse::HTTP_EXPECTATION_FAILED);
+        }
+    }
+
+    public function facialAttendanceList()
+    {
+        $main = AttendanceLog::with('employee', 'department', 'project')->get();
+        if ($main) {
+            return new JsonResponse([
+                "success" => true,
+                "message" => "Fetch Successfully.",
+                "data" => $main,
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            "success" => false,
+            "message" => "No data found.",
+        ], JsonResponse::HTTP_EXPECTATION_FAILED);
     }
 
     /**

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProjectRequest extends FormRequest
+class EmployeeFacePatternRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_code' => 'required|string',
-            'project_monitoring_id' => 'required|integer|unique:projects,project_monitoring_id'
+            'patterns' =>  "required|string",
+            'employee_id' => "required|numeric"
         ];
     }
 }

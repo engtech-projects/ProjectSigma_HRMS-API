@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -289,7 +290,7 @@ class Employee extends Model
 
     public function employee_overtime(): BelongsToMany
     {
-        return $this->belongsToMany(Overtime::class,);
+        return $this->belongsToMany(Overtime::class, 'overtime_employees');
     }
 
     public function employee_has_overtime(): BelongsToMany
