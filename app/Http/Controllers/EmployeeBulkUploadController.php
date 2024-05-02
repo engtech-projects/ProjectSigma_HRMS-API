@@ -410,8 +410,8 @@ class EmployeeBulkUploadController extends Controller
                         'city' => $data['person_to_contact_city'] ?? 'N/A',
                         'zip' => $data['person_to_contact_zip'] ?? 'N/A',
                         'province' => $data['person_to_contact_province'] ?? 'N/A',
-                        'occupation' => $data['person_to_contact_no'] ?? 'N/A',
-                        'contact_no' => 'N/A',
+                        'occupation' => 'N/A',
+                        'contact_no' => $data['person_to_contact_no'] ?? 'N/A',
                     ];
                     //mother information
                     $employeeRelatedPerson[] = [
@@ -420,13 +420,13 @@ class EmployeeBulkUploadController extends Controller
                         'relationship' => EmployeeRelatedPersonType::MOTHER,
                         'name' => $data['mother_name'] ?? 'N/A',
                         'date_of_birth' => null,
-                        'street' => 'N/A',
-                        'brgy' => 'N/A',
-                        'city' => 'N/A',
-                        'zip' => 'N/A',
-                        'province' => 'N/A',
-                        'occupation' => 'N/A',
-                        'contact_no' => 'N/A',
+                        'street' => null,
+                        'brgy' => null,
+                        'city' => null,
+                        'zip' => null,
+                        'province' => null,
+                        'occupation' => null,
+                        'contact_no' => null,
                     ];
                     //spouse information
                     $employeeRelatedPerson[] = [
@@ -435,11 +435,11 @@ class EmployeeBulkUploadController extends Controller
                         'relationship' => EmployeeRelatedPersonType::SPOUSE,
                         'name' => $data['spouse_name'] ?? 'N/A',
                         'date_of_birth' => $data['spouse_datebirth'],
-                        'street' => 'N/A',
-                        'brgy' => 'N/A',
-                        'city' => 'N/A',
-                        'zip' => 'N/A',
-                        'province' => 'N/A',
+                        'street' => null,
+                        'brgy' => null,
+                        'city' => null,
+                        'zip' => null,
+                        'province' => null,
                         'occupation' => $data['spouse_occupation'] ?? 'N/A',
                         'contact_no' => $data['spouse_contact_no'] ?? 'N/A',
                     ];
