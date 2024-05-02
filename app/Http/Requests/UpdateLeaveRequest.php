@@ -16,6 +16,15 @@ class UpdateLeaveRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (gettype($this->employment_status) == "string") {
+            $this->merge([
+                "employment_status" => json_decode($this->employment_status, true),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -35,9 +44,13 @@ class UpdateLeaveRequest extends FormRequest
             ],
             'employment_status' => [
                 "nullable",
+                "array",
+            ],
+            'employment_status.*' => [
+                "nullable",
                 "string",
                 new Enum(EmploymentType::class)
-            ]
+            ],
         ];
     }
 }

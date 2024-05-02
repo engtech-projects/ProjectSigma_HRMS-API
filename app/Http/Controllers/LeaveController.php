@@ -28,7 +28,7 @@ class LeaveController extends Controller
     {
         $leave = new Leave();
         $leave->fill($request->validated());
-        $leave->employment_type = json_encode($request->employment_type);
+        $leave->employment_status = json_encode($request->employment_status);
         $data = json_decode('{}');
         if (!$leave->save()) {
             $data->message = "Save failed.";
