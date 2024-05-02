@@ -73,6 +73,23 @@ class AttendanceLogController extends Controller
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
     }
+
+    public function facialAttendanceList()
+    {
+        $main = AttendanceLog::with('employee', 'department', 'project')->get();
+        if ($main) {
+            return new JsonResponse([
+                "success" => true,
+                "message" => "Fetch Successfully.",
+                "data" => $main,
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            "success" => false,
+            "message" => "No data found.",
+        ], JsonResponse::HTTP_EXPECTATION_FAILED);
+    }
+
     /**
      * Display the specified resource.
      */

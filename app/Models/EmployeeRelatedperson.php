@@ -19,7 +19,7 @@ class EmployeeRelatedperson extends Model
     use Notifiable;
     use SoftDeletes;
 
-    protected $appends = ['age'];
+    protected $appends = ['age', 'address'];
 
     protected $casts = [
         'date_of_birth' => 'datetime:Y-m-d',
@@ -40,6 +40,10 @@ class EmployeeRelatedperson extends Model
     //         get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
     //     );
     // }
+    protected function getAddressAttribute()
+    {
+        return $this->street . $this->brgy . $this->city . $this->zip . $this->province;
+    }
 
     protected $fillable = [
         'id',
