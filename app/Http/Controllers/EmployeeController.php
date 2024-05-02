@@ -134,6 +134,7 @@ class EmployeeController extends Controller
             "employment_records",
             "employee_address",
             "current_employment.employee_salarygrade.salary_grade_level",
+            "current_employment.position",
             "employee_affiliation",
             "employee_education",
             "employee_education_elementary",
@@ -156,6 +157,7 @@ class EmployeeController extends Controller
             "professionalstudies",
             "employee_seminartraining",
             "employee_internal.employee_salarygrade.salary_grade_level",
+            "employee_internal.position",
             "employee_externalwork",
             "images",
         )->find($id);
