@@ -123,7 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
-        Route::post('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
+        Route::get('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
         Route::get('users-list', [UsersController::class, 'get']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
@@ -188,6 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+
     Route::prefix('pan')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class);
         Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
@@ -262,6 +263,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', EmployeeAllowancesController::class);
     });
 });
+
+Route::prefix('attendance')->group(
+    function () {
+        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+    }
+);
 
 if (config()->get('app.artisan') == 'true') {
     Route::prefix('artisan')->group(function () {

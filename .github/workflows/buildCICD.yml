@@ -56,6 +56,7 @@ jobs:
               composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
               php artisan key:generate
               php artisan migrate
+              php artisan db:seed
               rm -rf .env
               rm -rf .git
               rm -rf .gitignore

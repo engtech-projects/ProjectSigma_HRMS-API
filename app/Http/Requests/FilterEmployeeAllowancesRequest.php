@@ -30,12 +30,14 @@ class FilterEmployeeAllowancesRequest extends FormRequest
                 new Enum(AssignTypes::class)
             ],
             'project_id' => [
-                'required_if:group_type,==,project',
+                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
+                'nullable',
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
-                'required_if:group_type,==,department',
+                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
+                'nullable',
                 "integer",
                 "exists:departments,id",
             ],

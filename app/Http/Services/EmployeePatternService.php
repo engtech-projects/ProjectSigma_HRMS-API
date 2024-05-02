@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Services;
-use App\Models\PatternRequest;
+use App\Models\EmployeePattern;
 
 class EmployeePatternService
 {
     protected $patternRequest;
 
-    public function __construct(PatternRequest $patternRequest)
+    public function __construct(EmployeePattern $patternRequest)
     {
         $this->patternRequest = $patternRequest;
     }

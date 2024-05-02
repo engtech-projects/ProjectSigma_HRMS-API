@@ -56,7 +56,8 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             ],
             'designation_position' => [
                 "nullable",
-                "string",
+                "integer",
+                "exists:positions,id",
                 'required_if:type,==,New Hire',
             ],
             'salary_grades' => [
@@ -106,7 +107,8 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
             ],
             'new_position' => [
                 "nullable",
-                "string",
+                "integer",
+                "exists:positions,id",
             ],
             'type_of_termination' => [
                 "nullable",

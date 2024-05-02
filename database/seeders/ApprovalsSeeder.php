@@ -14,7 +14,7 @@ class ApprovalsSeeder extends Seeder
     public function run(): void
     {
         //
-        DB::table('approvals')->insert(
+        DB::table('approvals')->upsert(
             [
                 [
                     'id' => 1,
@@ -43,7 +43,7 @@ class ApprovalsSeeder extends Seeder
                 [
                     'id' => 4,
                     'form' => "Leave",
-                    'approvals' => "[]",
+                    'approvals' => '[{"type": null, "user_id": null, "userselector": true}]',
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -64,6 +64,36 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 7,
+                    'form' => "Generate Allowance",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 8,
+                    'form' => "Payroll",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 9,
+                    'form' => "13th Month",
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+            ],
+            [
+                'id', 'form'
+            ],
+            [
+                'approvals'
             ]
         );
     }

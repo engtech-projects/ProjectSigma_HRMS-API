@@ -310,7 +310,6 @@ class EmployeeController extends Controller
                     $data->total_credits = $leave->amt_of_leave;
                     $data->used = $count;
                     $data->balance = $leave->amt_of_leave - $count;
-                    dd($leave->leave_name);
                     array_push($main, $data);
                 }
             }
