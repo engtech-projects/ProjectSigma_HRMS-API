@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leaves', function (Blueprint $table) {
-            $table->dropColumn("employment_type");
-            $table->json('employment_status');
+            $table->renameColumn("employment_type", 'employment_status');
         });
     }
 
@@ -23,8 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('leaves', function (Blueprint $table) {
-            $table->json("employment_type");
-            $table->dropColumn('employment_status');
+            $table->renameColumn("employment_status", 'employment_type');
         });
     }
 };
