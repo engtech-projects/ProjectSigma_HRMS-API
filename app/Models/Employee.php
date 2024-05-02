@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -309,5 +308,16 @@ class Employee extends Model
                 return $query->select(['first_name', 'middle_name', 'family_name', 'id']);
             }
         ])->addSelect(DB::raw('startTime as late'))->get();
+    }
+
+    public function dtrSchedule($date)
+    {
+        $schedule = $this->employee_schedule()->where('startRecur', $date)->get();
+        return $schedule;
+    }
+    public function dtrLeave($date)
+    {
+        $leave = $this->employee_leave('leave_date', $date)->withPayLeave()->approved()->get();
+        return $leave;
     }
 }

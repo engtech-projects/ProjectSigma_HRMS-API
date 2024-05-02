@@ -3,6 +3,7 @@
 namespace App\Http\Traits;
 
 use App\Enums\AttendanceLogType;
+use App\Helpers;
 use App\Models\Employee;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
@@ -38,10 +39,62 @@ trait Attendance
     {
     }
 
-    public function getRegOvertime()
+    public function getRegOvertime($data)
     {
+        $regOT = 0;
+        $specHolidayOT = 0;
+        foreach ($data["schedule"] as $schedule) {
+            $scheduleDate = Carbon::parse($schedule["startRecur"]);
+
+            foreach ($data["overtime"] as $otValue) {
+                $overtimeDate = Carbon::parse($otValue["overtime_date"]);
+                if ($scheduleDate->isSameDay($overtimeDate)) {
+                    $startTime = Carbon::parse($otValue["overtime_start_time"]);
+                    $endTime = Carbon::parse($otValue["overtime_end_time"]);
+                    if ($this->isHaveEvent($data["events"], $overtimeDate)) {
+                        $specHolidayOT += $startTime->diffInMinutes($endTime);
+                    } else {
+                        $regOT += $startTime->diffInHours($endTime);
+                    }
+                }
+            }
+        }
+        return [
+            "reg_OT" => $regOT,
+            "reg_holiday_OT" => $specHolidayOT
+        ];
+    }
+    public function isHaveEvent($events, $date)
+    {
+        foreach ($events as $event) {
+            $eventRange = Helpers::dateRange([
+                "period_start" => $event["start_date"],
+                "period_end" => $event["end_date"]
+            ]);
+            foreach ($eventRange as $eventDate) {
+                $eventDate = Carbon::parse($eventDate["date"]);
+                if ($eventDate->isSameDay($date)) {
+                    return true;
+                }
+                continue;
+            }
+        }
+        return false;
     }
 
+    public function calculateOvertime($overtime, $date)
+    {
+        $duration = 0;
+        foreach ($overtime as $otValue) {
+            $overtimeDate = Carbon::parse($otValue["overtime_date"]);
+            if ($date->isSameDay($overtimeDate)) {
+                $startTime = Carbon::parse($otValue["overtime_start_time"]);
+                $endTime = Carbon::parse($otValue["overtime_end_time"]);
+                $duration += $startTime->diffInHours($endTime);
+            }
+        }
+        return $duration;
+    }
 
     public function getRegHolidayOT()
     {
