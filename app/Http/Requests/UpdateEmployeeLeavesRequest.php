@@ -40,7 +40,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "integer",
                 "exists:projects,id",
             ],
-            'type' => [
+            'leave_id' => [
                 "integer",
                 "required",
                 "exists:leaves,id",
