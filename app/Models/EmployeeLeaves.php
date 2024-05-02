@@ -35,7 +35,7 @@ class EmployeeLeaves extends Model
         'employee_id',
         'department_id',
         'project_id',
-        'type',
+        'leave_id',
         'other_absence',
         'date_of_absence_from',
         'date_of_absence_to',
