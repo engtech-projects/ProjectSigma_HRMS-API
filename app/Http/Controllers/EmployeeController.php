@@ -296,16 +296,17 @@ class EmployeeController extends Controller
     public function getLeaveCredits($id)
     {
         $val = Employee::find($id);
+        $leaves_type = Leave::get();
         if ($val) {
             $main = [];
-            foreach (LeaveRequestType::cases() as $key) {
+            foreach ($leaves_type as $key) {
                 $data = json_decode('{}');
                 $count = EmployeeLeaves::where([
-                    ["type", $key],
+                    ["leave_id", $key->id],
                     ["request_status", "Approved"],
-                ])->count();
-                $leave = Leave::where("employment_type", $key)->get();
-                if (!$leave->isEmpty()) {
+                ])->max('number_of_days');
+                $leave = Leave::find($key->id);
+                if ($leave) {
                     $data->leavename = $leave->leave_name;
                     $data->total_credits = $leave->amt_of_leave;
                     $data->used = $count;
