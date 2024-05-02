@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EmploymentType;
 use App\Enums\PersonelAccessForm;
 use App\Enums\SalaryRequestType;
 use Illuminate\Foundation\Http\FormRequest;
@@ -36,7 +37,8 @@ class StoreInternalWorkExperienceRequest extends FormRequest
             ],
             'employment_status' => [
                 "required",
-                "string"
+                "string",
+                new Enum(EmploymentType::class)
             ],
             'department_id' => [
                 "required",

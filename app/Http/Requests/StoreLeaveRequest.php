@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EmploymentType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreLeaveRequest extends FormRequest
 {
@@ -30,10 +32,10 @@ class StoreLeaveRequest extends FormRequest
                 "required",
                 "integer",
             ],
-            'employment_type' => [
+            'employment_status' => [
                 "required",
-                "array",
-                'in:Probationary,Regular/FullTime,Part Time,Project Based,Contractual'
+                "string",
+                new Enum(EmploymentType::class)
             ],
         ];
     }

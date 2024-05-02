@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EmploymentType;
+use App\Enums\InternalWorkExpEmployeeStatus;
+use App\Enums\InternalWorkExpStatus;
 use App\Enums\LeaveRequestType;
 use App\Models\Employee;
 use App\Enums\SearchTypes;
@@ -17,6 +20,7 @@ use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
 use App\Models\Schedule;
+use Database\Factories\InternalWorkExperienceFactory;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Integer;
 
@@ -297,25 +301,33 @@ class EmployeeController extends Controller
 
     public function getLeaveCredits($id)
     {
-        $val = Employee::find($id);
+        $val = Employee::with("current_employment")->find($id);
         $leaves_type = Leave::get();
         if ($val) {
             $main = [];
+            $data = json_decode('{}');
             foreach ($leaves_type as $key) {
-                $data = json_decode('{}');
-                $count = EmployeeLeaves::where([
-                    ["leave_id", $key->id],
-                    ["request_status", "Approved"],
-                ])->max('number_of_days');
-                $leave = Leave::find($key->id);
-                if ($leave) {
-                    $data->leavename = $leave->leave_name;
-                    $data->total_credits = $leave->amt_of_leave;
-                    $data->used = $count;
-                    $data->balance = $leave->amt_of_leave - $count;
-                    array_push($main, $data);
+                if (gettype($key->employment_status) == "string") {
+                    $type = json_decode($key->employment_status);
+                    if ($val->current_employment) {
+                        if (in_array($val->current_employment->employment_status, $type)) {
+                            $count = EmployeeLeaves::where([
+                                ["leave_id", $key->id],
+                                ["request_status", "Approved"],
+                            ])->max('number_of_days');
+                            $leave = Leave::find($key->id);
+                            if ($leave) {
+                                $data->leavename = $leave->leave_name;
+                                $data->total_credits = $leave->amt_of_leave;
+                                $data->used = $count;
+                                $data->balance = $leave->amt_of_leave - $count;
+                                array_push($main, $data);
+                            }
+                        }
+                    }
                 }
             }
+
             if ($main) {
                 return new JsonResponse([
                     'success' => 'true',

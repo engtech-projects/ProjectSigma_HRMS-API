@@ -21,11 +21,11 @@ class Leave extends Model
         'id',
         'leave_name',
         'amt_of_leave',
-        'employment_type',
+        'employment_status',
     ];
 
     protected $casts = [
-        'employment_type' => 'array'
+        'employment_status' => 'array'
     ];
 
     /**

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EmploymentType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateLeaveRequest extends FormRequest
 {
@@ -31,10 +33,10 @@ class UpdateLeaveRequest extends FormRequest
                 "nullable",
                 "integer",
             ],
-            'employment_type' => [
+            'employment_status' => [
                 "nullable",
-                "array",
-                'in:Probationary,Regular/FullTime,Part Time,Project Based,Contractual'
+                "string",
+                new Enum(EmploymentType::class)
             ]
         ];
     }
