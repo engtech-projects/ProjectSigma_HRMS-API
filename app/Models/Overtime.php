@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonelAccessForm;
+use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,7 @@ class Overtime extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasApproval;
+    use HasApproval, StatusScope;
     protected $casts = [
         'approvals' => 'array'
     ];
@@ -66,7 +67,6 @@ class Overtime extends Model
     {
         return $this->hasMany(overtimeEmployees::class, 'overtime_id', 'id');
     }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'released_by');
@@ -75,5 +75,16 @@ class Overtime extends Model
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
+
+    public function scopePayrollOvertime(Builder $query, array $filters = [])
+    {
+        $query->whereBetween('overtime_date', array($filters['cutoff_start'], $filters['cutoff_end']))
+            ->where(function ($query) use ($filters) {
+                if (array_key_exists('department_id', $filters)) {
+                    return $query->where('department_id', $filters['department_id']);
+                }
+                return $query->where('project_id', $filters['project_id']);
+            });
     }
 }

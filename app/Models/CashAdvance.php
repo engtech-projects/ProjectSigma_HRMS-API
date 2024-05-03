@@ -6,6 +6,7 @@ use App\Enums\LoanPaymentPostingStatusType;
 use App\Traits\HasApproval;
 use App\Enums\LoanPaymentsType;
 use App\Enums\PersonelAccessForm;
+use App\Models\Traits\StatusScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +23,7 @@ class CashAdvance extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasApproval;
+    use HasApproval, StatusScope;
 
     protected $casts = [
         'approvals' => 'array',

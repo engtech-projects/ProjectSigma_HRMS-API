@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Enums\AttendanceLogType;
-use App\Enums\AttendanceType;
-use App\Models\Traits\HasDepartment;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\AttendanceType;
+use App\Enums\AttendanceLogType;
+use App\Models\Traits\HasDepartment;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AttendanceLog extends Model
 {
@@ -86,6 +87,16 @@ class AttendanceLog extends Model
                 // Carbon::now()->endOfMonth()->format('Y-m-d')
             ]
         )->count();
+    }
+    public function scopePayrollAttendanceLog(Builder $query, array $filters = [])
+    {
+        $query->whereBetween('date', array($filters['cutoff_start'], $filters['cutoff_end']))
+            ->where(function ($query) use ($filters) {
+                if (array_key_exists('department_id', $filters)) {
+                    return $query->where('department_id', $filters['department_id']);
+                }
+                return $query->where('project_id', $filters['project_id']);
+            });
     }
 
     public function employee(): BelongsTo
