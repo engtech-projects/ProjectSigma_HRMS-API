@@ -310,17 +310,40 @@ class Employee extends Model
         ])->addSelect(DB::raw('startTime as late'))->get();
     }
 
-    public function dtrSchedule($date)
+    public function dtrSchedule($employee, $date)
     {
-        $schedule = $this->employee_schedule()->where('startRecur', $date)->get();
+        $schedule = $employee->employee_schedule()
+            ->where('startRecur', $date)
+            ->get();
         return $schedule;
+    }
+    public function dtrAttendance($employee, $date)
+    {
+        $attendance = $employee->attendance_log()
+            ->where('date', $date)
+            ->get();
+        return $attendance;
+    }
+    public function dtrOvertime($employee, $date)
+    {
+        $overtime = $employee->employee_overtime()
+            ->where('overtime_date', $date)
+            ->approved()
+            ->get();
+        return $overtime;
+    }
+
+    public function dtrEvents($date)
+    {
+        return Events::whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->get();
     }
     public function dtrLeave($date)
     {
-        return $this->employee_leave()->where('date_of_absence_from', '<=', $date)
-            ->where('date_of_absence_to', '>=', $date)
-            ->where('request_status', 'Approved')
-            ->where('with_pay', 1)
+        return $this->employee_leave()
+            ->whereDate('date_of_absence_from', '<=', $date)
+            ->whereDate('date_of_absence_to', '>=', $date)
             ->get();
     }
 }
