@@ -272,24 +272,28 @@ class Employee extends Model
 
     public function employee_schedule(): HasMany
     {
-        return $this->hasMany(Schedule::class);
+        return $this->hasMany(Schedule::class, 'employee_id');
     }
 
 
     public function attendance_log(): HasMany
     {
-        return $this->hasMany(AttendanceLog::class);
+        return $this->hasMany(AttendanceLog::class, 'employee_id');
     }
 
 
     public function employee_leave(): HasMany
     {
-        return $this->hasMany(EmployeeLeaves::class);
+        return $this->hasMany(EmployeeLeaves::class, 'employee_id');
+    }
+    public function emploee_travel_order(): BelongsToMany
+    {
+        return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id');
     }
 
     public function employee_overtime(): BelongsToMany
     {
-        return $this->belongsToMany(Overtime::class, 'overtime_employees');
+        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id', 'id');
     }
 
     public function employee_has_overtime(): BelongsToMany
@@ -308,42 +312,5 @@ class Employee extends Model
                 return $query->select(['first_name', 'middle_name', 'family_name', 'id']);
             }
         ])->addSelect(DB::raw('startTime as late'))->get();
-    }
-
-    public function dtrSchedule($employee, $date)
-    {
-        $schedule = $employee->employee_schedule()
-            ->where('startRecur', $date)
-            ->get();
-        return $schedule;
-    }
-    public function dtrAttendance($employee, $date)
-    {
-        $attendance = $employee->attendance_log()
-            ->where('date', $date)
-            ->get();
-        return $attendance;
-    }
-    public function dtrOvertime($employee, $date)
-    {
-        $overtime = $employee->employee_overtime()
-            ->where('overtime_date', $date)
-            ->approved()
-            ->get();
-        return $overtime;
-    }
-
-    public function dtrEvents($date)
-    {
-        return Events::whereDate('start_date', '<=', $date)
-            ->whereDate('end_date', '>=', $date)
-            ->get();
-    }
-    public function dtrLeave($date)
-    {
-        return $this->employee_leave()
-            ->whereDate('date_of_absence_from', '<=', $date)
-            ->whereDate('date_of_absence_to', '>=', $date)
-            ->get();
     }
 }

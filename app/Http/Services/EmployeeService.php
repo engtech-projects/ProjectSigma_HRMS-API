@@ -13,23 +13,26 @@ class EmployeeService
     public function employeeDTR($employee, $date)
     {
         $date = Carbon::parse($date);
-        $dtrSchedule = $employee->dtrSchedule($employee, $date);
-        $dtrEvents = $employee->dtrEvents($date);
-        $dtrAttendance = $employee->dtrAttendance($employee, $date);
-        $attendanceMetadata = $this->getWorkingInterval($dtrAttendance);
-        $dtrOvertime = $employee->dtrOvertime($employee, $date);
+        $schedules = $employee->schedule_dtr($employee, $date);
+        $events = $employee->events_dtr($date);
+        $attendances = $employee->attendance_dtr($employee, $date);
+        $travelOrders = $employee->travel_order_dtr($date);
+        $attendanceMetadata = $this->getWorkingInterval($attendances);
+        $overtime = $employee->overtime_dtr($employee, $date);
         $overtimeMetadata = $this->getRegOvertime([
-            "schedule" => $dtrSchedule,
-            "events" => $dtrEvents,
-            "attendance" => $dtrAttendance,
-            "overtime" => $dtrOvertime
+            "schedule" => $schedules,
+            "events" => $events,
+            "attendance" => $attendances,
+            "overtime" => $overtime,
+            "travel_orders" => $travelOrders
         ]);
         return [
-            "schedule" => $dtrSchedule,
-            "attendance" => $dtrAttendance,
-            "ovetime" => $dtrOvertime,
-            "leave" => $employee->dtrLeave($date),
-            "events" => $dtrEvents,
+            "schedule" => $schedules,
+            "attendance" => $attendances,
+            "travel_order" => $travelOrders,
+            "ovetime" => $overtime,
+            "leave" => $employee->leave_dtr($date),
+            "events" => $events,
             "metadata" => [
                 "regular_hrs" => $attendanceMetadata->totalHours,
                 "regular_holiday_hrs" => 0,

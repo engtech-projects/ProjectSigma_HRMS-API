@@ -11,6 +11,7 @@ use App\Http\Resources\InternalWorkExpResource;
 use App\Http\Resources\OvertimeResource;
 use App\Http\Services\EmployeeService;
 use App\Models\Employee;
+use App\Models\EmployeeDTR;
 use Illuminate\Http\JsonResponse;
 
 
@@ -29,13 +30,13 @@ class EmployeeDtrController extends Controller
         $periodDates = Helpers::dateRange([
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
-        $employees = Employee::whereIn('id', $filters['employee_ids'])->get();
+        $dtr = EmployeeDTR::whereIn('id', $filters['employee_ids'])->get();
         $result = collect($periodDates)->groupBy(function ($date) {
             return $date["date"];
-        })->map(function ($date) use ($employees) {
+        })->map(function ($date) use ($dtr) {
             $date = $date[0]["date"];
-            foreach ($employees as $employee) {
-                return $this->employeeService->employeeDTR($employee, $date);
+            foreach ($dtr as $value) {
+                return $this->employeeService->employeeDTR($value, $date);
             }
         });
         return new JsonResponse([
