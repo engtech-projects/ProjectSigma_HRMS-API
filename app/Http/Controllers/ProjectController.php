@@ -24,6 +24,7 @@ class ProjectController extends Controller
     public function index()
     {
         $project = $this->projectService->getAll();
+        return $project;
         $collection = collect(ProjectResource::collection($project));
 
         return new JsonResponse([

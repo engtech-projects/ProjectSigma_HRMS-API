@@ -15,7 +15,7 @@ class ProjectMemberList extends Controller
      */
     public function __invoke($project)
     {
-        $projectEmployees = collect($project->projet_has_employees)->map(function ($value) {
+        $projectEmployees = collect($project->project_has_employees)->map(function ($value) {
             return $value;
         });
         $project["project_member_ids"] = collect($projectEmployees)->map(function ($member) {

@@ -21,7 +21,7 @@ class AttachProjectEmployee extends Controller
         $attribute = $request->validated();
         try {
             DB::transaction(function () use ($project, $attribute) {
-                $project->projet_has_employees()->sync($attribute["employee_id"]);
+                $project->project_has_employees()->sync($attribute["employee_id"]);
             });
         } catch (Exception $e) {
             throw new TransactionFailedException("Update transaction failed.", 500, $e);
