@@ -75,6 +75,7 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
+// use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -206,6 +207,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
+        Route::get('list', ProjectListController::class);
         Route::put('attach-employee/{projectMonitoringId}', AttachProjectEmployee::class);
         Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
         Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);
@@ -279,9 +281,6 @@ if (config()->get('app.artisan') == 'true') {
 Route::prefix('face-pattern')->group(function () {
     Route::resource('resource', EmployeeFacePattern::class);
 });
-// Route::prefix('project-monitoring')->group(function () {
-//     Route::get('list', ProjectController::class, 'getProject');
-// });
 Route::prefix("department")->group(function () {
     Route::get('list', [DepartmentController::class, 'getList']);
 });
