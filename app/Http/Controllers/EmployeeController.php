@@ -92,6 +92,7 @@ class EmployeeController extends Controller
                 "nick_name" => $employee->nick_name,
                 "gender" => $employee->gender,
                 "department" => $department,
+                "current_employment" => $employee->current_employment,
                 "project" => $project ? [
                     "id" => $project->id,
                     "code" => $project->code,
