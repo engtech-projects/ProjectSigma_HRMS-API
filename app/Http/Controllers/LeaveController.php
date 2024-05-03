@@ -77,7 +77,7 @@ class LeaveController extends Controller
             $valData = $request->validated();
             if ($valData) {
                 $leave->fill($valData);
-                $leave->employment_type = json_encode($request->employment_type);
+                $leave->employment_status = json_encode($request->employment_status);
                 if ($leave->save()) {
                     $data->message = "Successfully update.";
                     $data->success = true;
