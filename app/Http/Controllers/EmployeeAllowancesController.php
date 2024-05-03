@@ -113,14 +113,12 @@ class EmployeeAllowancesController extends Controller
                         }
                         return new JsonResponse([
                             'success' => false,
-                            'error' => 'Employee ' . $data->fullname_first . " doesn't have a position",
-                            'message' => 'Failed save.',
+                            'message' => 'Employee ' . $data->fullname_first . " doesn't have a position",
                         ], 400);
                     } else {
                         return new JsonResponse([
                             'success' => false,
-                            'error' => 'User ' . $data->fullname_first . " not found as not a current employee",
-                            'message' => 'Failed save.',
+                            'message' => 'User ' . $data->fullname_first . " not found as not a current employee",
                         ], 400);
                     }
                 }
