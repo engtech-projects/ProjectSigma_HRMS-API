@@ -77,7 +77,7 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::with(['current_employment', 'employee_has_projects'])->get();
+        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects'])->get();
         $employeeCollection = collect($employeeList)->map(function ($employee) {
             $department = $employee->current_employment?->employee_department;
             $project = $employee->employee_has_projects->last();
@@ -166,6 +166,7 @@ class EmployeeController extends Controller
             "employee_externalwork",
             "images",
         )->find($id);
+
 
         $data = json_decode('{}');
         if (!is_null($main)) {
