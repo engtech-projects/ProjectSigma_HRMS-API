@@ -43,8 +43,8 @@ trait Attendance
     {
 
         $regOT = 0;
+        $regHolidayOT = 0;
         $specHolidayOT = 0;
-        $travelOrder = 0;
         foreach ($data["schedule"] as $schedule) {
             $scheduleDate = Carbon::parse($schedule["startRecur"]);
 
@@ -53,17 +53,20 @@ trait Attendance
                 if ($scheduleDate->isSameDay($overtimeDate)) {
                     $startTime = Carbon::parse($otValue["overtime_start_time"]);
                     $endTime = Carbon::parse($otValue["overtime_end_time"]);
-                    if ($this->scheduleHaveEvent($data["events"], $overtimeDate)) {
-                        $specHolidayOT += $startTime->diffInHours($endTime);
-                    } else {
-                        $regOT += $startTime->diffInHours($endTime);
+                    if ($this->scheduleHaveTravelOrder($data["travel_orders"], $overtimeDate)) {
+                        if ($this->scheduleHaveEvent($data["events"], $overtimeDate)) {
+                            $regHolidayOT += $startTime->diffInHours($endTime);
+                        } else {
+                            $regOT += $startTime->diffInHours($endTime);
+                        }
                     }
                 }
             }
         }
         return [
             "reg_OT" => $regOT,
-            "reg_holiday_OT" => $specHolidayOT
+            "reg_holiday_OT" => $specHolidayOT,
+            "spec_holiday_OT" => $specHolidayOT
         ];
     }
 
