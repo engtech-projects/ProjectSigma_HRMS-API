@@ -280,7 +280,7 @@ Route::prefix('face-pattern')->group(function () {
     Route::resource('resource', EmployeeFacePattern::class);
 });
 Route::prefix('project-monitoring')->group(function () {
-    Route::get('list', ProjectListController::class);
+    Route::get('list', ProjectController::class, 'getProject');
 });
 Route::prefix("position")->group(function () {
     Route::get('list', [PositionController::class, 'get']);

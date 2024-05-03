@@ -84,4 +84,16 @@ class ProjectController extends Controller
             "message" => "Successfully deleted.",
         ], JsonResponse::HTTP_OK);
     }
+
+    public function getProject()
+    {
+        $project = $this->projectService->getAll();
+        $collection = collect(ProjectResource::collection($project));
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetch.",
+            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+        ], JsonResponse::HTTP_OK);
+    }
 }
