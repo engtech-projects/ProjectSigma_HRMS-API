@@ -282,8 +282,8 @@ Route::prefix('face-pattern')->group(function () {
 // Route::prefix('project-monitoring')->group(function () {
 //     Route::get('list', ProjectController::class, 'getProject');
 // });
-Route::prefix("position")->group(function () {
-    Route::get('list', [PositionController::class, 'get']);
+Route::prefix("department")->group(function () {
+    Route::get('list', [DepartmentController::class, 'getList']);
 });
 Route::prefix('attendance')->group(function () {
     Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
