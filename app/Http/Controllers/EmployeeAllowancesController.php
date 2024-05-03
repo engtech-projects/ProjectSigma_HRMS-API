@@ -84,30 +84,46 @@ class EmployeeAllowancesController extends Controller
             if ($valData) {
                 foreach ($request["employees"] as $key) {
                     $data = Employee::with('current_employment.position.allowances')->find($key);
-                    $data_amt = $data->current_employment->position->allowances->amount;
-                    $employee_allowance = new EmployeeAllowances();
-                    $type = $request["group_type"];
-                    switch ($type) {
-                        case AssignTypes::DEPARTMENT->value:
-                            $employee_allowance->charge_assignment_type = EmployeeAllowancesController::DEPARTMENT;
-                            $employee_allowance->charge_assignment_id = $request["department_id"];
-                            break;
-                        case AssignTypes::PROJECT->value:
-                            $employee_allowance->charge_assignment_type = EmployeeAllowancesController::PROJECT;
-                            $employee_allowance->charge_assignment_id = $request["project_id"];
-                            break;
+                    if ($data->current_employment) {
+                        if ($data->current_employment->position_id) {
+                            $data_amt = $data->current_employment->position->allowances->amount;
+                            $employee_allowance = new EmployeeAllowances();
+                            $type = $request["group_type"];
+                            switch ($type) {
+                                case AssignTypes::DEPARTMENT->value:
+                                    $employee_allowance->charge_assignment_type = EmployeeAllowancesController::DEPARTMENT;
+                                    $employee_allowance->charge_assignment_id = $request["department_id"];
+                                    break;
+                                case AssignTypes::PROJECT->value:
+                                    $employee_allowance->charge_assignment_type = EmployeeAllowancesController::PROJECT;
+                                    $employee_allowance->charge_assignment_id = $request["project_id"];
+                                    break;
+                            }
+                            $employee_allowance->allowance_date = $request["allowance_date"];
+                            $employee_allowance->cutoff_start = $request["cutoff_start"];
+                            $employee_allowance->cutoff_end = $request["cutoff_end"];
+                            $employee_allowance->total_days = $request["total_days"];
+                            $employee_allowance->allowance_amount = $data_amt;
+                            $employee_allowance->save();
+
+                            return new JsonResponse([
+                                'success' => true,
+                                'message' => 'Successfully save.',
+                            ], JsonResponse::HTTP_OK);
+                        }
+                        return new JsonResponse([
+                            'success' => false,
+                            'error' => 'Employee ' . $data->fullname_first . " doesn't have a position",
+                            'message' => 'Failed save.',
+                        ], 400);
+                    } else {
+                        return new JsonResponse([
+                            'success' => false,
+                            'error' => 'User ' . $data->fullname_first . " not found as not a current employee",
+                            'message' => 'Failed save.',
+                        ], 400);
                     }
-                    $employee_allowance->allowance_date = $request["allowance_date"];
-                    $employee_allowance->cutoff_start = $request["cutoff_start"];
-                    $employee_allowance->cutoff_end = $request["cutoff_end"];
-                    $employee_allowance->total_days = $request["total_days"];
-                    $employee_allowance->allowance_amount = $data_amt;
-                    $employee_allowance->save();
                 }
-                return new JsonResponse([
-                    'success' => true,
-                    'message' => 'Successfully save.',
-                ], JsonResponse::HTTP_OK);
             }
         } catch (\Throwable $th) {
             return new JsonResponse([
