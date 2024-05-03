@@ -282,7 +282,7 @@ Route::prefix('face-pattern')->group(function () {
     Route::resource('resource', EmployeeFacePattern::class);
 });
 Route::prefix("department")->group(function () {
-    Route::get('list', [DepartmentController::class, 'getList']);
+    Route::get('lists', [DepartmentController::class, 'getList']);
 });
 Route::prefix('attendance')->group(function () {
     Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
