@@ -89,9 +89,7 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::prefix('face-pattern')->group(function () {
-    Route::resource('resource', EmployeeFacePattern::class);
-});
+
 Route::middleware('auth:sanctum')->group(function () {
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -209,7 +207,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
-        Route::get('list', ProjectListController::class);
         Route::put('attach-employee/{projectMonitoringId}', AttachProjectEmployee::class);
         Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
         Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);
@@ -283,3 +280,11 @@ if (config()->get('app.artisan') == 'true') {
         });
     });
 }
+
+//public
+Route::prefix('face-pattern')->group(function () {
+    Route::resource('resource', EmployeeFacePattern::class);
+});
+Route::prefix('project-monitoring')->group(function () {
+    Route::get('list', ProjectListController::class);
+});
