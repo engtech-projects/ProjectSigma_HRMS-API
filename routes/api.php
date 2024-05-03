@@ -279,9 +279,9 @@ if (config()->get('app.artisan') == 'true') {
 Route::prefix('face-pattern')->group(function () {
     Route::resource('resource', EmployeeFacePattern::class);
 });
-Route::prefix('project-monitoring')->group(function () {
-    Route::get('list', ProjectController::class, 'getProject');
-});
+// Route::prefix('project-monitoring')->group(function () {
+//     Route::get('list', ProjectController::class, 'getProject');
+// });
 Route::prefix("position")->group(function () {
     Route::get('list', [PositionController::class, 'get']);
 });
