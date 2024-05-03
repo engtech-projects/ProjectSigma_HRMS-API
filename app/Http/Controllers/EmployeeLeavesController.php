@@ -39,19 +39,26 @@ class EmployeeLeavesController extends Controller
     public function store(StoreEmployeeLeavesRequest $request)
     {
         $main = new EmployeeLeaves();
-        $main->fill($request->validated());
-        $main->request_status = RequestStatusType::PENDING;
-        $data = json_decode('{}');
+        $valData = $request->validated();
 
-        if (!$main->save()) {
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        if ($valData) {
+            $main->fill($valData);
+            $main->request_status = RequestStatusType::PENDING;
+            $data = json_decode('{}');
+
+            if (!$main->save()) {
+                $data->message = "Save failed.";
+                $data->success = false;
+                return response()->json($data, 400);
+            }
+            $data->message = "Successfully save.";
+            $data->success = true;
+            $data->data = $main;
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+
+        $data->message = "Save failed.";
+        $data->success = false;
+        return response()->json($data, 400);
     }
 
     /**
