@@ -6,15 +6,18 @@ use App\Enums\EmployeeAddressType;
 use App\Enums\EmployeeEducationType;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\EmployeeStudiesType;
+use App\Enums\ProjectStatusType;
 use App\Http\Requests\BulkValidationRequest;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\Project;
 use App\Models\SalaryGradeLevel;
 use App\Models\SalaryGradeStep;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class EmployeeBulkUploadController extends Controller
@@ -114,7 +117,7 @@ class EmployeeBulkUploadController extends Controller
         'position',
         'section_program',
         'department',
-        'division',
+        'section_project_code',
         'immediate_supervisor',
         'salary_grade_level',
         'salary_grade_step',
@@ -213,6 +216,7 @@ class EmployeeBulkUploadController extends Controller
     {
         set_time_limit(99999);
         $errorList = [];
+        $url = config()->get('services.url.projects_api_url');
         $validatedData = $request->validated();
         if ($validatedData['employees_data']) {
             foreach (json_decode($validatedData['employees_data'], true) as $data) {
@@ -319,22 +323,28 @@ class EmployeeBulkUploadController extends Controller
                         'status' => 'N/A',
                         'membership_exp_date' => null,
                     ];
-                    $departmentId = $this->getDepartmentId($data['department']);
-                    $postionId = $this->getPositionId($data['position'], $departmentId);
-                    $getSalaryStep = $this->getSalaryStep($this->getSalaryGradeLevelId($data['salary_grade_level']));
-                    $internalRecord = [
-                        'position_id' => $postionId,
-                        'employment_status' => $data['employment_status'],
-                        'department_id' => $departmentId,
-                        'immediate_supervisor' => $data['immediate_supervisor'],
-                        'actual_salary' =>  $getSalaryStep ? $getSalaryStep->monthly_salary_amount : null,
-                        'salary_grades' => $getSalaryStep ? $getSalaryStep->id : null,
-                        'work_location' => 'N/A',
-                        'hire_source' => 'Internal',
-                        'status' => $data['employment_status'],
-                        'date_from' => null,
-                        'date_to' => null,
-                    ];
+                    if ( $data['work_location'] === 'project' && $data['work_location'] === 'PROJECT')
+                    {
+                        $project_id = $this->getProjectId($data['section_project_code']);
+                    }else{
+                        $departmentId = $this->getDepartmentId($data['section_project_code']);
+                        $postionId = $this->getPositionId($data['position'], $departmentId);
+                        $getSalaryStep = $this->getSalaryStep($this->getSalaryGradeLevelId($data['salary_grade_level']));
+                        $internalRecord = [
+                            'position_id' => $postionId,
+                            'employment_status' => $data['employment_status'],
+                            'department_id' => $departmentId,
+                            'immediate_supervisor' => $data['immediate_supervisor'],
+                            'actual_salary' =>  $getSalaryStep ? $getSalaryStep->monthly_salary_amount : null,
+                            'salary_grades' => $getSalaryStep ? $getSalaryStep->id : null,
+                            'work_location' => $data['work_location'],
+                            'hire_source' => 'Internal',
+                            'status' => $data['employment_status'],
+                            'date_from' => null,
+                            'date_to' => null,
+                        ];
+                    }
+
 
                     //elementary
                     $employeeEducation[] = [
@@ -486,13 +496,18 @@ class EmployeeBulkUploadController extends Controller
                     try {
                         $employee->company_employments()->create($data);
                         $employee->employee_externalwork()->create($externalEmployee);
-                        $employee->employee_internal()->create($internalRecord);
                         $employee->employee_address()->create($address_pre);
                         $employee->employee_affiliation()->create($affiliation);
                         $employee->employee_eligibility()->createMany($eligibility);
                         $employee->employee_related_person()->createMany($employeeRelatedPerson);
                         $employee->employee_education()->createMany($employeeEducation);
                         $employee->employee_studies()->createMany($studies);
+                        if ( $data['work_location'] === 'project' && $data['work_location'] === 'PROJECT')
+                        {
+                            $employee->employee_has_projects()->attach(['project_id' => $project_id]);
+                        }else{
+                            $employee->employee_internal()->create($internalRecord);
+                        }
                         DB::commit();
                     } catch (Exception $th) {
                         array_push($errorList, [
@@ -531,6 +546,11 @@ class EmployeeBulkUploadController extends Controller
     }
     public function getDepartmentId($department = null) {
         $data = Department::where('department_name', $department)->first();
+        return $data ? $data->id : null;
+    }
+    public function getProjectId($projectCode)
+    {
+        $data = Project::where('project_code', $projectCode)->first();
         return $data ? $data->id : null;
     }
     public function getSalaryGradeLevelId($salaryGradeLevel)
