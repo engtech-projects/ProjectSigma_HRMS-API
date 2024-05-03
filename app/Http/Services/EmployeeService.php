@@ -13,11 +13,11 @@ class EmployeeService
     public function employeeDTR($employee, $date)
     {
         $date = Carbon::parse($date);
-        $dtrSchedule = $employee->dtrSchedule($date);
-        $dtrEvents = $this->dtrEvents($date);
-        $dtrAttendance = $this->dtrAttendance($employee, $date);
+        $dtrSchedule = $employee->dtrSchedule($employee, $date);
+        $dtrEvents = $employee->dtrEvents($date);
+        $dtrAttendance = $employee->dtrAttendance($employee, $date);
         $attendanceMetadata = $this->getWorkingInterval($dtrAttendance);
-        $dtrOvertime = $this->dtrOvertime($employee, $date);
+        $dtrOvertime = $employee->dtrOvertime($employee, $date);
         $overtimeMetadata = $this->getRegOvertime([
             "schedule" => $dtrSchedule,
             "events" => $dtrEvents,
@@ -29,8 +29,7 @@ class EmployeeService
             "attendance" => $dtrAttendance,
             "ovetime" => $dtrOvertime,
             "leave" => $employee->dtrLeave($date),
-            "events" => $this->dtrEvents($date),
-
+            "events" => $dtrEvents,
             "metadata" => [
                 "regular_hrs" => $attendanceMetadata->totalHours,
                 "regular_holiday_hrs" => 0,
@@ -41,26 +40,5 @@ class EmployeeService
 
             ]
         ];
-    }
-
-    public function dtrSchedule($employee, $date)
-    {
-        $schedule = $employee->employee_schedule()->where('startRecur', $date)->get();
-        return $schedule;
-    }
-    public function dtrAttendance($employee, $date)
-    {
-        $attendance = $employee->attendance_log()->where('date', $date)->get();
-        return $attendance;
-    }
-    public function dtrOvertime($employee, $date)
-    {
-        $overtime = $employee->employee_overtime()->where('overtime_date', $date)->approved()->get();
-        return $overtime;
-    }
-
-    public function dtrEvents($date)
-    {
-        return Events::whereDate('start_date', '<=', $date)->whereDate('end_date', '>=', $date)->get();
     }
 }
