@@ -110,7 +110,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
         Route::resource('resource', PositionController::class);
-        Route::get('list', [PositionController::class, 'get']);
     });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
@@ -265,12 +264,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::prefix('attendance')->group(
-    function () {
-        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
-        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
-    }
-);
+
 
 if (config()->get('app.artisan') == 'true') {
     Route::prefix('artisan')->group(function () {
@@ -287,4 +281,11 @@ Route::prefix('face-pattern')->group(function () {
 });
 Route::prefix('project-monitoring')->group(function () {
     Route::get('list', ProjectListController::class);
+});
+Route::prefix("position")->group(function () {
+    Route::get('list', [PositionController::class, 'get']);
+});
+Route::prefix('attendance')->group(function () {
+    Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+    Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
 });
