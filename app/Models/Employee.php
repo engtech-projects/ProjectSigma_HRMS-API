@@ -317,7 +317,10 @@ class Employee extends Model
     }
     public function dtrLeave($date)
     {
-        $leave = $this->employee_leave('leave_date', $date)->withPayLeave()->approved()->get();
-        return $leave;
+        return $this->employee_leave()->where('date_of_absence_from', '<=', $date)
+            ->where('date_of_absence_to', '>=', $date)
+            ->where('request_status', 'Approved')
+            ->where('with_pay', 1)
+            ->get();
     }
 }

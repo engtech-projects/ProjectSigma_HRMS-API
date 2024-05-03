@@ -28,7 +28,7 @@ class EmployeeService
             "schedule" => $dtrSchedule,
             "attendance" => $dtrAttendance,
             "ovetime" => $dtrOvertime,
-            "leave" => $employee->dtrLeave($employee, $date),
+            "leave" => $employee->dtrLeave($date),
             "events" => $this->dtrEvents($date),
 
             "metadata" => [

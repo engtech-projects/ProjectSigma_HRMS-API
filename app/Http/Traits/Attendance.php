@@ -52,7 +52,7 @@ trait Attendance
                     $startTime = Carbon::parse($otValue["overtime_start_time"]);
                     $endTime = Carbon::parse($otValue["overtime_end_time"]);
                     if ($this->isHaveEvent($data["events"], $overtimeDate)) {
-                        $specHolidayOT += $startTime->diffInMinutes($endTime);
+                        $specHolidayOT += $startTime->diffInHours($endTime);
                     } else {
                         $regOT += $startTime->diffInHours($endTime);
                     }
