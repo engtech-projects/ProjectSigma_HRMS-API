@@ -89,6 +89,9 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::prefix('face-pattern')->group(function () {
+    Route::resource('resource', EmployeeFacePattern::class);
+});
 Route::middleware('auth:sanctum')->group(function () {
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -175,10 +178,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('salary')->group(function () {
         Route::resource('resource', SalaryGradeLevelController::class);
         Route::get('list', SalaryGradeLevelListController::class);
-    });
-
-    Route::prefix('face-pattern')->group(function () {
-        Route::resource('resource', EmployeeFacePattern::class);
     });
 
     Route::prefix("hmo")->group(function () {
