@@ -67,6 +67,7 @@ use App\Http\Controllers\Actions\Employee\{
 use App\Http\Controllers\Actions\GeneratePayrollController;
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
+use App\Http\Controllers\AttendancePortalController;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ExternalWorkExperienceController;
@@ -264,6 +265,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('payroll')->group(function () {
         Route::post('generate-payroll', GeneratePayrollController::class);
     });
+
+    Route::prefix('attendance-portal')->group(function () {
+        Route::resource('resource', AttendancePortalController::class);
+    });
 });
 
 
@@ -281,6 +286,7 @@ if (config()->get('app.artisan') == 'true') {
 Route::prefix('face-pattern')->group(function () {
     Route::resource('resource', EmployeeFacePattern::class);
 });
+
 Route::prefix("department")->group(function () {
     Route::get('list/v2', [DepartmentController::class, 'get']);
 });

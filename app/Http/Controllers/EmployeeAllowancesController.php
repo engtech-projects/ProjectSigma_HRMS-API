@@ -86,6 +86,7 @@ class EmployeeAllowancesController extends Controller
                     $data = Employee::with('current_employment.position.allowances')->find($key);
                     if ($data->current_employment) {
                         if ($data->current_employment->position_id) {
+
                             $data_amt = $data->current_employment->position->allowances->amount;
                             $employee_allowance = new EmployeeAllowances();
                             $type = $request["group_type"];
