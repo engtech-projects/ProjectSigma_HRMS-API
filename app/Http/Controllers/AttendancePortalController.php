@@ -35,6 +35,7 @@ class AttendancePortalController extends Controller
         try {
             if ($valData) {
                 $data = new AttendancePortal();
+                $data->fill($valData);
                 $type = $request["group_type"];
                 switch ($type) {
                     case AssignTypes::DEPARTMENT->value:
@@ -80,9 +81,41 @@ class AttendancePortalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAttendancePortalRequest $request, AttendancePortal $attendancePortal)
+    public function update(UpdateAttendancePortalRequest $request, $id)
     {
-        //
+        $main = AttendancePortal::find($id);
+        $valData = $request->validated();
+        try {
+            if ($valData) {
+                if (!is_null($main)) {
+                    $main->fill($valData);
+                    $type = $request["group_type"];
+                    switch ($type) {
+                        case AssignTypes::DEPARTMENT->value:
+                            $main->assignment_type = EmployeeAllowancesController::DEPARTMENT;
+                            $main->assignment_id = $request["department_id"];
+                            break;
+                        case AssignTypes::PROJECT->value:
+                            $main->assignment_type = EmployeeAllowancesController::PROJECT;
+                            $main->assignment_id = $request["project_id"];
+                            break;
+                    }
+
+                    if ($main->save()) {
+                        return new JsonResponse([
+                            'success' => true,
+                            'message' => 'Successfully save.',
+                        ], JsonResponse::HTTP_OK);
+                    }
+                }
+            }
+        } catch (\Throwable $th) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $th->getMessage(),
+                'message' => 'Failed save.',
+            ], 400);
+        }
     }
 
     /**
