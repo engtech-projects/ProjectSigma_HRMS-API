@@ -75,7 +75,7 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
-// use App\Http\Controllers\ProjectListController as ViewProjectListController;
+use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -287,4 +287,9 @@ Route::prefix("department")->group(function () {
 Route::prefix('attendance')->group(function () {
     Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
     Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+});
+
+
+Route::prefix('project-monitoring')->group(function () {
+    Route::get('lists', ViewProjectListController::class);
 });
