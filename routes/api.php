@@ -289,6 +289,7 @@ Route::prefix('attendance')->group(function () {
     Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
 });
 
+Route::resource('employee/resource/v2', EmployeeController::class);
 
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
