@@ -30,6 +30,7 @@ return new class extends Migration
             $table->double('installment_amount');
             $table->dropColumn("amount");
             $table->dropColumn('deduction_date_start');
+            $table->dropColumn('installment_deduction');
         });
     }
 };

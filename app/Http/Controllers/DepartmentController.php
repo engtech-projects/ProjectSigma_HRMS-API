@@ -7,6 +7,7 @@ use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
 use App\Models\Employee;
 use App\Models\InternalWorkExperience;
+use App\Models\Position;
 use Illuminate\Http\JsonResponse;
 
 class DepartmentController extends Controller
@@ -116,5 +117,15 @@ class DepartmentController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function getList()
+    {
+        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
     }
 }

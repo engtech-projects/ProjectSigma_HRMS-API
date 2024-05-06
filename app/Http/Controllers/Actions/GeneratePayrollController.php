@@ -1,28 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Actions\Attendance;
+namespace App\Http\Controllers\Actions;
 
 use App\Helpers;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GenerateDtrRequest;
-use App\Http\Resources\AttendanceLogResource;
-use App\Http\Resources\EmployeeLeaveResource;
-use App\Http\Resources\InternalWorkExpResource;
-use App\Http\Resources\OvertimeResource;
+use App\Http\Requests\GeneratePayrollRequest;
 use App\Http\Services\EmployeeService;
+use App\Http\Traits\Attendance;
+use App\Http\Traits\DailyTimeRecord;
 use App\Models\Employee;
+use App\Models\Events;
 use Illuminate\Http\JsonResponse;
 
-
-class EmployeeDtrController extends Controller
+class GeneratePayrollController extends Controller
 {
-
     /**
      * Handle the incoming request.
      */
-
     protected $employeeService;
-    public function __invoke(GenerateDtrRequest $request, EmployeeService $employeeService)
+    protected $attendance;
+    public function __invoke(GeneratePayrollRequest $request, EmployeeService $employeeService)
     {
         $this->employeeService = $employeeService;
         $filters = $request->validated();

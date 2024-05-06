@@ -27,18 +27,25 @@ class LeaveController extends Controller
     public function store(StoreLeaveRequest $request)
     {
         $leave = new Leave();
-        $leave->fill($request->validated());
-        $leave->employment_type = json_encode($request->employment_type);
+        $valData = $request->validated();
+
         $data = json_decode('{}');
-        if (!$leave->save()) {
+        if ($valData) {
+            $leave->fill($valData);
+            $leave->employment_status = json_encode($request->employment_status);
+            if ($leave->save()) {
+                $data->message = "Successfully save.";
+                $data->success = true;
+                $data->data = $leave;
+                return response()->json($data);
+            }
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $leave;
-        return response()->json($data);
+        $data->message = "Save failed.";
+        $data->success = false;
+        return response()->json($data, 400);
     }
 
     /**
@@ -67,17 +74,20 @@ class LeaveController extends Controller
         $leave = Leave::find($id);
         $data = json_decode('{}');
         if (!is_null($leave)) {
-            $leave->fill($request->validated());
-            $leave->employment_type = json_encode($request->employment_type);
-            if ($leave->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $leave;
-                return response()->json($data);
+            $valData = $request->validated();
+            if ($valData) {
+                $leave->fill($valData);
+                $leave->employment_status = json_encode($request->employment_status);
+                if ($leave->save()) {
+                    $data->message = "Successfully update.";
+                    $data->success = true;
+                    $data->data = $leave;
+                    return response()->json($data);
+                }
+                $data->message = "Failed update.";
+                $data->success = false;
+                return response()->json($data, 400);
             }
-            $data->message = "Failed update.";
-            $data->success = false;
-            return response()->json($data, 400);
         }
         $data->message = "Failed update.";
         $data->success = false;

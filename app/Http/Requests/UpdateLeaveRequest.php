@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EmploymentType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateLeaveRequest extends FormRequest
 {
@@ -12,6 +14,15 @@ class UpdateLeaveRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation()
+    {
+        if (gettype($this->employment_status) == "string") {
+            $this->merge([
+                "employment_status" => json_decode($this->employment_status, true),
+            ]);
+        }
     }
 
     /**
@@ -31,11 +42,15 @@ class UpdateLeaveRequest extends FormRequest
                 "nullable",
                 "integer",
             ],
-            'employment_type' => [
+            'employment_status' => [
                 "nullable",
                 "array",
-                'in:Probationary,Regular/FullTime,Part Time,Project Based,Contractual'
-            ]
+            ],
+            'employment_status.*' => [
+                "nullable",
+                "string",
+                new Enum(EmploymentType::class)
+            ],
         ];
     }
 }

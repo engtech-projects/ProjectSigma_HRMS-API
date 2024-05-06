@@ -34,15 +34,17 @@ class EmployeeRelatedperson extends Model
         }
         return null;
     }
+
     // protected function age(): Attribute
     // {
     //     return new Attribute(
     //         get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
     //     );
     // }
+
     protected function getAddressAttribute()
     {
-        return $this->street . $this->brgy . $this->city . $this->zip . $this->province;
+        return implode(" ", array($this->street, $this->brgy, $this->city, $this->zip, $this->province));
     }
 
     protected $fillable = [

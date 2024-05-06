@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EmploymentType;
+use App\Enums\InternalWorkExpEmployeeStatus;
+use App\Enums\InternalWorkExpStatus;
 use App\Enums\LeaveRequestType;
 use App\Models\Employee;
 use App\Enums\SearchTypes;
@@ -17,6 +20,7 @@ use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
 use App\Models\Schedule;
+use Database\Factories\InternalWorkExperienceFactory;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Integer;
 
@@ -73,7 +77,7 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::with(['current_employment', 'employee_has_projects'])->get();
+        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects'])->get();
         $employeeCollection = collect($employeeList)->map(function ($employee) {
             $department = $employee->current_employment?->employee_department;
             $project = $employee->employee_has_projects->last();
@@ -88,6 +92,7 @@ class EmployeeController extends Controller
                 "nick_name" => $employee->nick_name,
                 "gender" => $employee->gender,
                 "department" => $department,
+                "current_employment" => $employee->current_employment,
                 "project" => $project ? [
                     "id" => $project->id,
                     "code" => $project->code,
@@ -161,6 +166,7 @@ class EmployeeController extends Controller
             "employee_externalwork",
             "images",
         )->find($id);
+
 
         $data = json_decode('{}');
         if (!is_null($main)) {
@@ -297,24 +303,33 @@ class EmployeeController extends Controller
 
     public function getLeaveCredits($id)
     {
-        $val = Employee::find($id);
+        $val = Employee::with("current_employment")->find($id);
+        $leaves_type = Leave::get();
         if ($val) {
             $main = [];
-            foreach (LeaveRequestType::cases() as $key) {
-                $data = json_decode('{}');
-                $count = EmployeeLeaves::where([
-                    ["type", $key],
-                    ["request_status", "Approved"],
-                ])->count();
-                $leave = Leave::where("employment_type", $key)->get();
-                if (!$leave->isEmpty()) {
-                    $data->leavename = $leave->leave_name;
-                    $data->total_credits = $leave->amt_of_leave;
-                    $data->used = $count;
-                    $data->balance = $leave->amt_of_leave - $count;
-                    array_push($main, $data);
+            $data = json_decode('{}');
+            foreach ($leaves_type as $key) {
+                if (gettype($key->employment_status) == "string") {
+                    $type = json_decode($key->employment_status);
+                    if ($val->current_employment) {
+                        if (in_array($val->current_employment->employment_status, $type)) {
+                            $count = EmployeeLeaves::where([
+                                ["leave_id", $key->id],
+                                ["request_status", "Approved"],
+                            ])->max('number_of_days');
+                            $leave = Leave::find($key->id);
+                            if ($leave) {
+                                $data->leavename = $leave->leave_name;
+                                $data->total_credits = $leave->amt_of_leave;
+                                $data->used = $count;
+                                $data->balance = $leave->amt_of_leave - $count;
+                                array_push($main, $data);
+                            }
+                        }
+                    }
                 }
             }
+
             if ($main) {
                 return new JsonResponse([
                     'success' => 'true',

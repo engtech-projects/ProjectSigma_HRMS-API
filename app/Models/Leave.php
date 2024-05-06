@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,6 @@ use Laravel\Sanctum\HasApiTokens;
 class Leave extends Model
 {
     use SoftDeletes;
-    use HasApproval;
 
     protected $table = "leaves";
 
@@ -21,11 +21,11 @@ class Leave extends Model
         'id',
         'leave_name',
         'amt_of_leave',
-        'employment_type',
+        'employment_status',
     ];
 
     protected $casts = [
-        'employment_type' => 'array'
+        'employment_status' => 'array'
     ];
 
     /**

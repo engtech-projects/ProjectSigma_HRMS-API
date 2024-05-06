@@ -7,4 +7,6 @@ enum EmploymentStatus: string
     case PROBATIONARY = "Probationary";
     case REGULAR = "Regular";
     case PROJECT_BASED = "Project Based";
+    case PART_TIME = "Part Time";
+    case CONTRACTUAL = "Contractual";
 }

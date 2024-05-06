@@ -64,6 +64,7 @@ use App\Http\Controllers\Actions\Employee\{
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
+use App\Http\Controllers\Actions\GeneratePayrollController;
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\CashAdvanceController;
@@ -74,6 +75,7 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
+use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -88,6 +90,7 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
+
 Route::middleware('auth:sanctum')->group(function () {
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -108,7 +111,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
         Route::resource('resource', PositionController::class);
-        Route::get('list', [PositionController::class, 'get']);
     });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
@@ -174,10 +176,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('salary')->group(function () {
         Route::resource('resource', SalaryGradeLevelController::class);
         Route::get('list', SalaryGradeLevelListController::class);
-    });
-
-    Route::prefix('face-pattern')->group(function () {
-        Route::resource('resource', EmployeeFacePattern::class);
     });
 
     Route::prefix("hmo")->group(function () {
@@ -262,14 +260,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
         Route::resource('resource', EmployeeAllowancesController::class);
     });
+
+    Route::prefix('payroll')->group(function () {
+        Route::post('generate-payroll', GeneratePayrollController::class);
+    });
 });
 
-Route::prefix('attendance')->group(
-    function () {
-        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
-        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
-    }
-);
+
 
 if (config()->get('app.artisan') == 'true') {
     Route::prefix('artisan')->group(function () {
@@ -279,3 +276,22 @@ if (config()->get('app.artisan') == 'true') {
         });
     });
 }
+
+//public
+Route::prefix('face-pattern')->group(function () {
+    Route::resource('resource', EmployeeFacePattern::class);
+});
+Route::prefix("department")->group(function () {
+    Route::get('list/v2', [DepartmentController::class, 'get']);
+});
+
+Route::prefix('attendance')->group(function () {
+    Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+    Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+});
+
+Route::resource('employee/resource/v2', EmployeeController::class);
+
+Route::prefix('project-monitoring')->group(function () {
+    Route::get('lists', ViewProjectListController::class);
+});

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FilterDtrRequest extends FormRequest
+class GenerateDtrRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -12,6 +12,13 @@ class FilterDtrRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'employee_ids' => json_decode($this->employee_ids, true),
+        ]);
     }
 
     /**
@@ -22,9 +29,9 @@ class FilterDtrRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start_date' => 'date_format:Y-m-d',
-            'end_date' => 'date_format:Y-m-d',
-            'employee_id' => 'required|integer',
+            'cutoff_start' => 'required|date_format:Y-m-d',
+            'cutoff_end' => 'required|date_format:Y-m-d',
+            'employee_ids' => 'required|array',
         ];
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait HasProjectEmployee
 {
-    public function projet_has_employees(): BelongsToMany
+    public function project_has_employees(): BelongsToMany
     {
         return $this->belongsToMany(Employee::class, 'project_employees')
             ->withPivot([
