@@ -88,6 +88,12 @@ class EmployeeAllowancesController extends Controller
                         if ($data->current_employment->position_id) {
 
                             $data_amt = $data->current_employment->position->allowances->amount;
+                            if ($data_amt == null) {
+                                return new JsonResponse([
+                                    'success' => false,
+                                    'message' => 'Allowance amount not found',
+                                ], 400);
+                            }
                             $employee_allowance = new EmployeeAllowances();
                             $type = $request["group_type"];
                             switch ($type) {
