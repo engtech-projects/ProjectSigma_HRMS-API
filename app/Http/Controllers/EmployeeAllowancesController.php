@@ -21,7 +21,12 @@ class EmployeeAllowancesController extends Controller
      */
     public function index()
     {
-        //
+        $main = EmployeeAllowances::with('charge_assignment')->get();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $main;
+        return response()->json($data);
     }
 
     /**
@@ -61,7 +66,7 @@ class EmployeeAllowancesController extends Controller
 
                 return new JsonResponse([
                     'success' => true,
-                    'message' => 'Successfully save.',
+                    'message' => 'Successfully fetch.',
                     'data' => $data,
                 ], JsonResponse::HTTP_OK);
             }
