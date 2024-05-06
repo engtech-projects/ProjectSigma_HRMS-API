@@ -227,6 +227,7 @@ class EmployeeBulkUploadController extends Controller
                 $collegeDates = [];
                 $vocationalDates = [];
                 $studies = [];
+                $eligibility = [];
                 $employeeRelatedPerson = [];
                 if ($data['_status'] == 'unduplicate') {
                     //insert
@@ -548,7 +549,7 @@ class EmployeeBulkUploadController extends Controller
         $data = Department::where('department_name', $department)->first();
         return $data ? $data->id : null;
     }
-    public function getProjectId($projectCode)
+    public function getProjectId($projectCode = null)
     {
         $data = Project::where('project_code', $projectCode)->first();
         return $data ? $data->id : null;
