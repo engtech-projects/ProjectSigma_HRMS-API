@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 
 class AttendancePortalController extends Controller
 {
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
     /**
      * Display a listing of the resource.
      */
@@ -42,11 +44,11 @@ class AttendancePortalController extends Controller
                 $type = $request["group_type"];
                 switch ($type) {
                     case AssignTypes::DEPARTMENT->value:
-                        $data->assignment_type = EmployeeAllowancesController::DEPARTMENT;
+                        $data->assignment_type = AttendancePortalController::DEPARTMENT;
                         $data->assignment_id = $request["department_id"];
                         break;
                     case AssignTypes::PROJECT->value:
-                        $data->assignment_type = EmployeeAllowancesController::PROJECT;
+                        $data->assignment_type = AttendancePortalController::PROJECT;
                         $data->assignment_id = $request["project_id"];
                         break;
                 }
@@ -99,11 +101,11 @@ class AttendancePortalController extends Controller
                     $type = $request["group_type"];
                     switch ($type) {
                         case AssignTypes::DEPARTMENT->value:
-                            $main->assignment_type = EmployeeAllowancesController::DEPARTMENT;
+                            $main->assignment_type = AttendancePortalController::DEPARTMENT;
                             $main->assignment_id = $request["department_id"];
                             break;
                         case AssignTypes::PROJECT->value:
-                            $main->assignment_type = EmployeeAllowancesController::PROJECT;
+                            $main->assignment_type = AttendancePortalController::PROJECT;
                             $main->assignment_id = $request["project_id"];
                             break;
                     }
