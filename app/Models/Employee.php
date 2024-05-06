@@ -286,14 +286,14 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeLeaves::class, 'employee_id');
     }
-    public function emploee_travel_order(): BelongsToMany
+    public function employee_travel_order(): BelongsToMany
     {
         return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id');
     }
 
     public function employee_overtime(): BelongsToMany
     {
-        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id', 'id');
+        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id');
     }
 
     public function employee_has_overtime(): BelongsToMany
