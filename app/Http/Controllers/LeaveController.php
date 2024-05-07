@@ -32,7 +32,6 @@ class LeaveController extends Controller
         $data = json_decode('{}');
         if ($valData) {
             $leave->fill($valData);
-            $leave->employment_status = json_encode($request->employment_status);
             if ($leave->save()) {
                 $data->message = "Successfully save.";
                 $data->success = true;
@@ -77,7 +76,6 @@ class LeaveController extends Controller
             $valData = $request->validated();
             if ($valData) {
                 $leave->fill($valData);
-                $leave->employment_status = json_encode($request->employment_status);
                 if ($leave->save()) {
                     $data->message = "Successfully update.";
                     $data->success = true;
