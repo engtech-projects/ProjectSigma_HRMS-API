@@ -43,7 +43,7 @@ class ApprovalsSeeder extends Seeder
                 [
                     'id' => 4,
                     'form' => "Leave",
-                    'approvals' => '[{"type": null, "user_id": null, "userselector": true}]',
+                    'approvals' => '[]',
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -90,10 +90,10 @@ class ApprovalsSeeder extends Seeder
                 ],
             ],
             [
-                'id', 'form'
+                'id'
             ],
             [
-                'approvals'
+                'form'
             ]
         );
     }

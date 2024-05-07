@@ -26,10 +26,10 @@ class SettingsSeeder extends Seeder
                 ]
             ],
             [
-                'id', 'setting_name'
+                'id'
             ],
             [
-                'value'
+                'setting_name'
             ]
         );
     }
