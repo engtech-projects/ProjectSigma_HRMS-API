@@ -358,25 +358,10 @@ class EmployeeController extends Controller
 
     public function getLeaveCredits(Employee $employee)
     {
-        $leaves_types = Leave::get();
-        $leaves = [];
-        foreach ($leaves_types as $leavetype) {
-            $leavetype->credits = $leavetype->amt_of_leave;
-            if (!collect($leavetype->employment_status)->contains($employee->current_employment->employment_status)) {
-                $leavetype->credits = 0;
-            }
-            $leavetype->used = $employee->employee_leave()
-                ->where("leave_id", $leavetype->id)
-                ->whereYear("date_of_absence_from", Carbon::now()->year)
-                ->withPayLeave()
-                ->approved()
-                ->sum("number_of_days");
-            $leavetype->balance = $leavetype->credits - $leavetype->used;
-        }
         return new JsonResponse([
             'success' => 'true',
             'message' => 'Successfully fetch.',
-            'data' => $leaves_types,
+            'data' => $employee->leaveCredits,
         ]);
     }
 }
