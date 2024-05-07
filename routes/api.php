@@ -307,7 +307,7 @@ Route::prefix('project-monitoring')->group(function () {
 });
 
 Route::get("testRequest", function(Request $request) {
-    var_dump($request);
+    return $request;
 });
 Route::get("testRequest2", function() {
     var_dump($_SERVER);
