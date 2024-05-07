@@ -78,7 +78,9 @@ class EmployeeController extends Controller
     public function get()
     {
         $employeeList = Employee::with(['current_employment.position', 'employee_has_projects'])->get();
+
         $employeeCollection = collect($employeeList)->map(function ($employee) {
+            // $leaveCredits = $this->getEmployeeLeaveCredits($employee);
             $department = $employee->current_employment?->employee_department;
             $project = $employee->employee_has_projects->last();
             return [
@@ -99,7 +101,8 @@ class EmployeeController extends Controller
                     "project_monitoring_id" => $project->project_monitoring_id,
                     "project_created_at" => $project->pivot->created_at,
                 ] : null,
-            ];
+                // "leaveCredits" => $leaveCredits,
+                ];
         });
 
         return new JsonResponse([
@@ -166,13 +169,13 @@ class EmployeeController extends Controller
             "employee_externalwork",
             "images",
         )->find($id);
-
-
+        $leaveCredits = $this->getEmployeeLeaveCredits($main);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main["age"] = $main->age;
             $main["profile_photo"] = $main->profile_photo;
             $main["digital_signature"] = $main->digital_signature;
+            $main["leaveCredits"] = $leaveCredits;
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = $main;
@@ -299,6 +302,40 @@ class EmployeeController extends Controller
             'message' => 'Successfully fetched.',
             'data' => $dataval
         ]);
+    }
+
+    public function getEmployeeLeaveCredits($val)
+    {
+        $leaves_type = Leave::get();
+        if ($val) {
+            $main = [];
+            $data = json_decode('{}');
+            foreach ($leaves_type as $key) {
+                if (gettype($key->employment_status) == "string") {
+                    $type = json_decode($key->employment_status);
+                    if ($val->current_employment) {
+                        if (in_array($val->current_employment->employment_status, $type)) {
+                            $count = EmployeeLeaves::where([
+                                ["leave_id", $key->id],
+                                ["request_status", "Approved"],
+                            ])->max('number_of_days');
+                            $leave = Leave::find($key->id);
+                            if ($leave) {
+                                $data->leavename = $leave->leave_name;
+                                $data->total_credits = $leave->amt_of_leave;
+                                $data->used = $count;
+                                $data->balance = $leave->amt_of_leave - $count;
+                                array_push($main, $data);
+                            }
+                        }
+                    }
+                }
+            }
+            if ($main) {
+               return $main;
+            }
+        }
+        return [];
     }
 
     public function getLeaveCredits($id)
