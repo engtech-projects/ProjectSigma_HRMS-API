@@ -369,6 +369,7 @@ class EmployeeController extends Controller
                 ->where("leave_id", $leavetype->id)
                 ->whereYear("date_of_absence_from", Carbon::now()->year)
                 ->withPayLeave()
+                ->approved()
                 ->sum("number_of_days");
             $leavetype->balance = $leavetype->credits - $leavetype->used;
         }
