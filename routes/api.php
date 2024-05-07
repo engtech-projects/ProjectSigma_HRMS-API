@@ -272,7 +272,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('face-pattern')->group(function () {
-        Route::resource('resource', EmployeeFacePattern::class);
+        Route::resource('resource', EmployeeFacePattern::class)->except("GET");
     });
 });
 
@@ -304,6 +304,10 @@ Route::resource('employee/resource/v2', EmployeeController::class);
 
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
+});
+
+Route::prefix('face-pattern')->group(function () {
+    Route::resource('list', EmployeeFacePattern::class)->only("GET");
 });
 
 Route::get("testRequest", function(Request $request) {
