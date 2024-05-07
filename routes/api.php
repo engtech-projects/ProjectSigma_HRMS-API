@@ -267,7 +267,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('attendance-portal')->group(function () {
-        Route::resource('resource', AttendancePortalController::class);
+        Route::resource('resource/{ip}', AttendancePortalController::class)->middleware('portal_in');
     });
 
     Route::prefix('face-pattern')->group(function () {
@@ -289,18 +289,18 @@ if (config()->get('app.artisan') == 'true') {
 //public
 
 Route::middleware('portal_in')->group(function () {
-    Route::prefix("department")->group(function () {
-        Route::get('list/v2', [DepartmentController::class, 'get']);
-    });
+});
+Route::prefix("department")->group(function () {
+    Route::get('list/v2', [DepartmentController::class, 'get']);
+});
 
-    Route::prefix('attendance')->group(function () {
-        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
-        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
-    });
+Route::prefix('attendance')->group(function () {
+    Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+    Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+});
 
-    Route::resource('employee/resource/v2', EmployeeController::class);
+Route::resource('employee/resource/v2', EmployeeController::class);
 
-    Route::prefix('project-monitoring')->group(function () {
-        Route::get('lists', ViewProjectListController::class);
-    });
+Route::prefix('project-monitoring')->group(function () {
+    Route::get('lists', ViewProjectListController::class);
 });

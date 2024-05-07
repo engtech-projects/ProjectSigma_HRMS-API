@@ -102,7 +102,7 @@ class EmployeeController extends Controller
                     "project_created_at" => $project->pivot->created_at,
                 ] : null,
                 // "leaveCredits" => $leaveCredits,
-                ];
+            ];
         });
 
         return new JsonResponse([
@@ -169,16 +169,15 @@ class EmployeeController extends Controller
             "employee_externalwork",
             "images",
         )->find($id);
-        $leaveCredits = $this->getEmployeeLeaveCredits($main);
+        $newData = $this->getEmployeeLeaveCredits($main);
         $data = json_decode('{}');
-        if (!is_null($main)) {
-            $main["age"] = $main->age;
-            $main["profile_photo"] = $main->profile_photo;
-            $main["digital_signature"] = $main->digital_signature;
-            $main["leaveCredits"] = $leaveCredits;
+        if (!is_null($newData)) {
+            $newData->employee->age = $main->age;
+            $newData->employee->profile_photo = $main->profile_photo;
+            $newData->employee->digital_signature = $main->digital_signature;
             $data->message = "Successfully fetch.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = $newData;
             return response()->json($data);
         }
         $data->message = "No data found.";
@@ -308,9 +307,10 @@ class EmployeeController extends Controller
     {
         $leaves_type = Leave::get();
         if ($val) {
-            $main = [];
-            $data = json_decode('{}');
+            $leavedata = [];
+            $getData = json_decode('{}');
             foreach ($leaves_type as $key) {
+                $data = json_decode('{}');
                 if (gettype($key->employment_status) == "string") {
                     $type = json_decode($key->employment_status);
                     if ($val->current_employment) {
@@ -323,19 +323,30 @@ class EmployeeController extends Controller
                             if ($leave) {
                                 $data->leavename = $leave->leave_name;
                                 $data->total_credits = $leave->amt_of_leave;
-                                $data->used = $count;
+                                $data->used = $count ?? 0;
                                 $data->balance = $leave->amt_of_leave - $count;
-                                array_push($main, $data);
+                                array_push($leavedata, $data);
                             }
+                        }
+                    } else {
+                        $leave = Leave::find($key->id);
+                        if ($leave) {
+                            $data->leavename = $leave->leave_name;
+                            $data->total_credits = $leave->amt_of_leave;
+                            $data->used = 0;
+                            $data->balance = $leave->amt_of_leave;
+                            array_push($leavedata, $data);
                         }
                     }
                 }
             }
-            if ($main) {
-               return $main;
+            $getData->employee = $val;
+            $getData->employee->leaveCredits = $leavedata;
+            if ($val) {
+                return $getData;
             }
         }
-        return [];
+        return $getData;
     }
 
     public function getLeaveCredits($id)
@@ -344,8 +355,10 @@ class EmployeeController extends Controller
         $leaves_type = Leave::get();
         if ($val) {
             $main = [];
-            $data = json_decode('{}');
+            $leavedata = [];
+            $getData = json_decode('{}');
             foreach ($leaves_type as $key) {
+                $data = json_decode('{}');
                 if (gettype($key->employment_status) == "string") {
                     $type = json_decode($key->employment_status);
                     if ($val->current_employment) {
@@ -358,16 +371,27 @@ class EmployeeController extends Controller
                             if ($leave) {
                                 $data->leavename = $leave->leave_name;
                                 $data->total_credits = $leave->amt_of_leave;
-                                $data->used = $count;
+                                $data->used = $count ?? 0;
                                 $data->balance = $leave->amt_of_leave - $count;
-                                array_push($main, $data);
+                                array_push($leavedata, $data);
                             }
+                        }
+                    } else {
+                        $leave = Leave::find($key->id);
+                        if ($leave) {
+                            $data->leavename = $leave->leave_name;
+                            $data->total_credits = $leave->amt_of_leave;
+                            $data->used = 0;
+                            $data->balance = $leave->amt_of_leave;
+                            array_push($leavedata, $data);
                         }
                     }
                 }
             }
-
-            if ($main) {
+            $getData->employee = $val;
+            $getData->employee->leaveCredits = $leavedata;
+            array_push($main, $getData);
+            if ($val) {
                 return new JsonResponse([
                     'success' => 'true',
                     'message' => 'Successfully fetch.',

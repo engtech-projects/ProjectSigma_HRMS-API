@@ -21,15 +21,15 @@ class PortalIPMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $get = AttendancePortal::first();
-        // if (in_array($request->ip(), $this->baseIp)) {
-        if($get){
-            if ($request->ip() == $get->ip_address) {
+        $ip = $request->route()->parameter('ip');
+        if ($get) {
+            if ($ip == $get->ip_address) {
                 return $next($request);
             }
         }
         return new JsonResponse([
             'success' => false,
             'message' => 'Access denied.',
-        ],JsonResponse::HTTP_FORBIDDEN);
+        ], JsonResponse::HTTP_FORBIDDEN);
     }
 }
