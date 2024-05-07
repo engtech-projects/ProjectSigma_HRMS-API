@@ -309,10 +309,3 @@ Route::prefix('project-monitoring')->group(function () {
 Route::prefix('face-pattern')->group(function () {
     Route::resource('list', EmployeeFacePattern::class)->only("GET");
 });
-
-Route::get("testRequest", function(Request $request) {
-    return $request;
-});
-Route::get("testRequest2", function() {
-    var_dump($_SERVER);
-});

@@ -17,8 +17,9 @@ class EmployeeFacePattern extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        dd($request);
         $data = json_decode('{}');
         $data = $this->facePatternService->getAll();
         $data->message = "Successfull Fetch";
