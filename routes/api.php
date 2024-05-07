@@ -272,7 +272,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('face-pattern')->group(function () {
-        Route::resource('resource', EmployeeFacePattern::class)->except("GET");
+        Route::resource('resource', EmployeeFacePattern::class);
     });
 });
 
@@ -307,5 +307,5 @@ Route::prefix('project-monitoring')->group(function () {
 });
 
 Route::prefix('face-pattern')->group(function () {
-    Route::resource('resource', EmployeeFacePattern::class)->only("GET");
+    Route::get('list', [EmployeeFacePattern::class, "index"]);
 });
