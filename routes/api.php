@@ -78,6 +78,7 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -300,4 +301,11 @@ Route::resource('employee/resource/v2', EmployeeController::class);
 
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
+});
+
+Route::get("testRequest", function(Request $request) {
+    dd($request->input());
+});
+Route::get("testRequest", function() {
+    dd($_SERVER);
 });
