@@ -269,6 +269,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('attendance-portal')->group(function () {
         Route::resource('resource', AttendancePortalController::class);
     });
+
+    Route::prefix('face-pattern')->group(function () {
+        Route::resource('resource', EmployeeFacePattern::class);
+    });
 });
 
 
@@ -285,9 +289,6 @@ if (config()->get('app.artisan') == 'true') {
 //public
 
 Route::middleware('portal_in')->group(function () {
-    Route::prefix('face-pattern')->group(function () {
-        Route::resource('resource', EmployeeFacePattern::class);
-    });
     Route::prefix("department")->group(function () {
         Route::get('list/v2', [DepartmentController::class, 'get']);
     });
@@ -303,4 +304,3 @@ Route::middleware('portal_in')->group(function () {
         Route::get('lists', ViewProjectListController::class);
     });
 });
-
