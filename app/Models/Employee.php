@@ -100,6 +100,7 @@ class Employee extends Model
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'profile_image');
     }
+
     public function digital_signature()
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'signature');

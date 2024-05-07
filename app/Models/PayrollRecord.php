@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\PayrollDetail;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class PayrollRecord extends Model
+{
+    use HasFactory;
+    protected $fillable = [
+        'project_id',
+        'department_id',
+        'payroll_type',
+        'payroll_date',
+        'cutoff_start',
+        'cutoff_end',
+        'approvals'
+    ];
+    protected $casts = [
+        "approvals" => 'array'
+    ];
+    /**
+     * The roles that belong to the PayrollRecord
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function payroll_details(): HasMany
+    {
+        return $this->hasMany(PayrollDetail::class);
+    }
+}

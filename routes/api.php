@@ -76,6 +76,7 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
+use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
 
@@ -263,7 +264,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('payroll')->group(function () {
-        Route::post('generate-payroll', GeneratePayrollController::class);
+        Route::post('generate-payroll', [PayrollRecordController::class, 'generate']);
+        Route::post('create-payroll', [PayrollRecordController::class, 'store']);
     });
 
     Route::prefix('attendance-portal')->group(function () {
