@@ -268,7 +268,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('attendance-portal')->group(function () {
-        Route::resource('resource/{ip}', AttendancePortalController::class);
+        Route::resource('resource', AttendancePortalController::class);
     });
 
     Route::prefix('face-pattern')->group(function () {
