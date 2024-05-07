@@ -382,6 +382,13 @@ class EmployeeController extends Controller
                                 $data->balance = $leave->amt_of_leave - $count;
                                 array_push($leavedata, $data);
                             }
+                        } else {
+                            $leave = Leave::find($key->id);
+                            $data->leavename = $leave->leave_name;
+                            $data->total_credits = $leave->amt_of_leave;
+                            $data->used = 0;
+                            $data->balance = $leave->amt_of_leave;
+                            array_push($leavedata, $data);
                         }
                     } else {
                         $leave = Leave::find($key->id);
