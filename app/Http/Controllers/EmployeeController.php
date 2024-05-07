@@ -370,7 +370,7 @@ class EmployeeController extends Controller
                 ->whereYear("date_of_absence_from", Carbon::now()->year)
                 ->withPayLeave()
                 ->sum("number_of_days");
-            $leavetype->balance = $leavetype->amt_of_leave - $leavetype->used;
+            $leavetype->balance = $leavetype->credits - $leavetype->used;
         }
         return new JsonResponse([
             'success' => 'true',
