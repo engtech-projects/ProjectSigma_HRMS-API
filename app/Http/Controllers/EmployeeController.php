@@ -358,7 +358,7 @@ class EmployeeController extends Controller
 
     public function getLeaveCredits(Employee $employee)
     {
-        $leaves_types = Leave::all();
+        $leaves_types = Leave::get();
         foreach ($leaves_types as $leavetype) {
             if (!collect($leavetype->employment_status)->contains($employee->current_employment->employment_status)) {
                 $leavetype->credits = 0;
