@@ -21,15 +21,18 @@ class EmployeeAllowancesController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $main = EmployeeAllowances::with('charge_assignment')->get();
+        if (!is_null($main)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully fetch.',
+                'data' => $main,
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 
     /**
@@ -61,7 +64,7 @@ class EmployeeAllowancesController extends Controller
 
                 return new JsonResponse([
                     'success' => true,
-                    'message' => 'Successfully save.',
+                    'message' => 'Successfully fetch.',
                     'data' => $data,
                 ], JsonResponse::HTTP_OK);
             }
@@ -86,6 +89,14 @@ class EmployeeAllowancesController extends Controller
                     $data = Employee::with('current_employment.position.allowances')->find($key);
                     if ($data->current_employment) {
                         if ($data->current_employment->position_id) {
+
+                            if ($data->current_employment->position->allowances == null) {
+                                return new JsonResponse([
+                                    'success' => false,
+                                    'message' => 'No amount found',
+                                ], 400);
+                            }
+
                             $data_amt = $data->current_employment->position->allowances->amount;
                             $employee_allowance = new EmployeeAllowances();
                             $type = $request["group_type"];
@@ -135,32 +146,109 @@ class EmployeeAllowancesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(EmployeeAllowances $employeeAllowances)
+    public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(EmployeeAllowances $employeeAllowances)
-    {
-        //
+        $main = EmployeeAllowances::with('charge_assignment')->find($id);
+        if (!is_null($main)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully fetch.',
+                'data' => $main,
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeAllowancesRequest $request, EmployeeAllowances $employeeAllowances)
+    public function update(UpdateEmployeeAllowancesRequest $request, $id)
     {
-        //
+        // $valData = $request->validated();
+        // try {
+        //     if ($valData) {
+        //         foreach ($request["employees"] as $key) {
+        //             $data = Employee::with('current_employment.position.allowances')->find($key);
+        //             if ($data->current_employment) {
+        //                 if ($data->current_employment->position_id) {
+
+        //                     if ($data->current_employment->position->allowances == null) {
+        //                         return new JsonResponse([
+        //                             'success' => false,
+        //                             'message' => 'No amount found',
+        //                         ], 400);
+        //                     }
+
+        //                     $data_amt = $data->current_employment->position->allowances->amount;
+        //                     $employee_allowance = new EmployeeAllowances();
+        //                     $type = $request["group_type"];
+        //                     switch ($type) {
+        //                         case AssignTypes::DEPARTMENT->value:
+        //                             $employee_allowance->charge_assignment_type = EmployeeAllowancesController::DEPARTMENT;
+        //                             $employee_allowance->charge_assignment_id = $request["department_id"];
+        //                             break;
+        //                         case AssignTypes::PROJECT->value:
+        //                             $employee_allowance->charge_assignment_type = EmployeeAllowancesController::PROJECT;
+        //                             $employee_allowance->charge_assignment_id = $request["project_id"];
+        //                             break;
+        //                     }
+        //                     $employee_allowance->allowance_date = $request["allowance_date"];
+        //                     $employee_allowance->cutoff_start = $request["cutoff_start"];
+        //                     $employee_allowance->cutoff_end = $request["cutoff_end"];
+        //                     $employee_allowance->total_days = $request["total_days"];
+        //                     $employee_allowance->allowance_amount = $data_amt;
+        //                     $employee_allowance->save();
+
+        //                     return new JsonResponse([
+        //                         'success' => true,
+        //                         'message' => 'Successfully save.',
+        //                     ], JsonResponse::HTTP_OK);
+        //                 }
+        //                 return new JsonResponse([
+        //                     'success' => false,
+        //                     'message' => 'Employee ' . $data->fullname_first . " doesn't have a position",
+        //                 ], 400);
+        //             } else {
+        //                 return new JsonResponse([
+        //                     'success' => false,
+        //                     'message' => 'User ' . $data->fullname_first . " not found as not a current employee",
+        //                 ], 400);
+        //             }
+        //         }
+        //     }
+        // } catch (\Throwable $th) {
+        //     return new JsonResponse([
+        //         'success' => false,
+        //         'error' => $th->getMessage(),
+        //         'message' => 'Failed save.',
+        //     ], 400);
+        // }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EmployeeAllowances $employeeAllowances)
+    public function destroy($id)
     {
-        //
+        $main = EmployeeAllowances::find($id);
+        if (!is_null($main)) {
+            if ($main->delete()) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Successfully delete.',
+                ], JsonResponse::HTTP_OK);
+            }
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Failed delete.',
+            ], 400);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 }

@@ -24,7 +24,8 @@ class EmployeeEducation extends Model
         'period_attendance_from',
         'year_graduated',
         'degree_earned_of_school',
-        'honors_received'
+        'honors_received',
+        'type'
     ];
 
     public function employee(): BelongsTo

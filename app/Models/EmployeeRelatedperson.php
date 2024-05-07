@@ -5,7 +5,6 @@ namespace App\Models;
 use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\EmployeeRelatedPersonType;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -44,7 +43,7 @@ class EmployeeRelatedperson extends Model
 
     protected function getAddressAttribute()
     {
-        return implode(" ", array($this->street, $this->brgy, $this->city, $this->zip, $this->province));
+        return implode(", ", array($this->street, $this->brgy, $this->city, $this->zip, $this->province));
     }
 
     protected $fillable = [
