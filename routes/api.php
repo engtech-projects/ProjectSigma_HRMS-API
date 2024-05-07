@@ -306,6 +306,6 @@ Route::prefix('project-monitoring')->group(function () {
 Route::get("testRequest", function(Request $request) {
     dd($request->input());
 });
-Route::get("testRequest", function() {
+Route::get("testRequest2", function() {
     dd($_SERVER);
 });
