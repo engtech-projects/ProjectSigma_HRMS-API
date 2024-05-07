@@ -26,4 +26,16 @@ class SSSContribution extends Model
         'employee_contribution',
         'employer_contribution',
     ];
+
+
+    public static function getContribution($salary)
+    {
+        return self::where('range_from', '<=', $salary)
+            ->where('range_to', '>=', $salary)
+            ->first();
+    }
+    public static function getLoan()
+    {
+        return null;
+    }
 }

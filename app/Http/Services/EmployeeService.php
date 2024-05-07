@@ -5,6 +5,8 @@ namespace App\Http\Services;
 use App\Helpers;
 use App\Http\Traits\Attendance;
 use App\Models\Events;
+use App\Models\PhilhealthContribution;
+use App\Models\SSSContribution;
 use Illuminate\Support\Carbon;
 
 class EmployeeService
@@ -44,6 +46,45 @@ class EmployeeService
                 "reg_holiday_overtime" => $metaData["overtime"]["reg_holiday_OT"],
 
             ]
+        ];
+    }
+
+    public function generatePayroll(array $period, $employee)
+    {
+        $salary = $employee->current_employment->employee_salarygrade->monthly_salary_amount;
+        $dtr = collect($period)->groupBy(function ($period) {
+            return $period["date"];
+        })->map(function ($period) use ($employee) {
+            $date = $period[0]["date"];
+            $dtr = $this->employeeDTR($employee, $date);
+            $dtr["gross"] = [];
+            return $dtr;
+        });
+
+        return [
+            "dtr" => $dtr,
+            "monthly_salary" => $salary,
+            "salary_deduction" => $this->getSalaryDeduction($employee),
+        ];
+    }
+
+    public function getSalaryDeduction($employee)
+    {
+        $salary = $employee->current_employment->employee_salarygrade->monthly_salary_amount;
+        $cashAdvance = $employee->cash_advance_payroll;
+        $sssDeduction = SSSContribution::getContribution($salary);
+        $phic = PhilhealthContribution::getContribution($salary);
+        return [
+            "cash_advance" => $cashAdvance, //$ss
+            "sss" => $sssDeduction,
+            "sss_loan" => [],
+            "phic" => $phic,
+            "hmdf" => [],
+            "hmdf_loan" => [],
+            "mp2" => [],
+            "ewtc" => [],
+            "coop_loan" => []
+
         ];
     }
 }

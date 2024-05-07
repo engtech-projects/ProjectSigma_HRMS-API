@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Traits;
 
-class EmployeeDTR extends Employee
+use App\Models\Events;
+
+trait EmployeeDTR
 {
-    protected $table = 'employees';
-
     public function travel_order_dtr($date)
     {
 

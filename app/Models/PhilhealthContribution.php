@@ -23,4 +23,11 @@ class PhilhealthContribution extends Model
         'employer_share',
         'share_type',
     ];
+
+    public static function getContribution($salary)
+    {
+        return self::where('range_from', '<=', $salary)
+            ->where('range_to', '>=', $salary)
+            ->first();
+    }
 }

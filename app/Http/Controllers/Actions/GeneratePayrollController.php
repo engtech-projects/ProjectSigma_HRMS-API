@@ -24,22 +24,25 @@ class GeneratePayrollController extends Controller
     {
         $this->employeeService = $employeeService;
         $filters = $request->validated();
+
         $periodDates = Helpers::dateRange([
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
-        $dtr = EmployeeDTR::whereIn('id', $filters['employee_ids'])->get();
-        $result = collect($periodDates)->groupBy(function ($date) {
-            return $date["date"];
-        })->map(function ($date) use ($dtr) {
-            $date = $date[0]["date"];
-            foreach ($dtr as $value) {
-                return $this->employeeService->employeeDTR($value, $date);
-            }
+        $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
+
+        $result = collect($employeeDtr)->map(function ($employee) use ($periodDates) {
+            $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $employee);
+            return $employee["payroll_records"];
         });
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
             'data' => $result
         ]);
+    }
+
+    private function getSalaryDeduction()
+    {
     }
 }

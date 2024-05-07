@@ -16,11 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Traits\EmployeeDTR;
+use App\Models\Traits\EmployeePayroll;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 
 class Employee extends Model
 {
@@ -28,7 +27,7 @@ class Employee extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasProjectEmployee;
+    use HasProjectEmployee, EmployeeDTR, EmployeePayroll;
 
     protected $table = 'employees';
     protected $appends = [
@@ -122,7 +121,7 @@ class Employee extends Model
 
     public function current_employment(): HasOne
     {
-        return $this->hasOne(InternalWorkExperience::class)->where("status", "=", "current")
+        return $this->hasOne(InternalWorkExperience::class, 'employee_id')->where("status", "=", "current")
             ->with("employee_salarygrade", "employee_department");
     }
 
@@ -135,6 +134,11 @@ class Employee extends Model
     public function employee_salarygrade(): HasOne
     {
         return $this->hasOne(SalaryGradeStep::class);
+    }
+
+    public function cash_advance(): HasMany
+    {
+        return $this->hasMany(CashAdvance::class, 'employee_id');
     }
 
     public function employee_department(): HasOne
