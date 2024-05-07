@@ -107,7 +107,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
             'number_of_days' => [
                 "required",
                 "integer",
-                "min:1",
+                "gt:0",
             ],
             'with_pay' => [
                 "required",
