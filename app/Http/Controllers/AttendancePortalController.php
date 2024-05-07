@@ -10,20 +10,25 @@ use Illuminate\Http\JsonResponse;
 
 class AttendancePortalController extends Controller
 {
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $main = AttendancePortal::paginate(15);
+        if (!is_null($main)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully fetch.',
+                'data' => $main,
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 
     /**
@@ -39,11 +44,11 @@ class AttendancePortalController extends Controller
                 $type = $request["group_type"];
                 switch ($type) {
                     case AssignTypes::DEPARTMENT->value:
-                        $data->assignment_type = EmployeeAllowancesController::DEPARTMENT;
+                        $data->assignment_type = AttendancePortalController::DEPARTMENT;
                         $data->assignment_id = $request["department_id"];
                         break;
                     case AssignTypes::PROJECT->value:
-                        $data->assignment_type = EmployeeAllowancesController::PROJECT;
+                        $data->assignment_type = AttendancePortalController::PROJECT;
                         $data->assignment_id = $request["project_id"];
                         break;
                 }
@@ -51,6 +56,7 @@ class AttendancePortalController extends Controller
                 return new JsonResponse([
                     'success' => true,
                     'message' => 'Successfully save.',
+                    'data' => $data,
                 ], JsonResponse::HTTP_OK);
             }
         } catch (\Throwable $th) {
@@ -65,17 +71,20 @@ class AttendancePortalController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AttendancePortal $attendancePortal)
+    public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(AttendancePortal $attendancePortal)
-    {
-        //
+        $main = AttendancePortal::find($id);
+        if (!is_null($main)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully fetch.',
+                'data' => $main,
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 
     /**
@@ -92,11 +101,11 @@ class AttendancePortalController extends Controller
                     $type = $request["group_type"];
                     switch ($type) {
                         case AssignTypes::DEPARTMENT->value:
-                            $main->assignment_type = EmployeeAllowancesController::DEPARTMENT;
+                            $main->assignment_type = AttendancePortalController::DEPARTMENT;
                             $main->assignment_id = $request["department_id"];
                             break;
                         case AssignTypes::PROJECT->value:
-                            $main->assignment_type = EmployeeAllowancesController::PROJECT;
+                            $main->assignment_type = AttendancePortalController::PROJECT;
                             $main->assignment_id = $request["project_id"];
                             break;
                     }
@@ -121,8 +130,24 @@ class AttendancePortalController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AttendancePortal $attendancePortal)
+    public function destroy($id)
     {
-        //
+        $main = AttendancePortal::find($id);
+        if (!is_null($main)) {
+            if ($main->delete()) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Successfully delete.',
+                ], JsonResponse::HTTP_OK);
+            }
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Failed delete.',
+            ], 400);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 }
