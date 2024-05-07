@@ -307,5 +307,5 @@ Route::prefix('project-monitoring')->group(function () {
 });
 
 Route::prefix('face-pattern')->group(function () {
-    Route::resource('list', EmployeeFacePattern::class)->only("GET");
+    Route::resource('resource', EmployeeFacePattern::class)->only("GET");
 });
