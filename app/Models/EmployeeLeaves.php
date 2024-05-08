@@ -9,6 +9,7 @@ use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -72,9 +73,9 @@ class EmployeeLeaves extends Model
         return $this->hasOne(Project::class, "id", "project_id");
     }
 
-    public function leave(): HasOne
+    public function leave(): BelongsTo
     {
-        return $this->hasOne(Leave::class);
+        return $this->belongsTo(Leave::class, "leave_id", "id");
     }
 
     public function scopeWithPayLeave(Builder $query): void

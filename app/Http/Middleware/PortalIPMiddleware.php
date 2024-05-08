@@ -21,7 +21,7 @@ class PortalIPMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $get = AttendancePortal::first();
-        $ip = $request->route()->parameter('ip');
+        $ip = $request->ip();
         if ($get) {
             if ($ip == $get->ip_address) {
                 return $next($request);
