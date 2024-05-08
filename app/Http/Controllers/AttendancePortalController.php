@@ -9,6 +9,10 @@ use App\Http\Requests\UpdateAttendancePortalRequest;
 use App\Http\Resources\AttendancePortalResource;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
 
 class AttendancePortalController extends Controller
 {
@@ -56,7 +60,10 @@ class AttendancePortalController extends Controller
                         $data->assignment_id = $request["project_id"];
                         break;
                 }
-                $data->ip_address = $request->ip();
+                $secret = Str::random(30);
+                $hashmake = Hash::make($secret);
+                $hashname = hash('sha256', $hashmake);
+                $data->portal_token = $hashname();
                 $data->save();
                 return new JsonResponse([
                     'success' => true,
@@ -154,5 +161,12 @@ class AttendancePortalController extends Controller
             'success' => false,
             'message' => 'No data found.',
         ], 404);
+    }
+
+    public function setCookies()
+    {
+
+        // $cookie = cookie('key', $hashname);
+        // return response('Cookie has been set')->cookie($cookie);
     }
 }
