@@ -43,7 +43,6 @@ class AttendancePortalController extends Controller
      */
     public function store(StoreAttendancePortalRequest $request)
     {
-
         $valData = $request->validated();
         try {
             if ($valData) {
@@ -165,7 +164,6 @@ class AttendancePortalController extends Controller
 
     public function setCookies()
     {
-
         // $cookie = cookie('key', $hashname);
         // return response('Cookie has been set')->cookie($cookie);
     }

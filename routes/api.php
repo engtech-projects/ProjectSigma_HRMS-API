@@ -291,6 +291,9 @@ if (config()->get('app.artisan') == 'true') {
 
 Route::middleware('portal_in')->group(function () {
     Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
+    Route::prefix('test')->group(function () {
+        Route::get('cookies', [AttendancePortalController::class, 'setCookies']);
+    });
 });
 
 Route::prefix("department")->group(function () {
