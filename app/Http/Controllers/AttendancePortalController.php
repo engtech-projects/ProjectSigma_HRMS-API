@@ -7,7 +7,6 @@ use App\Models\AttendancePortal;
 use App\Http\Requests\StoreAttendancePortalRequest;
 use App\Http\Requests\UpdateAttendancePortalRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class AttendancePortalController extends Controller
 {
@@ -35,8 +34,9 @@ class AttendancePortalController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAttendancePortalRequest $request, Request $get)
+    public function store(StoreAttendancePortalRequest $request)
     {
+
         $valData = $request->validated();
         try {
             if ($valData) {
@@ -53,7 +53,7 @@ class AttendancePortalController extends Controller
                         $data->assignment_id = $request["project_id"];
                         break;
                 }
-                $data->ip_address = $get->ip();
+                $data->ip_address = $request->ip();
                 $data->save();
                 return new JsonResponse([
                     'success' => true,

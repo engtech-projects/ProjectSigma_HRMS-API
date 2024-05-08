@@ -309,11 +309,6 @@ Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
 });
 
-Route::prefix('face-pattern')->group(function () {
-    Route::get('list', [EmployeeFacePattern::class, "test"]);
-});
-
-
 // Route::prefix('test')->group(function () {
 //     Route::get('run', [EmployeeFacePattern::class, "index"]);
 // });
