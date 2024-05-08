@@ -14,7 +14,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class EmployeeLeaves extends Model
 {
     use HasApiTokens;
@@ -22,7 +21,8 @@ class EmployeeLeaves extends Model
     use Notifiable;
     use SoftDeletes;
     use HasApproval;
-    use HasUser, StatusScope;
+    use HasUser;
+    use StatusScope;
 
     protected $casts = [
         "approvals" => "array",
@@ -70,6 +70,11 @@ class EmployeeLeaves extends Model
     public function project(): HasOne
     {
         return $this->hasOne(Project::class, "id", "project_id");
+    }
+
+    public function leave(): HasOne
+    {
+        return $this->hasOne(Leave::class);
     }
 
     public function scopeWithPayLeave(Builder $query): void
