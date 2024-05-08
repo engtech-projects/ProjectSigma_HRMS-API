@@ -13,49 +13,19 @@ class UsersSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert(
+        DB::table('users')->upsert(
             [
                 [
                     'id' => 1,
                     'name' => "admin",
                     'email' => 'admin@gmail.com',
                     'password' => Hash::make('!onetimepassword'),
-                    'accessibilities' => '[1]',
+                    'accessibilities' => json_encode(range(1,36)),
                     'type' => 'Administrator',
-                ],
-                [
-                    'id' => 2,
-                    'name' => "Jermily C. Mozo",
-                    'email' => 'jermilymozo@gmail.com',
-                    'password' => Hash::make('!onetimepassword'),
-                    'accessibilities' => '[1]',
-                    'type' => 'Employee',
-                ],
-                [
-                    'id' => 3,
-                    'name' => "ENGR. Richie C. Dalauta",
-                    'email' => 'richiedalauta@gmail.com',
-                    'password' => Hash::make('!onetimepassword'),
-                    'accessibilities' => '[1]',
-                    'type' => 'Employee',
-                ],
-                [
-                    'id' => 4,
-                    'name' => "ENGR. Dionision Jonas A. Rodes",
-                    'email' => 'dionisionrodes@gmail.com',
-                    'password' => Hash::make('!onetimepassword'),
-                    'accessibilities' => '[1]',
-                    'type' => 'Employee',
-                ],
-                [
-                    'id' => 5,
-                    'name' => "ENGR. Angel A. Abrau",
-                    'email' => 'angelabrau@gmail.com',
-                    'password' => Hash::make('!onetimepassword'),
-                    'accessibilities' => '[1]',
-                    'type' => 'Employee',
-                ],
-            ]
+                ]
+            ],
+            [ "id" ],
+            [ "name" ]
         );
     }
 }

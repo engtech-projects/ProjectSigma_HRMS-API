@@ -15,7 +15,7 @@ class EmployeeLeaveService
 
     public function getAll()
     {
-        return EmployeeLeaves::with(['employee', 'department', 'project'])->get();
+        return EmployeeLeaves::with(['employee', 'department', 'project', 'leave'])->get();
     }
 
     public function create($attributes)

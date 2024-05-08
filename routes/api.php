@@ -67,6 +67,7 @@ use App\Http\Controllers\Actions\Employee\{
 use App\Http\Controllers\Actions\GeneratePayrollController;
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
+use App\Http\Controllers\AttendancePortalController;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ExternalWorkExperienceController;
@@ -77,6 +78,7 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,7 +127,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
-        Route::get('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
+        Route::get('leave-credits/{employee}', [EmployeeController::class, 'getLeaveCredits']);
         Route::get('users-list', [UsersController::class, 'get']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
@@ -264,6 +266,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('payroll')->group(function () {
         Route::post('generate-payroll', GeneratePayrollController::class);
     });
+
+    Route::prefix('attendance-portal')->group(function () {
+        Route::resource('resource', AttendancePortalController::class);
+    });
+
+    Route::prefix('face-pattern')->group(function () {
+        Route::resource('resource', EmployeeFacePattern::class);
+    });
 });
 
 
@@ -278,8 +288,8 @@ if (config()->get('app.artisan') == 'true') {
 }
 
 //public
-Route::prefix('face-pattern')->group(function () {
-    Route::resource('resource', EmployeeFacePattern::class);
+
+Route::middleware('portal_in')->group(function () {
 });
 Route::prefix("department")->group(function () {
     Route::get('list/v2', [DepartmentController::class, 'get']);
@@ -294,4 +304,8 @@ Route::resource('employee/resource/v2', EmployeeController::class);
 
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
+});
+
+Route::prefix('face-pattern')->group(function () {
+    Route::get('list', [EmployeeFacePattern::class, "index"]);
 });

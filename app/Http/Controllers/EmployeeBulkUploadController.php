@@ -6,7 +6,6 @@ use App\Enums\EmployeeAddressType;
 use App\Enums\EmployeeEducationType;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\EmployeeStudiesType;
-use App\Enums\ProjectStatusType;
 use App\Http\Requests\BulkValidationRequest;
 use App\Models\Department;
 use App\Models\Employee;
@@ -17,12 +16,12 @@ use App\Models\SalaryGradeStep;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class EmployeeBulkUploadController extends Controller
 {
     public const START_ROW = 3;
+    public const MAX_COL = 'CW';
     public const HEADER_KEYS = [
         'family_name',
         'first_name',
@@ -55,6 +54,7 @@ class EmployeeBulkUploadController extends Controller
         'pagibig_number',
         'tin_number',
         'sss_number',
+        'atm',
         'father_name',
         'mother_name',
         'spouse_name',
@@ -115,9 +115,9 @@ class EmployeeBulkUploadController extends Controller
         'date_hired',
         'employment_status',
         'position',
-        'section_program',
-        'department',
         'section_project_code',
+        'department',
+        'division',
         'immediate_supervisor',
         'salary_grade_level',
         'salary_grade_step',
@@ -146,11 +146,11 @@ class EmployeeBulkUploadController extends Controller
         $worksheet = $spreadsheet->getActiveSheet();
 
         $totalData = $worksheet->getHighestDataRow('A') - self::START_ROW;
-        $headerColumnKey = 'A' . (self::START_ROW - 1) . ':CV' . (self::START_ROW - 1);
+        $headerColumnKey = 'A' . (self::START_ROW - 1) . ':' . self::MAX_COL . (self::START_ROW - 1);
         $header = $worksheet->rangeToArray($headerColumnKey, null, true, true);
         for ($x = 0; $x < $totalData; $x++) {
             $tempData = [];
-            $columnKey = 'A' . (self::START_ROW + $x) . ':CV' . (self::START_ROW + $x);
+            $columnKey = 'A' . (self::START_ROW + $x) . ':' . self::MAX_COL . (self::START_ROW + $x);
             $extractData = $worksheet->rangeToArray($columnKey, null, true, true);
 
             foreach ($extractData as $data) {
@@ -182,8 +182,9 @@ class EmployeeBulkUploadController extends Controller
                     }
                     $tempData['phic_number'] = $tempData['phic_number'] ?? "N/A";
                     $tempData['tin_number'] = $tempData['tin_number'] ?? "N/A";
-                    $tempData['name_suffix'] = ($tempData['name_suffix'] === "N/A" ) ? null : $tempData['name_suffix'];
+                    $tempData['name_suffix'] = ($tempData['name_suffix'] === "N/A") ? null : $tempData['name_suffix'];
                     $tempData['sss_number'] = $tempData['sss_number'] ?? "N/A";
+                    $tempData['atm'] = $tempData['atm'] ?? "N/A";
                     $tempData['pagibig_number'] = $tempData['pagibig_number'] ?? "N/A";
                     $tempData['place_of_birth'] = $tempData['place_of_birth'] ?? "N/A";
                     $tempData['date_of_birth'] = !$tempData['date_of_birth'] ||
@@ -198,7 +199,7 @@ class EmployeeBulkUploadController extends Controller
                     $extractedData[] = $tempData;
                     if ($tempData['_status'] === 'duplicate') {
                         $savedData[] = $tempData;
-                    }else if ($tempData['_status'] === 'unduplicate') {
+                    } elseif ($tempData['_status'] === 'unduplicate') {
                         $unsaveData[] = $tempData;
                     }
                 }
@@ -221,6 +222,8 @@ class EmployeeBulkUploadController extends Controller
         if ($validatedData['employees_data']) {
             foreach (json_decode($validatedData['employees_data'], true) as $data) {
                 DB::beginTransaction();
+                $projectId = null;
+                $departmentId = $this->getDepartmentId(trim("PROJECT MANAGEMENT SECTION"));
                 $elementaryDates = [];
                 $highSchoolDates = [];
                 $education = [];
@@ -228,7 +231,11 @@ class EmployeeBulkUploadController extends Controller
                 $vocationalDates = [];
                 $studies = [];
                 $eligibility = [];
+                $employeeEducation = [];
                 $employeeRelatedPerson = [];
+                $externalEmployee = [];
+                $affiliation = [];
+                $internalRecord = [];
                 if ($data['_status'] == 'unduplicate') {
                     //insert
                     try {
@@ -237,15 +244,14 @@ class EmployeeBulkUploadController extends Controller
                         DB::commit();
                     } catch (Exception $th) {
                         array_push($errorList, [
-                            json_encode(['name'=> $data['family_name'],
+                            json_encode(['name' => $data['family_name'],
                             'message' => $th->getMessage()])
                         ]);
                         DB::rollback();
                         continue;
                     }
-
                     if ($data['dates_of_school_elementary']) {
-                        $elementaryDates = explode('-', $data['dates_of_school_elementary']);
+                        $elementaryDates = explode('-', trim($data['dates_of_school_elementary']));
                         if ($elementaryDates && count($elementaryDates) > 1) {
                             $education['elementary_period_attendance_from'] = $elementaryDates[0] ?? 'N/A';
                             $education['elementary_period_attendance_to'] = $elementaryDates[1] ?? 'N/A';
@@ -298,7 +304,6 @@ class EmployeeBulkUploadController extends Controller
                             }
                         }
                     }
-
                     //permanenet address
                     $address_pre = [
                         'street' => $data['pre_street'] ?? 'N/A',
@@ -313,10 +318,9 @@ class EmployeeBulkUploadController extends Controller
                         'brgy' => $data['per_brgy'] ?? 'N/A',
                         'city' => $data['per_city'] ?? 'N/A',
                         'zip' => $data['per_zip'] ?? 'N/A',
-                        'province' => $data['per_province'] ?? 'N/A',
+                        'province' => $data['pre_province'] ?? 'N/A',
                         'type' => EmployeeAddressType::PERMANENT,
                     ];
-
                     //affiliation information
                     $affiliation = [
                         'club_organization_name' => 'N/A',
@@ -324,75 +328,70 @@ class EmployeeBulkUploadController extends Controller
                         'status' => 'N/A',
                         'membership_exp_date' => null,
                     ];
-                    if ( $data['work_location'] === 'project' && $data['work_location'] === 'PROJECT')
-                    {
-                        $project_id = $this->getProjectId($data['section_project_code']);
-                    }else{
-                        $departmentId = $this->getDepartmentId($data['section_project_code']);
-                        $postionId = $this->getPositionId($data['position'], $departmentId);
-                        $getSalaryStep = $this->getSalaryStep($this->getSalaryGradeLevelId($data['salary_grade_level']));
-                        $internalRecord = [
-                            'position_id' => $postionId,
-                            'employment_status' => $data['employment_status'],
-                            'department_id' => $departmentId,
-                            'immediate_supervisor' => $data['immediate_supervisor'],
-                            'actual_salary' =>  $getSalaryStep ? $getSalaryStep->monthly_salary_amount : null,
-                            'salary_grades' => $getSalaryStep ? $getSalaryStep->id : null,
-                            'work_location' => $data['work_location'],
-                            'hire_source' => 'Internal',
-                            'status' => $data['employment_status'],
-                            'date_from' => null,
-                            'date_to' => null,
-                        ];
+                    if (strtolower(trim($data['work_location'])) === 'project') {
+                        $projectId = $this->getProjectId(trim($data['section_project_code']));
+                    } else {
+                        $departmentId = $this->getDepartmentId(trim($data['section_project_code']));
                     }
-
-
+                    $postionId = $this->getPositionId($data['position'], $departmentId);
+                    $getSalaryStep = $this->getSalaryStep($this->getSalaryGradeLevelId($data['salary_grade_level']));
+                    $internalRecord = [
+                        'position_id' => $postionId,
+                        'employment_status' => $data['employment_status'],
+                        'department_id' => $departmentId,
+                        'immediate_supervisor' => $data['immediate_supervisor'],
+                        'actual_salary' =>  $getSalaryStep ? $getSalaryStep->monthly_salary_amount : null,
+                        'salary_grades' => $getSalaryStep ? $getSalaryStep->id : null,
+                        'work_location' => $data['work_location'],
+                        'hire_source' => 'Internal',
+                        'status' => $data['employment_status'],
+                        'date_from' => $data['date_hired'],
+                        'date_to' => null,
+                    ];
                     //elementary
                     $employeeEducation[] = [
                         'honors_received' => $data['honor_of_school_elementary'] ?? 'N/A',
                         'degree_earned_of_school' => $data['elementary_degree_earned_of_school'] ?? 'N/A',
-                        'year_graduated' => 'N/A',
-                        'period_attendance_from' => 'N/A',
-                        'period_attendance_to' => 'N/A',
+                        'year_graduated' => $education['elementary_year_graduated'] ?? "N/A",
+                        'period_attendance_from' => $education['elementary_period_attendance_from'] ?? "N/A",
+                        'period_attendance_to' => $education['elementary_period_attendance_to'] ?? "N/A",
                         'education' => $data['elementary_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::ELEMENTARY,
-                        'name' =>  $data['elementary_name'] ?? 'N/A',
+                        'name' =>  $data['elementary_education'] ?? 'N/A',
                     ];
 
                     //secondary
                     $employeeEducation[] = [
                         'honors_received' => $data['honor_of_school_highschool'] ?? 'N/A',
                         'degree_earned_of_school' => $data['secondary_degree_earned_of_school'] ?? 'N/A',
-                        'year_graduated' => 'N/A',
-                        'period_attendance_from' => 'N/A',
-                        'period_attendance_to' => 'N/A',
+                        'year_graduated' => $education['secondary_period_attendance_from'] ?? "N/A",
+                        'period_attendance_from' => $education['secondary_period_attendance_to'] ?? "N/A",
+                        'period_attendance_to' => $education['secondary_year_graduated'] ?? "N/A",
                         'education' => $data['secondary_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::SECONDARY,
-                        'name' =>  $data['secondary_name'] ?? 'N/A',
+                        'name' =>  $data['secondary_education'] ?? 'N/A',
                     ];
-
                     //college
                     $employeeEducation[] = [
                         'honors_received' => $data['honor_of_school_college'] ?? 'N/A',
                         'degree_earned_of_school' => $data['college_degree_earned_of_school'] ?? 'N/A',
-                        'year_graduated' => 'N/A',
-                        'period_attendance_from' => 'N/A',
-                        'period_attendance_to' => 'N/A',
+                        'year_graduated' => $education['college_period_attendance_from'] ?? "N/A",
+                        'period_attendance_from' => $education['college_period_attendance_to'] ?? "N/A",
+                        'period_attendance_to' => $education['college_year_graduated'] ?? "N/A",
                         'education' => $data['college_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::COLLEGE,
-                        'name' =>  $data['college_name'] ?? 'N/A',
+                        'name' =>  $data['college_education'] ?? 'N/A',
                     ];
-
                     //vocational
                     $employeeEducation[] = [
                         'honors_received' => $data['honor_of_school_vocational'] ?? 'N/A',
                         'degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school'] ?? 'N/A',
-                        'year_graduated' => 'N/A',
-                        'period_attendance_from' => 'N/A',
-                        'period_attendance_to' => 'N/A',
+                        'year_graduated' => $education['vocationalcourse_period_attendance_from'] ?? "N/A",
+                        'period_attendance_from' => $education['vocationalcourse_period_attendance_to'] ?? "N/A",
+                        'period_attendance_to' => $education['vocationalcourse_year_graduated'] ?? "N/A",
                         'education' => $data['vocationalcourse_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::VOCATIONAL,
-                        'name' =>  $data['vocationalcourse_name'] ?? 'N/A',
+                        'name' =>  $data['vocationalcourse_education'] ?? 'N/A',
                     ];
                     //father information
                     $employeeRelatedPerson[] = [
@@ -454,7 +453,6 @@ class EmployeeBulkUploadController extends Controller
                         'occupation' => $data['spouse_occupation'] ?? 'N/A',
                         'contact_no' => $data['spouse_contact_no'] ?? 'N/A',
                     ];
-
                     //master studies
                     $studies[] = [
                         'title' => $data['master_thesis_name'] ?? 'N/A',
@@ -473,7 +471,6 @@ class EmployeeBulkUploadController extends Controller
                         'date' => $data['professional_license_date'],
                         'type' => EmployeeStudiesType::PROFESSIONAL,
                     ];
-
                     //externalEmployee
                     $externalEmployee[] = [
                         'position_title' => 'N/A',
@@ -483,7 +480,6 @@ class EmployeeBulkUploadController extends Controller
                         'date_from' => 'N/A',
                         'date_to' => 'N/A',
                     ];
-
                     //eligibility
                     $eligibility[] = [
                         'program_module' => 'N/A',
@@ -498,27 +494,26 @@ class EmployeeBulkUploadController extends Controller
                         $employee->company_employments()->create($data);
                         $employee->employee_externalwork()->create($externalEmployee);
                         $employee->employee_address()->create($address_pre);
+                        $employee->employee_address()->create($address_per);
                         $employee->employee_affiliation()->create($affiliation);
                         $employee->employee_eligibility()->createMany($eligibility);
                         $employee->employee_related_person()->createMany($employeeRelatedPerson);
                         $employee->employee_education()->createMany($employeeEducation);
                         $employee->employee_studies()->createMany($studies);
-                        if ( $data['work_location'] === 'project' && $data['work_location'] === 'PROJECT')
-                        {
-                            $employee->employee_has_projects()->attach(['project_id' => $project_id]);
-                        }else{
-                            $employee->employee_internal()->create($internalRecord);
+                        if ($projectId) {
+                            $employee->employee_has_projects()->attach(['project_id' => $projectId]);
                         }
+                        $employee->employee_internal()->create($internalRecord);
                         DB::commit();
                     } catch (Exception $th) {
+                        $employee->delete();
                         array_push($errorList, [
-                            json_encode(['name'=> $data['family_name'],
+                            json_encode(['name' => $data['family_name'],
                             'message' => $th->getMessage()])
                         ]);
                         DB::rollback();
                         continue;
                     }
-
                 }
             }
         }
@@ -527,29 +522,31 @@ class EmployeeBulkUploadController extends Controller
             'data' => ['errorList' => $errorList],
         ]);
     }
-    public function getPositionId($position = null, $departmentId) {
+    public function getPositionId($position = null, $departmentId)
+    {
         $query = Position::getQuery();
         $query->where('name', $position);
         $data = $query->get();
         if($data) {
             if (count($data) > 1) {
-                $query->where('department_id', $departmentId)->first();
-                if ($data) {
-                    return $data->id;
-                }else {
+                $pos = Position::where('department_id', $departmentId)->first();
+                if ($pos) {
+                    return $pos->id;
+                } else {
                     return null;
                 }
-            }else {
+            } else {
                 $data = $query->first();
                 return $data ? $data->id : null;
             }
         }
     }
-    public function getDepartmentId($department = null) {
+    public function getDepartmentId($department)
+    {
         $data = Department::where('department_name', $department)->first();
         return $data ? $data->id : null;
     }
-    public function getProjectId($projectCode = null)
+    public function getProjectId($projectCode)
     {
         $data = Project::where('project_code', $projectCode)->first();
         return $data ? $data->id : null;
