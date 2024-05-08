@@ -22,6 +22,7 @@ class PortalIPMiddleware
     {
         $get = AttendancePortal::first();
         $ip = $request->ip();
+        dd($ip);
         if ($get) {
             if ($ip == $get->ip_address) {
                 return $next($request);

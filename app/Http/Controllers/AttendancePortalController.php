@@ -36,6 +36,7 @@ class AttendancePortalController extends Controller
      */
     public function store(StoreAttendancePortalRequest $request)
     {
+
         $valData = $request->validated();
         try {
             if ($valData) {
@@ -52,6 +53,7 @@ class AttendancePortalController extends Controller
                         $data->assignment_id = $request["project_id"];
                         break;
                 }
+                $data->ip_address = $request->ip();
                 $data->save();
                 return new JsonResponse([
                     'success' => true,

@@ -13,6 +13,7 @@ use App\Http\Requests\StoreAttendanceLogRequest;
 use App\Http\Requests\StoreFacialAttendanceLog;
 use App\Http\Requests\UpdateAttendanceLogRequest;
 use Carbon\Carbon;
+use GuzzleHttp\Psr7\Request;
 
 class AttendanceLogController extends Controller
 {
@@ -128,7 +129,7 @@ class AttendanceLogController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
-    public function getToday()
+    public function getToday(Request $request)
     {
         $attendanceLog = $this->attendanceLogService->getAllToday();
         $collection = collect(AttendanceLogResource::collection($attendanceLog));
