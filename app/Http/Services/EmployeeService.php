@@ -5,13 +5,15 @@ namespace App\Http\Services;
 use App\Helpers;
 use App\Http\Traits\Attendance;
 use App\Models\Events;
+use App\Models\PagibigContribution;
 use App\Models\PhilhealthContribution;
 use App\Models\SSSContribution;
+use App\Models\Traits\SalaryDeduction;
 use Illuminate\Support\Carbon;
 
 class EmployeeService
 {
-    use Attendance;
+    use Attendance, SalaryDeduction;
     public function employeeDTR($employee, $date)
     {
         $date = Carbon::parse($date);
@@ -49,9 +51,10 @@ class EmployeeService
         ];
     }
 
-    public function generatePayroll(array $period, $employee)
+    public function generatePayroll(array $period, array $filters, $employee)
     {
-        $salary = $employee->current_employment->employee_salarygrade->monthly_salary_amount;
+        $salaryGrade = $employee->current_employment?->employee_salarygrade;
+        $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
         $dtr = collect($period)->groupBy(function ($period) {
             return $period["date"];
         })->map(function ($period) use ($employee) {
@@ -64,24 +67,25 @@ class EmployeeService
         return [
             "dtr" => $dtr,
             "monthly_salary" => $salary,
-            "salary_deduction" => $this->getSalaryDeduction($employee),
+            "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
         ];
     }
 
-    public function getSalaryDeduction($employee)
+    public function getSalaryDeduction($employee, $filters)
     {
-        $salary = $employee->current_employment->employee_salarygrade->monthly_salary_amount;
+
+        $salaryGrade = $employee->current_employment?->employee_salarygrade;
+        $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
         $cashAdvance = $employee->cash_advance_payroll;
-        $sssDeduction = SSSContribution::getContribution($salary);
-        $phic = PhilhealthContribution::getContribution($salary);
+        $salaryDeduction = new PayrollDeduction($salary, $filters);
         return [
-            "cash_advance" => $cashAdvance, //$ss
-            "sss" => $sssDeduction,
+            "cash_advance" => $cashAdvance,
+            "sss" => $filters["deduct_sss"] ? $salaryDeduction->sss : [],
             "sss_loan" => [],
-            "phic" => $phic,
-            "hmdf" => [],
-            "hmdf_loan" => [],
-            "mp2" => [],
+            "phic" => $filters["deduct_philhealth"] ? $salaryDeduction->philhealth : [],
+            "hmdf" => $filters["deduct_pagibig"] ?: $salaryDeduction->pagibig,
+            "hmdf_loan" =>  $filters["deduct_pagibig"] ?: $salaryDeduction->pagibig,
+            "mp2" =>  $filters["deduct_pagibig"] ?: $salaryDeduction->pagibig,
             "ewtc" => [],
             "coop_loan" => []
 
