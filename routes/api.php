@@ -308,7 +308,3 @@ Route::resource('employee/resource/v2', EmployeeController::class);
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
 });
-
-// Route::prefix('test')->group(function () {
-//     Route::get('run', [EmployeeFacePattern::class, "index"]);
-// });
