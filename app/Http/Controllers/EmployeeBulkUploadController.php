@@ -54,7 +54,7 @@ class EmployeeBulkUploadController extends Controller
         'pagibig_number',
         'tin_number',
         'sss_number',
-        'atm_number',
+        'atm',
         'father_name',
         'mother_name',
         'spouse_name',
@@ -184,7 +184,7 @@ class EmployeeBulkUploadController extends Controller
                     $tempData['tin_number'] = $tempData['tin_number'] ?? "N/A";
                     $tempData['name_suffix'] = ($tempData['name_suffix'] === "N/A") ? null : $tempData['name_suffix'];
                     $tempData['sss_number'] = $tempData['sss_number'] ?? "N/A";
-                    $tempData['atm_number'] = $tempData['atm_number'] ?? "N/A";
+                    $tempData['atm'] = $tempData['atm'] ?? "N/A";
                     $tempData['pagibig_number'] = $tempData['pagibig_number'] ?? "N/A";
                     $tempData['place_of_birth'] = $tempData['place_of_birth'] ?? "N/A";
                     $tempData['date_of_birth'] = !$tempData['date_of_birth'] ||
