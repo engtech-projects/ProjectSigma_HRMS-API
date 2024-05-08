@@ -19,6 +19,12 @@ class EmployeeLeaveResource extends JsonResource
             "employee_id" => $this->employee_id,
             "project_id" => $this->project_id,
             "type" => $this->type,
+            "requested_by_user" => $this->whenLoaded('user', function ($user) {
+                return [
+                    "name" => $user->employee?->fullname_last,
+                    "type" => $user->type
+                ];
+            }),
             "other_absence" => $this->other_absence,
             "date_of_absence_from" => $this->date_of_absence_from->format('F j, Y'),
             "date_of_absence_to" => $this->date_of_absence_to->format('F j, Y'),

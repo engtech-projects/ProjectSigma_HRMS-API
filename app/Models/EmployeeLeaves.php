@@ -9,11 +9,11 @@ use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
-
 
 class EmployeeLeaves extends Model
 {
@@ -22,7 +22,8 @@ class EmployeeLeaves extends Model
     use Notifiable;
     use SoftDeletes;
     use HasApproval;
-    use HasUser, StatusScope;
+    use HasUser;
+    use StatusScope;
 
     protected $casts = [
         "approvals" => "array",
@@ -70,6 +71,11 @@ class EmployeeLeaves extends Model
     public function project(): HasOne
     {
         return $this->hasOne(Project::class, "id", "project_id");
+    }
+
+    public function leave(): BelongsTo
+    {
+        return $this->belongsTo(Leave::class, "leave_id", "id");
     }
 
     public function scopeWithPayLeave(Builder $query): void
