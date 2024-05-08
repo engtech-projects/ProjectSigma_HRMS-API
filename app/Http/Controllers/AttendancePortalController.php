@@ -62,7 +62,7 @@ class AttendancePortalController extends Controller
                 $secret = Str::random(30);
                 $hashmake = Hash::make($secret);
                 $hashname = hash('sha256', $hashmake);
-                $data->portal_token = $hashname();
+                $data->portal_token = $hashname;
                 $data->save();
                 return new JsonResponse([
                     'success' => true,
