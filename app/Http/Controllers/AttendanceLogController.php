@@ -127,4 +127,16 @@ class AttendanceLogController extends Controller
             "message" => "Successfully deleted.",
         ], JsonResponse::HTTP_OK);
     }
+
+    public function getToday()
+    {
+        $attendanceLog = $this->attendanceLogService->getAllToday();
+        $collection = collect(AttendanceLogResource::collection($attendanceLog));
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+        ], JsonResponse::HTTP_OK);
+    }
 }
