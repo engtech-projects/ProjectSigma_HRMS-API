@@ -6,6 +6,8 @@ use App\Enums\AssignTypes;
 use App\Models\AttendancePortal;
 use App\Http\Requests\StoreAttendancePortalRequest;
 use App\Http\Requests\UpdateAttendancePortalRequest;
+use App\Http\Resources\AttendancePortalResource;
+use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 
 class AttendancePortalController extends Controller
@@ -19,11 +21,12 @@ class AttendancePortalController extends Controller
     {
         $main = AttendancePortal::with('assignment')->paginate(15);
         if (!is_null($main)) {
+            $collection = collect(AttendancePortalResource::collection($main));
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Successfully fetch.',
-                'data' => $main,
-            ], JsonResponse::HTTP_OK);
+                'message' => 'TravelOrder Request fetched.',
+                'data' => PaginateResourceCollection::paginate(collect($collection), 15)
+            ]);
         }
         return new JsonResponse([
             'success' => false,
