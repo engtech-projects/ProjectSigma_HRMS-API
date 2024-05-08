@@ -80,7 +80,7 @@ class StoreScheduleRequest extends FormRequest
                 "date_format:Y-m-d",
             ],
             'endRecur' => [
-                "required",
+                "nullable",
                 "date_format:Y-m-d",
                 "after_or_equal:startRecur"
             ],
