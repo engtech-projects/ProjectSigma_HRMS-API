@@ -54,7 +54,7 @@ class EmployeeLeavesController extends Controller
             $data->message = "Successfully save.";
             $data->success = true;
             $data->data = $main;
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
         $data->message = "Save failed.";
         $data->success = false;
