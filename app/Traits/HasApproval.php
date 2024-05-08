@@ -13,9 +13,15 @@ trait HasApproval
 {
     public function completeRequestStatus()
     {
+        $this->request_status = RequestApprovalStatus::APPROVED;
+        $this->save();
+        $this->refresh();
     }
     public function denyRequestStatus()
     {
+        $this->request_status = RequestApprovalStatus::DENIED;
+        $this->save();
+        $this->refresh();
     }
     public function setRequestStatus(?string $newStatus)
     {
