@@ -78,7 +78,6 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,7 +108,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('leave', LeaveController::class);
     Route::resource('events', EventsController::class);
     Route::resource('announcement', AnnouncementsController::class);
-    Route::get('announcement-list', [AnnouncementsController::class, 'currentAnnouncements']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
         Route::resource('resource', PositionController::class);
@@ -311,3 +309,4 @@ Route::resource('employee/resource/v2', EmployeeController::class);
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
 });
+Route::get('current-announcements', [AnnouncementsController::class, 'currentAnnouncements']);
