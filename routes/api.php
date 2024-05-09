@@ -286,14 +286,13 @@ if (config()->get('app.artisan') == 'true') {
     });
 }
 
-//public
+// portal token
 
 Route::middleware('portal_in')->group(function () {
-    Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
-    Route::prefix('test')->group(function () {
-        Route::get('cookies', [AttendancePortalController::class, 'setCookies']);
-    });
+    Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
 });
+
+//public
 
 Route::prefix("department")->group(function () {
     Route::get('list/v2', [DepartmentController::class, 'get']);

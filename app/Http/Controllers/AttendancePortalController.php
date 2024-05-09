@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateAttendancePortalRequest;
 use App\Http\Resources\AttendancePortalResource;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -162,20 +163,15 @@ class AttendancePortalController extends Controller
         ], 404);
     }
 
-    public function attendancePortalSession()
+    public function attendancePortalSession(Request $request)
     {
-        $main = AttendancePortal::get();
+        $main = AttendancePortal::with('assignment')->where('portal_token',$request->cookie('portal_token'))->get();
         if (!is_null($main)) {
-            if ($main->delete()) {
-                return new JsonResponse([
-                    'success' => true,
-                    'message' => 'Successfully delete.',
-                ], JsonResponse::HTTP_OK);
-            }
             return new JsonResponse([
-                'success' => false,
-                'message' => 'Failed delete.',
-            ], 400);
+                'success' => true,
+                'message' => 'Successfully fetch.',
+                'data' => $main,
+            ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => false,
