@@ -5,10 +5,11 @@ namespace App\Http\Requests;
 use App\Enums\LeaveRequestStatusType;
 use App\Enums\LeaveRequestType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
+use App\Http\Traits\ApprovalsRequest;
 
 class StoreEmployeeLeavesRequest extends FormRequest
 {
+    use ApprovalsRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -33,7 +34,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'employee_id' => [
                 "required",
                 "integer",
@@ -75,35 +76,6 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals' => [
-                "required",
-                "array",
-            ],
-            'approvals.*' => [
-                "required",
-                "array",
-            ],
-            'approvals.*.type' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.user_id' => [
-                "required",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.date_approved' => [
-                "nullable",
-                "date",
-            ],
-            'approvals.*.remarks' => [
-                "nullable",
-                "string",
-            ],
             'number_of_days' => [
                 "required",
                 "integer",
@@ -114,5 +86,6 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "boolean",
             ],
         ];
+        return array_merge($rules, $this->storeApprovals());
     }
 }

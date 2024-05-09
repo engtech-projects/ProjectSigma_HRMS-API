@@ -6,9 +6,11 @@ use App\Enums\LeaveRequestStatusType;
 use App\Enums\LeaveRequestType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use App\Http\Traits\ApprovalsRequest;
 
 class UpdateEmployeeLeavesRequest extends FormRequest
 {
+    use ApprovalsRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,7 +26,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'employee_id' => [
                 "nullable",
                 "integer",
@@ -66,35 +68,6 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'approvals' => [
-                "nullable",
-                "array",
-            ],
-            'approvals.*' => [
-                "nullable",
-                "array",
-            ],
-            'approvals.*.type' => [
-                "nullable",
-                "string",
-            ],
-            'approvals.*.user_id' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status' => [
-                "nullable",
-                "string",
-            ],
-            'approvals.*.date_approved' => [
-                "nullable",
-                "date",
-            ],
-            'approvals.*.remarks' => [
-                "nullable",
-                "string",
-            ],
             'request_status' => [
                 "nullable",
                 "string",
@@ -110,5 +83,6 @@ class UpdateEmployeeLeavesRequest extends FormRequest
                 "boolean",
             ],
         ];
+        return array_merge($rules, $this->storeApprovals());
     }
 }

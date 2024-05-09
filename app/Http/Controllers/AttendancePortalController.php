@@ -162,9 +162,24 @@ class AttendancePortalController extends Controller
         ], 404);
     }
 
-    public function setCookies()
+    public function attendancePortalSession()
     {
-        // $cookie = cookie('key', $hashname);
-        // return response('Cookie has been set')->cookie($cookie);
+        $main = AttendancePortal::get();
+        if (!is_null($main)) {
+            if ($main->delete()) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Successfully delete.',
+                ], JsonResponse::HTTP_OK);
+            }
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Failed delete.',
+            ], 400);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 }
