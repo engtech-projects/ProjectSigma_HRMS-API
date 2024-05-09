@@ -12,6 +12,7 @@ use App\Http\Resources\AttendanceLogResource;
 use App\Http\Requests\StoreAttendanceLogRequest;
 use App\Http\Requests\StoreFacialAttendanceLog;
 use App\Http\Requests\UpdateAttendanceLogRequest;
+use App\Models\EmployeePattern;
 use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 
@@ -77,7 +78,7 @@ class AttendanceLogController extends Controller
 
     public function facialAttendanceList()
     {
-        $main = AttendanceLog::with('employee', 'department', 'project')->get();
+        $main = EmployeePattern::get();
         if ($main) {
             return new JsonResponse([
                 "success" => true,
