@@ -8,18 +8,21 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Models\PayrollRecord;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Http\Services\EmployeeService;
 use App\Http\Requests\GeneratePayrollRequest;
+use App\Http\Services\Payroll\PayrollService;
 use App\Exceptions\TransactionFailedException;
 use App\Http\Requests\StorePayrollRecordRequest;
+use App\Models\PayrollDetail;
 
 class PayrollRecordController extends Controller
 {
 
-    protected $employeeService;
-    public function __construct(EmployeeService $employeeService)
+    protected $payrollService;
+    public function __construct(PayrollService $payrollService)
     {
-        $this->employeeService = $employeeService;
+        $this->payrollService = $payrollService;
     }
 
     public function generate(GeneratePayrollRequest $request)
@@ -31,7 +34,7 @@ class PayrollRecordController extends Controller
         ]);
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
         $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
-            $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
+            $employee["payroll_records"] = $this->payrollService->generatePayroll($periodDates, $filters, $employee);
             return $employee;
         });
 
@@ -50,37 +53,48 @@ class PayrollRecordController extends Controller
         $attribute = $request->validated();
 
         try {
-            $payroll = PayrollRecord::create($attribute);
-            $details = [
-                "payroll_record_id" => $payroll->id,
-                "employee_id" => 1,
-                "regular_hours" => 1,
-                "rest_hours" => 1,
-                "regular_holiday_hours" => 1,
-                "special_holiday_hours" => 1,
-                "regular_overtime" => 1,
-                "rest_overtime" => 1,
-                "regular_holiday_overtime" => 1,
-                "special_holiday_overtime" => 1,
-                "regular_pay" => 1,
-                "rest_pay" => 1,
-                "regular_holiday_pay" => 1,
-                "special_holiday_pay" => 1,
-                "regular_ot_pay" => 1,
-                "rest_ot_pay" => 1,
-                "regular_holiday_ot_pay" => 1,
-                "special_holiday_ot_pay" => 1,
-                "gross_pay" => 1,
-                "late_hours" => 1,
-                "sss_deduct" => 1,
-                "philhealth_deduct" => 1,
-                "pagibig_deduct" => 1,
-                "withholdingtax_deduct" => 1,
-                "total_deduct" => 1,
-                "net_pay" => 1,
+            DB::transaction(function () use ($attribute) {
+                $payroll = PayrollRecord::create($attribute);
+                $details = [
 
-            ];
-            $payroll->payroll_details()->create($details);
+                    "payroll_record_id" => $payroll->id,
+                    "employee_id" => 1,
+                    "regular_hours" => 1,
+                    "rest_hours" => 1,
+                    "regular_holiday_hours" => 1,
+                    "special_holiday_hours" => 1,
+                    "regular_overtime" => 1,
+                    "rest_overtime" => 1,
+                    "regular_holiday_overtime" => 1,
+                    "special_holiday_overtime" => 1,
+                    "regular_pay" => 1,
+                    "rest_pay" => 1,
+                    "regular_holiday_pay" => 1,
+                    "special_holiday_pay" => 1,
+                    "regular_ot_pay" => 1,
+                    "rest_ot_pay" => 1,
+                    "regular_holiday_ot_pay" => 1,
+                    "special_holiday_ot_pay" => 1,
+                    "gross_pay" => 1,
+                    "late_hours" => 1,
+                    "sss_employee_contribution" => 1,
+                    "sss_employer_contribution"  => 1,
+                    "sss_employee_compensation" => 1,
+                    "sss_employer_compensation" => 1,
+                    "philhealth_employee_contribution" => 1,
+                    "philhealth_employer_contribution" => 1,
+                    "pagibig_employee_contribution" => 1,
+                    "pagibig_employer_contribution" => 1,
+                    "pagibig_employee_compensation" => 1,
+                    "pagibig_employer_compensation" => 1,
+                    "withholdingtax_contribution" => 1,
+                    "total_deduct" => 1,
+                    "net_pay" => 1,
+
+
+                ];
+                $payroll->payroll_details()->create($details);
+            });
         } catch (Exception $e) {
             throw new TransactionFailedException("Transaction failed.", 500, $e);
         }

@@ -286,6 +286,11 @@ class Employee extends Model
         return $this->hasMany(AttendanceLog::class, 'employee_id');
     }
 
+    public function employee_loan(): HasMany
+    {
+        return $this->hasMany(Loans::class);
+    }
+
 
     public function employee_leave(): HasMany
     {

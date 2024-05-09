@@ -34,8 +34,8 @@ class SSSContribution extends Model
             ->where('range_to', '>=', $salary)
             ->first();
     }
-    public static function getLoan()
+    public function deduction()
     {
-        return null;
+        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
     }
 }

@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PayrollDetail extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         "payroll_record_id",
         "employee_id",
@@ -30,18 +32,28 @@ class PayrollDetail extends Model
         "special_holiday_ot_pay",
         "gross_pay",
         "late_hours",
-        "sss_deduct",
-        "philhealth_deduct",
-        "pagibig_deduct",
-        "withholdingtax_deduct",
+        "sss_employee_contribution",
+        "sss_employer_contribution",
+        "sss_employee_compensation",
+        "sss_employer_compensation",
+        "philhealth_employee_contribution",
+        "philhealth_employer_contribution",
+        "pagibig_employee_contribution",
+        "pagibig_employer_contribution",
+        "pagibig_employee_compensation",
+        "pagibig_employer_compensation",
+        "withholdingtax_contribution",
         "total_deduct",
         "net_pay",
-
     ];
 
     public function payroll_record(): BelongsTo
     {
         return $this->belongsTo(PayrollRecord::class);
+    }
+    public function payroll_detail_deduction(): HasMany
+    {
+        return $this->hasMany(PayrollDetailDeduction::class);
     }
     public function sss_deduction()
     {

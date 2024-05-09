@@ -121,4 +121,8 @@ class CashAdvance extends Model
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
     }
+    public function scopeRequestStatusApproved(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
+    }
 }

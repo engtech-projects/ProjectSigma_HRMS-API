@@ -64,7 +64,6 @@ use App\Http\Controllers\Actions\Employee\{
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
-use App\Http\Controllers\Actions\GeneratePayrollController;
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\AttendancePortalController;

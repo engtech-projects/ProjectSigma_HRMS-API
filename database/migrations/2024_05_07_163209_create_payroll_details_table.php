@@ -33,15 +33,15 @@ return new class extends Migration
             $table->double('special_holiday_ot_pay');
             $table->double('gross_pay');
             $table->double('late_hours');
-            $table->double('sss_employeee_contribution');
+            $table->double('sss_employee_contribution');
             $table->double('sss_employer_contribution');
             $table->double('sss_employee_compensation');
             $table->double('sss_employer_compensation');
             $table->double('philhealth_employee_contribution');
             $table->double('philhealth_employer_contribution');
-            $table->double('pagibig_employeee_contribution');
+            $table->double('pagibig_employee_contribution');
             $table->double('pagibig_employer_contribution');
-            $table->double('pagibig_employeee_compensation');
+            $table->double('pagibig_employee_compensation');
             $table->double('pagibig_employer_compensation');
             $table->double('withholdingtax_contribution');
             $table->double('total_deduct');
