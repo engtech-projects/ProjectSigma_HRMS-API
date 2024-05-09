@@ -129,7 +129,7 @@ class AttendanceLogController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
-    public function getToday(Request $request)
+    public function getToday()
     {
         $attendanceLog = $this->attendanceLogService->getAllToday();
         $collection = collect(AttendanceLogResource::collection($attendanceLog));
