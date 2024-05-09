@@ -63,6 +63,25 @@ class Employee extends Model
         );
     }
 
+    public function getLeaveCreditsAttribute()
+    {
+        $leaves_types = Leave::get();
+        foreach ($leaves_types as $leavetype) {
+            $leavetype->credits = $leavetype->amt_of_leave;
+            if (!collect($leavetype->employment_status)->contains($this->current_employment->employment_status)) {
+                $leavetype->credits = 0;
+            }
+            $leavetype->used = $this->employee_leave()
+                ->where("leave_id", $leavetype->id)
+                ->whereYear("date_of_absence_from", Carbon::now()->year)
+                ->withPayLeave()
+                ->approved()
+                ->sum("number_of_days");
+            $leavetype->balance = $leavetype->credits - $leavetype->used;
+        }
+        return $leaves_types;
+    }
+
     protected $casts = [
         'date_of_birth' => 'datetime:Y-m-d',
         'date_of_marriage' => 'datetime:Y-m-d',
@@ -280,7 +299,6 @@ class Employee extends Model
         return $this->hasMany(Schedule::class, 'employee_id');
     }
 
-
     public function attendance_log(): HasMany
     {
         return $this->hasMany(AttendanceLog::class, 'employee_id');
@@ -290,7 +308,6 @@ class Employee extends Model
     {
         return $this->hasMany(Loans::class);
     }
-
 
     public function employee_leave(): HasMany
     {

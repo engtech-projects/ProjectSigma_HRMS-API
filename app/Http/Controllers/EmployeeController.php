@@ -20,6 +20,7 @@ use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
 use App\Models\Schedule;
+use Carbon\Carbon;
 use Database\Factories\InternalWorkExperienceFactory;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Integer;
@@ -355,66 +356,12 @@ class EmployeeController extends Controller
         return $getData;
     }
 
-    public function getLeaveCredits($id)
+    public function getLeaveCredits(Employee $employee)
     {
-        $val = Employee::with("current_employment")->find($id);
-        $leaves_type = Leave::get();
-        if ($val) {
-            $main = [];
-            $leavedata = [];
-            $getData = json_decode('{}');
-            foreach ($leaves_type as $key) {
-                $data = json_decode('{}');
-                if (gettype($key->employment_status) == "string") {
-                    $type = json_decode($key->employment_status);
-                    if ($val->current_employment) {
-                        if (in_array($val->current_employment->employment_status, $type)) {
-                            $count = EmployeeLeaves::where([
-                                ["leave_id", $key->id],
-                                ["request_status", "Approved"],
-                            ])->max('number_of_days');
-                            $leave = Leave::find($key->id);
-                            if ($leave) {
-                                $data->leavename = $leave->leave_name;
-                                $data->total_credits = $leave->amt_of_leave;
-                                $data->used = $count ?? 0;
-                                $data->balance = $leave->amt_of_leave - $count;
-                                array_push($leavedata, $data);
-                            }
-                        } else {
-                            $leave = Leave::find($key->id);
-                            $data->leavename = $leave->leave_name;
-                            $data->total_credits = $leave->amt_of_leave;
-                            $data->used = 0;
-                            $data->balance = $leave->amt_of_leave;
-                            array_push($leavedata, $data);
-                        }
-                    } else {
-                        $leave = Leave::find($key->id);
-                        if ($leave) {
-                            $data->leavename = $leave->leave_name;
-                            $data->total_credits = $leave->amt_of_leave;
-                            $data->used = 0;
-                            $data->balance = $leave->amt_of_leave;
-                            array_push($leavedata, $data);
-                        }
-                    }
-                }
-            }
-            $getData->employee = $val;
-            $getData->employee->leaveCredits = $leavedata;
-            array_push($main, $getData);
-            if ($val) {
-                return new JsonResponse([
-                    'success' => 'true',
-                    'message' => 'Successfully fetch.',
-                    'data' => $main,
-                ]);
-            }
-        }
         return new JsonResponse([
-            'success' => 'false',
-            'message' => 'No data found.',
+            'success' => 'true',
+            'message' => 'Successfully fetch.',
+            'data' => $employee->leaveCredits,
         ]);
     }
 }

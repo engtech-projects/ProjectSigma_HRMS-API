@@ -108,7 +108,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('leave', LeaveController::class);
     Route::resource('events', EventsController::class);
     Route::resource('announcement', AnnouncementsController::class);
-    Route::get('announcement-list', [AnnouncementsController::class, 'currentAnnouncements']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
         Route::resource('resource', PositionController::class);
@@ -126,7 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
-        Route::get('leave-credits/{id}', [EmployeeController::class, 'getLeaveCredits']);
+        Route::get('leave-credits/{employee}', [EmployeeController::class, 'getLeaveCredits']);
         Route::get('users-list', [UsersController::class, 'get']);
         Route::post('bulk-upload', [EmployeeBulkUploadController::class, 'bulkUpload']);
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
@@ -268,7 +267,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('attendance-portal')->group(function () {
-        Route::resource('resource/{ip}', AttendancePortalController::class)->middleware('portal_in');
+        Route::resource('resource', AttendancePortalController::class);
     });
 
     Route::prefix('face-pattern')->group(function () {
@@ -290,12 +289,18 @@ if (config()->get('app.artisan') == 'true') {
 //public
 
 Route::middleware('portal_in')->group(function () {
+    Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
+    Route::prefix('test')->group(function () {
+        Route::get('cookies', [AttendancePortalController::class, 'setCookies']);
+    });
 });
+
 Route::prefix("department")->group(function () {
     Route::get('list/v2', [DepartmentController::class, 'get']);
 });
 
 Route::prefix('attendance')->group(function () {
+    Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
     Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
     Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
 });
@@ -305,3 +310,4 @@ Route::resource('employee/resource/v2', EmployeeController::class);
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
 });
+Route::get('current-announcements', [AnnouncementsController::class, 'currentAnnouncements']);

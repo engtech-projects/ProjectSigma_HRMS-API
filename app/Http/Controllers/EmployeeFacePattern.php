@@ -17,6 +17,7 @@ class EmployeeFacePattern extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
         $data = json_decode('{}');
@@ -31,7 +32,8 @@ class EmployeeFacePattern extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {}
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -41,8 +43,7 @@ class EmployeeFacePattern extends Controller
         $data = json_decode('{}');
         $validatedData = $request->validated();
         $data->success = $this->facePatternService->insert($validatedData);
-        if ($data)
-        {
+        if ($data) {
             $data->message = "Successfully Save";
             return response()->json($data);
         }

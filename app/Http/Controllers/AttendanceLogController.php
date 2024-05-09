@@ -12,7 +12,9 @@ use App\Http\Resources\AttendanceLogResource;
 use App\Http\Requests\StoreAttendanceLogRequest;
 use App\Http\Requests\StoreFacialAttendanceLog;
 use App\Http\Requests\UpdateAttendanceLogRequest;
+use App\Models\EmployeePattern;
 use Carbon\Carbon;
+use GuzzleHttp\Psr7\Request;
 
 class AttendanceLogController extends Controller
 {
@@ -76,7 +78,7 @@ class AttendanceLogController extends Controller
 
     public function facialAttendanceList()
     {
-        $main = AttendanceLog::with('employee', 'department', 'project')->get();
+        $main = EmployeePattern::get();
         if ($main) {
             return new JsonResponse([
                 "success" => true,
@@ -125,6 +127,18 @@ class AttendanceLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully deleted.",
+        ], JsonResponse::HTTP_OK);
+    }
+
+    public function getToday()
+    {
+        $attendanceLog = $this->attendanceLogService->getAllToday();
+        $collection = collect(AttendanceLogResource::collection($attendanceLog));
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
         ], JsonResponse::HTTP_OK);
     }
 }

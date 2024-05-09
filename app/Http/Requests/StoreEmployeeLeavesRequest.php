@@ -69,7 +69,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "required",
                 "date",
                 "date_format:Y-m-d",
-                "after:date_of_absence_from"
+                "after_or_equal:date_of_absence_from"
             ],
             'reason_for_absence' => [
                 "required",
@@ -88,7 +88,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "string",
             ],
             'approvals.*.user_id' => [
-                "nullable",
+                "required",
                 "integer",
                 "exists:users,id",
             ],
@@ -107,7 +107,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
             'number_of_days' => [
                 "required",
                 "integer",
-                "min:1",
+                "gt:0",
             ],
             'with_pay' => [
                 "required",

@@ -40,11 +40,11 @@ class EmployeeLeavesController extends Controller
     {
         $main = new EmployeeLeaves();
         $valData = $request->validated();
+        $data = json_decode('{}');
 
         if ($valData) {
             $main->fill($valData);
             $main->request_status = RequestStatusType::PENDING;
-            $data = json_decode('{}');
 
             if (!$main->save()) {
                 $data->message = "Save failed.";
@@ -54,8 +54,8 @@ class EmployeeLeavesController extends Controller
             $data->message = "Successfully save.";
             $data->success = true;
             $data->data = $main;
+            return response()->json($data, 200);
         }
-
         $data->message = "Save failed.";
         $data->success = false;
         return response()->json($data, 400);

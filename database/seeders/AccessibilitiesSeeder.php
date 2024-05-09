@@ -13,7 +13,7 @@ class AccessibilitiesSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('accessibilities')->insert(
+        DB::table('accessibilities')->upsert(
             [
                 [
                     'id' => 1,
@@ -260,7 +260,9 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
-            ]
+            ],
+            [ "id" ],
+            [ "accessibilities_name" ]
         );
     }
 }
