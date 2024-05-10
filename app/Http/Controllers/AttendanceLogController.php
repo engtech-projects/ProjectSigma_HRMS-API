@@ -63,7 +63,13 @@ class AttendanceLogController extends Controller
         $val = $request->validated();
         if ($val) {
             $mainsave = new AttendanceLog();
-            $main = AttendancePortal::with('assignment')->where('portal_token',$request->cookie('portal_token'))->first();
+            $token = "";
+            if($request->cookie('portal_token')){
+                $token = $request->cookie('portal_token');
+            }else{
+                $token = $request->header("Portal_token");
+            }
+            $main = AttendancePortal::with('assignment')->where('portal_token',$token)->first();
             $type = $main->assignment_type;
             $id = $main->assignment->id;
             switch ($type) {
