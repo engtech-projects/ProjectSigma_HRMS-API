@@ -66,28 +66,30 @@ class AttendanceLogController extends Controller
             $main = AttendancePortal::with('assignment')->where('portal_token',$request->cookie('portal_token'))->first();
             $type = $main->assignment_type;
             $id = $main->assignment->id;
-            $main->type = $type;
             switch ($type) {
                 case AttendanceLogController::DEPARTMENT:
                     $type = AssignTypes::DEPARTMENT->value;
                     $mainsave->department_id = $id;
-                    break;
+                break;
                 case AttendanceLogController::PROJECT:
                     $type = AssignTypes::PROJECT->value;
                     $mainsave->project_id = $id;
-                    break;
+                break;
             }
+            $main->type = $type;
             $mainsave->date = Carbon::now()->format('Y-m-d');
             $mainsave->time = Carbon::now()->format('H:i:s');
             $mainsave->attendance_type = AttendanceType::FACIAL->value;
             $mainsave->fill($val);
+            $employee = Employee::with('employee_schedule')->find($request->employee_id)->get();
+            $mainsave->employee = $employee;
             if ($mainsave->save()) {
                 $employee = Employee::with('employee_schedule')->find($request->employee_id)->get();
                 $mainsave->employee = $employee;
                 return new JsonResponse([
                     "success" => true,
                     "message" => "Successfully save.",
-                    "data" => new AttendanceLogResource($mainsave),
+                    "data" => $mainsave,
                 ], JsonResponse::HTTP_OK);
             }
             return new JsonResponse([
