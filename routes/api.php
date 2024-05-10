@@ -291,12 +291,12 @@ if (config()->get('app.artisan') == 'true') {
 Route::middleware('portal_in')->group(function () {
     Route::prefix('attendance')->group(function () {
         Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+        Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
+        Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
     });
 });
 
-Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
-Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
-Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
 
 //public
 
