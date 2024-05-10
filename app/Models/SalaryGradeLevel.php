@@ -29,6 +29,6 @@ class SalaryGradeLevel extends Model
 
     public function salary_grade_step(): HasMany
     {
-        return $this->hasMany(SalaryGradeStep::class);
+        return $this->hasMany(SalaryGradeStep::class, 'salary_grade_level_id', 'id');
     }
 }

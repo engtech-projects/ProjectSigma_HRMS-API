@@ -64,7 +64,6 @@ use App\Http\Controllers\Actions\Employee\{
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
-use App\Http\Controllers\Actions\GeneratePayrollController;
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\AttendancePortalController;
@@ -76,9 +75,9 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
+use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,7 +108,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('leave', LeaveController::class);
     Route::resource('events', EventsController::class);
     Route::resource('announcement', AnnouncementsController::class);
-    Route::get('announcement-list', [AnnouncementsController::class, 'currentAnnouncements']);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
         Route::resource('resource', PositionController::class);
@@ -264,7 +262,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('payroll')->group(function () {
-        Route::post('generate-payroll', GeneratePayrollController::class);
+        Route::post('generate-payroll', [PayrollRecordController::class, 'generate']);
+        Route::post('create-payroll', [PayrollRecordController::class, 'store']);
     });
 
     Route::prefix('attendance-portal')->group(function () {
@@ -287,25 +286,28 @@ if (config()->get('app.artisan') == 'true') {
     });
 }
 
-//public
+// portal token
 
 Route::middleware('portal_in')->group(function () {
+    Route::prefix('attendance')->group(function () {
+        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+        Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+        Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
+        Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
+    });
 });
+
+
+//public
+
 Route::prefix("department")->group(function () {
     Route::get('list/v2', [DepartmentController::class, 'get']);
 });
 
-Route::prefix('attendance')->group(function () {
-    Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
-    Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
-});
 
 Route::resource('employee/resource/v2', EmployeeController::class);
 
 Route::prefix('project-monitoring')->group(function () {
     Route::get('lists', ViewProjectListController::class);
 });
-
-Route::prefix('face-pattern')->group(function () {
-    Route::get('list', [EmployeeFacePattern::class, "index"]);
-});
+Route::get('current-announcements', [AnnouncementsController::class, 'currentAnnouncements']);

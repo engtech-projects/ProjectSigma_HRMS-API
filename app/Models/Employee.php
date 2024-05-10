@@ -16,11 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Schedule;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Traits\EmployeeDTR;
+use App\Models\Traits\EmployeePayroll;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 
 class Employee extends Model
 {
@@ -28,7 +27,7 @@ class Employee extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasProjectEmployee;
+    use HasProjectEmployee, EmployeeDTR, EmployeePayroll;
 
     protected $table = 'employees';
     protected $appends = [
@@ -120,6 +119,7 @@ class Employee extends Model
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'profile_image');
     }
+
     public function digital_signature()
     {
         return $this->morphOne(Image::class, 'parentable')->where('image_type', 'signature');
@@ -141,7 +141,7 @@ class Employee extends Model
 
     public function current_employment(): HasOne
     {
-        return $this->hasOne(InternalWorkExperience::class)->where("status", "=", "current")
+        return $this->hasOne(InternalWorkExperience::class, 'employee_id')->where("status", "=", "current")
             ->with("employee_salarygrade", "employee_department");
     }
 
@@ -154,6 +154,11 @@ class Employee extends Model
     public function employee_salarygrade(): HasOne
     {
         return $this->hasOne(SalaryGradeStep::class);
+    }
+
+    public function cash_advance(): HasMany
+    {
+        return $this->hasMany(CashAdvance::class, 'employee_id');
     }
 
     public function employee_department(): HasOne
@@ -291,22 +296,31 @@ class Employee extends Model
 
     public function employee_schedule(): HasMany
     {
-        return $this->hasMany(Schedule::class);
+        return $this->hasMany(Schedule::class, 'employee_id');
     }
 
     public function attendance_log(): HasMany
     {
-        return $this->hasMany(AttendanceLog::class);
+        return $this->hasMany(AttendanceLog::class, 'employee_id');
+    }
+
+    public function employee_loan(): HasMany
+    {
+        return $this->hasMany(Loans::class);
     }
 
     public function employee_leave(): HasMany
     {
-        return $this->hasMany(EmployeeLeaves::class);
+        return $this->hasMany(EmployeeLeaves::class, 'employee_id');
+    }
+    public function employee_travel_order(): BelongsToMany
+    {
+        return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id');
     }
 
     public function employee_overtime(): BelongsToMany
     {
-        return $this->belongsToMany(Overtime::class, 'overtime_employees');
+        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id');
     }
 
     public function employee_has_overtime(): BelongsToMany
@@ -325,42 +339,5 @@ class Employee extends Model
                 return $query->select(['first_name', 'middle_name', 'family_name', 'id']);
             }
         ])->addSelect(DB::raw('startTime as late'))->get();
-    }
-
-    public function dtrSchedule($employee, $date)
-    {
-        $schedule = $employee->employee_schedule()
-            ->where('startRecur', $date)
-            ->get();
-        return $schedule;
-    }
-    public function dtrAttendance($employee, $date)
-    {
-        $attendance = $employee->attendance_log()
-            ->where('date', $date)
-            ->get();
-        return $attendance;
-    }
-    public function dtrOvertime($employee, $date)
-    {
-        $overtime = $employee->employee_overtime()
-            ->where('overtime_date', $date)
-            ->approved()
-            ->get();
-        return $overtime;
-    }
-
-    public function dtrEvents($date)
-    {
-        return Events::whereDate('start_date', '<=', $date)
-            ->whereDate('end_date', '>=', $date)
-            ->get();
-    }
-    public function dtrLeave($date)
-    {
-        return $this->employee_leave()
-            ->whereDate('date_of_absence_from', '<=', $date)
-            ->whereDate('date_of_absence_to', '>=', $date)
-            ->get();
     }
 }

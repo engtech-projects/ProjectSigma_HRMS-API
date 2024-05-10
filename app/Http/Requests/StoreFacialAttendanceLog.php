@@ -30,23 +30,6 @@ class StoreFacialAttendanceLog extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
-            'group_type' => [
-                "required",
-                "string",
-                new Enum(AssignTypes::class)
-            ],
-            'project_id' => [
-                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
-                "integer",
-                'nullable',
-                "exists:projects,id",
-            ],
-            'department_id' => [
-                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
-                "integer",
-                'nullable',
-                "exists:departments,id",
-            ],
             'log_type' => [
                 "required",
                 "string",

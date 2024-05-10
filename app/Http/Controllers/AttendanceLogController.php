@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssignTypes;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
 use App\Models\AttendanceLog;
@@ -12,11 +13,17 @@ use App\Http\Resources\AttendanceLogResource;
 use App\Http\Requests\StoreAttendanceLogRequest;
 use App\Http\Requests\StoreFacialAttendanceLog;
 use App\Http\Requests\UpdateAttendanceLogRequest;
+use App\Models\AttendancePortal;
+use App\Models\Employee;
+use App\Models\EmployeePattern;
 use Carbon\Carbon;
+use GuzzleHttp\Psr7\Request;
 
 class AttendanceLogController extends Controller
 {
     protected $attendanceLogService;
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
 
     public function __construct(AttendanceLogService $attendanceLogService)
     {
@@ -55,16 +62,38 @@ class AttendanceLogController extends Controller
     {
         $val = $request->validated();
         if ($val) {
-            $main = new AttendanceLog();
-            $main->fill($val);
-            $main->date = Carbon::now()->format('Y-m-d');
-            $main->time = Carbon::now()->format('H:i:s');
-            $main->attendance_type = AttendanceType::FACIAL->value;
-            if ($main->save()) {
+            $mainsave = new AttendanceLog();
+            $token = "";
+            if($request->cookie('portal_token')){
+                $token = $request->cookie('portal_token');
+            }else{
+                $token = $request->header("Portal_token");
+            }
+            $main = AttendancePortal::with('assignment')->where('portal_token',$token)->first();
+            $type = $main->assignment_type;
+            $id = $main->assignment->id;
+            switch ($type) {
+                case AttendanceLogController::DEPARTMENT:
+                    $type = AssignTypes::DEPARTMENT->value;
+                    $mainsave->department_id = $id;
+                break;
+                case AttendanceLogController::PROJECT:
+                    $type = AssignTypes::PROJECT->value;
+                    $mainsave->project_id = $id;
+                break;
+            }
+            $main->type = $type;
+            $mainsave->date = Carbon::now()->format('Y-m-d');
+            $mainsave->time = Carbon::now()->format('H:i:s');
+            $mainsave->attendance_type = AttendanceType::FACIAL->value;
+            $mainsave->fill($val);
+            if ($mainsave->save()) {
+                $employee = Employee::with('employee_schedule')->find($request->employee_id);
+                $mainsave->employee = $employee;
                 return new JsonResponse([
                     "success" => true,
                     "message" => "Successfully save.",
-                    "data" => new AttendanceLogResource($main),
+                    "data" => $mainsave,
                 ], JsonResponse::HTTP_OK);
             }
             return new JsonResponse([
@@ -72,11 +101,15 @@ class AttendanceLogController extends Controller
                 "message" => "Failed save.",
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
+        return new JsonResponse([
+            "success" => false,
+            "message" => "Failed save.",
+        ], JsonResponse::HTTP_EXPECTATION_FAILED);
     }
 
     public function facialAttendanceList()
     {
-        $main = AttendanceLog::with('employee', 'department', 'project')->get();
+        $main = EmployeePattern::get();
         if ($main) {
             return new JsonResponse([
                 "success" => true,
@@ -125,6 +158,18 @@ class AttendanceLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully deleted.",
+        ], JsonResponse::HTTP_OK);
+    }
+
+    public function getToday()
+    {
+        $attendanceLog = $this->attendanceLogService->getAllToday();
+        $collection = collect(AttendanceLogResource::collection($attendanceLog));
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
         ], JsonResponse::HTTP_OK);
     }
 }

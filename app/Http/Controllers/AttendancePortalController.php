@@ -6,7 +6,14 @@ use App\Enums\AssignTypes;
 use App\Models\AttendancePortal;
 use App\Http\Requests\StoreAttendancePortalRequest;
 use App\Http\Requests\UpdateAttendancePortalRequest;
+use App\Http\Resources\AttendancePortalResource;
+use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
 
 class AttendancePortalController extends Controller
 {
@@ -17,13 +24,14 @@ class AttendancePortalController extends Controller
      */
     public function index()
     {
-        $main = AttendancePortal::paginate(15);
+        $main = AttendancePortal::with('assignment')->paginate(15);
         if (!is_null($main)) {
+            $collection = collect(AttendancePortalResource::collection($main));
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Successfully fetch.',
-                'data' => $main,
-            ], JsonResponse::HTTP_OK);
+                'message' => 'TravelOrder Request fetched.',
+                'data' => PaginateResourceCollection::paginate(collect($collection), 15)
+            ]);
         }
         return new JsonResponse([
             'success' => false,
@@ -52,6 +60,10 @@ class AttendancePortalController extends Controller
                         $data->assignment_id = $request["project_id"];
                         break;
                 }
+                $secret = Str::random(30);
+                $hashmake = Hash::make($secret);
+                $hashname = hash('sha256', $hashmake);
+                $data->portal_token = $hashname;
                 $data->save();
                 return new JsonResponse([
                     'success' => true,
@@ -144,6 +156,22 @@ class AttendancePortalController extends Controller
                 'success' => false,
                 'message' => 'Failed delete.',
             ], 400);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
+    }
+
+    public function attendancePortalSession(Request $request)
+    {
+        $main = AttendancePortal::with('assignment')->where('portal_token',$request->cookie('portal_token'))->get();
+        if (!is_null($main)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully fetch.',
+                'data' => $main,
+            ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => false,

@@ -318,7 +318,7 @@ class EmployeeBulkUploadController extends Controller
                         'brgy' => $data['per_brgy'] ?? 'N/A',
                         'city' => $data['per_city'] ?? 'N/A',
                         'zip' => $data['per_zip'] ?? 'N/A',
-                        'province' => $data['pre_province'] ?? 'N/A',
+                        'province' => $data['per_province'] ?? 'N/A',
                         'type' => EmployeeAddressType::PERMANENT,
                     ];
                     //affiliation information
@@ -364,9 +364,9 @@ class EmployeeBulkUploadController extends Controller
                     $employeeEducation[] = [
                         'honors_received' => $data['honor_of_school_highschool'] ?? 'N/A',
                         'degree_earned_of_school' => $data['secondary_degree_earned_of_school'] ?? 'N/A',
-                        'year_graduated' => $education['secondary_period_attendance_from'] ?? "N/A",
-                        'period_attendance_from' => $education['secondary_period_attendance_to'] ?? "N/A",
-                        'period_attendance_to' => $education['secondary_year_graduated'] ?? "N/A",
+                        'year_graduated' => $education['secondary_year_graduated'] ?? "N/A",
+                        'period_attendance_from' => $education['secondary_period_attendance_from'] ?? "N/A",
+                        'period_attendance_to' => $education['secondary_period_attendance_to'] ?? "N/A",
                         'education' => $data['secondary_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::SECONDARY,
                         'name' =>  $data['secondary_education'] ?? 'N/A',
@@ -375,9 +375,9 @@ class EmployeeBulkUploadController extends Controller
                     $employeeEducation[] = [
                         'honors_received' => $data['honor_of_school_college'] ?? 'N/A',
                         'degree_earned_of_school' => $data['college_degree_earned_of_school'] ?? 'N/A',
-                        'year_graduated' => $education['college_period_attendance_from'] ?? "N/A",
-                        'period_attendance_from' => $education['college_period_attendance_to'] ?? "N/A",
-                        'period_attendance_to' => $education['college_year_graduated'] ?? "N/A",
+                        'period_attendance_from' => $education['college_period_attendance_from'] ?? "N/A",
+                        'period_attendance_to'=> $education['college_period_attendance_to'] ?? "N/A",
+                        'year_graduated' => $education['college_year_graduated'] ?? "N/A",
                         'education' => $data['college_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::COLLEGE,
                         'name' =>  $data['college_education'] ?? 'N/A',
@@ -386,9 +386,9 @@ class EmployeeBulkUploadController extends Controller
                     $employeeEducation[] = [
                         'honors_received' => $data['honor_of_school_vocational'] ?? 'N/A',
                         'degree_earned_of_school' => $data['vocationalcourse_degree_earned_of_school'] ?? 'N/A',
-                        'year_graduated' => $education['vocationalcourse_period_attendance_from'] ?? "N/A",
-                        'period_attendance_from' => $education['vocationalcourse_period_attendance_to'] ?? "N/A",
-                        'period_attendance_to' => $education['vocationalcourse_year_graduated'] ?? "N/A",
+                        'period_attendance_from' => $education['vocationalcourse_period_attendance_from'] ?? "N/A",
+                        'period_attendance_to' => $education['vocationalcourse_period_attendance_to'] ?? "N/A",
+                        'year_graduated' => $education['vocationalcourse_year_graduated'] ?? "N/A",
                         'education' => $data['vocationalcourse_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::VOCATIONAL,
                         'name' =>  $data['vocationalcourse_education'] ?? 'N/A',

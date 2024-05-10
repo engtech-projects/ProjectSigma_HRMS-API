@@ -24,4 +24,11 @@ class WitholdingTaxContribution extends Model
         'tax_amount',
         'tax_percent_over_base',
     ];
+
+    public static function getContribution($salary)
+    {
+        return self::where('range_from', '<=', $salary)
+            ->where('range_to', '>=', $salary)
+            ->first();
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Exceptions\TransactionFailedException;
 use App\Models\AttendanceLog;
+use Carbon\Carbon;
 
 class AttendanceLogService
 {
@@ -16,6 +17,11 @@ class AttendanceLogService
     public function getAll()
     {
         return $this->log->with(['project', 'department'])->get();
+    }
+
+    public function getAllToday()
+    {
+        return $this->log->where('date', Carbon::now())->with(['project', 'department'])->get();
     }
 
     public function get(AttendanceLog $log)

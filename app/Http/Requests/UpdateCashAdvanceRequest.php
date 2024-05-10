@@ -7,9 +7,11 @@ use App\Enums\RequestStatusType;
 use App\Enums\TermsOfPaymentType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use App\Http\Traits\ApprovalsRequest;
 
 class UpdateCashAdvanceRequest extends FormRequest
 {
+    use ApprovalsRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,7 +27,7 @@ class UpdateCashAdvanceRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'employee_id' => [
                 "nullable",
                 "integer",
@@ -76,35 +78,7 @@ class UpdateCashAdvanceRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'approvals' => [
-                "nullable",
-                "array",
-            ],
-            'approvals.*' => [
-                "nullable",
-                "array",
-            ],
-            'approvals.*.type' => [
-                "nullable",
-                "string",
-            ],
-            'approvals.*.user_id' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status' => [
-                "nullable",
-                "string",
-            ],
-            'approvals.*.date_approved' => [
-                "nullable",
-                "date",
-            ],
-            'approvals.*.remarks' => [
-                "nullable",
-                "string",
-            ]
         ];
+        return array_merge($rules, $this->storeApprovals());
     }
 }

@@ -28,10 +28,6 @@ class StoreAttendancePortalRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'ip_address' => [
-                "required",
-                "string",
-            ],
             'group_type' => [
                 "required",
                 "string",

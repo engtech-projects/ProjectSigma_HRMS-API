@@ -9,6 +9,7 @@ use App\Http\Services\EmployeeService;
 use App\Http\Traits\Attendance;
 use App\Http\Traits\DailyTimeRecord;
 use App\Models\Employee;
+use App\Models\EmployeeDTR;
 use App\Models\Events;
 use Illuminate\Http\JsonResponse;
 
@@ -23,22 +24,25 @@ class GeneratePayrollController extends Controller
     {
         $this->employeeService = $employeeService;
         $filters = $request->validated();
+
         $periodDates = Helpers::dateRange([
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
-        $employees = Employee::whereIn('id', $filters['employee_ids'])->get();
-        $result = collect($periodDates)->groupBy(function ($date) {
-            return $date["date"];
-        })->map(function ($date) use ($employees) {
-            $date = $date[0]["date"];
-            foreach ($employees as $employee) {
-                return $this->employeeService->employeeDTR($employee, $date);
-            }
+        $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
+
+        $result = collect($employeeDtr)->map(function ($employee) use ($periodDates) {
+            $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $employee);
+            return $employee["payroll_records"];
         });
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
             'data' => $result
         ]);
+    }
+
+    private function getSalaryDeduction()
+    {
     }
 }
