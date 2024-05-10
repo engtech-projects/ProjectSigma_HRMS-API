@@ -82,7 +82,6 @@ class AttendanceLogController extends Controller
             $mainsave->attendance_type = AttendanceType::FACIAL->value;
             $mainsave->fill($val);
             $employee = Employee::with('employee_schedule')->find($request->employee_id)->get();
-            $mainsave->employee = $employee;
             if ($mainsave->save()) {
                 $employee = Employee::with('employee_schedule')->find($request->employee_id)->get();
                 $mainsave->employee = $employee;
