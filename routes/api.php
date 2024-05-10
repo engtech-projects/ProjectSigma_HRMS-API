@@ -289,8 +289,14 @@ if (config()->get('app.artisan') == 'true') {
 // portal token
 
 Route::middleware('portal_in')->group(function () {
-    Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
+    Route::prefix('attendance')->group(function () {
+        Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+    });
 });
+
+Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
+Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
+Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
 
 //public
 
@@ -298,11 +304,6 @@ Route::prefix("department")->group(function () {
     Route::get('list/v2', [DepartmentController::class, 'get']);
 });
 
-Route::prefix('attendance')->group(function () {
-    Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
-    Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
-    Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
-});
 
 Route::resource('employee/resource/v2', EmployeeController::class);
 
