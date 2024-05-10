@@ -301,7 +301,7 @@ class Employee extends Model
 
     public function attendance_log(): HasMany
     {
-        return $this->hasMany(AttendanceLog::class, 'employee_id');
+        return $this->hasMany(AttendanceLog::class);
     }
 
     public function employee_loan(): HasMany

@@ -4,6 +4,7 @@ namespace App\Http\Traits;
 
 use App\Enums\AttendanceLogType;
 use App\Helpers;
+use App\Models\AttendanceLog;
 use App\Models\Employee;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
@@ -42,8 +43,11 @@ trait Attendance
                 }
             }
         }
-        $workingInterval = CarbonInterval::seconds($duration);
+        /*  $workingInterval = CarbonInterval::seconds($duration); */
         return $duration;
+    }
+    public function getWorkingIntervalLate()
+    {
     }
     public function calculateAttendance($data)
     {
@@ -53,6 +57,7 @@ trait Attendance
         $restDayHRS = 0;
         $duration = 0;
         $lastTimeIn = null;
+        $late = 0;
         foreach ($data["attendance"] as $attendance) {
             $time = Carbon::parse($attendance->time);
             if ($attendance["log_type"] == AttendanceLogType::TIME_IN->value) {
@@ -61,13 +66,19 @@ trait Attendance
                 if ($lastTimeIn !== null) {
                     $lastTimeInDuration = $lastTimeIn->diffInHours($time);
                     $duration += $lastTimeInDuration;
+
+                    if ($time->diffIndays($lastTimeIn) > 0) {
+                        $lateDuration = $time->diffInSeconds($time->copy()->startOfDay());
+                        $late += $lateDuration;
+                    }
                     $lastTimeIn = null;
                 }
             }
             $attendanceDate = Carbon::parse($attendance->date);
+
+            dd($this->getSchedule($data["schedule"], $attendance));
             if ($this->hasSchedule($data["schedule"], $attendanceDate)) {
                 if ($this->scheduleHaveTravelOrder($data["travel_orders"], $attendance->date)) {
-
                     $regHolidayHRS = $duration;
                 } else {
                     $regHRS = $duration;
@@ -76,7 +87,6 @@ trait Attendance
                 $restDayHRS = $duration;
             }
         }
-
 
         return [
             "reg_hrs" => $regHRS,
@@ -109,6 +119,32 @@ trait Attendance
 
         return $workingInterval->totalHours;
     }
+    /*     public function getWorkingLateInterval($schedule, $attendance)
+    {
+        $lateDuration = 0;
+        foreach ($schedule as $value) {
+            $scheduleDate = Carbon::parse($value["startRecur"]);
+
+            if ($scheduleDate->isSameDay($attendance->date)) {
+                if ($attendance->log_type == "In") {
+                    $timeIn = $attendance->time;
+                    $timeOut = null;
+                } else {
+                    $timeOut = $attendance->time;
+                }
+
+                if ($timeOut !== null) {
+                    $timeOut = Carbon::parse($attendance->time);
+                    if ($timeOut->diffInDays($timeIn) > 0) {
+
+                        $lateHours = $timeOut->diffInSeconds($timeOut->copy()->startOfDay());
+                        $lateDuration += $lateHours;
+                    }
+                }
+            }
+        }
+        return $lateDuration;
+    } */
     public function calculateOvertime($data)
     {
         $regOT = 0;
@@ -162,6 +198,37 @@ trait Attendance
         ];
     }
 
+    public function getWorkingLate($schedule, $attendance)
+    {
+        $lastTimeIn = AttendanceLog::where("employee_id", $attendance->id)->where('log_type', 'In')->orderBy('id', 'desc')->first();
+        $lastTimeIn = Carbon::parse($lastTimeIn->time);
+        $scheduleStartime = Carbon::parse($schedule->startTime);
+        return $lastTimeIn->diffInMinutes($scheduleStartime);
+    }
+    public function getScheduleWorkingHours($schedule, $attendance)
+    {
+        $lastTimeOut = AttendanceLog::where("employee_id", $attendance->id)->where('log_type', 'Out')->orderBy('id', 'desc')->first();
+        $lastTimeOut = Carbon::parse($lastTimeOut->time);
+        $scheduleStartime = Carbon::parse($schedule->startTime);
+        return $lastTimeOut->diffInHours($scheduleStartime);
+    }
+    public function getSchedule($schedules, $attendance)
+    {
+        $totalLate = 0;
+        $totalWorkingHours = 0;
+        foreach ($schedules as $schedule) {
+            $scheduleDate = Carbon::parse($schedule["startRecur"]);
+            if ($scheduleDate->isSameDay($attendance->date)) {
+                $totalLate += $this->getWorkingLate($schedule, $attendance);
+                $totalWorkingHours += $this->getScheduleWorkingHours($schedule, $attendance);
+            }
+            continue;
+        }
+        return [
+            "total_late" => $totalLate,
+            "total_working_hours" => $totalWorkingHours,
+        ];
+    }
     public function hasSchedule($schedules, $date)
     {
         foreach ($schedules as $schedule) {

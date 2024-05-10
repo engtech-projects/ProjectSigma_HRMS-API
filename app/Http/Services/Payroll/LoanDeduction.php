@@ -24,15 +24,17 @@ class LoanDeduction extends PayrollDeduction
         $deduction = 0;
         $payrollDate = Carbon::parse($filters["payroll_date"]);
         $loan = $this->employee->employee_loan->first();
-        $loanPayments = $loan->loan_payment_notposted;
-        if (!$loan->loanPaid()) {
-            if ($loan->deduction_date_start->lt($payrollDate)) {
-                $deduction = $loan->installment_deduction;
-            }
-            if ($filters["payroll_type"] === "weekly") {
-                $deduction = $deduction / 4;
-            } else {
-                $deduction = $deduction / 2;
+        if ($loan) {
+            $loanPayments = $loan->loan_payment_notposted;
+            if (!$loan->loanPaid()) {
+                if ($loan->deduction_date_start->lt($payrollDate)) {
+                    $deduction = $loan->installment_deduction;
+                }
+                if ($filters["payroll_type"] === "weekly") {
+                    $deduction = $deduction / 4;
+                } else {
+                    $deduction = $deduction / 2;
+                }
             }
         }
         return $deduction;
