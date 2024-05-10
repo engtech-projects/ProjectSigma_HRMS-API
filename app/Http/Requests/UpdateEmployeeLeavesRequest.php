@@ -75,7 +75,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             ],
             'number_of_days' => [
                 "nullable",
-                "integer",
+                "numeric",
                 "gt:0",
             ],
             'with_pay' => [
