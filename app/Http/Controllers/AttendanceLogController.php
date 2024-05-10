@@ -81,9 +81,8 @@ class AttendanceLogController extends Controller
             $mainsave->time = Carbon::now()->format('H:i:s');
             $mainsave->attendance_type = AttendanceType::FACIAL->value;
             $mainsave->fill($val);
-            $employee = Employee::with('employee_schedule')->find($request->employee_id)->get();
             if ($mainsave->save()) {
-                $employee = Employee::with('employee_schedule')->find($request->employee_id)->get();
+                $employee = Employee::with('employee_schedule')->find($request->employee_id);
                 $mainsave->employee = $employee;
                 return new JsonResponse([
                     "success" => true,
