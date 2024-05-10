@@ -63,13 +63,26 @@ class Schedule extends Model
      * SCOPES
      */
 
+    /*
     public function scopeEmployeeSchedule(Builder $query, array $filter = [])
     {
         $query->where(function ($query) use ($filter) {
             $query->where('startRecur', '>=', $filter['start_date'])
                 ->orWhereNull('endRecur');
         })->where('endRecur', '<', $filter['end_date']);
+    } */
+
+    public function scopeEmployeeSchedule(Builder $query, $date): Builder
+    {
+        return $query->where(function ($query) use ($date) {
+            $query->whereDate('startRecur', '<=', $date)->whereNotNull('endRecur')->whereDate('endRecur', '>', $date);
+        })->orWhere(function ($query) use ($date) {
+            $query->whereDate('startRecur', '<=', $date)->whereNull('endRecur');
+        });
     }
+
+
+
 
 
     public function scopePayrollSchedule(Builder $query, array $filters = [])

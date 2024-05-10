@@ -65,6 +65,18 @@ class InternalWorkExperience extends Model
     {
         return $this->hasMany(Employee::class, 'id', 'employee_id');
     }
+    public function department_schedule()
+    {
+        return $this->hasMany(Schedule::class, 'department_id', 'department_id');
+    }
+    public function irregular_department_schedule($date)
+    {
+        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->employeeSchedule($date);
+    }
+    public function regular_department_schedule($date)
+    {
+        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->employeeSchedule($date);
+    }
 
 
     public function scopeByEmployee(Builder $query, $id): Builder
@@ -75,5 +87,21 @@ class InternalWorkExperience extends Model
     public function scopeStatusCurrent(Builder $query): Builder
     {
         return $query->where('status', InternalWorkExpStatus::CURRENT);
+    }
+
+    public function scopeCurrentOnDate(Builder $query, $date): Builder
+    {
+
+        return $query->where(function ($query) use ($date) {
+            $query->whereDate('date_from', '<=', $date)->whereNotNull('date_to')->whereDate('date_to', '>', $date);
+        })->orWhere(function ($query) use ($date) {
+            $query->whereDate('date_from', '<=', $date)->whereNull('date_to');
+        });
+
+
+        /* return $query->where(function ($query) use ($date) {
+            $query->where('date_from', '>=', $date)
+                ->orWhereNull('date_to');
+        })->where('date_to', '<', $date); */
     }
 }
