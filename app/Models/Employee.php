@@ -339,7 +339,7 @@ class Employee extends Model
                 $schedule = $internal->irregular_department_schedule($date)->get();
             }
         } else {
-            $schedule = 
+            $schedule = null;
         }
 
         return $schedule;
