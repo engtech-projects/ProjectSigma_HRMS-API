@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateAttendancePortalRequest;
 use App\Http\Resources\AttendancePortalResource;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -162,9 +163,20 @@ class AttendancePortalController extends Controller
         ], 404);
     }
 
-    public function setCookies()
+    public function attendancePortalSession(Request $request)
     {
-        // $cookie = cookie('key', $hashname);
-        // return response('Cookie has been set')->cookie($cookie);
+        $token = $request->header("Portal_token");
+        $main = AttendancePortal::with('assignment')->where('portal_token',$token)->get();
+        if (!is_null($main)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully fetch.',
+                'data' => $main,
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 }

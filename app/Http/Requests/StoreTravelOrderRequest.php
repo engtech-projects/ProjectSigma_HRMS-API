@@ -6,9 +6,11 @@ use App\Enums\RequestApprovalStatus;
 use App\Enums\StringRequestApprovalStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use App\Http\Traits\ApprovalsRequest;
 
 class StoreTravelOrderRequest extends FormRequest
 {
+    use ApprovalsRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -38,7 +40,7 @@ class StoreTravelOrderRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'requesting_office' => [
                 "required",
                 "integer",
@@ -69,35 +71,6 @@ class StoreTravelOrderRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals' => [
-                "nullable",
-                "array",
-            ],
-            'approvals.*' => [
-                "nullable",
-                "array",
-            ],
-            'approvals.*.type' => [
-                "nullable",
-                "string",
-            ],
-            'approvals.*.user_id' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status' => [
-                "nullable",
-                "string",
-            ],
-            'approvals.*.date_approved' => [
-                "nullable",
-                "date",
-            ],
-            'approvals.*.remarks' => [
-                "nullable",
-                "string",
-            ],
             'employee_ids' => [
                 "required",
                 "array",
@@ -108,5 +81,6 @@ class StoreTravelOrderRequest extends FormRequest
                 "exists:employees,id",
             ],
         ];
+        return array_merge($rules, $this->storeApprovals());
     }
 }

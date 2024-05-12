@@ -4,9 +4,13 @@ namespace App\Http\Traits;
 
 trait ApprovalsRequest
 {
-    function storeApprovals()
+    public function storeApprovals()
     {
-        return $data = [
+        $data = [
+            'approvals' => [
+                "required",
+                "array",
+            ],
             'approvals.*' => [
                 "required",
                 "array",
@@ -33,11 +37,12 @@ trait ApprovalsRequest
                 "string",
             ]
         ];
+        return $data;
     }
 
     function updateApprovals()
     {
-        return $data = [
+        $data = [
             'approvals' => [
                 "nullable",
                 "array",
@@ -68,5 +73,6 @@ trait ApprovalsRequest
                 "string",
             ]
         ];
+        return $data;
     }
 }
