@@ -71,7 +71,7 @@ class InternalWorkExperience extends Model
     }
     public function irregular_department_schedule($date)
     {
-        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->employeeSchedule($date);
+        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->whereDate('startRecur', $date);
     }
     public function regular_department_schedule($date)
     {

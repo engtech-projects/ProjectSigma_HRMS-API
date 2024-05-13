@@ -13,7 +13,7 @@ class EmployeeService
     public function employeeDTR($employee, $date)
     {
         $date = Carbon::parse($date);
-        $schedules = $employee->schedule_dtr($date);
+        $schedules = $employee->applied_schedule($date);
         $events = $employee->events_dtr($date);
         $attendances = $employee->attendance_dtr($date);
         $travelOrders = $employee->travel_order_dtr($date);
@@ -25,7 +25,7 @@ class EmployeeService
             "overtime" => $overtime,
             "travel_orders" => $travelOrders
         ];
-        $metaData = $this->getMetaData($collection,$date);
+        $metaData = $this->getMetaData($collection, $date);
         return [
             "schedule" => $schedules,
             "attendance" => $attendances,

@@ -101,7 +101,6 @@ trait Attendance
             $overtime = $this->hasOvertime($data["overtime"], $date);
             $result = $this->calculateInterval($data["attendance"]);
             $regHoliday += $result["total_work_interval"];
-            /* $totalWorkingLateMinutes += $result["total_late_interval"]; */
             if ($overtime) {
                 $startTime = $overtime->overtime_start_time;
                 $endTime = $overtime->overtime_end_time;
