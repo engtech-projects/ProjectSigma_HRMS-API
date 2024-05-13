@@ -21,7 +21,8 @@ class AttendanceLogResource extends JsonResource
             "log_type" => $this->log_type,
             "attendance_type" => $this->attendance_type,
             "project" => $this->whenLoaded("project"),
-            "department" => $this->whenLoaded('department')
+            "department" => $this->whenLoaded('department'),
+            "employee" => $this->whenLoaded('employee'),
 
         ];
     }
