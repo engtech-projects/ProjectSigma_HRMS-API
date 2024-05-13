@@ -88,6 +88,7 @@ class AttendanceLogController extends Controller
                     ['date',Carbon::now()->format('Y-m-d')],
                 ])->get();
                 $employee = Employee::with('employee_schedule')->find($request->employee_id);
+                $mainsave->schedule = $employee->applied_schedule(Carbon::now()->format('Y-m-d'));
                 $mainsave->employee = $employee;
                 $mainsave->employee_attendance_log = $employeeAttendanceLog;
                 return new JsonResponse([
