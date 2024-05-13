@@ -34,7 +34,7 @@ class StoreCashAdvanceRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
+        return [
             'employee_id' => [
                 "required",
                 "integer",
@@ -85,7 +85,7 @@ class StoreCashAdvanceRequest extends FormRequest
                 "required",
                 "string",
             ],
+            ...$this->storeApprovals(),
         ];
-        return array_merge($rules, $this->storeApprovals());
     }
 }
