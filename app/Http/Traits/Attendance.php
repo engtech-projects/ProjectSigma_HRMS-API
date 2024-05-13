@@ -27,13 +27,23 @@ trait Attendance
         $totalLate = 0;
         foreach ($attendances as $key => $attendance) {
             $time = Carbon::parse($attendance->time);
+            $lateMinutes = 0;
             if ($attendance["log_type"] == AttendanceLogType::TIME_IN->value) {
                 $lastTimeIn = $time;
             } else {
                 $timeOut = $time;
                 if ($lastTimeIn !== null) {
                     $duration += $lastTimeIn->diffInHours($time);
-                    $totalLate += max(0, $lastTimeIn->diffInMinutes($startTime));
+                    if ($time->between($startTime, $endTime)) {
+                        if ($lastTimeIn->gt($startTime)) {
+                            $lateMinutes = $startTime->diffInMinutes($lastTimeIn);
+                        }
+                        if ($timeOut !== null && $timeOut->gt($endTime)) {
+                            $lateMinutes -= $timeOut->diffInMinutes($endTime);
+                        }
+                        $lateMinutes = max(0, $lateMinutes);
+                        $totalLate += $lateMinutes;
+                    }
                 }
                 $lastTimeIn = null;
             }
@@ -97,18 +107,34 @@ trait Attendance
                 $endTime = $overtime->overtime_end_time;
                 $result = $this->calculateOvertimeInterval($data["attendance"], $startTime, $endTime);
                 $regHolidayOvertime += $result["total_work_interval"];
-                /*  $totalWorkingLateMinutes += $result["total_late_interval"];
-                $regHoliday -= $regHolidayOvertime; */
+                $totalWorkingLateMinutes += $result["total_late_interval"];
+                $regHoliday -= $regHolidayOvertime;
             }
         } else {
             if (!$data["schedule"]->isEmpty()) {
+                $totalRegularHrs = 0;
+                $totalRegularOvertime = 0;
+                $lateMinutes = 0;
+                $overtime = $this->hasOvertime($data["overtime"], $date);
                 foreach ($data["schedule"] as $schedule) {
                     $startTime = $schedule->startTime;
                     $endTime = $schedule->endTime;
                     $result = $this->calculateInterval($data["attendance"], $startTime, $endTime);
-                    $reg += $result["total_work_interval"];
-                    $totalWorkingLateMinutes += $result["total_late_interval"];
+
+                    $totalRegularHrs = $result["total_work_interval"];
+                    $lateMinutes += $result["total_late_interval"];
                 }
+                $reg += $totalRegularHrs;
+
+                if ($overtime) {
+                    $startTime = $overtime->overtime_start_time;
+                    $endTime = $overtime->overtime_end_time;
+                    $result = $this->calculateOvertimeInterval($data["attendance"], $startTime, $endTime);
+                    $totalRegularOvertime += $result["total_work_interval"];
+                }
+                $regOvertime += $totalRegularOvertime;
+                $reg -= $regOvertime;
+                $regLate += $lateMinutes;
             } else {
                 /** REST SCHEDULE */
                 $overtime = $this->hasOvertime($data["overtime"], $date);
@@ -130,7 +156,7 @@ trait Attendance
             "regular" => [
                 "reg_hrs" => $reg,
                 "overtime" => $regOvertime,
-                "late" => $totalWorkingLateMinutes,
+                "late" => $regLate,
             ],
             "rest" => [
                 "reg_hrs" => $rest,
