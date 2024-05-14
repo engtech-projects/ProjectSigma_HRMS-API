@@ -35,4 +35,9 @@ class Project extends Model
     {
         return $this->morphOne(EmployeeAllowances::class, 'charge_assignment');
     }
+
+    public function project_schedule()
+    {
+        return $this->hasMany(Schedule::class, "project_id");
+    }
 }

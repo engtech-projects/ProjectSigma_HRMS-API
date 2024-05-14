@@ -48,10 +48,8 @@ class FailureToLog extends Model
         $this->refresh();
     }
 
-
     public function denyRequestStatus()
     {
-
         $this->request_status = PersonelAccessForm::REQUESTSTATUS_DISAPPROVED;
         $this->save();
         $this->refresh();

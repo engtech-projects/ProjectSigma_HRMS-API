@@ -111,6 +111,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
         Route::resource('resource', PositionController::class);
+        Route::get('list', [PositionController::class, 'get']);
     });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);

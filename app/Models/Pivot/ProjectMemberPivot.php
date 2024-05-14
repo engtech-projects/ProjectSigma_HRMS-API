@@ -3,6 +3,7 @@
 namespace App\Models\Pivot;
 
 use App\Models\Employee;
+use App\Models\Schedule;
 use App\Models\Traits\HasEmployee;
 use App\Models\Traits\HasProject;
 use Illuminate\Database\Eloquent\Relations\Pivot;
@@ -20,5 +21,4 @@ class ProjectMemberPivot extends Pivot
     {
         return $this->belongsTo(Employee::class);
     }
-
 }

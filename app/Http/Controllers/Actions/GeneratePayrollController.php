@@ -6,11 +6,8 @@ use App\Helpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GeneratePayrollRequest;
 use App\Http\Services\EmployeeService;
-use App\Http\Traits\Attendance;
-use App\Http\Traits\DailyTimeRecord;
 use App\Models\Employee;
-use App\Models\EmployeeDTR;
-use App\Models\Events;
+
 use Illuminate\Http\JsonResponse;
 
 class GeneratePayrollController extends Controller
@@ -40,9 +37,5 @@ class GeneratePayrollController extends Controller
             'message' => 'Successfully fetched.',
             'data' => $result
         ]);
-    }
-
-    private function getSalaryDeduction()
-    {
     }
 }

@@ -35,21 +35,4 @@ class TravelOrderService
             return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
         });
     }
-
-    public function updateApproval($approval, $leaveRequest)
-    {
-        $userApproval = $this->getUserPendingApproval(collect($leaveRequest->approvals), auth()->user()->id)->first();
-        if ($userApproval) {
-            $approvalToUpdate = collect($leaveRequest->approvals)->search($userApproval);
-            $leaveRequestApproval = collect($leaveRequest->approvals)->map(function ($item, int $key) use ($approvalToUpdate, $approval) {
-                $approval = collect($approval)->first();
-                if ($key === $approvalToUpdate) {
-                    $item['status'] = $approval['status'];
-                }
-                return $item;
-            });
-            $leaveRequest->approvals = $leaveRequestApproval;
-        }
-        return $leaveRequest->approvals;
-    }
 }

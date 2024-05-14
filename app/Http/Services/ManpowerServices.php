@@ -56,28 +56,4 @@ class ManpowerServices
     {
         $this->manpowerRequest->create($attributes);
     }
-
-    public function update(array $attributes, ManpowerRequest $manpowerRequest)
-    {
-        if (array_key_exists('approvals', $attributes)) {
-            $manpowerRequest->approvals = $this->updateApproval(json_decode($attributes['approvals'], true), $manpowerRequest);
-        }
-        return $manpowerRequest->update($attributes);
-    }
-    public function updateApproval($approval, $manpowerRequest)
-    {
-        $userApproval = $this->getUserPendingApproval(collect($manpowerRequest->approvals), auth()->user()->id)->first();
-        if ($userApproval) {
-            $approvalToUpdate = collect($manpowerRequest->approvals)->search($userApproval);
-            $manpowerRequestApproval = collect($manpowerRequest->approvals)->map(function ($item, int $key) use ($approvalToUpdate, $approval) {
-                $approval = collect($approval)->first();
-                if ($key === $approvalToUpdate) {
-                    $item['status'] = $approval['status'];
-                }
-                return $item;
-            });
-            $manpowerRequest->approvals = $manpowerRequestApproval;
-        }
-        return $manpowerRequest->approvals;
-    }
 }
