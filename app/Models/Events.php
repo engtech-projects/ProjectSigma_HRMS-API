@@ -26,4 +26,9 @@ class Events extends Model
         'end_date',
         'description',
     ];
+
+    protected $casts = [
+        "start_date" => "datetime:Y-m-d",
+        "end_date" => "datetime:Y-m-d",
+    ];
 }

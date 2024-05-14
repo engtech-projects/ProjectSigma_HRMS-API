@@ -57,6 +57,14 @@ class AttendanceLogController extends Controller
             "message" => "Successfully created.",
         ], JsonResponse::HTTP_CREATED);
     }
+    public function getCurrentDate()
+    {
+        return new JsonResponse([
+            "data" => Carbon::now()->format('Y-m-d'),
+            "success" => true,
+            "message" => "Successfully current-date fetch.",
+        ], JsonResponse::HTTP_OK);
+    }
 
     public function facialAttendance(StoreFacialAttendanceLog $request)
     {
@@ -88,6 +96,7 @@ class AttendanceLogController extends Controller
                     ['date',Carbon::now()->format('Y-m-d')],
                 ])->get();
                 $employee = Employee::with('employee_schedule')->find($request->employee_id);
+                $mainsave->schedule = $employee->applied_schedule(Carbon::now()->format('Y-m-d'));
                 $mainsave->employee = $employee;
                 $mainsave->employee_attendance_log = $employeeAttendanceLog;
                 return new JsonResponse([

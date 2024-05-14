@@ -21,7 +21,7 @@ class AttendanceLogService
 
     public function getAllToday()
     {
-        return $this->log->where('date', Carbon::now()->format('Y-m-d'))->with(['project', 'department', 'employee'])->get();
+        return $this->log->where('date', Carbon::now()->format('Y-m-d'))->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->get();
     }
 
     public function get(AttendanceLog $log)

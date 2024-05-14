@@ -23,9 +23,7 @@ class Overtime extends Model
     use Notifiable;
     use SoftDeletes;
     use HasApproval, StatusScope;
-    protected $casts = [
-        'approvals' => 'array'
-    ];
+
 
     protected $table = 'overtime';
 
@@ -41,6 +39,13 @@ class Overtime extends Model
         'prepared_by',
         'approvals',
         'request_status',
+    ];
+
+    protected $casts = [
+        'approvals' => 'array',
+        'overtime_start_time' => 'date:H:i:s',
+        'overtime_end_time' => 'date:H:i:s',
+        'overtime_date' => "datetime:Y-m-d",
     ];
 
     public function employee(): HasOne

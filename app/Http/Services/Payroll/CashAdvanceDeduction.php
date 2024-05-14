@@ -25,11 +25,13 @@ class CashAdvanceDeduction extends PayrollDeduction
         $deduction = 0;
         $payrollDate = Carbon::parse($filters["payroll_date"]);
         $cashAdvance = $this->employee->cash_advance()->requestStatusApproved()->first();
-        $loanPayments = $cashAdvance->loan_payment_notposted;
-        if (!$cashAdvance->cashPaid()) {
-            if ($cashAdvance->deduction_date_start->lt($payrollDate)) {
-                $deduction = $cashAdvance->installment_deduction;
-            }
+
+        if ($cashAdvance) {
+            $loanPayments = $cashAdvance->loan_payment_notposted;
+            if (!$cashAdvance->cashPaid())
+                if ($cashAdvance->deduction_date_start->lt($payrollDate)) {
+                    $deduction = $cashAdvance->installment_deduction;
+                }
             if ($filters["payroll_type"] === "weekly") {
                 $deduction = $deduction / 4;
             } else {

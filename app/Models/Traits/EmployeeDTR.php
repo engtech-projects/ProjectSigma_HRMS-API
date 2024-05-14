@@ -11,22 +11,20 @@ trait EmployeeDTR
 
         return $this->employee_travel_order()->whereDate('date_and_time_of_travel', $date)->get();
     }
-    public function schedule_dtr($employee, $date)
+    public function schedule_dtr($date)
     {
-        $schedule = $employee->employee_schedule()
-            ->where('startRecur', $date)
-            ->get();
+        $schedule = $this->employee_schedule()
+            ->whereDate('startRecur', $date)->get();
         return $schedule;
     }
     public function attendance_dtr($date)
     {
         return $this->attendance_log()->where('date', $date)->get();
     }
-    public function overtime_dtr($employee, $date)
+    public function overtime_dtr($date)
     {
-        $overtime = $employee->employee_overtime()
-            ->get();
-        return $overtime;
+        return $this->employee_overtime()
+            ->whereDate('overtime_date', $date)->get();
     }
 
     public function events_dtr($date)

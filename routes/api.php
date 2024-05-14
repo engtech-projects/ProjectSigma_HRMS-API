@@ -290,6 +290,7 @@ if (config()->get('app.artisan') == 'true') {
 
 Route::middleware('portal_in')->group(function () {
     Route::prefix('attendance')->group(function () {
+        Route::get('current-date', [AttendanceLogController::class, 'getCurrentDate']);
         Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
         Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
         Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
