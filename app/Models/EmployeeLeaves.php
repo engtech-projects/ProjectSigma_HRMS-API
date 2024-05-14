@@ -53,6 +53,13 @@ class EmployeeLeaves extends Model
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
     }
 
+    public function denyRequestStatus()
+    {
+        $this->request_status = PersonelAccessForm::REQUESTSTATUS_DISAPPROVED;
+        $this->save();
+        $this->refresh();
+    }
+
     public function scopeApproval($query)
     {
         return $query->where("request_status", "=", "Pending");
