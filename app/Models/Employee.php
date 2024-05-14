@@ -336,13 +336,13 @@ class Employee extends Model
 
         if ($schedule->isEmpty()) {
             $schedule = $internal->irregular_department_schedule($date)->get();
-            if (!$schedule) {
+            if (!$schedule->isEmpty()) {
                 $schedule = $internal->irregular_department_schedule($date)->employeeSchedule($date)->get();
+            } else {
+                $project = $this->employee_has_projects()->orderBy('id', 'desc')->orderBy('id', 'desc')->first();
+                $schedule = $project->project_schedule;
             }
-        } else {
-            $schedule = null;
         }
-
         return $schedule;
     }
 
