@@ -77,6 +77,13 @@ class InternalWorkExperience extends Model
     {
         return $this->hasMany(Schedule::class, 'department_id', 'department_id')->employeeSchedule($date);
     }
+    public function regular_project_schedule()
+    {
+    }
+    public function irregular_project_schedule($date)
+    {
+        return $this->hasMany(ProjectMember::class, 'project_id', 'project_id');
+    }
 
 
     public function scopeByEmployee(Builder $query, $id): Builder
