@@ -6,6 +6,8 @@ use App\Enums\AttendanceLogType;
 use App\Helpers;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
+use App\Models\Events;
+use App\Models\Leave;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -188,6 +190,7 @@ trait Attendance
         }
         return $record;
     }
+
     public function hasSchedule($schedules, $date)
     {
         foreach ($schedules as $schedule) {

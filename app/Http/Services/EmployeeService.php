@@ -33,7 +33,7 @@ class EmployeeService
             "ovetime" => $overtime,
             "leave" => $employee->leave_dtr($date),
             "events" => $events,
-            "meta_data" => $metaData,
+            "metadata" => $metaData,
             /*  "metadata" => [
                 "regular_hrs" => $metaData["regular"]["reg_hrs"],
                 "regular_holiday_hrs" => $metaData["regular"]["reg_holiday_hrs"],
