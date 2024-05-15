@@ -330,7 +330,6 @@ class Employee extends Model
     }
     public function applied_schedule($date)
     {
-
         $internal = $this->employee_internal()->currentOnDate($date)->first();
         $schedule = $this->employee_schedule()->employeeSchedule($date)->whereNotNull('employee_id')->get();
 
@@ -340,7 +339,9 @@ class Employee extends Model
                 $schedule = $internal->irregular_department_schedule($date)->employeeSchedule($date)->get();
             } else {
                 $project = $this->employee_has_projects()->orderBy('id', 'desc')->orderBy('id', 'desc')->first();
-                $schedule = $project->project_schedule;
+                if ($project) {
+                    $schedule = $project->project_schedule;
+                }
             }
         }
         return $schedule;
