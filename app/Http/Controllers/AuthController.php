@@ -43,7 +43,6 @@ class AuthController extends Controller
     public function session(Request $request)
     {
         if ($request->user()) {
-
             return response()->json(Auth::user(), 200);
         }
         return  response()->json('Unauthenticated', 401);
