@@ -28,7 +28,21 @@ class EmployeeLeavesController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'LeaveForm Request fetched.',
-            'data' => $paginated,
+            'data' => [
+                'data' => $paginated,
+                "links" =>  $paginated->links,
+                "current_page" =>  $paginated->current_page,
+                "first_page_url" =>  $paginated->first_page_url,
+                "from" =>  $paginated->from,
+                "last_page" =>  $paginated->last_page,
+                "last_page_url" =>  $paginated->last_page_url,
+                "next_page_url" =>  $paginated->next_page_url,
+                "path" =>  $paginated->path,
+                "per_page" =>  $paginated->per_page,
+                "prev_page_url" =>  $paginated->prev_page_url,
+                "to" =>  $paginated->to,
+                "total" =>  $paginated->total,
+            ],
         ]);
     }
 
