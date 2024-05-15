@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Request;
 
 class EmployeeLeavesController extends Controller
 {
@@ -21,28 +22,14 @@ class EmployeeLeavesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $paginated = EmployeeLeaves::with(['employee', 'department', 'project', 'leave'])->paginate(15);
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'LeaveForm Request fetched.',
-            'data' => [
-                'data' => EmployeeLeaveResource::collection($paginated),
-                "links" =>  $paginated->links,
-                "current_page" =>  $paginated->current_page,
-                "first_page_url" =>  $paginated->first_page_url,
-                "from" =>  $paginated->from,
-                "last_page" =>  $paginated->last_page,
-                "last_page_url" =>  $paginated->last_page_url,
-                "next_page_url" =>  $paginated->next_page_url,
-                "path" =>  $paginated->path,
-                "per_page" =>  $paginated->per_page,
-                "prev_page_url" =>  $paginated->prev_page_url,
-                "to" =>  $paginated->to,
-                "total" =>  $paginated->total,
-            ],
-        ]);
+        $query = EmployeeLeaves::with(['employee', 'department', 'project', 'leave']);
+        if ($request->has("employee_id")) {
+            $query->where('employee_id', $request->input("employee_id"));
+        }
+        $data = $query->paginate(15);
+        return EmployeeLeaveResource::collection($data);
     }
 
     /**
