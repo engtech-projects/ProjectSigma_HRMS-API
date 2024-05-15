@@ -188,7 +188,7 @@ class CashAdvanceController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($myApproval)
+            'data' => $myApproval,
         ]);
     }
 }
