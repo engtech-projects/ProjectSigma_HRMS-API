@@ -343,9 +343,10 @@ class EmployeeBulkUploadController extends Controller
                         'actual_salary' =>  $getSalaryStep ? $getSalaryStep->monthly_salary_amount : null,
                         'salary_grades' => $getSalaryStep ? $getSalaryStep->id : null,
                         'work_location' => $data['work_location'],
-                        'hire_source' => 'Internal',
+                        'hire_source' => $data['hire_source'],
                         'status' => $data['employment_status'],
                         'date_from' => $data['date_hired'],
+                        'salary_type' => $data['salary_type'],
                         'date_to' => null,
                     ];
                     //elementary
