@@ -230,12 +230,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', LoansController::class);
         Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
     });
-
     Route::prefix('cash-advance')->group(function () {
         Route::resource('resource', CashAdvanceController::class);
         Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
         Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
         Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
+    });
+    Route::prefix('other-deduction')->group(function () {
+        Route::resource('resource', OtherDeductionController::class);
+        Route::post('manual-payment/{oded}', [OtherDeductionController::class, "cashAdvancePayment"]);
     });
 
     Route::prefix('overtime')->group(function () {
@@ -243,11 +246,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('overtime-employee', OvertimeEmployeesController::class);
         Route::get('my-request', [OvertimeController::class, 'myRequests']);
         Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
-    });
-
-    Route::prefix('other-deduction')->group(function () {
-        Route::resource('resource', OtherDeductionController::class);
-        Route::post('manual-payment/{oded}', [OtherDeductionController::class, "cashAdvancePayment"]);
     });
 
     Route::prefix('images')->group(function () {

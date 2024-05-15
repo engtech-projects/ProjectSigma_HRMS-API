@@ -35,11 +35,10 @@ class CashAdvance extends Model
         'employee_id',
         'department_id',
         'project_id',
-        'terms_of_payment',
-        'no_of_installment',
+        'terms_of_payment', // Not Sure but Removable. deduct every payroll
         'installment_deduction',
-        'deduction_date_start',
         'amount',
+        'deduction_date_start',
         'purpose',
         'remarks',
         'request_status',

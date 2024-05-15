@@ -54,11 +54,6 @@ class UpdateCashAdvanceRequest extends FormRequest
                 "string",
                 new Enum(TermsOfPaymentType::class)
             ],
-            'no_of_installment' => [
-                "nullable",
-                "integer",
-                "min:1"
-            ],
             'installment_deduction' => [
                 "nullable",
                 "numeric",

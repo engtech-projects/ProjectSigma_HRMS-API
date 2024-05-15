@@ -41,16 +41,6 @@ class UpdateLoansRequest extends FormRequest
                 "min:1",
                 'decimal:0,2',
             ],
-            'terms_length' => [
-                "nullable",
-                "numeric",
-                "min:1",
-            ],
-            'no_of_installment' => [
-                "nullable",
-                "numeric",
-                "min:1",
-            ],
             'deduction_date_start' => [
                 "nullable",
                 "date",

@@ -41,16 +41,6 @@ class StoreLoansRequest extends FormRequest
                 "min:1",
                 'decimal:0,2',
             ],
-            'terms_length' => [
-                "required",
-                "numeric",
-                "min:1",
-            ],
-            'no_of_installment' => [
-                "required",
-                "numeric",
-                "min:1",
-            ],
             'deduction_date_start' => [
                 "required",
                 "date",
