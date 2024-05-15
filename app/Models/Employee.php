@@ -340,7 +340,7 @@ class Employee extends Model
             } else {
                 $schedule = $internal->regular_department_schedule($date)->employeeSchedule($date)->get();
                 if ($schedule) {
-                    $project = $this->employee_has_projects()->orderBy('id', 'desc')->orderBy('id', 'desc')->first();
+                    $project = $this->employee_has_projects()->orderBy('id', 'desc')->first();
                     if ($project) {
                         $schedule = $project->project_schedule;
                     }
