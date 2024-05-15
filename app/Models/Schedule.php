@@ -20,6 +20,9 @@ class Schedule extends Model
     use Notifiable;
     use SoftDeletes;
 
+    public const TYPE_REGULAR = 'Regular';
+    public const TYPE_IRREGULAR = 'Irregular';
+
     protected $table = "schedules";
 
     protected $fillable = [
@@ -71,6 +74,37 @@ class Schedule extends Model
                 ->orWhereNull('endRecur');
         })->where('endRecur', '<', $filter['end_date']);
     } */
+
+    public function scopeSchedulesOnDay(Builder $query, $date)
+    {
+        return $query->where(function ($query) use ($date) {
+            $query->where('scheduleType', self::TYPE_REGULAR)
+            ->where(function ($query) use ($date) {
+                $carbondate = new Carbon($date);
+                $query->whereDate('startRecur', '<=', $date)
+                ->whereNotNull('endRecur')
+                ->whereDate('endRecur', '>', $date)
+                ->whereJsonContains("daysOfWeek", $carbondate->dayOfWeek());
+            })->orWhere(function ($query) use ($date) {
+                $query->whereDate('startRecur', '<=', $date)
+                ->whereNull('endRecur');
+            });
+        })->orWhere(function ($query) use ($date) {
+            $query->where('scheduleType', self::TYPE_IRREGULAR)
+            ->whereDate('startRecur', '=', $date);
+        });
+    }
+
+    public function scopeRegularSchedules(Builder $query)
+    {
+        return $query->where('scheduleType', self::TYPE_REGULAR);
+    }
+
+
+    public function scopeIrregularSchedules(Builder $query)
+    {
+        return $query->where('scheduleType', self::TYPE_IRREGULAR);
+    }
 
     public function scopeEmployeeSchedule(Builder $query, $date): Builder
     {

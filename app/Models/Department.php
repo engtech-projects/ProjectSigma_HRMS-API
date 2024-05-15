@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\HasAttendanceLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
@@ -43,4 +44,10 @@ class Department extends Model
     {
         return $this->morphOne(EmployeeAllowances::class, 'charge_assignment');
     }
+
+    public function schedule (): HasMany
+    {
+        return $this->hasMany(Schedule::class, 'department_id');
+    }
+
 }
