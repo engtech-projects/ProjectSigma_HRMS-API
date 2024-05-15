@@ -338,9 +338,12 @@ class Employee extends Model
             if (!$schedule->isEmpty()) {
                 $schedule = $internal->irregular_department_schedule($date)->employeeSchedule($date)->get();
             } else {
-                $project = $this->employee_has_projects()->orderBy('id', 'desc')->orderBy('id', 'desc')->first();
-                if ($project) {
-                    $schedule = $project->project_schedule;
+                $schedule = $internal->regular_department_schedule($date)->employeeSchedule($date)->get();
+                if ($schedule) {
+                    $project = $this->employee_has_projects()->orderBy('id', 'desc')->orderBy('id', 'desc')->first();
+                    if ($project) {
+                        $schedule = $project->project_schedule;
+                    }
                 }
             }
         }
