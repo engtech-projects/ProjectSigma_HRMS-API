@@ -331,29 +331,20 @@ class Employee extends Model
     }
     public function applied_schedule($date)
     {
-        $schedule = $this->employee_schedule()->schedulesOnDate($date)->irregularSchedules()->get();
-        if ($schedule) {
-            return $schedule;
-        }
-        $schedule = $this->employee_schedule()->schedulesOnDate($date)->regularSchedules()->get();
-        if ($schedule) {
-            return $schedule;
-        }
-        $schedule = $this->employee_has_projects()->orderBy('id', 'desc')->first()->schedule()->schedulesOnDate($date)->irregularSchedules()->get();
-        if ($schedule) {
-            return $schedule;
-        }
-        $schedule = $this->employee_has_projects()->orderBy('id', 'desc')->first()->schedule()->schedulesOnDate($date)->regularSchedules()->get();
-        if ($schedule) {
-            return $schedule;
-        }
-        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->regularSchedules()->get();
-        if ($schedule) {
-            return $schedule;
-        }
-        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->irregularSchedules()->get();
-        if ($schedule) {
-            return $schedule;
+
+        $internal = $this->employee_internal()->currentOnDate($date)->first();
+        $schedule = $this->employee_schedule()->employeeSchedule($date)->whereNotNull('employee_id')->get();
+
+        if ($schedule->isEmpty()) {
+            $schedule = $internal->irregular_department_schedule($date)->get();
+            if (!$schedule->isEmpty()) {
+                $schedule = $internal->irregular_department_schedule($date)->employeeSchedule($date)->get();
+            } else {
+                $project = $this->employee_has_projects()->orderBy('id', 'desc')->orderBy('id', 'desc')->first();
+                if ($project) {
+                    $schedule = $project->project_schedule;
+                }
+            }
         }
     }
 
