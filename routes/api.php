@@ -247,7 +247,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('other-deduction')->group(function () {
         Route::resource('resource', OtherDeductionController::class);
-        Route::post('manual-payment/{cash}', [OtherDeductionController::class, "cashAdvancePayment"]);
+        Route::post('manual-payment/{oded}', [OtherDeductionController::class, "cashAdvancePayment"]);
     });
 
     Route::prefix('images')->group(function () {
