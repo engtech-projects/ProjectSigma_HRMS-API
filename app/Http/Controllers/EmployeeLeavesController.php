@@ -8,7 +8,6 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 
 class EmployeeLeavesController extends Controller
@@ -25,7 +24,7 @@ class EmployeeLeavesController extends Controller
     public function index()
     {
         $main = EmployeeLeaves::with(['employee', 'department', 'project', 'leave'])->paginate(15);
-        $paginated = EmployeeLeaveResource::collection($main);
+        $paginated = new EmployeeLeaveResource($main);
         return new JsonResponse([
             'success' => true,
             'message' => 'LeaveForm Request fetched.',
