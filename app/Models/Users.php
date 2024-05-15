@@ -20,6 +20,10 @@ class Users extends Model
     protected $with = [
         "employee"
     ];
+    protected $appends = [
+        "accessibility_names"
+    ];
+
     protected $fillable = [
         'id',
         'name',
@@ -47,10 +51,16 @@ class Users extends Model
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'accessibilities' => 'array',
     ];
 
     public function Employee(): BelongsTo
     {
         return $this->BelongsTo(Employee::class);
+    }
+
+    public function getAccessibilityNamesAttribute()
+    {
+        return Accessibilities::whereIn("id", $this->accessibilities)->get()->pluck("accessibilities_name");
     }
 }

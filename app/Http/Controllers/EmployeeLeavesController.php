@@ -8,8 +8,8 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class EmployeeLeavesController extends Controller
 {
@@ -22,15 +22,14 @@ class EmployeeLeavesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $main = $this->leaveRequestService->getAll();
-        $paginated = EmployeeLeaveResource::collection($main);
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'LeaveForm Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
-        ]);
+        $query = EmployeeLeaves::with(['employee', 'department', 'project', 'leave']);
+        if ($request->has("employee_id") && $request->input("employee_id")) {
+            $query->where('employee_id', $request->input("employee_id"));
+        }
+        $data = $query->paginate(15);
+        return EmployeeLeaveResource::collection($data);
     }
 
     /**

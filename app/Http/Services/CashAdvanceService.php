@@ -59,7 +59,7 @@ class CashAdvanceService
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = CashAdvance::with(['employee', 'department'])
+        $result = CashAdvance::with("employee", "department", "project")
             ->requestStatusPending()
             ->authUserPending()
             ->get();
