@@ -13,7 +13,7 @@ class AccessibilitiesController extends Controller
      */
     public function index()
     {
-        $access = Accessibilities::paginate(15);
+        $access = Accessibilities::get();
         return response()->json($access);
     }
 
