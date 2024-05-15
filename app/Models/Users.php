@@ -23,7 +23,7 @@ class Users extends Model
     protected $appends = [
         "accessibility_names"
     ];
-    
+
     protected $fillable = [
         'id',
         'name',
@@ -61,6 +61,6 @@ class Users extends Model
 
     public function getAccessibilityNamesAttribute()
     {
-        return Accessibilities::whereIn("id", $this->accesibilities)->get()->pluck("accessibilities_name");
+        return Accessibilities::whereIn("id", $this->accessibilities)->get()->pluck("accessibilities_name");
     }
 }
