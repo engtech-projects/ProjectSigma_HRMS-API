@@ -25,11 +25,11 @@ class EmployeeLeavesController extends Controller
     public function index()
     {
         $main = $this->leaveRequestService->getAll();
-        $paginated = EmployeeLeaveResource::collection($main);
+        $paginated = new EmployeeLeaveResource(EmployeeLeaves::with(['employee', 'department', 'project', 'leave'])->paginate(15));
         return new JsonResponse([
             'success' => true,
             'message' => 'LeaveForm Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+            'data' => $paginated,
         ]);
     }
 
