@@ -25,7 +25,7 @@ class EmployeeLeavesController extends Controller
     public function index(Request $request)
     {
         $query = EmployeeLeaves::with(['employee', 'department', 'project', 'leave']);
-        if ($request->has("employee_id")) {
+        if ($request->has("employee_id") && $request->input("employee_id")) {
             $query->where('employee_id', $request->input("employee_id"));
         }
         $data = $query->paginate(15);
