@@ -26,7 +26,7 @@ class EmployeeDtrController extends Controller
         $periodDates = Helpers::dateRange([
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
-        $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
+        $employeeDtr = Employee::where('id', $filters['employee_ids'])->get();
         $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $employeeDtr) {
             $employee["dtr"] = collect($periodDates)->groupBy(function ($date) {
                 return $date["date"];

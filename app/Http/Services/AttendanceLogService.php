@@ -16,7 +16,7 @@ class AttendanceLogService
 
     public function getAll()
     {
-        return $this->log->with(['project', 'department'])->get();
+        return $this->log->with(['project', 'department', 'employee'])->get();
     }
 
     public function getAllToday()

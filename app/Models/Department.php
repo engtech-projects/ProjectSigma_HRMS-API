@@ -47,7 +47,7 @@ class Department extends Model
 
     public function schedule (): HasMany
     {
-        return $this->hasMany(Schedule::class, 'department_id');
+        return $this->hasMany(Schedule::class);
     }
 
 }
