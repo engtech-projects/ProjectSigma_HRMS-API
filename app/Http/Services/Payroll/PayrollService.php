@@ -26,7 +26,7 @@ class PayrollService
         })->map(function ($period) use ($employee) {
             $date = $period[0]["date"];
             $dtr = $this->employeeService->employeeDTR($employee, $date);
-            $dtr["gross"] = [];
+            $dtr["gross"] = $this->getGrossPay($dtr);
             return $dtr;
         });
 
@@ -50,5 +50,10 @@ class PayrollService
             "ewtc" =>  $salaryDeduction->withHoldingTax,
             "loan" => $salaryDeduction->loan->loan
         ];
+    }
+
+    public function getGrossPay($dtr)
+    {
+        return $dtr;
     }
 }

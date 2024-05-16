@@ -331,28 +331,28 @@ class Employee extends Model
     }
     public function applied_schedule($date)
     {
-        $schedule = $this->employee_schedule()->schedulesOnDate($date)->irregularSchedules()->get();
-        if ($schedule) {
+        $schedule = $this->employee_schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
+        if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_schedule()->schedulesOnDate($date)->regularSchedules()->get();
-        if ($schedule) {
+        $schedule = $this->employee_schedule()?->schedulesOnDay($date)->regularSchedules()->get();
+        if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_has_projects()->orderBy('id', 'desc')->first()->schedule()->schedulesOnDate($date)->irregularSchedules()->get();
-        if ($schedule) {
+        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->schedule()->schedulesOnDay($date)->irregularSchedules()->get();
+        if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_has_projects()->orderBy('id', 'desc')->first()->schedule()->schedulesOnDate($date)->regularSchedules()->get();
-        if ($schedule) {
+        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->schedule()->schedulesOnDay($date)->regularSchedules()->get();
+        if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->irregularSchedules()->get();
-        if ($schedule) {
+        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()->schedulesOnDay($date)->irregularSchedules()->get();
+        if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->regularSchedules()->get();
-        if ($schedule) {
+        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()->schedulesOnDay($date)->regularSchedules()->get();
+        if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
     }
