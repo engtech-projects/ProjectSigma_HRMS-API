@@ -347,11 +347,11 @@ class Employee extends Model
         if ($schedule) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->regularSchedules()->get();
+        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->irregularSchedules()->get();
         if ($schedule) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->irregularSchedules()->get();
+        $schedule = $this->employee_internal()->currentOnDate($date)->first()->employee_department->schedule()->schedulesOnDate($date)->regularSchedules()->get();
         if ($schedule) {
             return $schedule;
         }
