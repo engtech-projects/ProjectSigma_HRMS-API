@@ -48,10 +48,6 @@ class UpdateOtherDeductionRequest extends FormRequest
                 "string",
                 new Enum(TermsOfPaymentType::class)
             ],
-            'no_of_installments' => [
-                "nullable",
-                "integer",
-            ],
             'installment_deduction' => [
                 "nullable",
                 "numeric",

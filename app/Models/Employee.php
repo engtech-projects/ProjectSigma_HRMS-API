@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Schedule;
 use App\Models\Traits\EmployeeDTR;
 use App\Models\Traits\EmployeePayroll;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,7 +26,9 @@ class Employee extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasProjectEmployee, EmployeeDTR, EmployeePayroll;
+    use HasProjectEmployee;
+    use EmployeeDTR;
+    use EmployeePayroll;
 
     protected $table = 'employees';
     protected $appends = [
@@ -338,16 +339,12 @@ class Employee extends Model
             if (!$schedule->isEmpty()) {
                 $schedule = $internal->irregular_department_schedule($date)->employeeSchedule($date)->get();
             } else {
-                $schedule = $internal->regular_department_schedule($date)->employeeSchedule($date)->get();
-                if ($schedule) {
-                    $project = $this->employee_has_projects()->orderBy('id', 'desc')->first();
-                    if ($project) {
-                        $schedule = $project->project_schedule;
-                    }
+                $project = $this->employee_has_projects()->orderBy('id', 'desc')->orderBy('id', 'desc')->first();
+                if ($project) {
+                    $schedule = $project->project_schedule;
                 }
             }
         }
-        return $schedule;
     }
 
     public function filter_employee_schedule($start_range, $end_range)

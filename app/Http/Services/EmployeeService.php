@@ -16,12 +16,14 @@ class EmployeeService
         $attendances = $employee->attendance_dtr($date);
         $travelOrders = $employee->travel_order_dtr($date);
         $overtime = $employee->overtime_dtr($date);
+        $leave = $employee->leave_dtr($date);
         $collection = [
             "schedule" => $schedules,
             "events" => $events,
             "attendance" => $attendances,
             "overtime" => $overtime,
-            "travel_orders" => $travelOrders
+            "travel_orders" => $travelOrders,
+            "leave" => $leave
         ];
         return [
             "schedule" => $schedules,

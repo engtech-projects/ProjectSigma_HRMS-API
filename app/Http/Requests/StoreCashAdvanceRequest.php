@@ -61,11 +61,6 @@ class StoreCashAdvanceRequest extends FormRequest
                 "string",
                 new Enum(TermsOfPaymentType::class)
             ],
-            'no_of_installment' => [
-                "required",
-                "integer",
-                "min:1"
-            ],
             'installment_deduction' => [
                 "required",
                 "numeric",

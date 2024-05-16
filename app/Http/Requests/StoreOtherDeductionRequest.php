@@ -57,10 +57,6 @@ class StoreOtherDeductionRequest extends FormRequest
                 "string",
                 new Enum(TermsOfPaymentType::class)
             ],
-            'no_of_installments' => [
-                "required",
-                "integer",
-            ],
             'installment_deduction' => [
                 "required",
                 "numeric",
