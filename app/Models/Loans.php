@@ -33,6 +33,11 @@ class Loans extends Model
         'deduction_date_start',
     ];
 
+    protected $appends = [
+        "total_paid",
+        "balance",
+    ];
+
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'id', 'employee_id');
@@ -50,6 +55,16 @@ class Loans extends Model
     public function loan_payment_notposted(): HasMany
     {
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::NOTPOSTED);
+    }
+
+    public function getBalanceAttribute()
+    {
+        return $this->amount - $this->totalPaid;
+    }
+
+    public function getTotalPaidAttribute()
+    {
+        return $this->loanPayments()->sum("amount_paid");
     }
 
     public function loanPaid()
