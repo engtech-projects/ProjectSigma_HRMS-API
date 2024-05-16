@@ -45,6 +45,11 @@ class CashAdvance extends Model
         'approvals',
     ];
 
+    protected $appends = [
+        "total_paid",
+        "balance",
+    ];
+
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
@@ -63,6 +68,16 @@ class CashAdvance extends Model
     public function cashAdvancePayments(): HasMany
     {
         return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id');
+    }
+
+    public function getBalanceAttribute()
+    {
+        return $this->amount - $this->totalPaid;
+    }
+
+    public function getTotalPaidAttribute()
+    {
+        return $this->cashAdvancePayments()->sum("amount_paid");
     }
 
     public function cashPaid()
