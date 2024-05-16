@@ -339,11 +339,11 @@ class Employee extends Model
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->schedule()->schedulesOnDay($date)->irregularSchedules()->get();
+        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()->schedulesOnDay($date)->irregularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->schedule()->schedulesOnDay($date)->regularSchedules()->get();
+        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()->schedulesOnDay($date)->regularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }

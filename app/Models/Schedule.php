@@ -66,31 +66,22 @@ class Schedule extends Model
      * SCOPES
      */
 
-    /*
-    public function scopeEmployeeSchedule(Builder $query, array $filter = [])
-    {
-        $query->where(function ($query) use ($filter) {
-            $query->where('startRecur', '>=', $filter['start_date'])
-                ->orWhereNull('endRecur');
-        })->where('endRecur', '<', $filter['end_date']);
-    } */
-
     public function scopeSchedulesOnDay(Builder $query, $date)
     {
         return $query->where(function ($query2) use ($date) {
             $query2->where('scheduleType', self::TYPE_REGULAR)
                 ->where(function ($query3) use ($date) {
-                    $query3->where(function ($query4) use ($date){
+                    $query3->where(function ($query4) use ($date) {
                         $carbondate = new Carbon($date);
                         $query4->whereDate('startRecur', '<=', $date)
                             ->whereNotNull('endRecur')
                             ->whereDate('endRecur', '>', $date)
-                            ->whereJsonContains("daysOfWeek", (String)$carbondate->dayOfWeek);
+                            ->whereJsonContains("daysOfWeek", (string)$carbondate->dayOfWeek);
                     })
-                    ->orWhere(function ($query5) use ($date) {
-                        $query5->whereDate('startRecur', '<=', $date)
-                            ->whereNull('endRecur');
-                    });
+                        ->orWhere(function ($query5) use ($date) {
+                            $query5->whereDate('startRecur', '<=', $date)
+                                ->whereNull('endRecur');
+                        });
                 });
         })->orWhere(function ($query6) use ($date) {
             $query6->where('scheduleType', self::TYPE_IRREGULAR)
