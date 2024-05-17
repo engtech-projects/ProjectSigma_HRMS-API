@@ -21,7 +21,7 @@ class PayrollService
     {
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
         $salary = $salaryGrade ? $salaryGrade?->monthly_salary_amount : 0;
-        $dailyRate = $salaryGrade->dailyRate;
+        $dailyRate = $salaryGrade?->dailyRate ?: 0;
         $dtr = collect($period)->groupBy(function ($period) {
             return $period["date"];
         })->map(function ($period) use ($employee, $dailyRate) {
@@ -30,9 +30,6 @@ class PayrollService
             $dtr["gross_pay"] = $this->grossPayPerDay($dtr["metadata"], $dailyRate);
             return $dtr;
         });
-
-
-
         return [
             "dtr" => $dtr,
             "monthly_salary" => $salary,

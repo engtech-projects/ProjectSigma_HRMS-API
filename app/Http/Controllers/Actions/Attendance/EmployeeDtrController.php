@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Actions\Attendance;
 
 use App\Helpers;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\GenerateDtrRequest;
-use App\Http\Services\EmployeeService;
 use App\Models\Employee;
-
+use Illuminate\Support\Carbon;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+
+use App\Http\Services\EmployeeService;
+use App\Http\Requests\GenerateDtrRequest;
 
 
 class EmployeeDtrController extends Controller
@@ -26,23 +27,17 @@ class EmployeeDtrController extends Controller
         $periodDates = Helpers::dateRange([
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
-        $employeeDtr = Employee::where('id', $filters['employee_ids'])->get();
-        $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $employeeDtr) {
-            $employee["dtr"] = collect($periodDates)->groupBy(function ($date) {
-                return $date["date"];
-            })->map(function ($date) use ($employeeDtr) {
-                $date = $date[0]["date"];
-                foreach ($employeeDtr as $value) {
-                    return $this->employeeService->employeeDTR($value, $date);
-                }
-            });
-            return $employee;
-        });
+        $employee = Employee::find($filters["employee_id"]);
 
+        $employee["dtr"] = collect($periodDates)->groupBy("date")
+            ->map(function ($dtr) use ($employee) {
+                $dtr = $this->employeeService->employeeDTR($employee, $dtr[0]["date"]);
+                return $dtr;
+            });
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => $result
+            'data' => $employee
         ]);
     }
 }
