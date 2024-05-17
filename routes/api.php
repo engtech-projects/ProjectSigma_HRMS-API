@@ -203,7 +203,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
             Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
         });
-        Route::post('dtr', EmployeeDtrController::class);
+        Route::get('dtr', EmployeeDtrController::class);
     });
 
     Route::prefix('project-monitoring')->group(function () {

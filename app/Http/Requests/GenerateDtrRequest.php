@@ -14,13 +14,6 @@ class GenerateDtrRequest extends FormRequest
         return true;
     }
 
-    public function prepareForValidation()
-    {
-        $this->merge([
-            'employee_ids' => json_decode($this->employee_ids, true),
-        ]);
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -31,7 +24,7 @@ class GenerateDtrRequest extends FormRequest
         return [
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',
-            'employee_ids' => 'exists:employees,id',
+            'employee_id' => 'required|integer',
         ];
     }
 }

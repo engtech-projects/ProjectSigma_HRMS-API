@@ -25,6 +25,7 @@ trait Attendance
 
     public function calculateWorkRendered($data, $startTime = null, $endTime = null)
     {
+
         $attendances = $data["attendance"];
         $duration = 0;
         $lastTimeIn = null;
@@ -40,6 +41,7 @@ trait Attendance
                 $timeOut = $time;
                 if ($lastTimeIn !== null) {
                     $duration += $lastTimeIn->diffInHours($time);
+
                     if ($time->between($startTime, $endTime)) {
                         if ($lastTimeIn->gt($startTime)) {
                             $lateMinutes = $startTime->diffInMinutes($lastTimeIn);
@@ -176,6 +178,7 @@ trait Attendance
                     $totalRegularHrs = $result["rendered"];
                     $lateMinutes += $result["late"];
                 }
+
                 $reg += $totalRegularHrs;
                 $reg += $leave;
                 $overtime = $this->getTotalOvertimeRendered($data["overtime"], $data["attendance"], $date);
