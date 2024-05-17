@@ -40,7 +40,7 @@ class AttendanceLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+            "data" => PaginateResourceCollection::paginate($collection, 5)
         ], JsonResponse::HTTP_OK);
     }
 
@@ -72,18 +72,18 @@ class AttendanceLogController extends Controller
         if ($val) {
             $mainsave = new AttendanceLog();
             $token = $request->header("Portal_token");
-            $main = AttendancePortal::with('assignment')->where('portal_token',$token)->first();
+            $main = AttendancePortal::with('assignment')->where('portal_token', $token)->first();
             $type = $main->assignment_type;
             $id = $main->assignment->id;
             switch ($type) {
                 case AttendanceLogController::DEPARTMENT:
                     $type = AssignTypes::DEPARTMENT->value;
                     $mainsave->department_id = $id;
-                break;
+                    break;
                 case AttendanceLogController::PROJECT:
                     $type = AssignTypes::PROJECT->value;
                     $mainsave->project_id = $id;
-                break;
+                    break;
             }
             $main->type = $type;
             $mainsave->date = Carbon::now()->format('Y-m-d');
@@ -92,8 +92,8 @@ class AttendanceLogController extends Controller
             $mainsave->fill($val);
             if ($mainsave->save()) {
                 $employeeAttendanceLog = AttendanceLog::where([
-                    ['employee_id',$request->employee_id],
-                    ['date',Carbon::now()->format('Y-m-d')],
+                    ['employee_id', $request->employee_id],
+                    ['date', Carbon::now()->format('Y-m-d')],
                 ])->get();
                 $employee = Employee::with('employee_schedule')->find($request->employee_id);
                 $mainsave->schedule = $employee->applied_schedule(Carbon::now()->format('Y-m-d'));

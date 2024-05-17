@@ -35,6 +35,7 @@ class PayrollRecordController extends Controller
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
         $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
             $employee["payroll_records"] = $this->payrollService->generatePayroll($periodDates, $filters, $employee);
+            unset($employee["current_employment"]);
             return $employee;
         });
 

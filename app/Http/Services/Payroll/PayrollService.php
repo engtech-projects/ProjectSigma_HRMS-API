@@ -20,15 +20,18 @@ class PayrollService
     public function generatePayroll(array $period, array $filters, $employee)
     {
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
-        $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
+        $salary = $salaryGrade ? $salaryGrade?->monthly_salary_amount : 0;
+        $dailyRate = $salaryGrade->dailyRate;
         $dtr = collect($period)->groupBy(function ($period) {
             return $period["date"];
-        })->map(function ($period) use ($employee) {
+        })->map(function ($period) use ($employee, $dailyRate) {
             $date = $period[0]["date"];
             $dtr = $this->employeeService->employeeDTR($employee, $date);
-            $dtr["gross"] = $this->getGrossPay($dtr);
+            $dtr["gross_pay"] = $this->grossPayPerDay($dtr["metadata"], $dailyRate);
             return $dtr;
         });
+
+
 
         return [
             "dtr" => $dtr,
@@ -52,8 +55,13 @@ class PayrollService
         ];
     }
 
-    public function getGrossPay($dtr)
+    public function grossPayPerDay($dtr, $dailyRate)
     {
-        return $dtr;
+        $result = [];
+        foreach ($dtr as $key => $value) {
+            $result[$key]["reg_hrs"] = $value["reg_hrs"] * $dailyRate;
+            $result[$key]["overtime"] = $value["overtime"] * $dailyRate;
+        }
+        return $result;
     }
 }

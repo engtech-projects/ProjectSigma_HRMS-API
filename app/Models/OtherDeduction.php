@@ -34,6 +34,11 @@ class OtherDeduction extends Model
         'deduction_date_start',
     ];
 
+    protected $appends = [
+        "total_paid",
+        "balance",
+    ];
+
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'id', 'employee_id');
@@ -42,6 +47,16 @@ class OtherDeduction extends Model
     public function otherDeductionPayment(): HasMany
     {
         return $this->hasMany(OtherDeductionPayments::class, 'otherdeduction_id', 'id');
+    }
+
+    public function getBalanceAttribute()
+    {
+        return $this->amount - $this->totalPaid;
+    }
+
+    public function getTotalPaidAttribute()
+    {
+        return $this->otherDeductionPayment()->sum("amount_paid");
     }
 
     public function cashPaid()

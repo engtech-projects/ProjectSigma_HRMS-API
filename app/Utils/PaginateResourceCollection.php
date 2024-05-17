@@ -11,11 +11,12 @@ class PaginateResourceCollection
 {
     public static function paginate(Collection $results, $showPerPage)
     {
+
         $pageNumber = Paginator::resolveCurrentPage('page');
-
         $totalPageNumber = $results->count();
-
-        return self::paginator($results->forPage($pageNumber, $showPerPage), $totalPageNumber, $showPerPage, $pageNumber, [
+        $offset = ($pageNumber * $showPerPage) - $showPerPage;
+        $items = collect(array_slice($results->toArray(), $offset, $showPerPage));
+        return self::paginator($items, $totalPageNumber, $showPerPage, $pageNumber, [
             'path' => Paginator::resolveCurrentPath(),
             'pageName' => 'page',
         ]);
