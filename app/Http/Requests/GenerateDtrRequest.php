@@ -24,7 +24,7 @@ class GenerateDtrRequest extends FormRequest
         return [
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',
-            'employee_id' => 'required|integer',
+            'employee_id' => 'exists:employees,id',
         ];
     }
 }

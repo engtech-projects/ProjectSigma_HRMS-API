@@ -357,8 +357,10 @@ class Employee extends Model
         }
     }
 
+
     public function daily_attendance_schedule($date)
     {
+        return $this->attendance_log()->whereDate("date", $date)->orderBy('time')->get();
     }
 
     public function filter_employee_schedule($start_range, $end_range)

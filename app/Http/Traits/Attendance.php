@@ -19,8 +19,45 @@ trait Attendance
     {
 
         $date = Carbon::parse($date);
-        /* dd($this->calculateAttendance($data, $date)); */
+        /*         $res = $this->calculateEmployeeAttendance($data); */
+
+
         return $this->calculateAttendance($data, $date);
+    }
+
+
+
+    public function getWorkingHoursRendered($attendances, $startTime = null, $endTime = null)
+    {
+        $totalHrs = 0;
+        if ($attendances) {
+            $lastTimeIn = $attendances->where('log_type', 'In')->first();
+            $lastTimeOut = $attendances->where('log_type', 'Out')->first();
+            $time = null;
+            if ($lastTimeIn) {
+                $time = Carbon::parse($lastTimeIn->time);
+            } else {
+                $time = Carbon::parse($lastTimeOut->time);
+            }
+            if ($startTime && $endTime) {
+                $timeIn = Carbon::parse($lastTimeIn->time);
+                $timeOut = Carbon::parse($lastTimeOut->time);
+                dd($timeIn, $time);
+                dd($timeIn->diffInHours($time));
+            }
+
+
+            $time = null;
+            if ($lastTimeIn) {
+                $time = Carbon::parse($lastTimeIn->time);
+            } else {
+                if ($lastTimeIn) {
+                }
+            }
+        }
+
+
+        return $total;
     }
 
     public function calculateWorkRendered($data, $startTime = null, $endTime = null)
@@ -39,45 +76,18 @@ trait Attendance
                 $lastTimeIn = $time;
             } else {
                 $timeOut = $time;
-                if ($lastTimeIn !== null) {
+                if ($lastTimeIn) {
                     $duration += $lastTimeIn->diffInHours($time);
-
-                    if ($time->between($startTime, $endTime)) {
-                        if ($lastTimeIn->gt($startTime)) {
-                            $lateMinutes = $startTime->diffInMinutes($lastTimeIn);
-                        }
-                        if ($timeOut !== null && $timeOut->gt($endTime)) {
-                            $lateMinutes -= $timeOut->diffInMinutes($endTime);
-                        }
-                        $lateMinutes = max(0, $lateMinutes);
-                        $totalLate += $lateMinutes;
+                    if ($lastTimeIn->gt($startTime)) {
+                        $lateMinutes = $startTime->diffInMinutes($lastTimeIn);
                     }
-                }
-                $lastTimeIn = null;
-            }
-        }
-
-        return [
-            "rendered" => $duration,
-            "late" => $totalLate
-        ];
-    }
-    public function calculateOvertimeRendered($attendances, $startTime = null, $endTime = null)
-    {
-        $duration = 0;
-        $lastTimeIn = null;
-        $totalLate = 0;
-
-        foreach ($attendances as $key => $attendance) {
-            $time = Carbon::parse($attendance->time);
-            if ($attendance["log_type"] == AttendanceLogType::TIME_IN->value) {
-                $lastTimeIn = $time;
-            } else {
-                if ($lastTimeIn !== null) {
-                    if ($time->between($startTime, $endTime)) {
-                        $duration += $lastTimeIn->diffInHours($time);
-                        $totalLate += max(0, $lastTimeIn->diffInMinutes($startTime));
+                    if ($timeOut !== null && $timeOut->gt($endTime)) {
+                        $lateMinutes -= $timeOut->diffInMinutes($endTime);
                     }
+                    $totalLate += $lateMinutes;
+
+
+
                     $lastTimeIn = null;
                 }
             }
@@ -87,16 +97,32 @@ trait Attendance
             "late" => $totalLate
         ];
     }
-
-    public function getTotalOvertimeRendered($overtime, $attendances, $date)
+    public function calculateOvertimeRendered($overtime, $startTime = null, $endTime = null)
     {
-        $overtime = $this->hasOvertime($overtime, $date);
+        /*  if ($overtime) {
+            foreach ($overtime as $otVal) {
+                dd($otVal);
+                $startTime = $overtime->overtime_start_time;
+                $endTime = $overtime->overtime_end_time;
+                $result = $this->calculateOvertimeRendered($overtime, $startTime, $endTime);
+                $overtimeHrs += $result["rendered"];
+                $late += $result["late"];
+            }
+        }
+        return [
+            "rendered" => $duration,
+            "late" => $totalLate
+        ]; */
+    }
+
+    /*     public function getTotalOvertimeRendered($overtime, $attendances, $date)
+    {
         $overtimeHrs = 0;
         $late = 0;
         if ($overtime) {
             $startTime = $overtime->overtime_start_time;
             $endTime = $overtime->overtime_end_time;
-            $result = $this->calculateOvertimeRendered($attendances, $startTime, $endTime);
+            $result = $this->calculateOvertimeRendered($overtime, $startTime, $endTime);
             $overtimeHrs += $result["rendered"];
             $late += $result["late"];
         }
@@ -104,7 +130,7 @@ trait Attendance
             "rendered" => $overtimeHrs,
             "late" => $late
         ];
-    }
+    } */
     public function getTotalRendered($data, $date)
     {
         $totalHrs = 0;
@@ -133,6 +159,16 @@ trait Attendance
         }
         return $totalHrs;
     }
+    public function getOvertimeRendered($overtime)
+    {
+        $total = 0;
+        if ($overtime) {
+            foreach ($overtime as $otVal) {
+                $total += $otVal->overtime_start_time->diffInHours($otVal->overtime_time);
+            }
+        }
+        return $total;
+    }
     public function calculateAttendance($data, $date)
     {
         $leave = 0;
@@ -141,7 +177,7 @@ trait Attendance
         $travel += $this->getTotalRendered($data["travel_orders"], $date);
         $total = $leave + $travel;
 
-        $reg = $total;
+        $reg = 0;
         $regOvertime = 0;
         $regLate = 0;
         $rest = $total;
@@ -153,49 +189,37 @@ trait Attendance
         $totalWorkingLateMinutes = 0;
         $totalLeave = 0;
 
-
-
-
         if ($this->hasEvent($data["events"], $date)) {
             //REGULAR HOLIDAY WORK
             $result = $this->calculateWorkRendered($data);
             $regHoliday += $result["rendered"];
-            $overtime = $this->getTotalOvertimeRendered($data["overtime"], $data["attendance"], $date);
-            $regHolidayOvertime += $overtime["rendered"];
-            $regHolidayLate += $overtime["late"];
+            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
             $regHoliday -= $regHolidayOvertime;
         } else {
             if (!$data["schedule"] == null) {
+                $regOvertime += $this->getOvertimeRendered($data["overtime"]);
                 $totalRegularHrs = 0;
                 $totalRegularOvertime = 0;
                 $lateMinutes = 0;
-                $overtime = $this->hasOvertime($data["overtime"], $date);
                 foreach ($data["schedule"] as $schedule) {
                     $startTime = $schedule->startTime;
                     $endTime = $schedule->endTime;
                     $result = $this->calculateWorkRendered($data, $startTime, $endTime);
-
                     $totalRegularHrs = $result["rendered"];
                     $lateMinutes += $result["late"];
                 }
-
                 $reg += $totalRegularHrs;
                 $reg += $leave;
-                $overtime = $this->getTotalOvertimeRendered($data["overtime"], $data["attendance"], $date);
-                $totalRegularOvertime += $overtime["rendered"];
-                $lateMinutes += $overtime["late"];
-
                 $regOvertime += $totalRegularOvertime;
-                $reg -= $regOvertime;
                 $regLate += $lateMinutes;
             } else {
                 //REST WORK
                 $result = $this->calculateWorkRendered($data);
                 $rest += $result["rendered"];
-                $overtime = $this->getTotalOvertimeRendered($data["overtime"], $data["attendance"], $date);
+                /*                 $overtime = $this->getTotalOvertimeRendered($data["overtime"], $data["attendance"], $date);
                 $restOvertime += $overtime["rendered"];
                 $regHolidayLate += $overtime["late"];
-                $rest -= $regHolidayOvertime;
+                $rest -= $regHolidayOvertime; */
             }
         }
 
