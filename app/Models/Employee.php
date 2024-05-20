@@ -314,6 +314,12 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeLeaves::class, 'employee_id');
     }
+
+    public function face_patterns(): HasMany
+    {
+        return $this->hasMany(EmployeePattern::class);
+    }
+
     public function employee_travel_order(): BelongsToMany
     {
         return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id');

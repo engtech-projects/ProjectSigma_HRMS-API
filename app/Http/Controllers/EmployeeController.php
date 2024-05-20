@@ -169,6 +169,7 @@ class EmployeeController extends Controller
             "employee_internal.position",
             "employee_externalwork",
             "images",
+            'face_patterns',
         )->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
