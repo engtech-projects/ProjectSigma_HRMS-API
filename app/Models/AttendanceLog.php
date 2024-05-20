@@ -39,6 +39,10 @@ class AttendanceLog extends Model
         'employee_id' => 'integer',
     ];
 
+    protected $appends = [
+        'time_human',
+    ];
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
@@ -107,5 +111,9 @@ class AttendanceLog extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
+    }
+    public function getTimeHumanAttribute()
+    {
+        return Carbon::parse($this->time)->format("H:s A");
     }
 }
