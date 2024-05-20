@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use Illuminate\Support\Carbon;
 use App\Http\Traits\Attendance;
+use App\Models\AttendanceLog;
 
 class EmployeeService
 {
@@ -14,7 +15,6 @@ class EmployeeService
         $schedules = $employee->applied_schedule($date);
         $events = $employee->events_dtr($date);
         $attendances = $employee->daily_attendance_schedule($date);
-
         $travelOrders = $employee->travel_order_dtr($date);
         $overtime = $employee->employee_overtime()->where('overtime_date', $date)->get();
 
