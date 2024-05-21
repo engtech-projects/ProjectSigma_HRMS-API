@@ -20,7 +20,6 @@ class EmployeeService
 
         $leave = $employee->leave_dtr($date);
         $collection = [
-            "schedules_attendances" => $schedules_attendances,
             "schedule" => $schedules,
             "events" => $events,
             "attendance" => $attendances,
@@ -29,6 +28,7 @@ class EmployeeService
             "leave" => $leave
         ];
         return [
+            "schedules_attendances" => $schedules_attendances,
             "schedule" => $schedules,
             "attendance" => $attendances,
             "travel_order" => $travelOrders,
