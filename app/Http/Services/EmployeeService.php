@@ -35,6 +35,7 @@ class EmployeeService
             "ovetime" => $overtime,
             "leave" => $employee->leave_dtr($date),
             "events" => $events,
+            "date" => $date,
             "metadata" => $this->getMetaData($collection, $date),
         ];
     }
