@@ -316,6 +316,12 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeLeaves::class, 'employee_id');
     }
+
+    public function face_patterns(): HasMany
+    {
+        return $this->hasMany(EmployeePattern::class);
+    }
+
     public function employee_travel_order(): BelongsToMany
     {
         return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id');
@@ -358,7 +364,29 @@ class Employee extends Model
             return $schedule;
         }
     }
-
+    public function applied_schedule_with_attendance($date) {
+        $schedWithLogs =  $this->applied_schedule($date);
+        if($schedWithLogs){
+            $schedWithLogs->append([
+                "attendance_log_ins",
+                "attendance_log_outs",
+            ]);
+        }
+        return $schedWithLogs->map(function ($sched) use($date) {
+            return [
+                ...$sched->toArray(),
+                "applied_ins" => $sched->attendance_log_ins->where("employee_id", $this->id)->where("date", $date)->first(),
+                "applied_outs" => $sched->attendance_log_outs->where("employee_id", $this->id)->where("date", $date)->last()
+            ];
+            // $sched->attendance_log_ins = $sched->attendance_log_ins->where("employee_id", $this->id)->where("date", $date)->first();
+            // $sched->attendance_log_outs = $sched->attendance_log_outs->where("employee_id", $this->id)->where("date", $date)->last();
+        });
+        // foreach ($schedWithLogs as $sched) {
+        //     $sched->attendance_log_ins = $sched->attendance_log_ins->where("employee_id", $this->id)->where("date", $date)->first();
+        //     $sched->attendance_log_outs = $sched->attendance_log_outs->where("employee_id", $this->id)->where("date", $date)->last();
+        // }
+        // return $schedWithLogs;
+    }
 
     public function daily_attendance_schedule($date)
     {

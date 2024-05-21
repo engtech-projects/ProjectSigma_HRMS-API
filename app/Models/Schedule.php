@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AttendanceLogType;
 use App\Enums\ScheduleGroupType;
 use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
@@ -40,10 +41,17 @@ class Schedule extends Model
     ];
 
     protected $casts = [
+        'daysOfWeek' => 'array',
         'startTime' => 'date:H:s:i',
         'endTime' => 'date:H:s:i',
         'startRecur' => 'date:Y-m-d',
         'endRecur' => 'date:Y-m-d',
+    ];
+
+    protected $appends = [
+        'day_of_week_names',
+        'start_time_human',
+        'end_time_human',
     ];
 
     public function department(): HasOne
@@ -59,7 +67,49 @@ class Schedule extends Model
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
     }
+    public function getAttendanceLogInsAttribute()
+    {
+        $bufferInTimeEarly = Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
+        $bufferInTimeLate = Carbon::parse($this->startTime)->addHour((int)config("app.login_late"));
+        return AttendanceLog::where("log_type", AttendanceLogType::TIME_IN)
+        ->whereTime('time', ">=", $bufferInTimeEarly)
+        ->whereTime('time', "<=", $bufferInTimeLate)
+        ->get();
+    }
+    public function getAttendanceLogOutsAttribute()
+    {
+        $bufferOutTimeEarly = $this->endTime->subHour((int)config("app.logout_early"));
+        $bufferOutTimeLate = $this->endTime->addHour((int)config("app.logout_late"));
+        return AttendanceLog::where("log_type", AttendanceLogType::TIME_OUT)
+        ->whereTime('time', ">=", $bufferOutTimeEarly)
+        ->whereTime('time', "<=", $bufferOutTimeLate)
+        ->get();
+    }
 
+    public function getDayOfWeekNamesAttribute()
+    {
+        $days = [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday'
+          ];
+        return array_map(function ($day) use($days) {
+            return $days[$day];
+        }, $this->daysOfWeek);
+    }
+
+    public function getStartTimeHumanAttribute()
+    {
+        return Carbon::parse($this->startTime)->format("h:s A");
+    }
+    public function getEndTimeHumanAttribute()
+    {
+        return Carbon::parse($this->endTime)->format("h:s A");
+    }
     /**
      * MODEL
      * LOCAL
@@ -79,8 +129,10 @@ class Schedule extends Model
                             ->whereJsonContains("daysOfWeek", (string)$carbondate->dayOfWeek);
                     })
                         ->orWhere(function ($query5) use ($date) {
+                            $carbondate = new Carbon($date);
                             $query5->whereDate('startRecur', '<=', $date)
-                                ->whereNull('endRecur');
+                                ->whereNull('endRecur')
+                                ->whereJsonContains("daysOfWeek", (string)$carbondate->dayOfWeek);
                         });
                 });
         })->orWhere(function ($query6) use ($date) {
