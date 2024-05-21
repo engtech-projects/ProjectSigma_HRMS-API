@@ -14,7 +14,7 @@ class EmployeeService
         $date = Carbon::parse($date);
         $schedules = $employee->applied_schedule($date);
         $events = $employee->events_dtr($date);
-        $attendances = $employee->daily_attendance_schedule($date);
+        $attendances = $employee->applied_schedule_with_attendance($date->format('Y-m-d'));
         $travelOrders = $employee->travel_order_dtr($date);
         $overtime = $employee->employee_overtime()->where('overtime_date', $date)->get();
 
