@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\AssignTypes;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
+use App\Http\Requests\AllAttendanceLogsRequest;
 use App\Models\AttendanceLog;
 use Illuminate\Http\JsonResponse;
 use App\Utils\PaginateResourceCollection;
@@ -45,6 +46,16 @@ class AttendanceLogController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
+    public function allAttendanceLogs(AllAttendanceLogsRequest $request)
+    {
+        $attendanceLog = $this->attendanceLogService->getFilterDateAndEmployee($request);
+        $collection = collect(AttendanceLogResource::collection($attendanceLog));
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => PaginateResourceCollection::paginate($collection, 5),
+        ], JsonResponse::HTTP_OK);
+    }
 
     /**
      * Store a newly created resource in storage.
