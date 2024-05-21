@@ -104,11 +104,11 @@ class Schedule extends Model
 
     public function getStartTimeHumanAttribute()
     {
-        return Carbon::parse($this->startTime)->format("H:s A");
+        return Carbon::parse($this->startTime)->format("h:s A");
     }
     public function getEndTimeHumanAttribute()
     {
-        return Carbon::parse($this->endTime)->format("H:s A");
+        return Carbon::parse($this->endTime)->format("h:s A");
     }
     /**
      * MODEL
