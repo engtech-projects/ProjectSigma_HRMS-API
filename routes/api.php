@@ -261,7 +261,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('payroll')->group(function () {
-        Route::post('generate-payroll', [PayrollRecordController::class, 'generate']);
+        Route::get('generate-payroll', [PayrollRecordController::class, 'generate']);
         Route::post('create-payroll', [PayrollRecordController::class, 'store']);
     });
 

@@ -2,13 +2,13 @@
 
 namespace App\Http\Services;
 
+use App\Models\AttendanceLog;
 use Illuminate\Support\Carbon;
 use App\Http\Traits\Attendance;
-use App\Models\AttendanceLog;
+use App\Http\Services\Payroll\PayrollDeduction;
 
 class EmployeeService
 {
-    use Attendance;
     public function employeeDTR($employee, $date)
     {
         $date = Carbon::parse($date);
@@ -34,7 +34,50 @@ class EmployeeService
             "ovetime" => $overtime,
             "leave" => $employee->leave_dtr($date),
             "events" => $events,
-            "metadata" => $this->getMetaData($collection, $date),
+            "metadata" => $employee->getMetaData($collection, $date),
         ];
+    }
+
+    public function generatePayroll(array $period, array $filters, $employee)
+    {
+        $dailyRate = $employee->salary_gross_pay();
+        $dtr = collect($period)->groupBy(function ($period) {
+            return $period["date"];
+        })->map(function ($period) use ($employee, $dailyRate) {
+            $date = $period[0]["date"];
+            $dtr = $this->employeeDTR($employee, $date);
+            $dtr["gross_pay"] = $this->grossPayPerDay($dtr["metadata"], $dailyRate);
+            return $dtr;
+        });
+        return [
+            "dtr" => $dtr,
+
+            "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
+        ];
+    }
+    public function getSalaryDeduction($employee, $filters)
+    {
+
+        $salaryGrade = $employee->current_employment?->employee_salarygrade;
+        $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
+        $salaryDeduction = new PayrollDeduction($employee, $salary, $filters);
+        return [
+            "cash_advance" => $salaryDeduction->cashAdvance->cashAdvance,
+            "sss" => $filters["deduct_sss"] ? $salaryDeduction->sss : [],
+            "phic" => $filters["deduct_philhealth"] ? $salaryDeduction->philhealth : [],
+            "hmdf" => $filters["deduct_pagibig"] ? $salaryDeduction->pagibig : [],
+            "ewtc" =>  $salaryDeduction->withHoldingTax,
+            "loan" => $salaryDeduction->loan->loan
+        ];
+    }
+
+    public function grossPayPerDay($dtr, $dailyRate)
+    {
+        $result = [];
+        foreach ($dtr as $key => $value) {
+            $result[$key]["reg_hrs"] = $value["reg_hrs"] * $dailyRate;
+            $result[$key]["overtime"] = $value["overtime"] * $dailyRate;
+        }
+        return $result;
     }
 }

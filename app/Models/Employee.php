@@ -8,6 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Enums\EmployeeStudiesType;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
+use App\Http\Traits\Attendance;
 use App\Models\Traits\HasProjectEmployee;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,6 +30,7 @@ class Employee extends Model
     use HasProjectEmployee;
     use EmployeeDTR;
     use EmployeePayroll;
+    use Attendance;
 
     protected $table = 'employees';
     protected $appends = [

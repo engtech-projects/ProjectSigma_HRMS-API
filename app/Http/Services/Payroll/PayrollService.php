@@ -10,7 +10,7 @@ class PayrollService
 {
     use Attendance;
 
-    protected $payrollDeduction;
+    /* protected $payrollDeduction;
     protected $employeeService;
     public function __construct(EmployeeService $employeeService)
     {
@@ -60,5 +60,5 @@ class PayrollService
             $result[$key]["overtime"] = $value["overtime"] * $dailyRate;
         }
         return $result;
-    }
+    } */
 }

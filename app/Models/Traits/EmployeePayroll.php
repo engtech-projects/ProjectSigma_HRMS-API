@@ -18,4 +18,12 @@ trait EmployeePayroll
     {
         return $this->hasOne(SalaryGradeStep::class);
     }
+
+    public function salary_gross_pay()
+    {
+        $salaryGrade = $this->current_employment?->employee_salarygrade;
+        $salary = $salaryGrade ? $salaryGrade?->monthly_salary_amount : 0;
+        $dailyRate = $salaryGrade?->dailyRate ?: 0;
+        return $dailyRate;
+    }
 }
