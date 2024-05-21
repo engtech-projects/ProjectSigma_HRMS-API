@@ -199,6 +199,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('bulk-save', [AttendanceBulkUpload::class, 'bulkSave']);
         Route::resource('log', AttendanceLogController::class);
         Route::resource('failed-log', FailureToLogController::class);
+        Route::get('all-attendance-logs', [AttendanceLogController::class, 'allAttendanceLogs']);
         Route::prefix('failure-to-log')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
             Route::get('my-approvals', [FailureToLogController::class, 'myApprovals']);
