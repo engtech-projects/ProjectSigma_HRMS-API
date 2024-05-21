@@ -11,7 +11,7 @@ class EmployeeService
     use Attendance;
     public function employeeDTR($employee, $date)
     {
-        $date = Carbon::parse($date);
+        $schedules_attendances = $employee->applied_schedule_with_attendance($date);
         $schedules = $employee->applied_schedule($date);
         $events = $employee->events_dtr($date);
         $attendances = $employee->daily_attendance_schedule($date);
@@ -20,6 +20,7 @@ class EmployeeService
 
         $leave = $employee->leave_dtr($date);
         $collection = [
+            "schedules_attendances" => $schedules_attendances,
             "schedule" => $schedules,
             "events" => $events,
             "attendance" => $attendances,
@@ -28,6 +29,7 @@ class EmployeeService
             "leave" => $leave
         ];
         return [
+            "schedules_attendances" => $schedules_attendances,
             "schedule" => $schedules,
             "attendance" => $attendances,
             "travel_order" => $travelOrders,
