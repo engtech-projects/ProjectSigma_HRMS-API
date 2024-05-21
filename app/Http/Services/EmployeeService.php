@@ -29,7 +29,6 @@ class EmployeeService
             "leave" => $leave
         ];
         return [
-            "schedules_attendances" => $schedules_attendances,
             "schedule" => $schedules,
             "attendance" => $attendances,
             "travel_order" => $travelOrders,
