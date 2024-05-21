@@ -14,7 +14,7 @@ class EmployeeService
         $schedules_attendances = $employee->applied_schedule_with_attendance($date);
         $schedules = $employee->applied_schedule($date);
         $events = $employee->events_dtr($date);
-        $attendances = $employee->applied_schedule_with_attendance($date->format('Y-m-d'));
+        $attendances = $employee->applied_schedule_with_attendance($date);
         $travelOrders = $employee->travel_order_dtr($date);
         $overtime = $employee->employee_overtime()->where('overtime_date', $date)->get();
 
@@ -42,20 +42,31 @@ class EmployeeService
 
     public function generatePayroll(array $period, array $filters, $employee)
     {
-        $dailyRate = $employee->salary_gross_pay();
         $dtr = collect($period)->groupBy(function ($period) {
             return $period["date"];
-        })->map(function ($period) use ($employee, $dailyRate) {
+        })->map(function ($period) use ($employee) {
             $date = $period[0]["date"];
             $dtr = $this->employeeDTR($employee, $date);
-            $dtr["gross_pay"] = $this->grossPayPerDay($dtr["metadata"], $dailyRate);
+            $dtr["gross_pay"] =  $employee->salary_gross_pay($dtr["metadata"]);
             return $dtr;
         });
-        return [
-            "dtr" => $dtr,
 
+        $result = [
+            "dtr" => $dtr,
             "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
+
         ];
+
+        $totalGross = 0;
+        foreach (collect($result) as $res) {
+            $total = 0;
+            foreach ($res as $value) {
+                $regularHrs = $value["gross_pay"]["regular"]["reg_hrs"] + $value["gross_pay"]["rest"]["reg_hrs"] + $value["gross_pay"]["regular_holidays"]["reg_hrs"] + $value["gross_pay"]["special_holidays"]["reg_hrs"];
+                $overtime = $value["gross_pay"]["regular"]["overtime"] + $value["gross_pay"]["rest"]["overtime"] + $value["gross_pay"]["regular_holidays"]["overtime"] + $value["gross_pay"]["special_holidays"]["overtime"];
+                
+            }
+
+        }
     }
     public function getSalaryDeduction($employee, $filters)
     {

@@ -23,14 +23,15 @@ trait Attendance
 
     public function calculateWorkRendered($data)
     {
-        $attendances = $data["attendance"];
+        $attendances = $data["schedules_attendances"];
         $duration = 0;
         $totalLate = 0;
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
-            $in = Carbon::parse($timeIn->time);
-            $out = Carbon::parse($timeOut->time);
+
+            $in = Carbon::parse($timeIn?->time);
+            $out = Carbon::parse($timeOut?->time);
             $startTime = Carbon::parse($attendance["startTime"]);
             $duration += $in->diffInHours($out);
             if ($in->gt($attendance["startTime"])) {
@@ -125,12 +126,12 @@ trait Attendance
             "rest" => [
                 "reg_hrs" => $rest,
                 "overtime" => $restOvertime,
-                "late" => $late,
+                "late" => 0,
             ],
             "regular_holidays" => [
                 "reg_hrs" => $regHoliday,
                 "overtime" => $regHolidayOvertime,
-                "late" => $late,
+                "late" => 0,
             ],
             "special_holidays" => [
                 "reg_hrs" => 0,
