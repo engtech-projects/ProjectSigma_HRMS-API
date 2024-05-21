@@ -16,6 +16,7 @@ use App\Http\Requests\UpdateAttendanceLogRequest;
 use App\Models\AttendancePortal;
 use App\Models\Employee;
 use App\Models\EmployeePattern;
+use App\Models\Schedule;
 use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 
@@ -68,6 +69,8 @@ class AttendanceLogController extends Controller
 
     public function facialAttendance(StoreFacialAttendanceLog $request)
     {
+        $dateNow = Carbon::now()->format('Y-m-d');
+        $timeNow = Carbon::now()->format('H:i:s');
         $val = $request->validated();
         if ($val) {
             $mainsave = new AttendanceLog();
@@ -86,23 +89,20 @@ class AttendanceLogController extends Controller
                     break;
             }
             $main->type = $type;
-            $mainsave->date = Carbon::now()->format('Y-m-d');
-            $mainsave->time = Carbon::now()->format('H:i:s');
+            $mainsave->date = $dateNow;
+            $mainsave->time = $timeNow;
             $mainsave->attendance_type = AttendanceType::FACIAL->value;
             $mainsave->fill($val);
             if ($mainsave->save()) {
-                $employeeAttendanceLog = AttendanceLog::where([
-                    ['employee_id', $request->employee_id],
-                    ['date', Carbon::now()->format('Y-m-d')],
-                ])->get();
-                $employee = Employee::with('employee_schedule')->find($request->employee_id);
-                $mainsave->schedule = $employee->applied_schedule(Carbon::now()->format('Y-m-d'));
-                $mainsave->employee = $employee;
-                $mainsave->employee_attendance_log = $employeeAttendanceLog;
+                $employee = Employee::with('employee_schedule', 'profile_photo',)->find($val["employee_id"]);
+                $return = [];
+                $return['log_saved'] = $mainsave;
+                $return['schedule'] = $employee->applied_schedule_with_attendance($dateNow);
+                $return['employee'] = $employee;
                 return new JsonResponse([
                     "success" => true,
                     "message" => "Successfully save.",
-                    "data" => $mainsave,
+                    "data" => $return,
                 ], JsonResponse::HTTP_OK);
             }
             return new JsonResponse([

@@ -18,6 +18,11 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'login_early' => env('LOG_IN_EARLY_HOUR', '2'),
+    'login_late' => env('LOG_IN_LATE_HOUR', '4'),
+    'logout_early' => env('LOG_OUT_EARLY_HOUR', '2'),
+    'logout_late' => env('LOG_OUT_LATE_HOUR', '4'),
+
     'artisan' => env('ENABLE_ARTISAN_ROUTES', 'false'),
     /*
     |--------------------------------------------------------------------------
