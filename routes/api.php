@@ -98,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/session', [AuthController::class, 'session']);
     Route::put('update-user', [UsersController::class, 'updateUserCredential']);
     Route::resource('users', UsersController::class);
+    Route::get('user-account-by-employee-id/{id}',[UsersController::class, 'getUserAccountByEmployeeId']);
     Route::resource('accessibilities', AccessibilitiesController::class);
     Route::resource('sss', SSSContributionController::class);
     Route::resource('philhealth', PhilhealthContributionController::class);
