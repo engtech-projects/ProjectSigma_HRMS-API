@@ -42,8 +42,8 @@ class Schedule extends Model
 
     protected $casts = [
         'daysOfWeek' => 'array',
-        'startTime' => 'date:H:s:i',
-        'endTime' => 'date:H:s:i',
+        'startTime' => 'date:H:i:s',
+        'endTime' => 'date:H:i:s',
         'startRecur' => 'date:Y-m-d',
         'endRecur' => 'date:Y-m-d',
     ];
@@ -106,11 +106,11 @@ class Schedule extends Model
 
     public function getStartTimeHumanAttribute()
     {
-        return Carbon::parse($this->startTime)->format("h:s A");
+        return Carbon::parse($this->startTime)->format("h:i A");
     }
     public function getEndTimeHumanAttribute()
     {
-        return Carbon::parse($this->endTime)->format("h:s A");
+        return Carbon::parse($this->endTime)->format("h:i A");
     }
     /**
      * MODEL
