@@ -6,6 +6,7 @@ use App\Models\AttendanceLog;
 use Illuminate\Support\Carbon;
 use App\Http\Traits\Attendance;
 use App\Http\Services\Payroll\PayrollDeduction;
+use App\Models\SSSContribution;
 
 class EmployeeService
 {
@@ -36,12 +37,17 @@ class EmployeeService
 
     public function generatePayroll(array $period, array $filters, $employee)
     {
-        $dtr = collect($period)->groupBy(function ($period) {
+        $total = 0;
+
+        $dtr = collect($period)->groupBy(function ($period) use ($filters) {
             return $period["date"];
-        })->map(function ($period) use ($employee) {
+        })->map(function ($period) use ($employee, $filters) {
             $date = $period[0]["date"];
             $dtr = $this->employeeDTR($employee, $date);
-            $dtr["gross_pay"] =  $employee->salary_gross_pay($dtr["metadata"]);
+            $grossPay =  $employee->salary_gross_pay($dtr["metadata"]);
+            dd($employee->salary_deduction($filters));
+/*             $total += $grossPay["regular"]["reg_hrs"]; */
+            $dtr["grosspay"] = $grossPay;
             return $dtr;
         });
 
@@ -50,15 +56,28 @@ class EmployeeService
             "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
 
         ];
+        /*         foreach($result[] as $payroll) {
+
+            foreach($payroll as $value) {
+                dd($value["total_gross"]);
+            }
+
+        } */
+        return $result;
 
         $totalGross = 0;
         foreach (collect($result) as $res) {
-            $total = 0;
+            $totalRegularHrs = 0;
             foreach ($res as $value) {
+                dd($value);
+                $totalRegularHrs += $value["gross_pay"]["regular"]["reg_hrs"];
+                /* $overtime = $value["gross_pay"]["regular"]["overtime"] + $value["gross_pay"]["rest"]["overtime"] + $value["gross_pay"]["regular_holidays"]["overtime"] + $value["gross_pay"]["special_holidays"]["overtime"];
                 $regularHrs = $value["gross_pay"]["regular"]["reg_hrs"] + $value["gross_pay"]["rest"]["reg_hrs"] + $value["gross_pay"]["regular_holidays"]["reg_hrs"] + $value["gross_pay"]["special_holidays"]["reg_hrs"];
-                $overtime = $value["gross_pay"]["regular"]["overtime"] + $value["gross_pay"]["rest"]["overtime"] + $value["gross_pay"]["regular_holidays"]["overtime"] + $value["gross_pay"]["special_holidays"]["overtime"];
+                $overtime = $value["gross_pay"]["regular"]["overtime"] + $value["gross_pay"]["rest"]["overtime"] + $value["gross_pay"]["regular_holidays"]["overtime"] + $value["gross_pay"]["special_holidays"]["overtime"]; */
             }
+            $totalGross += $totalRegularHrs;
         }
+
     }
     public function getSalaryDeduction($employee, $filters)
     {

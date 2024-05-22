@@ -30,4 +30,19 @@ class PhilhealthContribution extends Model
             ->where('range_to', '>=', $salary)
             ->first();
     }
+
+    public static function contribution($salary)
+    {
+        return self::where('range_from', '<=', $salary)
+            ->where('range_to', '>=', $salary)
+            ->first();
+    }
+    public function employee_compensation($salary)
+    {
+        $philhealth = $this->contribution($salary);
+
+    }
+    public function employer_compensation()
+    {
+    }
 }
