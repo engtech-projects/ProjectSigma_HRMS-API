@@ -363,7 +363,7 @@ class Employee extends Model
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        return []; // returns if no schedule is found
+        return []; // returns empty array if no schedule is found
     }
     public function applied_schedule_with_attendance($date)
     {
