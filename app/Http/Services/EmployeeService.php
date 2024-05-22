@@ -12,26 +12,20 @@ class EmployeeService
     public function employeeDTR($employee, $date)
     {
         $schedules_attendances = $employee->applied_schedule_with_attendance($date);
-        $schedules = $employee->applied_schedule($date);
         $events = $employee->events_dtr($date);
-        $attendances = $employee->applied_schedule_with_attendance($date);
         $travelOrders = $employee->travel_order_dtr($date);
         $overtime = $employee->employee_overtime()->where('overtime_date', $date)->get();
 
         $leave = $employee->leave_dtr($date);
         $collection = [
             "schedules_attendances" => $schedules_attendances,
-            "schedule" => $schedules,
             "events" => $events,
-            "attendance" => $attendances,
             "overtime" => $overtime,
             "travel_orders" => $travelOrders,
             "leave" => $leave
         ];
         return [
             "schedules_attendances" => $schedules_attendances,
-            "schedule" => $schedules,
-            "attendance" => $attendances,
             "travel_order" => $travelOrders,
             "ovetime" => $overtime,
             "leave" => $employee->leave_dtr($date),

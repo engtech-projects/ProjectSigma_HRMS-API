@@ -105,7 +105,7 @@ trait Attendance
             $regHoliday += $result["rendered"];
             $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
             $regHoliday += $leave + $travel;
-        } else if ($data["schedule"]) {
+        } else if ($data["schedules_attendances"]) {
             $result = $this->calculateWorkRendered($data);
             $reg += $result["rendered"];
             $regOvertime += $this->getOvertimeRendered($data["overtime"]);
