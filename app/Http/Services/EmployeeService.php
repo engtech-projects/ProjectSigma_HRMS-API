@@ -20,6 +20,7 @@ class EmployeeService
 
         $leave = $employee->leave_dtr($date);
         $collection = [
+            "schedules_attendances" => $schedules_attendances,
             "schedule" => $schedules,
             "events" => $events,
             "attendance" => $attendances,
@@ -62,9 +63,7 @@ class EmployeeService
             foreach ($res as $value) {
                 $regularHrs = $value["gross_pay"]["regular"]["reg_hrs"] + $value["gross_pay"]["rest"]["reg_hrs"] + $value["gross_pay"]["regular_holidays"]["reg_hrs"] + $value["gross_pay"]["special_holidays"]["reg_hrs"];
                 $overtime = $value["gross_pay"]["regular"]["overtime"] + $value["gross_pay"]["rest"]["overtime"] + $value["gross_pay"]["regular_holidays"]["overtime"] + $value["gross_pay"]["special_holidays"]["overtime"];
-                
             }
-
         }
     }
     public function getSalaryDeduction($employee, $filters)
