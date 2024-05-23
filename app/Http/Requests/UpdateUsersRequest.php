@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUsersRequest extends FormRequest
 {
@@ -23,11 +24,13 @@ class UpdateUsersRequest extends FormRequest
     {
         return [
             'name' => "nullable|string|max:35",
-            'email' => "nullable|string|max:35",
-            'email_verified_at' => "nullable|date_format:Y-m-d H:i:s",
+            'email' => [
+                "nullable",
+                "string",
+                "max:35",
+                Rule::unique("users", "email")->ignore($this->route("user"), 'id')->whereNull('deleted_at'),
+            ],
             'password' => "nullable|string|max:255",
-            'remember_token' => "nullable|string|max:100",
-            'type' => "nullable|in:Administrator,Employee",
             'accessibilities' => "nullable|array|exists:accessibilities,id",
         ];
     }

@@ -20,8 +20,8 @@ class PortalIPMiddleware
 
     public function handle(Request $request, Closure $next): Response
     {
-        $auth_token = $request->header("Portal_token");
-        $get = AttendancePortal::where("portal_token",$auth_token);
+        $auth_token = $request->header("Portal_token", $request->bearerToken());
+        $get = AttendancePortal::where("portal_token", $auth_token)->first();
         if ($get) {
             return $next($request);
         }

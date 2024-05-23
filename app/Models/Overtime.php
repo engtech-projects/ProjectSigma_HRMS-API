@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class Overtime extends Model
 {
@@ -46,6 +47,11 @@ class Overtime extends Model
         'overtime_start_time' => 'date:H:i:s',
         'overtime_end_time' => 'date:H:i:s',
         'overtime_date' => "datetime:Y-m-d",
+    ];
+
+    protected $appends = [
+        'start_time_human',
+        'end_time_human',
     ];
 
     public function employee(): HasOne
@@ -91,5 +97,15 @@ class Overtime extends Model
                 }
                 return $query->where('project_id', $filters['project_id']);
             });
+    }
+
+    public function getStartTimeHumanAttribute()
+    {
+        return Carbon::parse($this->overtime_start_time)->format("h:i A");
+    }
+
+    public function getEndTimeHumanAttribute()
+    {
+        return Carbon::parse($this->overtime_end_time)->format("h:i A");
     }
 }
