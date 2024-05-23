@@ -80,13 +80,13 @@ class AttendanceLogController extends Controller
 
     public function facialAttendance(StoreFacialAttendanceLog $request)
     {
+        $portalToken = $request->header("Portal_token", $request->bearerToken());
         $dateNow = Carbon::now()->format('Y-m-d');
         $timeNow = Carbon::now()->format('H:i:s');
         $val = $request->validated();
         if ($val) {
             $mainsave = new AttendanceLog();
-            $token = $request->header("Portal_token");
-            $main = AttendancePortal::with('assignment')->where('portal_token', $token)->first();
+            $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
             $type = $main->assignment_type;
             $id = $main->assignment->id;
             switch ($type) {

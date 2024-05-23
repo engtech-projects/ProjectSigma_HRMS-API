@@ -165,8 +165,8 @@ class AttendancePortalController extends Controller
 
     public function attendancePortalSession(Request $request)
     {
-        $token = $request->header("Portal_token", $request->bearerToken());
-        $main = AttendancePortal::with('assignment')->where('portal_token', $token)->first();
+        $portalToken = $request->header("Portal_token", $request->bearerToken());
+        $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
         if ($main) {
             return new JsonResponse([
                 'success' => true,
