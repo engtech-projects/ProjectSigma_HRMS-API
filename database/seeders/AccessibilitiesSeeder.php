@@ -372,9 +372,6 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
-
-
-
                 [
                     'id' => 53,
                     'accessibilities_name' => "hrms:dashboard_announcement",
@@ -545,28 +542,28 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 77,
-                    'accessibilities_name' => "hrms:_manpower_request_form",
+                    'accessibilities_name' => "hrms:manpower_request_form",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 78,
-                    'accessibilities_name' => "hrms:_manpower_request_all_request",
+                    'accessibilities_name' => "hrms:manpower_request_all_request",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 79,
-                    'accessibilities_name' => "hrms:_manpower_request_approval",
+                    'accessibilities_name' => "hrms:manpower_request_approval",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 80,
-                    'accessibilities_name' => "hrms:_manpower_request_my_request",
+                    'accessibilities_name' => "hrms:manpower_request_my_request",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
