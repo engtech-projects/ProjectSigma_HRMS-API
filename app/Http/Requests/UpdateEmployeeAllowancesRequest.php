@@ -47,12 +47,12 @@ class UpdateEmployeeAllowancesRequest extends FormRequest
                 "exists:employees,id",
             ],
             'project_id' => [
-                'nullable_if:group_type,==,Project',
+                'nullable_if:group_type,==,'.AssignTypes::PROJECT->value,
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
-                'nullable_if:group_type,==,Department',
+                'nullable_if:group_type,==,'.AssignTypes::DEPARTMENT->value,
                 "integer",
                 "exists:departments,id",
             ],
