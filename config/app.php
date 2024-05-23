@@ -23,6 +23,8 @@ return [
     'logout_early' => env('LOG_OUT_EARLY_HOUR', '2'),
     'logout_late' => env('LOG_OUT_LATE_HOUR', '4'),
 
+    'salary_grade_setter' => array_map('intval', explode(',', env('SALARY_GRADE_SETTER'))),
+
     'artisan' => env('ENABLE_ARTISAN_ROUTES', 'false'),
     /*
     |--------------------------------------------------------------------------

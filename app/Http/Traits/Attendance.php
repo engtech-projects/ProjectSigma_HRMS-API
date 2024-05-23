@@ -26,6 +26,7 @@ trait Attendance
         $attendances = $data["schedules_attendances"];
         $duration = 0;
         $totalLate = 0;
+        $undertime = 0;
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
@@ -33,15 +34,24 @@ trait Attendance
             $in = Carbon::parse($timeIn?->time);
             $out = Carbon::parse($timeOut?->time);
             $startTime = Carbon::parse($attendance["startTime"]);
-            $duration += $in->diffInHours($out);
+            $endTime = Carbon::parse($attendance["endTime"]);
+            $dtrIn = $in->gt($startTime) ? $in : $startTime;
+            $dtrOut = $out->gt($endTime) ? $endTime : $out;
+            $duration += $dtrIn->diffInMinutes($dtrOut) / 60;
+
             if ($in->gt($attendance["startTime"])) {
                 $lateMinutes = $startTime->diffInMinutes($in);
                 $totalLate += $lateMinutes;
             }
+            if ($endTime->gt($out)) {
+                $undertimeMinutes = $out->diffInMinutes($endTime);
+                $undertime += $undertimeMinutes;
+            }
         }
         return [
             "rendered" => $duration,
-            "late" => $totalLate
+            "late" => $totalLate,
+            "undertime" => $undertime,
         ];
     }
 
@@ -89,32 +99,34 @@ trait Attendance
         $leave = 0;
         $travel = 0;
 
-        $total = $leave + $travel;
         $reg = 0;
         $regOvertime = 0;
+        $regUndertime = 0;
         $late = 0;
-        $rest = $total;
+        $rest = 0;
         $restOvertime = 0;
-        $regHoliday = $total;
+        $restUndertime = 0;
+        $regHoliday = 0;
         $regHolidayOvertime = 0;
+        $regHolidayUndertime = 0;
 
         $leave += $this->getTotalRendered($data["leave"], $date);
         $travel += $this->getTotalRendered($data["travel_orders"], $date);
         if (count($data["events"]) > 0) {
             $result = $this->calculateWorkRendered($data);
-            $regHoliday += $result["rendered"];
+            $regHoliday += $result["rendered"] + $leave + $travel;;
             $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
-            $regHoliday += $leave + $travel;
+            $regHolidayUndertime += $result["undertime"];
         } else if ($data["schedules_attendances"]) {
             $result = $this->calculateWorkRendered($data);
-            $reg += $result["rendered"];
+            $reg += $result["rendered"] + $leave + $travel;;
             $regOvertime += $this->getOvertimeRendered($data["overtime"]);
             $late += $result["late"];
-            $reg += $leave + $travel;
+            $regUndertime += $result["undertime"];
         } else {
             $result = $this->calculateWorkRendered($data);
-            $rest += $result["rendered"];
-            $rest += $leave + $travel;
+            $rest += $result["rendered"] + $leave + $travel;
+            $restUndertime += $result["undertime"];
         }
 
         return [
@@ -122,21 +134,25 @@ trait Attendance
                 "reg_hrs" => $reg,
                 "overtime" => $regOvertime,
                 "late" => $late,
+                "undertime" => $regUndertime,
             ],
             "rest" => [
                 "reg_hrs" => $rest,
                 "overtime" => $restOvertime,
                 "late" => 0,
+                "undertime" => $restUndertime,
             ],
             "regular_holidays" => [
                 "reg_hrs" => $regHoliday,
                 "overtime" => $regHolidayOvertime,
                 "late" => 0,
+                "undertime" => $regHolidayUndertime,
             ],
             "special_holidays" => [
                 "reg_hrs" => 0,
                 "overtime" => 0,
                 "late" => 0,
+                "undertime" => 0,
             ],
 
         ];

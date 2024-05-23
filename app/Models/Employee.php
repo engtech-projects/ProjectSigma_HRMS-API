@@ -347,19 +347,19 @@ class Employee extends Model
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()->schedulesOnDay($date)->irregularSchedules()->get();
+        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()->schedulesOnDay($date)->regularSchedules()->get();
+        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->regularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()->schedulesOnDay($date)->irregularSchedules()->get();
+        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()->schedulesOnDay($date)->regularSchedules()->get();
+        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()?->schedulesOnDay($date)->regularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
