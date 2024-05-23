@@ -42,8 +42,8 @@ class Schedule extends Model
 
     protected $casts = [
         'daysOfWeek' => 'array',
-        'startTime' => 'date:H:s:i',
-        'endTime' => 'date:H:s:i',
+        'startTime' => 'date:H:i:s',
+        'endTime' => 'date:H:i:s',
         'startRecur' => 'date:Y-m-d',
         'endRecur' => 'date:Y-m-d',
     ];
@@ -73,7 +73,8 @@ class Schedule extends Model
     {
         $bufferInTimeEarly = Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
         $bufferInTimeLate = Carbon::parse($this->startTime)->addHour((int)config("app.login_late"));
-        return AttendanceLog::where("log_type", AttendanceLogType::TIME_IN)
+        return AttendanceLog::with(["department", "project"])
+            ->where("log_type", AttendanceLogType::TIME_IN)
             ->whereTime('time', ">=", $bufferInTimeEarly)
             ->whereTime('time', "<=", $bufferInTimeLate)
             ->get();
@@ -82,7 +83,8 @@ class Schedule extends Model
     {
         $bufferOutTimeEarly = $this->endTime->subHour((int)config("app.logout_early"));
         $bufferOutTimeLate = $this->endTime->addHour((int)config("app.logout_late"));
-        return AttendanceLog::where("log_type", AttendanceLogType::TIME_OUT)
+        return AttendanceLog::with(["department", "project"])
+            ->where("log_type", AttendanceLogType::TIME_OUT)
             ->whereTime('time', ">=", $bufferOutTimeEarly)
             ->whereTime('time', "<=", $bufferOutTimeLate)
             ->get();
@@ -106,11 +108,11 @@ class Schedule extends Model
 
     public function getStartTimeHumanAttribute()
     {
-        return Carbon::parse($this->startTime)->format("h:s A");
+        return Carbon::parse($this->startTime)->format("h:i A");
     }
     public function getEndTimeHumanAttribute()
     {
-        return Carbon::parse($this->endTime)->format("h:s A");
+        return Carbon::parse($this->endTime)->format("h:i A");
     }
     /**
      * MODEL
