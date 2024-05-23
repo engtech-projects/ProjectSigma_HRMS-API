@@ -45,6 +45,8 @@ class AttendancePortal extends Model
         'ip_address',
         'assignment_type',
         'assignment_id',
+        'portal_token',
+        'last_used',
     ];
 
     public function assignment(): MorphTo

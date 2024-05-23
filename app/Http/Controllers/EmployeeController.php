@@ -45,6 +45,7 @@ class EmployeeController extends Controller
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
         $noAccounts = $validatedData["type"] == SearchTypes::NOACCOUNTS->value;
+        $withAccounts = $validatedData["type"] == SearchTypes::WITHACCOUNTS->value;
         $main = Employee::select("id", "first_name", "middle_name", "family_name")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('first_name', 'like', "%{$searchKey}%")
@@ -63,6 +64,9 @@ class EmployeeController extends Controller
             })
             ->when($noAccounts, function (Builder $builder) {
                 $builder->whereDoesntHave("account");
+            })
+            ->when($withAccounts, function (Builder $builder) {
+                $builder->whereHas("account");
             })
             ->with("account")
             ->limit(25)

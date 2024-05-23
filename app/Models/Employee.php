@@ -8,6 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Enums\EmployeeStudiesType;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
+use App\Http\Traits\Attendance;
 use App\Models\Traits\HasProjectEmployee;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,6 +30,7 @@ class Employee extends Model
     use HasProjectEmployee;
     use EmployeeDTR;
     use EmployeePayroll;
+    use Attendance;
 
     protected $table = 'employees';
     protected $appends = [
@@ -361,29 +363,19 @@ class Employee extends Model
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
+        return collect([]); // returns collection of empty array if no schedule is found
     }
-    public function applied_schedule_with_attendance($date) {
+    public function applied_schedule_with_attendance($date)
+    {
         $schedWithLogs =  $this->applied_schedule($date);
-        if($schedWithLogs){
-            $schedWithLogs->append([
-                "attendance_log_ins",
-                "attendance_log_outs",
-            ]);
-        }
-        return $schedWithLogs->map(function ($sched) use($date) {
+        return $schedWithLogs->map(function ($sched) use ($date) {
             return [
                 ...$sched->toArray(),
-                "applied_ins" => $sched->attendance_log_ins->where("employee_id", $this->id)->where("date", $date)->first(),
-                "applied_outs" => $sched->attendance_log_outs->where("employee_id", $this->id)->where("date", $date)->last()
+                "applied_ins" => $sched->attendance_log_ins?->where("employee_id", $this->id)->where("date", $date)->first(),
+                "applied_outs" => $sched->attendance_log_outs?->where("employee_id", $this->id)->where("date", $date)->last()
             ];
-            // $sched->attendance_log_ins = $sched->attendance_log_ins->where("employee_id", $this->id)->where("date", $date)->first();
-            // $sched->attendance_log_outs = $sched->attendance_log_outs->where("employee_id", $this->id)->where("date", $date)->last();
         });
-        // foreach ($schedWithLogs as $sched) {
-        //     $sched->attendance_log_ins = $sched->attendance_log_ins->where("employee_id", $this->id)->where("date", $date)->first();
-        //     $sched->attendance_log_outs = $sched->attendance_log_outs->where("employee_id", $this->id)->where("date", $date)->last();
-        // }
-        // return $schedWithLogs;
+
     }
 
     public function daily_attendance_schedule($date)

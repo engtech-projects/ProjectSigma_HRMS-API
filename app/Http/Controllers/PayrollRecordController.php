@@ -19,10 +19,10 @@ use App\Models\PayrollDetail;
 class PayrollRecordController extends Controller
 {
 
-    protected $payrollService;
-    public function __construct(PayrollService $payrollService)
+    protected $employeeService;
+    public function __construct(EmployeeService $employeeService)
     {
-        $this->payrollService = $payrollService;
+        $this->employeeService = $employeeService;
     }
 
     public function generate(GeneratePayrollRequest $request)
@@ -34,7 +34,7 @@ class PayrollRecordController extends Controller
         ]);
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
         $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
-            $employee["payroll_records"] = $this->payrollService->generatePayroll($periodDates, $filters, $employee);
+            $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
             unset($employee["current_employment"]);
             return $employee;
         });

@@ -18,4 +18,16 @@ trait EmployeePayroll
     {
         return $this->hasOne(SalaryGradeStep::class);
     }
+
+    public function salary_gross_pay($dtr)
+    {
+        $salaryGrade = $this->current_employment?->employee_salarygrade;
+        $dailyRate = $salaryGrade?->dailyRate ?: 0;
+        $result = [];
+        foreach ($dtr as $key => $value) {
+            $result[$key]["reg_hrs"] = $value["reg_hrs"] * $dailyRate;
+            $result[$key]["overtime"] = $value["overtime"] * $dailyRate;
+        }
+        return $result;
+    }
 }

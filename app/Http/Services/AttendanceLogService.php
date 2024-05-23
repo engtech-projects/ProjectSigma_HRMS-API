@@ -24,6 +24,20 @@ class AttendanceLogService
         return $this->log->where('date', Carbon::now()->format('Y-m-d'))->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->get();
     }
 
+    public function getFilterDateAndEmployee($request)
+    {
+        $query = $this->log->query();
+        if ($request->date)
+        {
+            $query->where('date', $request->date);
+        }
+        if ($request->employee_id)
+        {
+            $query->where('employee_id', $request->employee_id);
+        }
+        return $query->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->get();
+    }
+
     public function get(AttendanceLog $log)
     {
         return $log;

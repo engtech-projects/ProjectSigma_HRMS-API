@@ -38,7 +38,14 @@ class UsersController extends Controller
         $data->data = $users;
         return response()->json($data);
     }
-
+    public function getUserAccountByEmployeeId($id){
+        $users = Users::where('employee_id', $id)->with("employee")->first();
+        $data = json_decode('{}');
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $users;
+        return response()->json($data);
+    }
     public function updateUserCredential(UpdateUserCredentialRequest $request)
     {
         $data = json_decode('{}');
@@ -81,7 +88,6 @@ class UsersController extends Controller
         $validatedData = $request->validated();
         $validatedData["type"] = UserTypes::EMPLOYEE;
         $validatedData["password"] = Hash::make($validatedData["password"]);
-        $validatedData["accessibilities"] = json_encode([]);
         $validatedData["email_verified_at"] = Carbon::now();
         $user = Users::create($validatedData);
         $data = json_decode('{}');
@@ -126,16 +132,15 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUsersRequest $request, Users $users)
+    public function update(UpdateUsersRequest $request, Users $user)
     {
         $data = json_decode('{}');
-        if (!is_null($users)) {
-            $users->fill($request->validated());
-            $users->accessibilities = json_encode($request->accessibilities);
-            if ($users->save()) {
+        if (!is_null($user)) {
+            $user->fill($request->validated());
+            if ($user->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
-                $data->data = $users;
+                $data->data = $user;
                 return response()->json($data);
             }
             $data->message = "Update failed.";
