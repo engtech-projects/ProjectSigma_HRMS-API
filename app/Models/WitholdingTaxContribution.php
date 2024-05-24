@@ -31,14 +31,10 @@ class WitholdingTaxContribution extends Model
             ->where('range_to', '>=', $salary)
             ->first();
     }
-
-    public function with_holding_tax_deduction($salary)
+    public static function contribution($salary)
     {
-        $wht = WitholdingTaxContribution::getContribution($salary);
-        $taxBase = $wht->tax_base;
-        $taxAmount = $wht->tax_amount;
-        $diff = abs($taxBase - $taxAmount);
-        $total = ($wht->tax_percent_over_base / 100) * $diff + $taxAmount;
-        return $total;
+        return self::where('range_from', '<=', $salary)
+            ->where('range_to', '>=', $salary)
+            ->first();
     }
 }

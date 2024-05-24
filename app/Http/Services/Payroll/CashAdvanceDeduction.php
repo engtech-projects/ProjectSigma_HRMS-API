@@ -27,7 +27,6 @@ class CashAdvanceDeduction extends PayrollDeduction
         $cashAdvance = $this->employee->cash_advance()->requestStatusApproved()->first();
 
         if ($cashAdvance) {
-            $loanPayments = $cashAdvance->loan_payment_notposted;
             if (!$cashAdvance->cashPaid())
                 if ($cashAdvance->deduction_date_start->lt($payrollDate)) {
                     $deduction = $cashAdvance->installment_deduction;

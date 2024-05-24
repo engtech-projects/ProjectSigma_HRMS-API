@@ -37,6 +37,15 @@ class PayrollDeduction
     {
         $result = [];
         $sss = SSSContribution::getContribution($this->salary);
+
+        $result = [
+            "employer_contribution" => 0,
+            "employee_contribution" =>  0,
+            "employer_compensation" => 0,
+            "employee_compensation" => 0,
+            "total_contribution" => 0,
+            "total_compensation" => 0,
+        ];
         if ($sss) {
             $contribution = $this->getContributionTotal([
                 "employer" => $sss->employer_contribution,
@@ -60,8 +69,14 @@ class PayrollDeduction
     }
     private function PhilhealthDeduction()
     {
-        $result = [];
+
         $philhealth = PhilhealthContribution::getContribution($this->salary);
+        $result = [
+            "share_type" => 0,
+            "employer_compensation" => 0,
+            "employee_compensation" => 0,
+            "total_compensation" => 0,
+        ];
         if ($philhealth) {
             if ($philhealth->share_type == 'Amount') {
                 $employeeCompensation = $philhealth->employee_share;
@@ -89,11 +104,14 @@ class PayrollDeduction
     {
         $result = [];
         $pagibig = PagibigContribution::getContribution($this->salary);
-
+        $result = [
+            "employer_compensation" => 0,
+            "employee_compensation" => 0,
+            "total_compensation" => 0,
+        ];
         if ($pagibig) {
             $employeeCompensation = ($pagibig->employee_share_percent / 100) * $this->salary;
             $employeerCompensation = ($pagibig->employer_share_percent / 100) * $this->salary;
-
             $compensation = $this->getCompensationTotal([
                 "employer" => $employeerCompensation,
                 "employee" => $employeeCompensation

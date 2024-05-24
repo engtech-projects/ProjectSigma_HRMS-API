@@ -74,28 +74,46 @@ class EmployeeService
     }
     public function getSalaryDeduction($employee, $filters)
     {
-
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
         $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
-        $salaryDeduction = new PayrollDeduction($employee, $salary, $filters);
+
         $result = [
-            "cash_advance" => $salaryDeduction->cashAdvance->cashAdvance,
-            "sss" => $filters["deduct_sss"] ? $salaryDeduction->sss : [],
-            "phic" => $filters["deduct_philhealth"] ? $salaryDeduction->philhealth : [],
-            "hmdf" => $filters["deduct_pagibig"] ? $salaryDeduction->pagibig : [],
-            "ewtc" =>  $salaryDeduction->withHoldingTax,
-            "loan" => $salaryDeduction->loan->loan
+            "cash_advance" => $employee->cash_advance_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
+            "sss" => $filters["deduct_sss"] ? $employee->sss_deduction($salary, $filters["payroll_type"]) : [],
+            "phic" => $filters["deduct_philhealth"] ? $employee->philhealth_deduction($salary, $filters["payroll_type"]) : [],
+            "hmdf" => $filters["deduct_pagibig"] ? $employee->pagibig_deduction($salary, $filters["payroll_type"]) : [],
+            "ewtc" =>  $employee->with_holding_tax_deduction($salary),
+            "loan" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
         ];
 
         return $result;
     }
     public function getTotalSalaryDeduction($deductions)
     {
-        $cashAdvance = $deductions["cash_advance"];
-        $sss =  $deductions["sss"]["total_compensation"] + $deductions["sss"]["total_contribution"];
-        $phic = $deductions["phic"]["total_compensation"];
-        $hmdf = $deductions["hmdf"]["total_compensation"];
+        $cashAdvance = 0;
+        $sss = 0;
+        $phic = 0;
+        $ewtc = 0;
+        $loan = 0;
+        if ($deductions["cash_advance"]) {
+            $cashAdvance = $deductions["cash_advance"];
+        }
+        if ($deductions["sss"]) {
+            $sss = $deductions["sss"]["total_compensation"] + $deductions["sss"]["total_contribution"];
+        }
+        if ($deductions["phic"]) {
+            $phic = $deductions["phic"]["total_compensation"];
+        }
+        if ($deductions["hmdf"]) {
+            $hmdf = $deductions["hmdf"]["total_compensation"];
+        }
+        if ($deductions["ewtc"]) {
+            $ewtc = $deductions["ewtc"];
+        }
 
-        return $cashAdvance + $sss + $phic + $hmdf + $deductions["ewtc"] + $deductions["loan"];
+        if ($deductions["loan"]) {
+            $loan = $deductions["loan"];
+        }
+        return $cashAdvance + $sss + $phic + $hmdf + $ewtc + $loan;
     }
 }
