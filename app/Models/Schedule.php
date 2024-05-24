@@ -49,10 +49,10 @@ class Schedule extends Model
     ];
 
     protected $appends = [
+        'day_of_week_names_short',
         'day_of_week_names',
         'start_time_human',
         'end_time_human',
-
     ];
 
 
@@ -100,6 +100,22 @@ class Schedule extends Model
             'Thursday',
             'Friday',
             'Saturday'
+        ];
+        return array_map(function ($day) use ($days) {
+            return $days[$day];
+        }, $this->daysOfWeek);
+    }
+
+    public function getDayOfWeekNamesShortAttribute()
+    {
+        $days = [
+            'Sun',
+            'Mon',
+            'Tue',
+            'Wed',
+            'Thur',
+            'Fri',
+            'Sat'
         ];
         return array_map(function ($day) use ($days) {
             return $days[$day];

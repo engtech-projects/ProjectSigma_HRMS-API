@@ -21,4 +21,6 @@ class Accessibilities extends Model
         'updated_at',
         'created_at',
     ];
+
+    public const HRMS_SETUP_SALARY_GRADE = "hrms:setup_salary_grade";
 }
