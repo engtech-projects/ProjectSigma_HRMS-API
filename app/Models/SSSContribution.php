@@ -34,6 +34,29 @@ class SSSContribution extends Model
             ->where('range_to', '>=', $salary)
             ->first();
     }
+    public function sssContribution($salary)
+    {
+        return self::where('range_from', '<=', $salary)
+            ->where('range_to', '>=', $salary)
+            ->first();
+    }
+
+    public function contribution($salary)
+    {
+        $contribution = $this->sssContribution($salary);
+        return [
+            "employee" => $contribution->employee_contribution,
+            "employer" => $contribution->employer_share,
+        ];
+    }
+    public function compensation($salary)
+    {
+        $contribution = $this->sssContribution($salary);
+        return [
+            "employee" => $contribution->employee_share,
+            "employer" => $contribution->employer_share
+        ];
+    }
     public function deduction()
     {
         return $this->morphOne(PayrollDetailDeduction::class, 'deduction');

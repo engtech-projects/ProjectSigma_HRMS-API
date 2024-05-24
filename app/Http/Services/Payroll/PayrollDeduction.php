@@ -149,7 +149,7 @@ class PayrollDeduction
 
     public function WithHoldingTaxDeduction()
     {
-        $wht = WitholdingTaxContribution::getContribution(33332);
+        $wht = WitholdingTaxContribution::getContribution($this->salary);
         $taxBase = $wht->tax_base;
         $taxAmount = $wht->tax_amount;
         $diff = abs($taxBase - $taxAmount);
