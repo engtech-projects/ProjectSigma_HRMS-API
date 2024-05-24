@@ -45,8 +45,6 @@ class EmployeeService
             $date = $period[0]["date"];
             $dtr = $this->employeeDTR($employee, $date);
             $grossPay =  $employee->salary_gross_pay($dtr["metadata"]);
-            dd($employee->salary_deduction($filters));
-/*             $total += $grossPay["regular"]["reg_hrs"]; */
             $dtr["grosspay"] = $grossPay;
             return $dtr;
         });
@@ -56,15 +54,22 @@ class EmployeeService
             "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
 
         ];
-        /*         foreach($result[] as $payroll) {
 
-            foreach($payroll as $value) {
-                dd($value["total_gross"]);
+        $totalGrossPay = 0;
+        foreach ($result["dtr"] as $value) {
+            $grossPay = $value["grosspay"];
+            $total = 0;
+            foreach ($grossPay as $key => $value) {
+                $totalGrossPay += $value["reg_hrs"] + $value["overtime"];
             }
+            $totalGrossPay += $total;
+        }
 
-        } */
-        return $result;
-
+        $totalSalaryDeduction = $this->getTotalSalaryDeduction($result["salary_deduction"]);
+        $totalNetPay = $totalGrossPay - $totalSalaryDeduction;
+        $result["total_gross_pay"] = $totalGrossPay;
+        $result["total_salary_deduction"] = $totalSalaryDeduction;
+        $result["total_net_pay"] = $totalNetPay;
         return $result;
     }
     public function getSalaryDeduction($employee, $filters)
@@ -73,7 +78,7 @@ class EmployeeService
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
         $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
         $salaryDeduction = new PayrollDeduction($employee, $salary, $filters);
-        return [
+        $result = [
             "cash_advance" => $salaryDeduction->cashAdvance->cashAdvance,
             "sss" => $filters["deduct_sss"] ? $salaryDeduction->sss : [],
             "phic" => $filters["deduct_philhealth"] ? $salaryDeduction->philhealth : [],
@@ -81,15 +86,16 @@ class EmployeeService
             "ewtc" =>  $salaryDeduction->withHoldingTax,
             "loan" => $salaryDeduction->loan->loan
         ];
-    }
 
-    public function grossPayPerDay($dtr, $dailyRate)
-    {
-        $result = [];
-        foreach ($dtr as $key => $value) {
-            $result[$key]["reg_hrs"] = $value["reg_hrs"] * $dailyRate;
-            $result[$key]["overtime"] = $value["overtime"] * $dailyRate;
-        }
         return $result;
+    }
+    public function getTotalSalaryDeduction($deductions)
+    {
+        $cashAdvance = $deductions["cash_advance"];
+        $sss =  $deductions["sss"]["total_compensation"] + $deductions["sss"]["total_contribution"];
+        $phic = $deductions["phic"]["total_compensation"];
+        $hmdf = $deductions["hmdf"]["total_compensation"];
+
+        return $cashAdvance + $sss + $phic + $hmdf + $deductions["ewtc"] + $deductions["loan"];
     }
 }
