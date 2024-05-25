@@ -95,6 +95,7 @@ class EmployeeService
         $phic = 0;
         $ewtc = 0;
         $loan = 0;
+        $hmdf = 0;
         if ($deductions["cash_advance"]) {
             $cashAdvance = $deductions["cash_advance"];
         }
@@ -110,7 +111,6 @@ class EmployeeService
         if ($deductions["ewtc"]) {
             $ewtc = $deductions["ewtc"];
         }
-
         if ($deductions["loan"]) {
             $loan = $deductions["loan"];
         }
