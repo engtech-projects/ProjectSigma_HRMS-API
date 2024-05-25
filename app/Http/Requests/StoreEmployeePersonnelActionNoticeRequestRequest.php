@@ -4,11 +4,13 @@ namespace App\Http\Requests;
 
 use App\Enums\EmploymentStatus;
 use App\Enums\SalaryRequestType;
+use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -19,10 +21,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        $this->merge([
-            "approvals" => json_decode($this->approvals, true)
-
-        ]);
+        $this->prepareApprovalValidation();
     }
 
     /**
@@ -134,31 +133,6 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "required",
                 "array",
             ],
-            'approvals.*' => [
-                "required",
-                "array",
-            ],
-            'approvals.*.type' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.user_id' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.date_approved' => [
-                "nullable",
-                "date",
-            ],
-            'approvals.*.remarks' => [
-                "nullable",
-                "string",
-            ],
             'comments' => [
                 "nullable",
                 "string",
@@ -174,6 +148,7 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "string",
                 new Enum(SalaryRequestType::class)
             ],
+            ...$this->storeApprovals(),
         ];
     }
 }

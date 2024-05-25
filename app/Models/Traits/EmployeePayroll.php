@@ -30,8 +30,8 @@ trait EmployeePayroll
         $dailyRate = $salaryGrade?->dailyRate ?: 0;
         $result = [];
         foreach ($dtr as $key => $value) {
-            $result[$key]["reg_hrs"] = $value["reg_hrs"] * $dailyRate;
-            $result[$key]["overtime"] = $value["overtime"] * $dailyRate;
+            $result[$key]["reg_hrs"] = round($value["reg_hrs"] / 8 * $dailyRate, 2);
+            $result[$key]["overtime"] = round($value["overtime"] / 8 * $dailyRate, 2);
         }
         return $result;
     }
@@ -92,11 +92,11 @@ trait EmployeePayroll
     {
         if ($compensation) {
             if ($payrollType == "weekly") {
-                $compensation["employee"] =  $compensation["employee"] / 4;
-                $compensation["employer"] =  $compensation["employer"] / 4;
+                $compensation["employee"] =  round($compensation["employee"] / 4, 2);
+                $compensation["employer"] =  round($compensation["employer"] / 4, 2);
             } else {
-                $compensation["employee"] =  $compensation["employee"] / 2;
-                $compensation["employer"] =  $compensation["employer"] / 2;
+                $compensation["employee"] =  round($compensation["employee"] / 2, 2);
+                $compensation["employer"] =  round($compensation["employer"] / 2, 2);
             }
         }
         return $compensation;
@@ -116,8 +116,8 @@ trait EmployeePayroll
                 $employeeCompensation = $philhealth->employee_share;
                 $employeerCompensation = $philhealth->employer_share;
             } else {
-                $employeeCompensation = ($philhealth->employee_share / 100) * $salary;
-                $employeerCompensation = ($philhealth->employer_share / 100) * $salary;
+                $employeeCompensation = round(($philhealth->employee_share / 100) * $salary, 2);
+                $employeerCompensation = round(($philhealth->employer_share / 100) * $salary, 2);
             }
             $compensation = $this->getTotal([
                 "employer" => $employeerCompensation,
@@ -143,8 +143,8 @@ trait EmployeePayroll
             "total_compensation" => 0,
         ];
         if ($pagibig) {
-            $employeeCompensation = ($pagibig->employee_share_percent / 100) * $salary;
-            $employeerCompensation = ($pagibig->employer_share_percent / 100) * $salary;
+            $employeeCompensation = round(($pagibig->employee_share_percent / 100) * $salary, 2);
+            $employeerCompensation = round(($pagibig->employer_share_percent / 100) * $salary, 2);
 
             $compensation = $this->getTotal([
                 "employer" => $employeerCompensation,
@@ -169,8 +169,8 @@ trait EmployeePayroll
         if ($wht) {
             $taxBase = $wht->tax_base;
             $taxAmount = $wht->tax_amount;
-            $diff = abs($taxBase - $taxAmount);
-            $total = ($wht->tax_percent_over_base / 100) * $diff + $taxAmount;
+            $diff = abs($taxBase - $salary);
+            $total = round(($wht->tax_percent_over_base_decimal) * $diff + $taxAmount, 2);
         }
         return $total;
     }

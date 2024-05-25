@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreManpowerRequestRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -16,11 +18,7 @@ class StoreManpowerRequestRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->approvals) == "string") {
-            $this->merge([
-                "approvals" => json_decode($this->approvals, true)
-            ]);
-        }
+        $this->prepareApprovalValidation();
     }
 
     /**
@@ -90,35 +88,7 @@ class StoreManpowerRequestRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals' => [
-                "required",
-                "array",
-            ],
-            'approvals.*' => [
-                "required",
-                "array",
-            ],
-            'approvals.*.type' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.user_id' => [
-                "required",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.date_approved' => [
-                "nullable",
-                "date",
-            ],
-            'approvals.*.remarks' => [
-                "nullable",
-                "string",
-            ],
+            ...$this->storeApprovals(),
         ];
     }
 }

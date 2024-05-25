@@ -4,11 +4,14 @@ namespace App\Http\Requests;
 
 use App\Enums\RequestApprovalStatus;
 use App\Enums\StringRequestApprovalStatus;
+use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreOvertimeRequest extends FormRequest
 {
+
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -19,11 +22,7 @@ class StoreOvertimeRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->approvals) == "string") {
-            $this->merge([
-                "approvals" => json_decode($this->approvals, true),
-            ]);
-        }
+        $this->prepareApprovalValidation();
         if (gettype($this->employees) == "string") {
             $this->merge([
                 "employees" => json_decode($this->employees, true),
@@ -75,40 +74,12 @@ class StoreOvertimeRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals' => [
-                "required",
-                "array",
-            ],
-            'approvals.*' => [
-                "required",
-                "array",
-            ],
-            'approvals.*.type' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.user_id' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
-            ],
-            'approvals.*.status' => [
-                "required",
-                "string",
-            ],
-            'approvals.*.date_approved' => [
-                "nullable",
-                "date",
-            ],
-            'approvals.*.remarks' => [
-                "nullable",
-                "string",
-            ],
             'request_status' => [
                 "nullable",
                 "string",
                 new Enum(StringRequestApprovalStatus::class)
             ],
+            ...$this->storeApprovals(),
         ];
     }
 }

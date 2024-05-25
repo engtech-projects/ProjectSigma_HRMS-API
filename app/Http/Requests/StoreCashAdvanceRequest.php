@@ -6,11 +6,11 @@ use App\Enums\RequestStatusType;
 use App\Enums\TermsOfPaymentType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-use App\Http\Traits\ApprovalsRequest;
+use App\Http\Traits\HasApprovalValidation;
 
 class StoreCashAdvanceRequest extends FormRequest
 {
-    use ApprovalsRequest;
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -21,11 +21,7 @@ class StoreCashAdvanceRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->approvals) == "string") {
-            $this->merge([
-                "approvals" => json_decode($this->approvals, true)
-            ]);
-        }
+        $this->prepareApprovalValidation();
     }
     /**
      * Get the validation rules that apply to the request.

@@ -2,8 +2,17 @@
 
 namespace App\Http\Traits;
 
-trait ApprovalsRequest
+trait HasApprovalValidation
 {
+    public function prepareApprovalValidation()
+    {
+        if (gettype($this->approvals) == "string") {
+            $this->merge([
+                "approvals" => json_decode($this->approvals, true)
+            ]);
+        }
+    }
+
     public function storeApprovals()
     {
         $data = [

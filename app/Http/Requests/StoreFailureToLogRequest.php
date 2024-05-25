@@ -3,11 +3,13 @@
 namespace App\Http\Requests;
 
 use App\Enums\AttendanceLogType;
+use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreFailureToLogRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -17,9 +19,7 @@ class StoreFailureToLogRequest extends FormRequest
     }
     protected function prepareForValidation()
     {
-        $this->merge([
-            "approvals" => json_decode($this->approvals, true)
-        ]);
+        $this->prepareApprovalValidation();
     }
 
     /**
@@ -38,8 +38,8 @@ class StoreFailureToLogRequest extends FormRequest
                 new Enum(AttendanceLogType::class)
             ],
             'reason' => 'required|string',
-            'approvals' => 'required|array',
             'employee_id' => 'required|integer',
+            ...$this->storeApprovals(),
         ];
     }
 }

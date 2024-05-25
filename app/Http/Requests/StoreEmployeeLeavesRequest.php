@@ -5,11 +5,11 @@ namespace App\Http\Requests;
 use App\Enums\LeaveRequestStatusType;
 use App\Enums\LeaveRequestType;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Http\Traits\ApprovalsRequest;
+use App\Http\Traits\HasApprovalValidation;
 
 class StoreEmployeeLeavesRequest extends FormRequest
 {
-    use ApprovalsRequest;
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -20,11 +20,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->approvals) == "string") {
-            $this->merge([
-                "approvals" => json_decode($this->approvals, true)
-            ]);
-        }
+        $this->prepareApprovalValidation();
     }
 
     /**

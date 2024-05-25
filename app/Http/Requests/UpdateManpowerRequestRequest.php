@@ -18,9 +18,6 @@ class UpdateManpowerRequestRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        /*       $this->merge([
-            "approvals" => $this->approvals
-        ]); */
     }
 
     /**

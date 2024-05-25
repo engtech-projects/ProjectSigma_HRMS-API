@@ -60,7 +60,6 @@ class InternalWorkExperience extends Model
         return $this->hasOne(Position::class, "id", "position_id");
     }
 
-
     public function employees()
     {
         return $this->hasMany(Employee::class, 'id', 'employee_id');

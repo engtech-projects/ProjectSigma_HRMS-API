@@ -52,19 +52,13 @@ class HMOController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(HMO $resource)
     {
-        $main = HMO::find($id);
         $data = json_decode('{}');
-        if (!is_null($main)) {
-            $data->message = "Successfully fetch.";
-            $data->success = true;
-            $data->data = $main;
-            return response()->json($data);
-        }
-        $data->message = "No data found.";
-        $data->success = false;
-        return response()->json($data, 404);
+        $data->message = "Successfully fetch.";
+        $data->success = true;
+        $data->data = $resource->with(["hmoMembers"]);
+        return response()->json($data);
     }
 
     /**

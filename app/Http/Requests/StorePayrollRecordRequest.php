@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePayrollRecordRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -45,8 +47,8 @@ class StorePayrollRecordRequest extends FormRequest
                 "net_pay" =>1,
 
         ]; */
+        $this->prepareApprovalValidation();
         $this->merge([
-            "approvals" => json_decode($this->approvals, true),
             "payroll_details" => json_decode($this->payroll_details, true)
         ]);
     }
@@ -65,10 +67,7 @@ class StorePayrollRecordRequest extends FormRequest
             'payroll_date' => 'required|date',
             'cutoff_start' => 'required|date',
             'cutoff_end' => 'required|date',
-            'approvals' => [
-                "required",
-                "array"
-            ]
+            ...$this->storeApprovals(),
         ];
     }
 }

@@ -25,6 +25,11 @@ class WitholdingTaxContribution extends Model
         'tax_percent_over_base',
     ];
 
+    public function getPercentOverBaseDecimal()
+    {
+        return $this->tax_percent_over_base / 100;
+    }
+
     public static function getContribution($salary)
     {
         return self::where('range_from', '<=', $salary)

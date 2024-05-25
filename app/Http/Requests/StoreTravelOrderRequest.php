@@ -6,11 +6,11 @@ use App\Enums\RequestApprovalStatus;
 use App\Enums\StringRequestApprovalStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-use App\Http\Traits\ApprovalsRequest;
+use App\Http\Traits\HasApprovalValidation;
 
 class StoreTravelOrderRequest extends FormRequest
 {
-    use ApprovalsRequest;
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -21,11 +21,7 @@ class StoreTravelOrderRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->approvals) == "string") {
-            $this->merge([
-                "approvals" => json_decode($this->approvals, true)
-            ]);
-        }
+        $this->prepareApprovalValidation();
         if (gettype($this->employee_ids) == "string") {
             $this->merge([
                 "employee_ids" => json_decode($this->employee_ids, true)
@@ -40,7 +36,7 @@ class StoreTravelOrderRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
+        return [
             'requesting_office' => [
                 "required",
                 "integer",
@@ -80,7 +76,7 @@ class StoreTravelOrderRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
+            ...$this->storeApprovals(),
         ];
-        return array_merge($rules, $this->storeApprovals());
     }
 }

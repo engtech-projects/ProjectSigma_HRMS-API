@@ -20,9 +20,11 @@ class PayrollRecordController extends Controller
 {
 
     protected $employeeService;
-    public function __construct(EmployeeService $employeeService)
+    protected $payrollService;
+    public function __construct(EmployeeService $employeeService, PayrollService $payrollService)
     {
         $this->employeeService = $employeeService;
+        $this->payrollService = $payrollService;
     }
 
     public function generate(GeneratePayrollRequest $request)
@@ -35,7 +37,7 @@ class PayrollRecordController extends Controller
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
         $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
             $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
-            unset($employee["current_employment"]);
+            $employee->current_employment['position'] = $employee->current_employment->position;
             return $employee;
         });
 
