@@ -25,9 +25,18 @@ class EmployeeAddress extends Model
         'province',
         'type',
     ];
+    protected $appends = [
+        "complete_address"
+    ];
 
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function getCompleteAddressAttribute()
+    {
+        return $this->street . ", " . $this->brgy . ", " . $this->city . ", " . $this->province;
+    }
+
 }

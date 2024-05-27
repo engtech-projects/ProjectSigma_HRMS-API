@@ -146,6 +146,8 @@ class EmployeeController extends Controller
             "company_employments",
             "employment_records",
             "employee_address",
+            "permanent_address",
+            "present_address",
             "current_employment.employee_salarygrade.salary_grade_level",
             "current_employment.position",
             "employee_affiliation",
