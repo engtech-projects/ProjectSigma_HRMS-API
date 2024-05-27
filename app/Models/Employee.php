@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeAddressType;
 use Carbon\Carbon;
 use App\Enums\EmployeeUploadType;
 use Laravel\Sanctum\HasApiTokens;
@@ -140,6 +141,18 @@ class Employee extends Model
     public function employee_address(): HasMany
     {
         return $this->hasMany(EmployeeAddress::class);
+    }
+
+    public function present_address(): HasOne
+    {
+        return $this->hasOne(EmployeeAddress::class)
+            ->where("type", EmployeeAddressType::PRESENT);
+    }
+
+    public function permanent_address(): HasOne
+    {
+        return $this->hasOne(EmployeeAddress::class)
+            ->where("type", EmployeeAddressType::PERMANENT);
     }
 
     public function current_employment(): HasOne
