@@ -67,7 +67,24 @@ class PayrollRecordController extends Controller
                 $payroll = PayrollRecord::create($attribute);
                 foreach($attribute["payroll"] as $payrollData){
                     $empPayroll = $payroll->payroll_details()->createMany($payrollData);
-                    $empPayroll
+                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['cash_advance'])->map(function($dedData){
+                    //     return [
+                    //         ...$dedData,
+                    //         "type" => 'Cash Advance',
+                    //     ];
+                    // }));
+                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['loans'])->map(function($dedData){
+                    //     return [
+                    //         ...$dedData,
+                    //         "type" => 'Loan',
+                    //     ];
+                    // }));
+                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['other_deduction'])->map(function($dedData){
+                    //     return [
+                    //         ...$dedData,
+                    //         "type" => 'Other Deduction',
+                    //     ];
+                    // }));
                 }
             });
         } catch (Exception $e) {
