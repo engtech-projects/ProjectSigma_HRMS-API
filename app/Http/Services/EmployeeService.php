@@ -146,9 +146,9 @@ class EmployeeService
         if ($deductions["ewtc"]) {
             $ewtc = $deductions["ewtc"];
         }
-        if ($deductions["loan"]) {
-            $loan = $deductions["loan"];
-        }
+        // if ($deductions["loan"]) {
+        //     $loan = $deductions["loan"];
+        // }
         if ($deductions["cash_advance"]) {
             $cashAdvance = $deductions["cash_advance"];
         }

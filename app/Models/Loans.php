@@ -57,6 +57,10 @@ class Loans extends Model
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::NOTPOSTED);
     }
 
+    public function getMaxPayrollPaymentAttribute()
+    {
+        return $this->installment_deduction > $this->balance ? $this->balance : $this->installment_deduction;
+    }
     public function getBalanceAttribute()
     {
         return $this->amount - $this->totalPaid;

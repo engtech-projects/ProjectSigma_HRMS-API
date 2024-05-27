@@ -177,22 +177,22 @@ trait EmployeePayroll
 
     public function loan_deduction($salary, $type, $date)
     {
-        $deduction = 0;
         $date = Carbon::parse($date);
-        $loan = $this->employee_loan->first();
-        if ($loan) {
-            if (!$loan->loanPaid()) {
-                if ($loan->deduction_date_start->lt($date)) {
-                    $deduction = $loan->installment_deduction;
-                }
-                if ($type === "weekly") {
-                    $deduction = $deduction / 4;
-                } else {
-                    $deduction = $deduction / 2;
-                }
-            }
-        }
-        return $deduction;
+        $loans = $this->employee_loan()->get();
+        $loans->filter(function($loan) use($date){
+            return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
+        });
+        $loans->map(function($loan){
+            return [
+                ...$loan,
+                $loan->max_payroll_payment,
+            ];
+        });
+        $totalPaid = $loans->sum("max_payroll_payment");
+        return [
+            "total_paid" => $totalPaid,
+            "loans" => $loans,
+        ];
     }
     public function cash_advance_deduction($salary, $type, $date)
     {
