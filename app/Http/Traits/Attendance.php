@@ -30,14 +30,16 @@ trait Attendance
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
-
+            if(!$timeIn || !$timeOut){
+                continue;
+            }
             $in = Carbon::parse($timeIn?->time);
             $out = Carbon::parse($timeOut?->time);
             $startTime = Carbon::parse($attendance["startTime"]);
             $endTime = Carbon::parse($attendance["endTime"]);
             $dtrIn = $in->gt($startTime) ? $in : $startTime;
             $dtrOut = $out->gt($endTime) ? $endTime : $out;
-            $duration += $dtrIn->diffInMinutes($dtrOut) / 60;
+            $duration += round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
 
             if ($in->gt($attendance["startTime"])) {
                 $lateMinutes = $startTime->diffInMinutes($in);

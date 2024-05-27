@@ -6,11 +6,11 @@ use App\Enums\LeaveRequestStatusType;
 use App\Enums\LeaveRequestType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-use App\Http\Traits\ApprovalsRequest;
+use App\Http\Traits\HasApprovalValidation;
 
 class UpdateEmployeeLeavesRequest extends FormRequest
 {
-    use ApprovalsRequest;
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */

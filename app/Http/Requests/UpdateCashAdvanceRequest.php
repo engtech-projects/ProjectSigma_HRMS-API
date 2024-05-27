@@ -7,11 +7,11 @@ use App\Enums\RequestStatusType;
 use App\Enums\TermsOfPaymentType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-use App\Http\Traits\ApprovalsRequest;
+use App\Http\Traits\HasApprovalValidation;
 
 class UpdateCashAdvanceRequest extends FormRequest
 {
-    use ApprovalsRequest;
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */

@@ -2,10 +2,15 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\GroupType;
+use App\Enums\ReleaseType;
+use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StorePayrollRecordRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -16,37 +21,8 @@ class StorePayrollRecordRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        /* [
-                "payroll_record_id" => 1,
-                "employee_id" => 1,
-                "regular_hours" => 1,
-                "rest_hours" => 1,
-                "regular_holiday_hours" => 1,
-                "special_holiday_hours" => 1,
-                "regular_overtime" => 1,
-                "rest_overtime" => 1,
-                "regular_holiday_overtime" =>1,
-                "special_holiday_overtime" =>1,
-                "regular_pay" =>1,
-                "rest_pay" =>1,
-                "regular_holiday_pay" =>1,
-                "special_holiday_pay" =>1,
-                "regular_ot_pay" =>1,
-                "rest_ot_pay" =>1,
-                "regular_holiday_ot_pay" =>1,
-                "special_holiday_ot_pay" =>1,
-                "gross_pay" =>1,
-                "late_hours" =>1,
-                "sss_deduct" =>1,
-                "philhealth_deduct" =>1,
-                "pagibig_deduct" =>1,
-                "withholdingtax_deduct" =>1,
-                "total_deduct" =>1,
-                "net_pay" =>1,
-
-        ]; */
+        $this->prepareApprovalValidation();
         $this->merge([
-            "approvals" => json_decode($this->approvals, true),
             "payroll_details" => json_decode($this->payroll_details, true)
         ]);
     }
@@ -58,17 +34,30 @@ class StorePayrollRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_type' => 'required|string',
-            'project_id' => 'required|integer',
-            'department_id' => 'required|integer',
-            'payroll_type' => 'required|string',
-            'payroll_date' => 'required|date',
-            'cutoff_start' => 'required|date',
-            'cutoff_end' => 'required|date',
-            'approvals' => [
-                "required",
-                "array"
-            ]
+            'group_type' => [
+                'required',
+                new Enum(GroupType::class)
+            ],
+            'project_id' => 'required_if:group_type,project|integer|nullable',
+            'department_id' => 'required_if:group_type,department|integer|nullable',
+            'payroll_type' => [
+                'required',
+                'string',
+                new Enum(PayrollType::class)
+            ],
+            'release_type' => [
+                'required',
+                'string',
+                new Enum(ReleaseType::class)
+            ],
+            'payroll' => 'required|array',
+            'payroll_date' => 'required|date_format:Y-m-d',
+            'cutoff_start' => 'required|date_format:Y-m-d',
+            'cutoff_end' => 'required|date_format:Y-m-d',
+            'deduct_sss' => 'required|boolean',
+            'deduct_philhealth' => 'required|boolean',
+            'deduct_pagibig' => 'required|boolean',
+            ...$this->storeApprovals(),
         ];
     }
 }

@@ -15,6 +15,7 @@ class PayrollRecord extends Model
         'project_id',
         'department_id',
         'payroll_type',
+        'release_type',
         'payroll_date',
         'cutoff_start',
         'cutoff_end',

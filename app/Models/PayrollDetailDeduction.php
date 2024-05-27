@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class PayrollDetailDeduction extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        "type"
+    ];
 
     public function deduction()
     {

@@ -29,7 +29,7 @@ class EmployeeService
             "schedules_attendances" => $schedules_attendances,
             "travel_order" => $travelOrders,
             "ovetime" => $overtime,
-            "leave" => $employee->leave_dtr($date),
+            "leave" => $leave,
             "events" => $events,
             "metadata" => $employee->getMetaData($collection, $date),
         ];
@@ -49,53 +49,109 @@ class EmployeeService
             return $dtr;
         });
 
+        $dtrs = $dtr->values();
         $result = [
             "dtr" => $dtr,
             "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
-
         ];
 
-        $totalGrossPay = 0;
-        foreach ($result["dtr"] as $value) {
-            $grossPay = $value["grosspay"];
-            $total = 0;
-            foreach ($grossPay as $key => $value) {
-                $totalGrossPay += $value["reg_hrs"] + $value["overtime"];
-            }
-            $totalGrossPay += $total;
-        }
-
+        $totalHoursWorked = [
+            "regular" => [
+                "reg_hrs" => round($dtrs->sum("metadata.regular.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.regular.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.regular.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.regular.undertime"), 2),
+            ],
+            "rest" => [
+                "reg_hrs" => round($dtrs->sum("metadata.rest.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.rest.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.rest.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.rest.undertime"), 2),
+            ],
+            "regular_holidays" => [
+                "reg_hrs" => round($dtrs->sum("metadata.regular_holidays.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.regular_holidays.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.regular_holidays.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.regular_holidays.undertime"), 2),
+            ],
+            "special_holidays" => [
+                "reg_hrs" => round($dtrs->sum("metadata.special_holidays.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.special_holidays.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.special_holidays.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.special_holidays.undertime"), 2),
+            ]
+        ];
+        $grossPays = collect([
+            "regular" => [
+                "regular" => round($dtrs->sum("grosspay.regular.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("grosspay.regular.overtime"), 2),
+            ],
+            "rest" => [
+                "regular" => round($dtrs->sum("grosspay.rest.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("grosspay.rest.overtime"), 2),
+            ],
+            "regular_holidays" => [
+                "regular" => round($dtrs->sum("grosspay.regular_holidays.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("grosspay.regular_holidays.overtime"), 2),
+            ],
+            "special_holidays" => [
+                "regular" => round($dtrs->sum("grosspay.special_holidays.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("grosspay.special_holidays.overtime"), 2),
+            ]
+        ]);
+        $totalGrossPay = round($grossPays->values()->sum("regular") + $grossPays->values()->sum("overtime"), 2);
         $totalSalaryDeduction = $this->getTotalSalaryDeduction($result["salary_deduction"]);
         $totalNetPay = $totalGrossPay - $totalSalaryDeduction;
-        $result["total_gross_pay"] = $totalGrossPay;
-        $result["total_salary_deduction"] = $totalSalaryDeduction;
-        $result["total_net_pay"] = $totalNetPay;
+        $result["total_gross_pay"] = round($totalGrossPay, 2);
+        $result["total_salary_deduction"] = round($totalSalaryDeduction, 2);
+        $result["total_net_pay"] = round($totalNetPay, 2);
+        $result["hours_worked"] = $totalHoursWorked;
+        $result["gross_pays"] = $grossPays;
         return $result;
     }
     public function getSalaryDeduction($employee, $filters)
     {
-
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
         $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
-        $salaryDeduction = new PayrollDeduction($employee, $salary, $filters);
+
         $result = [
-            "cash_advance" => $salaryDeduction->cashAdvance->cashAdvance,
-            "sss" => $filters["deduct_sss"] ? $salaryDeduction->sss : [],
-            "phic" => $filters["deduct_philhealth"] ? $salaryDeduction->philhealth : [],
-            "hmdf" => $filters["deduct_pagibig"] ? $salaryDeduction->pagibig : [],
-            "ewtc" =>  $salaryDeduction->withHoldingTax,
-            "loan" => $salaryDeduction->loan->loan
+            "sss" => $filters["deduct_sss"] ? $employee->sss_deduction($salary, $filters["payroll_type"]) : [],
+            "phic" => $filters["deduct_philhealth"] ? $employee->philhealth_deduction($salary, $filters["payroll_type"]) : [],
+            "hmdf" => $filters["deduct_pagibig"] ? $employee->pagibig_deduction($salary, $filters["payroll_type"]) : [],
+            "ewtc" =>  $employee->with_holding_tax_deduction($salary),
+            "loan" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
+            "cash_advance" => $employee->cash_advance_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
+            "other_deduction" => [],
         ];
 
         return $result;
     }
     public function getTotalSalaryDeduction($deductions)
     {
-        $cashAdvance = $deductions["cash_advance"];
-        $sss =  $deductions["sss"]["total_compensation"] + $deductions["sss"]["total_contribution"];
-        $phic = $deductions["phic"]["total_compensation"];
-        $hmdf = $deductions["hmdf"]["total_compensation"];
-
-        return $cashAdvance + $sss + $phic + $hmdf + $deductions["ewtc"] + $deductions["loan"];
+        $cashAdvance = 0;
+        $sss = 0;
+        $phic = 0;
+        $ewtc = 0;
+        $loan = 0;
+        $hmdf = 0;
+        if ($deductions["sss"]) {
+            $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["total_contribution"];
+        }
+        if ($deductions["phic"]) {
+            $phic = $deductions["phic"]["employee_compensation"];
+        }
+        if ($deductions["hmdf"]) {
+            $hmdf = $deductions["hmdf"]["employee_compensation"];
+        }
+        if ($deductions["ewtc"]) {
+            $ewtc = $deductions["ewtc"];
+        }
+        if ($deductions["loan"]) {
+            $loan = $deductions["loan"];
+        }
+        if ($deductions["cash_advance"]) {
+            $cashAdvance = $deductions["cash_advance"];
+        }
+        return $cashAdvance + $sss + $phic + $hmdf + $ewtc + $loan;
     }
 }

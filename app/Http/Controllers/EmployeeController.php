@@ -82,7 +82,7 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects'])->get();
+        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects'])->orderBy('family_name')->get();
 
         $employeeCollection = collect($employeeList)->map(function ($employee) {
             // $leaveCredits = $this->getEmployeeLeaveCredits($employee);

@@ -14,15 +14,19 @@ use App\Http\Requests\GeneratePayrollRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Exceptions\TransactionFailedException;
 use App\Http\Requests\StorePayrollRecordRequest;
+use App\Models\Department;
 use App\Models\PayrollDetail;
+use App\Models\Project;
 
 class PayrollRecordController extends Controller
 {
 
     protected $employeeService;
-    public function __construct(EmployeeService $employeeService)
+    protected $payrollService;
+    public function __construct(EmployeeService $employeeService, PayrollService $payrollService)
     {
         $this->employeeService = $employeeService;
+        $this->payrollService = $payrollService;
     }
 
     public function generate(GeneratePayrollRequest $request)
@@ -35,14 +39,19 @@ class PayrollRecordController extends Controller
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
         $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
             $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
-            unset($employee["current_employment"]);
+            $employee->current_employment['position'] = $employee->current_employment->position;
             return $employee;
         });
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => $result
+            'data' => [
+                ...$filters,
+                "project" => Project::find($filters['project_id']),
+                "department" => Department::find($filters['department_id']),
+                "payroll" => $result
+            ]
         ]);
     }
 
@@ -56,45 +65,27 @@ class PayrollRecordController extends Controller
         try {
             DB::transaction(function () use ($attribute) {
                 $payroll = PayrollRecord::create($attribute);
-                $details = [
-
-                    "payroll_record_id" => $payroll->id,
-                    "employee_id" => 1,
-                    "regular_hours" => 1,
-                    "rest_hours" => 1,
-                    "regular_holiday_hours" => 1,
-                    "special_holiday_hours" => 1,
-                    "regular_overtime" => 1,
-                    "rest_overtime" => 1,
-                    "regular_holiday_overtime" => 1,
-                    "special_holiday_overtime" => 1,
-                    "regular_pay" => 1,
-                    "rest_pay" => 1,
-                    "regular_holiday_pay" => 1,
-                    "special_holiday_pay" => 1,
-                    "regular_ot_pay" => 1,
-                    "rest_ot_pay" => 1,
-                    "regular_holiday_ot_pay" => 1,
-                    "special_holiday_ot_pay" => 1,
-                    "gross_pay" => 1,
-                    "late_hours" => 1,
-                    "sss_employee_contribution" => 1,
-                    "sss_employer_contribution"  => 1,
-                    "sss_employee_compensation" => 1,
-                    "sss_employer_compensation" => 1,
-                    "philhealth_employee_contribution" => 1,
-                    "philhealth_employer_contribution" => 1,
-                    "pagibig_employee_contribution" => 1,
-                    "pagibig_employer_contribution" => 1,
-                    "pagibig_employee_compensation" => 1,
-                    "pagibig_employer_compensation" => 1,
-                    "withholdingtax_contribution" => 1,
-                    "total_deduct" => 1,
-                    "net_pay" => 1,
-
-
-                ];
-                $payroll->payroll_details()->create($details);
+                foreach($attribute["payroll"] as $payrollData){
+                    $empPayroll = $payroll->payroll_details()->createMany($payrollData);
+                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['cash_advance'])->map(function($dedData){
+                    //     return [
+                    //         ...$dedData,
+                    //         "type" => 'Cash Advance',
+                    //     ];
+                    // }));
+                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['loans'])->map(function($dedData){
+                    //     return [
+                    //         ...$dedData,
+                    //         "type" => 'Loan',
+                    //     ];
+                    // }));
+                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['other_deduction'])->map(function($dedData){
+                    //     return [
+                    //         ...$dedData,
+                    //         "type" => 'Other Deduction',
+                    //     ];
+                    // }));
+                }
             });
         } catch (Exception $e) {
             throw new TransactionFailedException("Transaction failed.", 500, $e);

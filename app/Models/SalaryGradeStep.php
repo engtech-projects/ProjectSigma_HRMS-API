@@ -31,7 +31,7 @@ class SalaryGradeStep extends Model
     protected function dailyRate(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->monthly_salary_amount / 26,
+            get: fn () => round($this->monthly_salary_amount / 26, 2),
         );
     }
 
