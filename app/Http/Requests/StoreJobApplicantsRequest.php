@@ -189,7 +189,7 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'telephone_icoe' => [
                 "required",
-                "string",
+                "integer",
             ],
             "education" => [
                 "nullable",
