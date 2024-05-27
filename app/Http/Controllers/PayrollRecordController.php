@@ -48,8 +48,8 @@ class PayrollRecordController extends Controller
             'message' => 'Successfully fetched.',
             'data' => [
                 ...$filters,
-                "project" => Project::find($filters['project_id']),
-                "department" => Department::find($filters['department_id']),
+                "project" => Project::find($filters['project_id'] ?? null),
+                "department" => Department::find($filters['department_id'] ?? null),
                 "payroll" => $result
             ]
         ]);

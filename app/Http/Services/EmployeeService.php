@@ -121,11 +121,13 @@ class EmployeeService
             "ewtc" =>  $employee->with_holding_tax_deduction($salary),
             "loan" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
+            // "other_deduction" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
             "other_deduction" => [],
         ];
 
         return $result;
     }
+
     public function getTotalSalaryDeduction($deductions)
     {
         $cashAdvance = 0;
@@ -149,9 +151,9 @@ class EmployeeService
         // if ($deductions["loan"]) {
         //     $loan = $deductions["loan"];
         // }
-        if ($deductions["cash_advance"]) {
-            $cashAdvance = $deductions["cash_advance"];
-        }
+        // if ($deductions["cash_advance"]) {
+        //     $cashAdvance = $deductions["cash_advance"];
+        // }
         return $cashAdvance + $sss + $phic + $hmdf + $ewtc + $loan;
     }
 }

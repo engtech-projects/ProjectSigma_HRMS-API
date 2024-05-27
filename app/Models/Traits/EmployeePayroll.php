@@ -179,13 +179,13 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $loans = $this->employee_loan()->get();
-        $loans->filter(function($loan) use($date){
+        $loans = $loans->filter(function($loan) use($date){
             return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
         });
-        $loans->map(function($loan){
+        $loans = $loans->map(function($loan){
             return [
-                ...$loan,
-                $loan->max_payroll_payment,
+                ...collect($loan),
+                "max_payroll_payment" => $loan->max_payroll_payment,
             ];
         });
         $totalPaid = $loans->sum("max_payroll_payment");
@@ -194,23 +194,24 @@ trait EmployeePayroll
             "loans" => $loans,
         ];
     }
+
     public function cash_advance_deduction($salary, $type, $date)
     {
-        $deduction = 0;
         $date = Carbon::parse($date);
-        $cashAdvance = $this->cash_advance()->requestStatusApproved()->first();
-
-        if ($cashAdvance) {
-            if (!$cashAdvance->cashPaid())
-                if ($cashAdvance->deduction_date_start->lt($date)) {
-                    $deduction = $cashAdvance->installment_deduction;
-                }
-            if ($type === "weekly") {
-                $deduction = $deduction / 4;
-            } else {
-                $deduction = $deduction / 2;
-            }
-        }
-        return $deduction;
+        $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
+        $cashAdvance->filter(function($loan) use($date){
+            return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
+        });
+        $cashAdvance->map(function($loan){
+            return [
+                ...collect($loan),
+                "max_payable" => $loan->max_payroll_payment,
+            ];
+        });
+        $totalPaid = $cashAdvance->sum("max_payroll_payment");
+        return [
+            "total_paid" => $totalPaid,
+            "cash_advance" => $cashAdvance,
+        ];
     }
 }
