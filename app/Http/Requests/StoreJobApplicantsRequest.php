@@ -151,7 +151,7 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'date_of_birth_spouse' => [
                 "nullable",
-                "date",
+                "string",
             ],
             'occupation_spouse' => [
                 "nullable",
@@ -160,8 +160,6 @@ class StoreJobApplicantsRequest extends FormRequest
             'telephone_spouse' => [
                 "nullable",
                 "string",
-                "min:11",
-                "max:11",
             ],
             "children" => [
                 "present",
@@ -192,50 +190,47 @@ class StoreJobApplicantsRequest extends FormRequest
             'telephone_icoe' => [
                 "required",
                 "string",
-                "min:11",
-                "max:11",
             ],
             "education" => [
-                "present",
                 "nullable",
                 "array"
             ],
             'education.*' => [
-                "required",
+                "nullable",
                 "array",
                 "required_array_keys:type,name,education,period_attendance_from,period_attendance_to,year_graduated,honors_received"
             ],
             'education.*.type' => [
-                "required",
+                "nullable",
                 "string",
                 "in:elementary,secondary,vocational_course,college,graduate_studies",
             ],
             'education.*.name' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.education' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.period_attendance_from' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.period_attendance_to' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.year_graduated' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.honors_received' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.degree_earned_of_school' => [
-                "required",
+                "nullable",
                 "string",
             ],
             "workexperience" => [
