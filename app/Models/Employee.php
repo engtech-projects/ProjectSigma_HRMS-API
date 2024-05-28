@@ -177,6 +177,11 @@ class Employee extends Model
         return $this->hasMany(CashAdvance::class, 'employee_id');
     }
 
+    public function other_deduction(): HasMany
+    {
+        return $this->hasMany(OtherDeduction::class, 'employee_id');
+    }
+
     public function employee_department(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class, "id", "department_id");

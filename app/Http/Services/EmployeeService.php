@@ -121,8 +121,7 @@ class EmployeeService
             "ewtc" =>  $employee->with_holding_tax_deduction($salary),
             "loan" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
-            // "other_deduction" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
-            "other_deduction" => [],
+            "other_deduction" => $employee->other_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
         ];
 
         return $result;

@@ -214,4 +214,24 @@ trait EmployeePayroll
             "cash_advance" => $cashAdvance,
         ];
     }
+
+    public function other_deduction($salary, $type, $date)
+    {
+        $date = Carbon::parse($date);
+        $otherDeduction = $this->other_deduction()->requestStatusApproved()->get();
+        $otherDeduction->filter(function($loan) use($date){
+            return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
+        });
+        $otherDeduction->map(function($loan){
+            return [
+                ...collect($loan),
+                "max_payable" => $loan->max_payroll_payment,
+            ];
+        });
+        $totalPaid = $otherDeduction->sum("max_payroll_payment");
+        return [
+            "total_paid" => $totalPaid,
+            "other_deduction" => $otherDeduction,
+        ];
+    }
 }
