@@ -5,9 +5,11 @@ namespace App\Http\Requests;
 use App\Enums\AssignTypes;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use App\Http\Traits\HasApprovalValidation;
 
 class UpdateEmployeeAllowancesRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,6 +25,7 @@ class UpdateEmployeeAllowancesRequest extends FormRequest
                 "employees" => json_decode($this->employees, true),
             ]);
         }
+        $this->prepareApprovalValidation();
     }
     /**
      * Get the validation rules that apply to the request.
@@ -75,6 +78,7 @@ class UpdateEmployeeAllowancesRequest extends FormRequest
                 "nullable",
                 "integer",
             ],
+            ...$this->updateApprovals(),
         ];
     }
 }

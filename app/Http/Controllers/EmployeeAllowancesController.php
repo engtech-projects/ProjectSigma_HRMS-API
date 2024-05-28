@@ -114,6 +114,7 @@ class EmployeeAllowancesController extends Controller
                             $employee_allowance->cutoff_start = $request["cutoff_start"];
                             $employee_allowance->cutoff_end = $request["cutoff_end"];
                             $employee_allowance->total_days = $request["total_days"];
+                            $employee_allowance->approvals = $request["approvals"];
                             $employee_allowance->allowance_amount = $data_amt;
                             $employee_allowance->save();
 
