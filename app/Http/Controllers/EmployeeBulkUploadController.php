@@ -489,7 +489,6 @@ class EmployeeBulkUploadController extends Controller
                         'cert_exp_date' => null,
                     ];
                     //employment
-                    $data['atm'] = null;
                     $data['status'] = 'active';
                     try {
                         $employee->company_employments()->create($data);
