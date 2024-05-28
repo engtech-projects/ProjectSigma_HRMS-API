@@ -178,21 +178,21 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 25,
-                    'accessibilities_name' => "hrms:loansandadvances_cash advance",
+                    'accessibilities_name' => "hrms:loans and advances_cash advance",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 26,
-                    'accessibilities_name' => "hrms:loansandadvances_loans",
+                    'accessibilities_name' => "hrms:loans and advances_loans",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 27,
-                    'accessibilities_name' => "hrms:loansandadvances_other deductions",
+                    'accessibilities_name' => "hrms:loans and advances_other deductions",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -277,7 +277,7 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 39,
                     'accessibilities_name' => "hrms:setup_division",
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
