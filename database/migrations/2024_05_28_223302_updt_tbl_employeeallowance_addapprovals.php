@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('employee_allowances', function (Blueprint $table) {
+            $table->enum('request_status', ['Pending','Approved','Denied','Released']);
             $table->json('approvals');
         });
     }
@@ -22,6 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('employee_allowances', function (Blueprint $table) {
+            $table->dropColumn('request_status');
             $table->dropColumn('approvals');
         });
     }

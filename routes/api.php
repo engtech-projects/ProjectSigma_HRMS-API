@@ -259,6 +259,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('employee-allowance')->group(function () {
         Route::post('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
+        Route::get('my-requests', [EmployeeAllowancesController::class, 'myRequest']);
+        Route::get('my-approvals', [EmployeeAllowancesController::class, 'myApproval']);
         Route::resource('resource', EmployeeAllowancesController::class);
     });
 

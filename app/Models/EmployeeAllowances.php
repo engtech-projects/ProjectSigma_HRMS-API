@@ -42,4 +42,14 @@ class EmployeeAllowances extends Model
     {
         return $this->morphTo();
     }
+
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
+
+    public function scopeRequestStatusApproved(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
+    }
 }
