@@ -3,9 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Traits\HasApprovalValidation;
 
 class StoreallowanceRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -14,6 +16,10 @@ class StoreallowanceRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $this->prepareApprovalValidation();
+    }
     /**
      * Get the validation rules that apply to the request.
      *
@@ -34,6 +40,7 @@ class StoreallowanceRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
+            ...$this->storeApprovals(),
         ];
     }
 }

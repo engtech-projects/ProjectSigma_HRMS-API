@@ -3,15 +3,23 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Traits\HasApprovalValidation;
+
 
 class UpdateallowanceRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->prepareApprovalValidation();
     }
 
     /**
@@ -33,6 +41,7 @@ class UpdateallowanceRequest extends FormRequest
                 'max:999999',
                 'decimal:0,2',
             ],
+            ...$this->updateApprovals(),
         ];
     }
 }
