@@ -4,6 +4,7 @@ namespace App\Models\Traits;
 
 use App\Enums\RequestStatusType;
 use App\Models\CashAdvance;
+use App\Models\OtherDeduction;
 use App\Models\PagibigContribution;
 use App\Models\PhilhealthContribution;
 use App\Models\SalaryGradeStep;
@@ -200,7 +201,7 @@ trait EmployeePayroll
         $date = Carbon::parse($date);
         $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
         $cashAdvance->filter(function($loan) use($date){
-            return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
+            return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
         $cashAdvance->map(function($loan){
             return [
@@ -215,12 +216,12 @@ trait EmployeePayroll
         ];
     }
 
-    public function other_deduction($salary, $type, $date)
+    public function other_deductions($salary, $type, $date)
     {
         $date = Carbon::parse($date);
-        $otherDeduction = $this->other_deduction()->requestStatusApproved()->get();
+        $otherDeduction = $this->other_deduction()->get();
         $otherDeduction->filter(function($loan) use($date){
-            return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
+            return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
         $otherDeduction->map(function($loan){
             return [
