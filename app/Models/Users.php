@@ -18,7 +18,7 @@ class Users extends Model
 
     protected $primaryKey = 'id';
     protected $with = [
-        "employee"
+        "employee.profile_photo"
     ];
     protected $appends = [
         "accessibility_names"
