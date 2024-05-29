@@ -717,8 +717,8 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 102,
-                    'accessibilities_name' => "hrms:attendance_biomentrics",
-                    'deleted_at' => null,
+                    'accessibilities_name' => "hrms:attendance_biometrics",
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
