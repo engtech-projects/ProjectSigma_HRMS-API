@@ -158,7 +158,7 @@ class Employee extends Model
     public function current_employment(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class, 'employee_id')->where("status", "=", "current")
-            ->with("employee_salarygrade", "employee_department");
+            ->with("employee_salarygrade.salary_grade_level", "employee_department");
     }
 
     public function employee_internal(): HasMany
@@ -175,6 +175,11 @@ class Employee extends Model
     public function cash_advance(): HasMany
     {
         return $this->hasMany(CashAdvance::class, 'employee_id');
+    }
+
+    public function other_deduction(): HasMany
+    {
+        return $this->hasMany(OtherDeduction::class, 'employee_id');
     }
 
     public function employee_department(): HasOne
@@ -368,11 +373,11 @@ class Employee extends Model
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
+        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department?->schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department->schedule()?->schedulesOnDay($date)->regularSchedules()->get();
+        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()->employee_department?->schedule()?->schedulesOnDay($date)->regularSchedules()->get();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }

@@ -334,7 +334,7 @@ class EmployeeBulkUploadController extends Controller
                         $departmentId = $this->getDepartmentId(trim($data['section_project_code']));
                     }
                     $postionId = $this->getPositionId($data['position'], $departmentId);
-                    $getSalaryStep = $this->getSalaryStep($this->getSalaryGradeLevelId($data['salary_grade_level']));
+                    $getSalaryStep = $this->getSalaryStep($this->getSalaryGradeLevelId($data['salary_grade_level']), $data['salary_grade_step']);
                     $internalRecord = [
                         'position_id' => $postionId,
                         'employment_status' => $data['employment_status'],
@@ -489,7 +489,6 @@ class EmployeeBulkUploadController extends Controller
                         'cert_exp_date' => null,
                     ];
                     //employment
-                    $data['atm'] = null;
                     $data['status'] = 'active';
                     try {
                         $employee->company_employments()->create($data);
@@ -557,9 +556,9 @@ class EmployeeBulkUploadController extends Controller
         $data = SalaryGradeLevel::where('salary_grade_level', $salaryGradeLevel)->first();
         return $data ? $data->id : null;
     }
-    public function getSalaryStep($salaryGradeLevelId)
+    public function getSalaryStep($salaryGradeLevelId, $stepName)
     {
-        $data = SalaryGradeStep::where('salary_grade_level_id', $salaryGradeLevelId)->first();
+        $data = SalaryGradeStep::where(['salary_grade_level_id' => $salaryGradeLevelId, 'step_name' => $stepName, ])->first();
         return $data;
     }
 }

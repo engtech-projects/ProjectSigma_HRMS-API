@@ -10,11 +10,21 @@ use App\Http\Requests\UpdateEmployeeAllowancesRequest;
 use App\Models\Employee;
 use App\Models\InternalWorkExperience;
 use Illuminate\Http\JsonResponse;
+use App\Http\Services\EmployeeAllowanceService;
 
 class EmployeeAllowancesController extends Controller
 {
     public const DEPARTMENT = "App\Models\Department";
     public const PROJECT = "App\Models\Project";
+
+    protected $employeeAllowanceService;
+    protected $employeeAllowanceRequestType = null;
+
+    public function __construct(EmployeeAllowanceService $employeeAllowanceService)
+    {
+        $this->employeeAllowanceRequestType = request()->get('type');
+        $this->employeeAllowanceService = $employeeAllowanceService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -114,6 +124,7 @@ class EmployeeAllowancesController extends Controller
                             $employee_allowance->cutoff_start = $request["cutoff_start"];
                             $employee_allowance->cutoff_end = $request["cutoff_end"];
                             $employee_allowance->total_days = $request["total_days"];
+                            $employee_allowance->approvals = $request["approvals"];
                             $employee_allowance->allowance_amount = $data_amt;
                             $employee_allowance->save();
 
@@ -250,5 +261,40 @@ class EmployeeAllowancesController extends Controller
             'success' => false,
             'message' => 'No data found.',
         ], 404);
+    }
+
+    public function myRequest()
+    {
+        $myRequest = $this->employeeAllowanceService->getAll();
+        if ($myRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $myRequest
+        ]);
+    }
+
+    /**
+     * Show all requests to be approved/reviewed by current user
+     */
+    public function myApproval()
+    {
+        $myApproval = $this->employeeAllowanceService->getMyApprovals();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $myApproval
+        ]);
     }
 }

@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\HasApproval;
+use Illuminate\Database\Eloquent\Builder;
 
 class EmployeeAllowances extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasApproval;
 
     protected $appends = ['total_amount'];
 
@@ -22,6 +24,7 @@ class EmployeeAllowances extends Model
         "deduction_date_start" => "date:Y-m-d",
         "cutoff_start" => "date:Y-m-d",
         "cutoff_end" => "date:Y-m-d",
+        'approvals' => 'array',
     ];
 
     protected $fillable = [
@@ -33,10 +36,21 @@ class EmployeeAllowances extends Model
         'cutoff_start',
         'cutoff_end',
         'total_days',
+        'approvals',
     ];
 
     public function charge_assignment(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
+
+    public function scopeRequestStatusApproved(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 }

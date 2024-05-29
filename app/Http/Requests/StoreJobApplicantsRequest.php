@@ -39,7 +39,7 @@ class StoreJobApplicantsRequest extends FormRequest
                 "exists:manpower_requests,id",
             ],
             'name_suffix' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'application_letter_attachment' => [
@@ -68,16 +68,16 @@ class StoreJobApplicantsRequest extends FormRequest
                 "max:35"
             ],
             'middlename' => [
-                "required",
+                "nullable",
                 "string",
                 "max:35"
             ],
             'date_of_application' => [
-                "required",
+                "nullable",
                 "date",
             ],
             'date_of_birth' => [
-                "required",
+                "nullable",
                 "date",
             ],
             'pre_address_street' => [
@@ -121,22 +121,22 @@ class StoreJobApplicantsRequest extends FormRequest
                 "string",
             ],
             'contact_info' => [
-                "required",
+                "nullable",
                 "string",
                 "min:11",
                 "max:11",
             ],
             'email' => [
-                "required",
+                "nullable",
                 "string",
                 "max:35"
             ],
             'how_did_u_learn_about_our_company' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'desired_position' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'currently_employed' => [
@@ -151,7 +151,7 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'date_of_birth_spouse' => [
                 "nullable",
-                "date",
+                "string",
             ],
             'occupation_spouse' => [
                 "nullable",
@@ -160,8 +160,6 @@ class StoreJobApplicantsRequest extends FormRequest
             'telephone_spouse' => [
                 "nullable",
                 "string",
-                "min:11",
-                "max:11",
             ],
             "children" => [
                 "present",
@@ -192,50 +190,47 @@ class StoreJobApplicantsRequest extends FormRequest
             'telephone_icoe' => [
                 "required",
                 "string",
-                "min:11",
-                "max:11",
             ],
             "education" => [
-                "present",
                 "nullable",
                 "array"
             ],
             'education.*' => [
-                "required",
+                "nullable",
                 "array",
                 "required_array_keys:type,name,education,period_attendance_from,period_attendance_to,year_graduated,honors_received"
             ],
             'education.*.type' => [
-                "required",
+                "nullable",
                 "string",
                 "in:elementary,secondary,vocational_course,college,graduate_studies",
             ],
             'education.*.name' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.education' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.period_attendance_from' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.period_attendance_to' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.year_graduated' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.honors_received' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'education.*.degree_earned_of_school' => [
-                "required",
+                "nullable",
                 "string",
             ],
             "workexperience" => [
@@ -305,7 +300,7 @@ class StoreJobApplicantsRequest extends FormRequest
                 "string",
             ],
             'religion' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'height' => [
@@ -317,11 +312,11 @@ class StoreJobApplicantsRequest extends FormRequest
                 "string",
             ],
             'father_name' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'mother_name' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'gender' => [

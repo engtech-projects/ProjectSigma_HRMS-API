@@ -113,7 +113,6 @@ class EmployeeService
     {
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
         $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
-
         $result = [
             "sss" => $filters["deduct_sss"] ? $employee->sss_deduction($salary, $filters["payroll_type"]) : [],
             "phic" => $filters["deduct_philhealth"] ? $employee->philhealth_deduction($salary, $filters["payroll_type"]) : [],
@@ -121,11 +120,12 @@ class EmployeeService
             "ewtc" =>  $employee->with_holding_tax_deduction($salary),
             "loan" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
-            "other_deduction" => [],
+            "other_deductions" => $employee->other_deductions($salary, $filters["payroll_type"], $filters["payroll_date"]),
         ];
 
         return $result;
     }
+
     public function getTotalSalaryDeduction($deductions)
     {
         $cashAdvance = 0;
@@ -146,12 +146,12 @@ class EmployeeService
         if ($deductions["ewtc"]) {
             $ewtc = $deductions["ewtc"];
         }
-        if ($deductions["loan"]) {
-            $loan = $deductions["loan"];
-        }
-        if ($deductions["cash_advance"]) {
-            $cashAdvance = $deductions["cash_advance"];
-        }
+        // if ($deductions["loan"]) {
+        //     $loan = $deductions["loan"];
+        // }
+        // if ($deductions["cash_advance"]) {
+        //     $cashAdvance = $deductions["cash_advance"];
+        // }
         return $cashAdvance + $sss + $phic + $hmdf + $ewtc + $loan;
     }
 }

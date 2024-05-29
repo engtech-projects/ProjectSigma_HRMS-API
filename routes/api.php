@@ -259,12 +259,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('employee-allowance')->group(function () {
         Route::post('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
+        Route::get('my-requests', [EmployeeAllowancesController::class, 'myRequest']);
+        Route::get('my-approvals', [EmployeeAllowancesController::class, 'myApproval']);
         Route::resource('resource', EmployeeAllowancesController::class);
     });
 
     Route::prefix('payroll')->group(function () {
         Route::get('generate-payroll', [PayrollRecordController::class, 'generate']);
         Route::post('create-payroll', [PayrollRecordController::class, 'store']);
+        Route::get('my-requests', [PayrollRecordController::class, 'myRequest']);
+        Route::get('my-approvals', [PayrollRecordController::class, 'myApproval']);
     });
 
     Route::prefix('attendance-portal')->group(function () {
