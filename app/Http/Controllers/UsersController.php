@@ -9,6 +9,7 @@ use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUserCredentialRequest;
 use App\Http\Requests\UpdateUsersRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
@@ -72,6 +73,10 @@ class UsersController extends Controller
             $data->message = "Successfully update.";
             $data->success = true;
             $data->data = $users;
+            // Logout Other Devices
+            if (config("app.logout_change_password")) {
+                $request->user()->tokens()->where('id', '!=', $request->user()->currentAccessToken()->id)->delete();
+            }
             return response()->json($data);
         }
 

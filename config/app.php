@@ -26,6 +26,7 @@ return [
     'salary_grade_setter' => array_map('intval', explode(',', env('SALARY_GRADE_SETTER') ?? '')),
 
     'artisan' => env('ENABLE_ARTISAN_ROUTES', 'false'),
+    'logout_change_password' => env('LOGOUT_CHANGE_PASSWORD', false),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
