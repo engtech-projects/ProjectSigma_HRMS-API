@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\HasApproval;
+use Illuminate\Database\Eloquent\Builder;
 
 class EmployeeAllowances extends Model
 {

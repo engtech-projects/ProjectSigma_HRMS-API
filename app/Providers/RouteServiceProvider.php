@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use App\Exceptions\TransactionFailedException;
 use App\Models\EmployeeAllowances;
 use App\Models\EmployeePersonnelActionNoticeRequest;
+use App\Models\PayrollRecord;
 use App\Models\SalaryGradeLevel;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -77,6 +78,7 @@ class RouteServiceProvider extends ServiceProvider
             'CashAdvance' => CashAdvance::class,
             'Overtime' => Overtime::class,
             'GenerateAllowance' => EmployeeAllowances::class,
+            'Payroll' => PayrollRecord::class,
         ];
         try {
             array_key_exists($modelName, $modelHasApprovals);

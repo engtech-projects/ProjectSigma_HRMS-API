@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RequestStatusType;
 use Exception;
 use App\Helpers;
 use App\Models\Employee;
@@ -61,7 +62,7 @@ class PayrollRecordController extends Controller
     public function store(StorePayrollRecordRequest $request)
     {
         $attribute = $request->validated();
-
+        $attribute['request_status'] = RequestStatusType::PENDING->value;
         try {
             DB::transaction(function () use ($attribute) {
                 $payroll = PayrollRecord::create($attribute);
@@ -119,5 +120,40 @@ class PayrollRecordController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function myRequest()
+    {
+        $myRequest = $this->payrollService->getAll();
+        if ($myRequest->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $myRequest
+        ]);
+    }
+
+    /**
+     * Show all requests to be approved/reviewed by current user
+     */
+    public function myApproval()
+    {
+        $myApproval = $this->payrollService->getMyApprovals();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $myApproval
+        ]);
     }
 }
