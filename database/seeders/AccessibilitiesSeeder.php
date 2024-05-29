@@ -437,8 +437,8 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 62,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => "accounting:dashboard",
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
