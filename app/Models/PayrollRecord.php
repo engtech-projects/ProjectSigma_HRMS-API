@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\RequestStatusType;
 use App\Models\PayrollDetail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +21,8 @@ class PayrollRecord extends Model
         'payroll_date',
         'cutoff_start',
         'cutoff_end',
-        'approvals'
+        'request_status',
+        'approvals',
     ];
     protected $casts = [
         "approvals" => 'array'
@@ -32,5 +35,15 @@ class PayrollRecord extends Model
     public function payroll_details(): HasMany
     {
         return $this->hasMany(PayrollDetail::class);
+    }
+
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', RequestStatusType::PENDING);
+    }
+
+    public function scopeRequestStatusApproved(Builder $query): void
+    {
+        $query->where('request_status', RequestStatusType::APPROVED);
     }
 }
