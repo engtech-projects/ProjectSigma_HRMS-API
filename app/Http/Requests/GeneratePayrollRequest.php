@@ -27,6 +27,9 @@ class GeneratePayrollRequest extends FormRequest
         $this->merge([
             'employee_ids' => json_decode($this->employee_ids, true),
         ]);
+        $this->merge([
+            'adjustments' => json_decode($this->adjustments, true),
+        ]);
     }
 
     /**
@@ -61,6 +64,22 @@ class GeneratePayrollRequest extends FormRequest
             'deduct_philhealth' => 'required|boolean',
             'deduct_pagibig' => 'required|boolean',
             ...$this->storeApprovals(),
+            'adjustments' => 'nullable|array',
+            'adjustments.*' => [
+                "required",
+                "array",
+            ],
+            'adjustments.*.name' => [
+                "required",
+                "string",
+            ],
+            'adjustments.*.amount' => [
+                "required",
+                "numeric",
+                'max:999999',
+                "min:0",
+                'decimal:0,2',
+            ],
 
         ];
     }

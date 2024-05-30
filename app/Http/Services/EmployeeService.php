@@ -49,6 +49,12 @@ class EmployeeService
             return $dtr;
         });
 
+        if(isset($filters["adjustments"])){
+            $adjustments = collect($filters["adjustments"])->map(function($data){
+                    return $data;
+            });
+        }
+
         $dtrs = $dtr->values();
         $result = [
             "dtr" => $dtr,
@@ -97,9 +103,9 @@ class EmployeeService
             "special_holidays" => [
                 "regular" => round($dtrs->sum("grosspay.special_holidays.reg_hrs"), 2),
                 "overtime" => round($dtrs->sum("grosspay.special_holidays.overtime"), 2),
-            ]
+            ],
         ]);
-        $totalGrossPay = round($grossPays->values()->sum("regular") + $grossPays->values()->sum("overtime"), 2);
+        $totalGrossPay = round($grossPays->values()->sum("regular") + $adjustments->values()->sum("amount") + $grossPays->values()->sum("overtime"), 2);
         $totalSalaryDeduction = $this->getTotalSalaryDeduction($result["salary_deduction"]);
         $totalNetPay = $totalGrossPay - $totalSalaryDeduction;
         $result["total_gross_pay"] = round($totalGrossPay, 2);
