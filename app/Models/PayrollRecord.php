@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class PayrollRecord extends Model
 {
     use HasFactory;
+    use HasApproval;
+
     protected $fillable = [
         'project_id',
         'department_id',
