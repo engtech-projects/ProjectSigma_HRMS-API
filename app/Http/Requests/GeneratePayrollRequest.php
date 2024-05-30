@@ -69,11 +69,11 @@ class GeneratePayrollRequest extends FormRequest
                 "required",
                 "array",
             ],
-            'adjustments.*.name' => [
+            'adjustments.*.adjustment_name' => [
                 "required",
                 "string",
             ],
-            'adjustments.*.amount' => [
+            'adjustments.*.adjustment_amount' => [
                 "required",
                 "numeric",
                 'max:999999',
