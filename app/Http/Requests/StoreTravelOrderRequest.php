@@ -50,9 +50,13 @@ class StoreTravelOrderRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'date_and_time_of_travel' => [
+            'date_of_travel' => [
                 "required",
                 "date",
+            ],
+            'time_of_travel' => [
+                "required",
+                "date_format:H:i",
             ],
             'duration_of_travel' => [
                 "required",
