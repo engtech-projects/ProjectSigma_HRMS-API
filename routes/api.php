@@ -269,6 +269,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('create-payroll', [PayrollRecordController::class, 'store']);
         Route::get('my-requests', [PayrollRecordController::class, 'myRequest']);
         Route::get('my-approvals', [PayrollRecordController::class, 'myApproval']);
+        Route::resource('resource', PayrollRecordController::class);
     });
 
     Route::prefix('attendance-portal')->group(function () {

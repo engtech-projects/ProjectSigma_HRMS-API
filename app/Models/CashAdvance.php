@@ -139,4 +139,9 @@ class CashAdvance extends Model
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
+
+    public function payroll_detail_deduction(): MorphOne
+    {
+        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
+    }
 }

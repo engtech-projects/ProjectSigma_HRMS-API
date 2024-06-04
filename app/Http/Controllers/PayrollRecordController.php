@@ -67,25 +67,11 @@ class PayrollRecordController extends Controller
             DB::transaction(function () use ($attribute) {
                 $payroll = PayrollRecord::create($attribute);
                 foreach($attribute["payroll"] as $payrollData){
+                    // payroll detail
                     $empPayroll = $payroll->payroll_details()->createMany($payrollData);
-                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['cash_advance'])->map(function($dedData){
-                    //     return [
-                    //         ...$dedData,
-                    //         "type" => 'Cash Advance',
-                    //     ];
-                    // }));
-                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['loans'])->map(function($dedData){
-                    //     return [
-                    //         ...$dedData,
-                    //         "type" => 'Loan',
-                    //     ];
-                    // }));
-                    // $empPayroll->payroll_detail_deduction()->create(collect($payrollData['other_deduction'])->map(function($dedData){
-                    //     return [
-                    //         ...$dedData,
-                    //         "type" => 'Other Deduction',
-                    //     ];
-                    // }));
+                    $payrollAdjustment = PayrollDetailsAdjustment::create($attribute);
+                    $payrollCharging = PayrollDetailsCharging::create($attribute);
+                    $payrollDeduction = PayrollDetailDeduction::create($attribute);
                 }
             });
         } catch (Exception $e) {
@@ -102,6 +88,11 @@ class PayrollRecordController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
+    {
+        //
+    }
+
+    public function index()
     {
         //
     }
