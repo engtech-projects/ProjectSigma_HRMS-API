@@ -22,7 +22,7 @@ class PositionController extends Controller
     }
     public function get()
     {
-        $main = Position::select(["positions.*", 'department.department_name'])
+        $main = Position::select(["positions.*", 'departments.department_name'])
             ->join('departments', 'positions.department_id', '=', 'departments.id')
             ->get();
         $data = json_decode('{}');
