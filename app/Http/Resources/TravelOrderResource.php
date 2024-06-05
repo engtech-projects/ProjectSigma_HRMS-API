@@ -20,11 +20,17 @@ class TravelOrderResource extends JsonResource
                 "type" => $this->user->type
             ];
         });
+
         $employees = $this->whenLoaded('employees', function () {
-            return [
-                "id" => $this->employee?->id,
-                "name" => $this->employee?->fullname_last,
-            ];
+            $arr = array();
+            foreach ($this->employees as $key) {
+                array_push($arr, array("id"=>$key->fullname_last, "name" => $key?->fullname_last));
+            }
+            return $arr;
+            // return [
+            //     "id" => $this->employee?->id,
+            //     "name" => $this->employee?->fullname_last,
+            // ];
         });
         return [
             "id" => $this->id,
@@ -40,6 +46,7 @@ class TravelOrderResource extends JsonResource
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "department" => $this->department,
             "requested_by" => $user,
+            "request_status" => $this->request_status,
         ];
     }
 }
