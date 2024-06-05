@@ -26,10 +26,11 @@ class TravelOrderService
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = TravelOrder::with(['department'])
+        $result = TravelOrder::with(['department',"employees"])
             ->requestStatusPending()
             ->authUserPending()
             ->get();
+
         return $result->filter(function ($item) use ($userId) {
             $nextPendingApproval = $item->getNextPendingApproval();
             return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
