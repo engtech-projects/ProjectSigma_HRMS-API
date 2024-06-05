@@ -14,10 +14,10 @@ class TravelOrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user = $this->whenLoaded('user', function () {
+        $user = $this->when('user', function () {
             return [
-                "name" => $this->user->employee?->fullname_last,
-                "type" => $this->user->type
+                    "name" => $this->user->employee->fullname_last,
+                    "type" => $this->user->type,
             ];
         });
 
@@ -27,11 +27,8 @@ class TravelOrderResource extends JsonResource
                 array_push($arr, array("id"=>$key->fullname_last, "name" => $key?->fullname_last));
             }
             return $arr;
-            // return [
-            //     "id" => $this->employee?->id,
-            //     "name" => $this->employee?->fullname_last,
-            // ];
         });
+
         return [
             "id" => $this->id,
             "name" => $this->name,
