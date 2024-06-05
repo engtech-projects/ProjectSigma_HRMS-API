@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payroll_records', function (Blueprint $table) {
             $table->id();
-            $table->enum('group_tye', ['Project', 'Department']);
+            $table->enum('group_type', ['Project', 'Department']);
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('department_id');
             $table->enum('payroll_type', ['Weekly', 'Monthly', 'Bi-monthly']);

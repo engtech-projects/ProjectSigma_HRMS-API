@@ -60,10 +60,10 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:1",
                 'decimal:0,2',
             ],
-            'payroll_details.*.deductions.*.payroll_details_id' => [
+            'payroll_details.*.deductions.*.payroll_record_id' => [
                 "required",
                 "integer",
-                "exists:payroll_details,id",
+                "exists:payroll_records,id",
             ],
             // adjustments = name,amount
             'payroll_details.*.adjustment' => 'required|array',
