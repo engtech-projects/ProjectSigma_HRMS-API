@@ -16,7 +16,7 @@ class TravelOrderResource extends JsonResource
     {
         $user = $this->when('user', function () {
             return [
-                    "name" => $this->user->employee->fullname_last,
+                    "name" => $this->user->employee?->fullname_last,
                     "type" => $this->user->type,
             ];
         });
