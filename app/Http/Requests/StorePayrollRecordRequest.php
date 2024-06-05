@@ -50,7 +50,51 @@ class StorePayrollRecordRequest extends FormRequest
                 'string',
                 new Enum(ReleaseType::class)
             ],
-            'payroll' => 'required|array',
+            'payroll_details' => 'required|array',
+            // deductions = polymorp(Cash Advance ,Loan ,Other Deduction ,Others)  type, deduction_type, deduction_id
+            'payroll_details.*.deductions' => 'required|array',
+            'payroll_details.*.deductions.*.name' => 'required|string',
+            'payroll_details.*.deductions.*.amount' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'payroll_details.*.deductions.*.payroll_details_id' => [
+                "required",
+                "integer",
+                "exists:payroll_details,id",
+            ],
+            // adjustments = name,amount
+            'payroll_details.*.adjustment' => 'required|array',
+            'payroll_details.*.adjustment.*.payroll_details_id' => [
+                "required",
+                "integer",
+                "exists:payroll_details,id",
+            ],
+            'payroll_details.*.adjustment.*.name' => 'required|string',
+            'payroll_details.*.adjustment.*.amount' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+
+            // chargings = polymorp(Cash Advance ,Loan ,Other Deduction ,Others)  name, amount, charge_type, charge_id
+            'payroll_details.*.charging' => 'required|array',
+            'payroll_details.*.charging.*.name' => 'required|string',
+            'payroll_details.*.charging.*.amount' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'payroll_details.*.charging.*.payroll_details_id' => [
+                "required",
+                "integer",
+                "exists:payroll_details,id",
+            ],
+
             'payroll_date' => 'required|date_format:Y-m-d',
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',

@@ -22,7 +22,9 @@ class PositionController extends Controller
     }
     public function get()
     {
-        $main = Position::join('departments', 'positions.department_id', '=', 'departments.id')->get();
+        $main = Position::select(["positions.*", 'departments.department_name'])
+            ->join('departments', 'positions.department_id', '=', 'departments.id')
+            ->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

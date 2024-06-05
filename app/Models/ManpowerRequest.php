@@ -87,7 +87,7 @@ class ManpowerRequest extends Model
 
     public function position()
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(Position::class, "position_id", "id");
     }
 
     /**

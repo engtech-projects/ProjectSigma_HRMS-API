@@ -27,7 +27,8 @@ class TravelOrder extends Model
 
     protected $casts = [
         "approvals" => "array",
-        "date_and_time_of_travel" => "date:Y-m-d",
+        "date_of_travel" => "date:Y-m-d",
+        "time_of_travel" => "date:H:i",
         "date_of_absence_to" => "date:Y-m-d"
     ];
 
@@ -36,7 +37,8 @@ class TravelOrder extends Model
         'requesting_office',
         'destination',
         'purpose_of_travel',
-        'date_and_time_of_travel',
+        'date_of_travel',
+        'time_of_travel',
         'duration_of_travel',
         'means_of_transportation',
         'remarks',
