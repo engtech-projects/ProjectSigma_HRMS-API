@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AssignTypes;
 use App\Enums\RequestApprovalStatus;
 use App\Enums\StringRequestApprovalStatus;
 use App\Http\Traits\HasApprovalValidation;
@@ -47,14 +48,14 @@ class StoreOvertimeRequest extends FormRequest
                 "exists:employees,id",
             ],
             'project_id' => [
-                "required",
+                'nullable',
                 "integer",
-                "exists:projects,id"
+                "exists:projects,id",
             ],
             'department_id' => [
-                "required",
+                'nullable',
                 "integer",
-                "exists:departments,id"
+                "exists:departments,id",
             ],
             'overtime_date' => [
                 "required",
