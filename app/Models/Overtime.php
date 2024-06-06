@@ -108,4 +108,14 @@ class Overtime extends Model
     {
         return Carbon::parse($this->overtime_end_time)->format("h:i A");
     }
+
+    function getChargingNameAttribute() {
+        if($this->project_id){
+            return $this->project->project_code;
+        }
+        if($this->department_id){
+            return $this->department->department_name;
+        }
+        return 'No charging found.';
+    }
 }
