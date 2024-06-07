@@ -25,7 +25,11 @@ class OvertimeController extends Controller
      */
     public function index()
     {
-        $main = Overtime::with("employee", "department", "project")->paginate(15);
+        // $main = Overtime::with("employee", "department", "project")->get();
+        $main = Overtime::with("employee")->paginate(15);
+        $main->each(function ($main) {
+            $main->append(['charging_name']);
+        });
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -66,7 +70,7 @@ class OvertimeController extends Controller
      */
     public function show($id)
     {
-        $main = Overtime::with("employee", "department", "project")->find($id);
+        $main = Overtime::with("employee", "department", "project")->append(['charging_name'])->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
