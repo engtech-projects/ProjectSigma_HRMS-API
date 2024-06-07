@@ -30,7 +30,7 @@ class OvertimeController extends Controller
         $paginated = OvertimeResource::collection($main);
         return new JsonResponse([
             'success' => true,
-            'message' => 'TravelOrder Request fetched.',
+            'message' => 'Overtime Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
         ]);
     }
