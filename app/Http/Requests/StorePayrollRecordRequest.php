@@ -263,7 +263,6 @@ class StorePayrollRecordRequest extends FormRequest
             'payroll_details.*.deductions.*.charge_id' =>[
                 "nullable",
                 "integer",
-                "exists:cash_advances,id",
             ],
             'payroll_details.*.deductions.*.name' => 'required|string',
             'payroll_details.*.deductions.*.amount' => [
@@ -287,19 +286,23 @@ class StorePayrollRecordRequest extends FormRequest
                 'decimal:0,2',
             ],
             // chargings = polymorp(Cash Advance ,Loan ,Other Deduction ,Others)  name, amount, charge_type, charge_id
-            // 'payroll_details.*.charging' => 'required|array',
-            // 'payroll_details.*.charging.*.name' => 'required|string',
-            // 'payroll_details.*.charging.*.amount' => [
-            //     "required",
-            //     "numeric",
-            //     "min:0",
-            //     'decimal:0,2',
-            // ],
-            // 'payroll_details.*.charging.*.payroll_details_id' => [
-            //     "required",
-            //     "integer",
-            //     "exists:payroll_details,id",
-            // ],
+            'payroll_details.*.charging' => 'required|array',
+            'payroll_details.*.charging.*.name' => 'required|string',
+            'payroll_details.*.charging.*.amount' => [
+                "required",
+                "numeric",
+                "min:0",
+                'decimal:0,2',
+            ],
+            'payroll_details.*.charging.*.charge_id' =>[
+                "nullable",
+                "integer",
+            ],
+            'payroll_details.*.charging.*.type' => [
+                "required",
+                "string",
+                new Enum(PayrollDetailsDeductionType::class)
+            ],
             ...$this->storeApprovals(),
         ];
     }
