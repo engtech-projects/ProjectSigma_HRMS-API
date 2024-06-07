@@ -21,6 +21,8 @@ use App\Http\Requests\StorePayrollRecordRequest;
 use App\Models\Department;
 use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
+use App\Models\LoanPayments;
+use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
 use App\Models\PayrollDetailsAdjustment;
 use App\Models\Project;
