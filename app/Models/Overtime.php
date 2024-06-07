@@ -80,7 +80,7 @@ class Overtime extends Model
     }
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'released_by');
+        return $this->belongsTo(User::class, 'prepared_by');
     }
 
     public function scopeRequestStatusPending(Builder $query): void
@@ -118,4 +118,5 @@ class Overtime extends Model
         }
         return 'No charging found.';
     }
+
 }
