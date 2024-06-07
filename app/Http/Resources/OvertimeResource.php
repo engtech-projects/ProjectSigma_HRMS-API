@@ -21,7 +21,7 @@ class OvertimeResource extends JsonResource
             ];
         });
 
-        $employees = $this->whenLoaded('employees', function () {
+        $employees = $this->whenLoaded('overtimeEmployees', function () {
             $arr = array();
             foreach ($this->employees as $key) {
                 array_push($arr, array("id"=>$key->fullname_last, "name" => $key?->fullname_last));
