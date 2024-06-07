@@ -36,6 +36,7 @@ class OvertimeResource extends JsonResource
             "overtime_start_time" => $this->overtime_start_time,
             "overtime_end_time" => $this->overtime_end_time,
             "reason" => $this->reason,
+            "charging_name" => $this->charging_name,
             "project" => $this->project,
             "department" => $this->department,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
