@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateOvertimeRequest;
 use App\Http\Resources\OvertimeResource;
 use App\Http\Services\OvertimeService;
 use App\Models\OvertimeEmployees;
+use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -25,16 +26,13 @@ class OvertimeController extends Controller
      */
     public function index()
     {
-        // $main = Overtime::with("employee", "department", "project")->get();
-        $main = Overtime::with("employee")->paginate(15);
-        $main->each(function ($main) {
-            $main->append(['charging_name']);
-        });
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $main = $this->RequestService->getAll();
+        $paginated = OvertimeResource::collection($main);
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'TravelOrder Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+        ]);
     }
 
     /**

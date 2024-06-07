@@ -15,7 +15,7 @@ class OvertimeService
 
     public function getAll()
     {
-        return Overtime::with(['employee', 'department', 'project'])->get();
+        return Overtime::with("employee")->get()->append(['charging_name']);
     }
 
     public function create($attributes)
