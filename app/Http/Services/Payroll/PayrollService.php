@@ -18,7 +18,7 @@ class PayrollService
 
     public function getAll()
     {
-        return PayrollRecord::get();
+        return PayrollRecord::with('payroll_details')->get()->append(['charging_name']);
     }
 
     public function getMyApprovals()

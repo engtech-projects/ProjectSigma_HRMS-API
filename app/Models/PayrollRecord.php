@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Traits\HasApproval;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PayrollRecord extends Model
 {
@@ -37,7 +38,28 @@ class PayrollRecord extends Model
      */
     public function payroll_details(): HasMany
     {
-        return $this->hasMany(PayrollDetail::class);
+        return $this->hasMany(PayrollDetail::class)->with('deductions', 'adjustments', 'charges');
+    }
+
+    public function department(): HasOne
+    {
+        return $this->hasOne(Department::class, "id", "department_id");
+    }
+
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class, "id", "project_id");
+    }
+
+
+    function getChargingNameAttribute() {
+        if($this->project_id){
+            return $this->project->project_code;
+        }
+        if($this->department_id){
+            return $this->department->department_name;
+        }
+        return 'No charging found.';
     }
 
     public function scopeRequestStatusPending(Builder $query): void

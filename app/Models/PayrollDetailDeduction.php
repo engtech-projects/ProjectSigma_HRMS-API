@@ -26,7 +26,7 @@ class PayrollDetailDeduction extends Model
         'amount',
     ];
 
-    public function charge(): MorphTo
+    public function deduction(): MorphTo
     {
         return $this->morphTo();
     }

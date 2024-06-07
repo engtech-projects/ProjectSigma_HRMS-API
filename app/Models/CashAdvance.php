@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -143,5 +144,10 @@ class CashAdvance extends Model
     public function payroll_detail_deduction(): MorphOne
     {
         return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
+    }
+
+    public function payroll_details_charging(): MorphOne
+    {
+        return $this->morphOne(PayrollDetailDeduction::class, 'charge');
     }
 }
