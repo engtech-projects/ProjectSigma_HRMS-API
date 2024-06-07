@@ -54,7 +54,7 @@ class PayrollDetail extends Model
 
     public function deductions(): HasMany
     {
-        return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id');
+        return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id')->with('deduction');
     }
 
     public function adjustments(): HasMany
@@ -64,15 +64,6 @@ class PayrollDetail extends Model
 
     public function charges(): HasMany
     {
-        return $this->hasMany(PayrollDetailsCharging::class, 'payroll_details_id');
-    }
-
-    public function sss_deduction()
-    {
-        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
-    }
-    public function philhealth_deduction()
-    {
-        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
+        return $this->hasMany(PayrollDetailsCharging::class, 'payroll_details_id')->with('charge');
     }
 }

@@ -155,7 +155,7 @@ class PayrollRecordController extends Controller
      */
     public function show($id)
     {
-        $myRequest = PayrollRecord::find($id);
+        $myRequest = PayrollRecord::with('payroll_details')->where('id',$id)->get()->append(['charging_name']);
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord request fetched.',
