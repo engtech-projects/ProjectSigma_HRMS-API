@@ -37,7 +37,6 @@ class ScheduleController extends Controller
         $main = new Schedule();
         $main->fill($request->validated());
         $data = json_decode('{}');
-        $main->daysOfWeek = json_encode($request->daysOfWeek);
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
@@ -101,7 +100,6 @@ class ScheduleController extends Controller
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
-            $main->daysOfWeek = json_encode($request->daysOfWeek);
             if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
