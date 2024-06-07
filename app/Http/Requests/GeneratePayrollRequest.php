@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\GroupType;
+use App\Enums\AssignTypes;
 use App\Enums\PayrollType;
 use App\Enums\ReleaseType;
 use App\Enums\RequestApprovalStatus;
@@ -43,7 +43,7 @@ class GeneratePayrollRequest extends FormRequest
         return [
             'group_type' => [
                 'required',
-                new Enum(GroupType::class)
+                new Enum(AssignTypes::class)
             ],
             'project_id' => 'required_if:group_type,project|integer|nullable',
             'department_id' => 'required_if:group_type,department|integer|nullable',
