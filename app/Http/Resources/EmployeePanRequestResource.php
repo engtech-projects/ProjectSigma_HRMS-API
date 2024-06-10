@@ -19,9 +19,13 @@ class EmployeePanRequestResource extends JsonResource
             "date_of_effictivity" => $this->date_of_effictivity->format('F j, Y'),
             "type" => $this->type,
             "pan_job_applicant_id" => $this->pan_job_applicant_id,
-            "jobapplicant" => $this->whenLoaded('jobapplicantonly'),
+            "jobapplicant" => $this->whenLoaded('jobapplicantonly', function($app){
+                return EmployeeUserResource::collection($app);
+            }),
             "employee_id" => $this->employee_id,
-            "employee" => $this->whenLoaded('employee'),
+            "employee" => $this->whenLoaded('employee', function($emp){
+                return EmployeeUserResource::collection($emp);
+            }),
             "hire_source" => $this->work_location,
             "employment_status" => $this->employment_status,
             "salary_type" => $this->salary_type,
