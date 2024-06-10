@@ -53,23 +53,24 @@ class EmployeePanRequest extends Model
 
     protected $fillable = [
         'id',
-        'employee_id',
-        'type',
         'date_of_effictivity',
-        'section_department_id',
-        'designation_position',
+        'type',
+        'pan_job_applicant_id',
+        'employee_id',
         'hire_source',
+        'employment_status',
+        'salary_type',
+        'designation_position',
+        'salary_grades',
         'work_location',
+        'section_department_id',
         'type_of_termination',
         'reasons_for_termination',
         'eligible_for_rehire',
         'last_day_worked',
-        'approvals',
+        'comments',
         'created_by',
-        'pan_job_applicant_id',
-        'salary_grades',
-        'salary_type',
-        'employment_status'
+        'approvals',
     ];
 
 

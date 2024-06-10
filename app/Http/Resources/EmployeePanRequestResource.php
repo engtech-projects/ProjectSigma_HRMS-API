@@ -34,9 +34,9 @@ class EmployeePanRequestResource extends JsonResource
             }),
             "hire_source" => $this->work_location,
             "employment_status" => $this->employment_status,
-            "salary_type" => $this->salary_type,
             "designation_position" => $this->designation_position, // position_id
             "position" => $this->whenLoaded('position'),
+            "salary_type" => $this->salary_type,
             "salary_grades" => $this->salary_grades,
             "salarygrade" => $this->whenLoaded('salarygrade'),
             "work_location" => $this->work_location,
