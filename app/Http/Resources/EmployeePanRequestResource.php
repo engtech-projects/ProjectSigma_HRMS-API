@@ -38,6 +38,7 @@ class EmployeePanRequestResource extends JsonResource
             "new_section_id" => $this->new_section_id,
             "department" => $this->whenLoaded('department'),
             "position" => $this->whenLoaded('position'),
+            "salarygrade" => $this->whenLoaded('salarygrade'),
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
         ];
         //return parent::toArray($request);
