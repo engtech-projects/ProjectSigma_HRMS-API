@@ -151,7 +151,7 @@ class EmployeePanRequest extends Model
 
     public function position(): HasOne
     {
-        return $this->hasOne(Position::class, "id", "position_id");
+        return $this->hasOne(Position::class, "id", "designation_position");
     }
 
     public function completeRequestStatus()
