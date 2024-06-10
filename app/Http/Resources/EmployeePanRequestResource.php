@@ -20,11 +20,17 @@ class EmployeePanRequestResource extends JsonResource
             "type" => $this->type,
             "pan_job_applicant_id" => $this->pan_job_applicant_id,
             "jobapplicant" => $this->whenLoaded('jobapplicantonly', function($app){
-                return EmployeeUserResource::collection($app);
+                return [
+                    "fullname_first" => $app->fullname_first,
+                    "fullname_last" => $app->fullname_last,
+                ];
             }),
             "employee_id" => $this->employee_id,
-            "employee" => $this->whenLoaded('employee', function($emp){
-                return EmployeeUserResource::collection($emp);
+            "employee" => $this->whenLoaded("employee", function ($employee) {
+                return [
+                    "fullname_first" => $employee->fullname_first,
+                    "fullname_last" => $employee->fullname_last,
+                ];
             }),
             "hire_source" => $this->work_location,
             "employment_status" => $this->employment_status,
