@@ -14,7 +14,7 @@ class EmployeePanRequestService
 
     public function getAll()
     {
-        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level'])->get();
+        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])->get();
     }
 
     public function create($attributes)
@@ -23,14 +23,14 @@ class EmployeePanRequestService
     }
     public function getMyRequests()
     {
-        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level'])
+        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->where("created_by", auth()->user()->id)
             ->get();
     }
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level'])
+        $result = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->requestStatusPending()
             ->authUserPending()
             ->get();
