@@ -100,7 +100,7 @@ class JobApplicants extends Model
         return $this->lastname . ", " . $this->firstname . " " . $this->middlename;
     }
 
-    protected function getFullnameFirstAttrbute()
+    protected function getFullnameFirstAttribute()
     {
         return $this->firstname . " " . $this->middlename . " " . $this->lastname;
     }
