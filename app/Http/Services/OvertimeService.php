@@ -15,7 +15,7 @@ class OvertimeService
 
     public function getAll()
     {
-        return Overtime::with("overtimeEmployees")->get();
+        return Overtime::with("employees")->get();
     }
 
     public function create($attributes)
