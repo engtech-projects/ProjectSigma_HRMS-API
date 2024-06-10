@@ -51,7 +51,14 @@ class PersonnelActionNoticeRequestController extends Controller
     public function store(StoreEmployeePersonnelActionNoticeRequestRequest $request)
     {
         try {
-            $this->panRequestService->create($request->validated());
+            $valid = $request->validated();
+            if(!$valid){
+                return new JsonResponse([
+                    "success" => false,
+                    "message" => "Create transaction failed."
+                    ], JsonResponse::HTTP_EXPECTATION_FAILED);
+            }
+            $this->panRequestService->create($valid);
         } catch (\Exception $e) {
             throw new TransactionFailedException("Create transaction failed.", 500, $e);
         }

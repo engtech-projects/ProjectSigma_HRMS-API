@@ -65,12 +65,6 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "exists:salary_grade_steps,id",
                 'required_if:type,==,New Hire',
             ],
-            'new_salary_grades' => [
-                "nullable",
-                "integer",
-                "exists:salary_grade_steps,id",
-                'required_if:type,==,Promotion',
-            ],
             'pan_job_applicant_id' => [
                 "nullable",
                 "integer",
@@ -87,27 +81,6 @@ class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
                 "nullable",
                 "string",
                 'required_if:type,==,New Hire,Transfer',
-            ],
-            'new_section_id' => [
-                "nullable",
-                "integer",
-                "exists:departments,id",
-                'required_if:type,==,Transfer',
-            ],
-            'new_location' => [
-                "nullable",
-                "string",
-                'required_if:type,==,Transfer'
-            ],
-            'new_employment_status' => [
-                "nullable",
-                "string",
-                'required_if:type,==,Promotion'
-            ],
-            'new_position' => [
-                "nullable",
-                "integer",
-                "exists:positions,id",
             ],
             'type_of_termination' => [
                 "nullable",
