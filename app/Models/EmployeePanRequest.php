@@ -409,6 +409,7 @@ class EmployeePanRequest extends Model
             'type_of_termination' => $this->type_of_termination,
             'reason_for_termination' => $this->reasons_for_termination,
             'eligible_for_rehire' => $this->eligible_for_rehire,
+            'last_day_worked' => $this->last_day_worked,
         ]);
     }
     public function rehire()
