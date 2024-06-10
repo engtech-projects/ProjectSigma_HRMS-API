@@ -60,17 +60,12 @@ class EmployeePanRequest extends Model
         'designation_position',
         'hire_source',
         'work_location',
-        'new_section_id',
-        'new_location',
-        'new_employment_status',
-        'new_position',
         'type_of_termination',
         'reasons_for_termination',
         'eligible_for_rehire',
         'last_day_worked',
         'approvals',
         'created_by',
-        'new_salary_grades',
         'pan_job_applicant_id',
         'salary_grades',
         'salary_type',
@@ -358,22 +353,14 @@ class EmployeePanRequest extends Model
         $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
-        InternalWorkExperience::create([
-            // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
-            'department_id' => $this->new_section_id ?? $interWorkExp->department_id,
-            'work_location' => $this->new_location ?? $interWorkExp->work_location,
-            'date_from' => $this->date_of_effictivity,
-            // NO CHANGES ( COPY FROM OLD )
-            'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
-            'employee_id' => $interWorkExp->employee_id,
-            'position_title' => $interWorkExp->position_title,
-            'employment_status' => $interWorkExp->employment_status,
-            'hire_source' => $interWorkExp->hire_source,
-            'salary_grades' => $interWorkExp->salary_grades,
-            'actual_salary' => $interWorkExp->actual_salary,
-            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
-            'date_to' => null,
-        ]);
+        $newInterWorkExp = $interWorkExp->toArray();
+        unset($newInterWorkExp["id"]);
+        $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
+        $newInterWorkExp['work_location'] = $this->work_location ?? $interWorkExp->work_location;
+        $newInterWorkExp['date_from'] = $this->date_of_effictivity;
+        $newInterWorkExp['date_to'] = null;
+        $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        InternalWorkExperience::create($newInterWorkExp);
     }
 
     /** Promotion Employee PAN request approved
@@ -391,22 +378,16 @@ class EmployeePanRequest extends Model
         $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
-        InternalWorkExperience::create([
-            // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
-            'position_title' => $this->new_position ?? $interWorkExp->position_title,
-            'employment_status' => $this->new_employment_status ?? $interWorkExp->position_title,
-            'salary_grades' => $this->new_salary_grades ?? $interWorkExp->salary_grades,
-            'actual_salary' => $this->salarygrade?->monthly_salary_amount ?? "",
-            'date_from' => $this->date_of_effictivity,
-            // NO CHANGES ( COPY FROM OLD )
-            'employee_id' => $interWorkExp->employee_id,
-            'department_id' => $interWorkExp->department_id,
-            'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
-            'work_location' => $interWorkExp->work_location,
-            'hire_source' => $interWorkExp->hire_source,
-            'date_to' => null,
-            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
-        ]);
+        $newInterWorkExp = $interWorkExp->toArray();
+        unset($newInterWorkExp["id"]);
+        $newInterWorkExp['position_id'] = $this->designation_position ?? $interWorkExp->position_id;
+        $newInterWorkExp['employment_status'] = $this->employment_status ?? $interWorkExp->employment_status;
+        $newInterWorkExp['salary_grades'] = $this->salary_grades ?? $interWorkExp->salary_grades;
+        $newInterWorkExp['actual_salary'] = $this->salarygrade?->monthly_salary_amount ?? $interWorkExp->actual_salary;
+        $newInterWorkExp['date_from'] = $this->date_of_effictivity;
+        $newInterWorkExp['date_to'] = null;
+        $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        InternalWorkExperience::create($newInterWorkExp);
     }
     /** Termination Employee PAN  request approved
      * to terminate proccessed.

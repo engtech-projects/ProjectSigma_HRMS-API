@@ -22,7 +22,6 @@ class InternalWorkExperience extends Model
         'id',
         'employee_id',
         'position_id',
-        'position_title',
         'employment_status',
         'department_id',
         'immediate_supervisor',

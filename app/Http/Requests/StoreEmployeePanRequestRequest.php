@@ -32,26 +32,43 @@ class StoreEmployeePanRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => [
-                "nullable",
-                "integer",
-                "exists:employees,id",
-                'required_if:type,==,Termination,Transfer,Promotion',
+            'date_of_effictivity' => [
+                "required",
+                "date",
             ],
             'type' => [
                 "required",
                 "string",
                 'in:New Hire,Termination,Transfer,Promotion'
             ],
-            'date_of_effictivity' => [
-                "required",
-                "date",
-            ],
-            'section_department_id' => [
+            'pan_job_applicant_id' => [
                 "nullable",
                 "integer",
-                "exists:departments,id",
+                "exists:job_applicants,id",
                 'required_if:type,==,New Hire',
+            ],
+            'employee_id' => [
+                "nullable",
+                "integer",
+                "exists:employees,id",
+                'required_if:type,==,Termination,Transfer,Promotion',
+            ],
+            'hire_source' => [
+                "nullable",
+                "string",
+                'in:Internal,External',
+                'required_if:type,==,New Hire',
+            ],
+            'employment_status' => [
+                "nullable",
+                "string",
+                'required_if:type,==,New Hire',
+                new Enum(EmploymentStatus::class)
+            ],
+            'salary_type' => [
+                "nullable",
+                "string",
+                new Enum(SalaryRequestType::class)
             ],
             'designation_position' => [
                 "nullable",
@@ -65,22 +82,16 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "exists:salary_grade_steps,id",
                 'required_if:type,==,New Hire',
             ],
-            'pan_job_applicant_id' => [
-                "nullable",
-                "integer",
-                "exists:job_applicants,id",
-                'required_if:type,==,New Hire',
-            ],
-            'hire_source' => [
-                "nullable",
-                "string",
-                'in:Internal,External',
-                'required_if:type,==,New Hire',
-            ],
             'work_location' => [
                 "nullable",
                 "string",
                 'required_if:type,==,New Hire,Transfer',
+            ],
+            'section_department_id' => [
+                "nullable",
+                "integer",
+                "exists:departments,id",
+                'required_if:type,==,New Hire',
             ],
             'type_of_termination' => [
                 "nullable",
@@ -102,24 +113,9 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "string",
                 'required_if:type,==,Termination'
             ],
-            'approvals' => [
-                "required",
-                "array",
-            ],
             'comments' => [
                 "nullable",
                 "string",
-            ],
-            'employment_status' => [
-                "nullable",
-                "string",
-                'required_if:type,==,New Hire',
-                new Enum(EmploymentStatus::class)
-            ],
-            'salary_type' => [
-                "nullable",
-                "string",
-                new Enum(SalaryRequestType::class)
             ],
             ...$this->storeApprovals(),
         ];
