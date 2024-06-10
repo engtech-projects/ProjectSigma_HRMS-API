@@ -21,20 +21,14 @@ class OvertimeResource extends JsonResource
             ];
         });
 
-        // $employees = $this->whenLoaded('employees', function () {
-        //     $arr = array();
-        //     foreach ($this->employees as $key) {
-        //         array_push($arr, array("id"=>$key->fullname_last, "name" => $key?->fullname_last));
-        //     }
-        //     return $arr;
-        // });
-
         return [
             "id" => $this->id,
             "employees" => $this->employees,
             "overtime_date" => $this->overtime_date->format('F j, Y'),
             "overtime_start_time" => $this->overtime_start_time,
             "overtime_end_time" => $this->overtime_end_time,
+            "start_time_human" => $this->start_time_human,
+            "end_time_human" => $this->end_time_human,
             "reason" => $this->reason,
             "charging_name" => $this->charging_name,
             "project" => $this->project,
