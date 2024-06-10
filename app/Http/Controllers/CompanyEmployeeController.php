@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\CompanyEmployee;
 use App\Http\Requests\StoreCompanyEmployeeRequest;
 use App\Http\Requests\UpdateCompanyEmployeeRequest;
+use App\Models\EmployeePanRequest;
+use Carbon\Carbon;
 
 class CompanyEmployeeController extends Controller
 {

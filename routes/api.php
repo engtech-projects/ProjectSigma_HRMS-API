@@ -193,6 +193,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class);
         Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
         Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
+        Route::get("generate-company-id-num", [PersonnelActionNoticeRequestController::class, "generateIdNum"]);
     });
 
     Route::prefix('attendance')->group(function () {

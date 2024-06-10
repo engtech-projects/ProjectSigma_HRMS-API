@@ -146,13 +146,15 @@ class Employee extends Model
     public function present_address(): HasOne
     {
         return $this->hasOne(EmployeeAddress::class)
-            ->where("type", EmployeeAddressType::PRESENT);
+            ->where("type", EmployeeAddressType::PRESENT)
+            ->withDefault();
     }
 
     public function permanent_address(): HasOne
     {
         return $this->hasOne(EmployeeAddress::class)
-            ->where("type", EmployeeAddressType::PERMANENT);
+            ->where("type", EmployeeAddressType::PERMANENT)
+            ->withDefault();
     }
 
     public function current_employment(): HasOne
@@ -259,7 +261,7 @@ class Employee extends Model
 
     public function contact_person(): HasOne
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::CONTACT_PERSON);
+        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::CONTACT_PERSON)->withDefault();
     }
     public function guardian(): HasOne
     {
@@ -270,9 +272,9 @@ class Employee extends Model
         return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::SPOUSE);
     }
 
-    public function reference(): HasOne
+    public function reference(): HasMany
     {
-        return $this->hasOne(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::REFERENCE);
+        return $this->hasMany(EmployeeRelatedperson::class)->where('type', "=", EmployeeRelatedPersonType::REFERENCE);
     }
 
     public function employee_studies(): HasMany
@@ -282,17 +284,17 @@ class Employee extends Model
 
     public function masterstudies(): HasOne
     {
-        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::MASTER);
+        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::MASTER)->withDefault();
     }
 
     public function doctorstudies(): HasOne
     {
-        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::DOCTOR);
+        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::DOCTOR)->withDefault();
     }
 
     public function professionalstudies(): HasOne
     {
-        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::PROFESSIONAL);
+        return $this->hasOne(EmployeeStudies::class)->where('type', "=", EmployeeStudiesType::PROFESSIONAL)->withDefault();
     }
 
     public function child(): HasMany

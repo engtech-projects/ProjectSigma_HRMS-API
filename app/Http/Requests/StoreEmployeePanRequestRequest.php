@@ -53,6 +53,11 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "exists:employees,id",
                 'required_if:type,==,Termination,Transfer,Promotion',
             ],
+            'company_id_num' => [
+                "nullable",
+                "string",
+                'required_if:type,==,New Hire',
+            ],
             'hire_source' => [
                 "nullable",
                 "string",

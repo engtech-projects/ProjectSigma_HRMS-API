@@ -57,6 +57,7 @@ class EmployeePanRequest extends Model
         'type',
         'pan_job_applicant_id',
         'employee_id',
+        'company_id_num',
         'hire_source',
         'employment_status',
         'salary_type',
@@ -90,9 +91,9 @@ class EmployeePanRequest extends Model
     public function getFullNameAttribute()
     {
         if ($this->type == "New Hire") {
-            return $this->jobapplicant->lastname . ", " . $this->jobapplicant->firstname . " " . $this->jobapplicant->middlename;
+            return $this->jobapplicant?->lastname . ", " . $this->jobapplicant?->firstname . " " . $this->jobapplicant?->middlename;
         } else {
-            return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
+            return $this->employee?->family_name . ", " . $this->employee?->first_name . " " . $this->employee?->middle_name;
         }
     }
     public function requestCreatedAt(): Attribute
@@ -245,7 +246,7 @@ class EmployeePanRequest extends Model
 
         /*         dd($jobApplicant); */
         $employee->company_employments()->create([
-            "employeedisplay_id" => null,
+            "employeedisplay_id" => $this->company_id_num,
             "date_hired" => $this->date_of_effictivity,
             "phic_number" => $jobApplicant->philhealth ?: "N/A",
             "sss_number" => $jobApplicant->sss ?: "N/A",

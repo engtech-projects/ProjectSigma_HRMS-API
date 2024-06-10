@@ -22,6 +22,9 @@ use App\Models\EmployeePanRequest;
 use App\Http\Resources\EmployeePanRequestResource;
 use App\Http\Requests\StoreEmployeePanRequestRequest;
 use App\Http\Requests\UpdateEmployeePanRequestRequest;
+use App\Models\CompanyEmployee;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PersonnelActionNoticeRequestController extends Controller
 {
@@ -177,5 +180,20 @@ class PersonnelActionNoticeRequestController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function generateIdNum()
+    {
+        // Locate to get the last index of - + 1 for start
+        // max cast substring to get max number
+        $maxCompany = CompanyEmployee::addSelect(DB::raw("MAX(CAST(SUBSTRING(employeedisplay_id, LOCATE('-', employeedisplay_id, 6)+1, 4) AS UNSIGNED)) as companyid"))->first()->companyid;
+        $maxHiring = EmployeePanRequest::addSelect(DB::raw("MAX(CAST(SUBSTRING(company_id_num, 13, 4) AS UNSIGNED)) as companyid"))->first()->companyid;
+        $max = $maxCompany > $maxHiring ? $maxCompany : $maxHiring;
+        $date = Carbon::now()->format("ymj");
+        return response()->json([
+            "message" => "Success generate new Company ID.",
+            "success" => true,
+            "data" => "ECDC-" . $date . '-' . Str::padLeft($max + 1, 4, "0"),
+        ]);
     }
 }
