@@ -2,10 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\EmployeePersonnelActionNoticeRequest;
+use App\Models\EmployeePanRequest;
 use App\Models\User;
 
-class EmployeePersonnelActionNoticeRequestPolicy
+class EmployeePanRequestPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -18,7 +18,7 @@ class EmployeePersonnelActionNoticeRequestPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, EmployeePersonnelActionNoticeRequest $employeePersonnelActionNoticeRequest): bool
+    public function view(User $user, EmployeePanRequest $EmployeePanRequest): bool
     {
         //
     }
@@ -34,7 +34,7 @@ class EmployeePersonnelActionNoticeRequestPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, EmployeePersonnelActionNoticeRequest $employeePersonnelActionNoticeRequest): bool
+    public function update(User $user, EmployeePanRequest $EmployeePanRequest): bool
     {
         //
     }
@@ -42,7 +42,7 @@ class EmployeePersonnelActionNoticeRequestPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, EmployeePersonnelActionNoticeRequest $employeePersonnelActionNoticeRequest): bool
+    public function delete(User $user, EmployeePanRequest $EmployeePanRequest): bool
     {
         //
     }
@@ -50,7 +50,7 @@ class EmployeePersonnelActionNoticeRequestPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, EmployeePersonnelActionNoticeRequest $employeePersonnelActionNoticeRequest): bool
+    public function restore(User $user, EmployeePanRequest $EmployeePanRequest): bool
     {
         //
     }
@@ -58,7 +58,7 @@ class EmployeePersonnelActionNoticeRequestPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, EmployeePersonnelActionNoticeRequest $employeePersonnelActionNoticeRequest): bool
+    public function forceDelete(User $user, EmployeePanRequest $EmployeePanRequest): bool
     {
         //
     }

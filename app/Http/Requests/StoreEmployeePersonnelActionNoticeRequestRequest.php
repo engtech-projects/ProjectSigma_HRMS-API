@@ -8,7 +8,7 @@ use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreEmployeePersonnelActionNoticeRequestRequest extends FormRequest
+class StoreEmployeePanRequestRequest extends FormRequest
 {
     use HasApprovalValidation;
     /**

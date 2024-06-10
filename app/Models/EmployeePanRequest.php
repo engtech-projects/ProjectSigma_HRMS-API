@@ -20,7 +20,7 @@ use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class EmployeePersonnelActionNoticeRequest extends Model
+class EmployeePanRequest extends Model
 {
     use HasApiTokens;
     use HasFactory;
@@ -86,8 +86,8 @@ class EmployeePersonnelActionNoticeRequest extends Model
     public static function boot()
     {
         parent::boot();
-        static::creating(function ($employeePersonnelActionNoticeRequest) {
-            $employeePersonnelActionNoticeRequest->created_by = auth()->user()->id;
+        static::creating(function ($EmployeePanRequest) {
+            $EmployeePanRequest->created_by = auth()->user()->id;
         });
     }
 
@@ -105,7 +105,6 @@ class EmployeePersonnelActionNoticeRequest extends Model
             get: fn () => $this->created_at->format('F j, Y')
         );
     }
-
 
     public function scopeRequestStatusPending(Builder $query): void
     {
@@ -155,19 +154,24 @@ class EmployeePersonnelActionNoticeRequest extends Model
         return $this->hasOne(Employee::class, "id", "employee_id");
     }
 
+    public function position(): HasOne
+    {
+        return $this->hasOne(Position::class, "id", "position_id");
+    }
+
     public function completeRequestStatus()
     {
         switch ($this->type) {
-            case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
+            case EmployeePanRequest::NEW_HIRE:
                 $this->hireRequest();
                 break;
-            case EmployeePersonnelActionNoticeRequest::TRANSFER:
+            case EmployeePanRequest::TRANSFER:
                 $this->transferRequest();
                 break;
-            case EmployeePersonnelActionNoticeRequest::PROMOTION:
+            case EmployeePanRequest::PROMOTION:
                 $this->promotionRequest();
                 break;
-            case EmployeePersonnelActionNoticeRequest::TERMINATION:
+            case EmployeePanRequest::TERMINATION:
                 $this->terminationRequest();
                 break;
         }
@@ -237,8 +241,8 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employeeInternal = $this->toArray();
         unset($employeeInternal["id"]);
         $employeeInternal["status"] = EmployeeInternalWorkExperiencesStatus::CURRENT;
-        $employeeInternal['actual_salary'] = $this->salarygrade;
-        $employeeInternal["position_title"] = $this->designation_position;
+        $employeeInternal['actual_salary'] = $this->salarygrade->monthly_salary_amount;
+        $employeeInternal["position_id"] = $this->designation_position;
         $employeeInternal["employment_status"] = $this->employment_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employee->employee_internal()->create($employeeInternal);

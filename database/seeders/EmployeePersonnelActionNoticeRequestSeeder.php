@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class EmployeePersonnelActionNoticeRequestSeeder extends Seeder
+class EmployeePanRequestSeeder extends Seeder
 {
     /**
      * Run the database seeds.

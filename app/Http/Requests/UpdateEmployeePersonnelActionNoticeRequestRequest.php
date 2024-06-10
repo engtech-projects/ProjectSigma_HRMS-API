@@ -7,7 +7,7 @@ use App\Enums\SalaryRequestType;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateEmployeePersonnelActionNoticeRequestRequest extends FormRequest
+class UpdateEmployeePanRequestRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
