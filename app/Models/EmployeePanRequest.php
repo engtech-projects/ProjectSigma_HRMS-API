@@ -407,7 +407,7 @@ class EmployeePanRequest extends Model
         ]);
 
         Termination::create([
-            'employee_id' => $interWorkExp->id,
+            'employee_id' => $this->employee_id,
             'type_of_termination' => $this->type_of_termination,
             'reason_for_termination' => $this->reasons_for_termination,
             'eligible_for_rehire' => $this->eligible_for_rehire,
