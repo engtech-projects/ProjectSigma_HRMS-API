@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\EmployeePersonnelActionNoticeRequest>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\EmployeePanRequest>
  */
-class EmployeePersonnelActionNoticeRequestFactory extends Factory
+class EmployeePanRequestFactory extends Factory
 {
     /**
      * Define the model's default state.

@@ -54,11 +54,6 @@ class Overtime extends Model
         'end_time_human',
     ];
 
-    public function employee(): HasOne
-    {
-        return $this->hasOne(Employee::class, "id", "employee_id");
-    }
-
     public function employees(): BelongsToMany
     {
         return $this->belongsToMany(Employee::class, OvertimeEmployees::class);
@@ -74,13 +69,9 @@ class Overtime extends Model
         return $this->hasOne(Project::class, "id", "project_id");
     }
 
-    public function overtimeEmployees(): HasMany
-    {
-        return $this->hasMany(overtimeEmployees::class, 'overtime_id', 'id');
-    }
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'released_by');
+        return $this->belongsTo(User::class, 'prepared_by');
     }
 
     public function scopeRequestStatusPending(Builder $query): void
@@ -108,4 +99,15 @@ class Overtime extends Model
     {
         return Carbon::parse($this->overtime_end_time)->format("h:i A");
     }
+
+    function getChargingNameAttribute() {
+        if($this->project_id){
+            return $this->project->project_code;
+        }
+        if($this->department_id){
+            return $this->department->department_name;
+        }
+        return 'No charging found.';
+    }
+
 }

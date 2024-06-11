@@ -16,7 +16,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use App\Exceptions\TransactionFailedException;
 use App\Models\EmployeeAllowances;
-use App\Models\EmployeePersonnelActionNoticeRequest;
+use App\Models\EmployeePanRequest;
 use App\Models\PayrollRecord;
 use App\Models\SalaryGradeLevel;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -72,7 +72,7 @@ class RouteServiceProvider extends ServiceProvider
         $modelHasApprovals = [
             'ManpowerRequest' => ManpowerRequest::class,
             'FailureToLog' => FailureToLog::class,
-            'EmployeePanRequest' => EmployeePersonnelActionNoticeRequest::class,
+            'EmployeePanRequest' => EmployeePanRequest::class,
             'LeaveEmployeeRequest' => EmployeeLeaves::class,
             'TravelOrder' => TravelOrder::class,
             'CashAdvance' => CashAdvance::class,

@@ -51,16 +51,19 @@ class PayrollDetail extends Model
     {
         return $this->belongsTo(PayrollRecord::class);
     }
-    public function payroll_detail_deduction(): HasMany
+
+    public function deductions(): HasMany
     {
-        return $this->hasMany(PayrollDetailDeduction::class);
+        return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id')->with('deduction');
     }
-    public function sss_deduction()
+
+    public function adjustments(): HasMany
     {
-        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
+        return $this->hasMany(PayrollDetailsAdjustment::class, 'payroll_details_id');
     }
-    public function philhealth_deduction()
+
+    public function charges(): HasMany
     {
-        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
+        return $this->hasMany(PayrollDetailsCharging::class, 'payroll_details_id')->with('charge');
     }
 }

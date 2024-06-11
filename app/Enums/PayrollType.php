@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Enums;
 
 enum PayrollType: string
 {

@@ -272,7 +272,7 @@ class StoreJobApplicantsRequest extends FormRequest
                 "string",
             ],
             'blood_type' => [
-                "required",
+                "nullable",
                 "string",
             ],
             'date_of_marriage' => [

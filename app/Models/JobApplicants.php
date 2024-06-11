@@ -85,8 +85,23 @@ class JobApplicants extends Model
         "workexperience" => "array",
     ];
 
+    protected $appends = [
+        'fullname_last',
+        'fullname_first',
+    ];
+
     public function manpower(): BelongsTo
     {
         return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');
+    }
+
+    protected function getFullnameLastAttribute()
+    {
+        return $this->lastname . ", " . $this->firstname . " " . $this->middlename;
+    }
+
+    protected function getFullnameFirstAttribute()
+    {
+        return $this->firstname . " " . $this->middlename . " " . $this->lastname;
     }
 }

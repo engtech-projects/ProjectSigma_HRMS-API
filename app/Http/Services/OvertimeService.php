@@ -15,7 +15,7 @@ class OvertimeService
 
     public function getAll()
     {
-        return Overtime::with(['employee', 'department', 'project'])->get();
+        return Overtime::with("employees")->get();
     }
 
     public function create($attributes)
@@ -25,7 +25,7 @@ class OvertimeService
 
     public function getMyRequests()
     {
-        return Overtime::with(['employee', 'department', 'project'])
+        return Overtime::with(['employees', 'department', 'project'])
             ->where("created_by", auth()->user()->id)
             ->get();
     }
@@ -34,7 +34,7 @@ class OvertimeService
     {
         $userId = auth()->user()->id;
         return Overtime::requestStatusPending()
-            ->with(['employee', 'department'])
+            ->with(['employees', 'department'])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId])
             ->get();
@@ -59,7 +59,7 @@ class OvertimeService
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = Overtime::with(['employee', 'department', 'project'])
+        $result = Overtime::with(['employees', 'department', 'project'])
             ->requestStatusPending()
             ->authUserPending()
             ->get();

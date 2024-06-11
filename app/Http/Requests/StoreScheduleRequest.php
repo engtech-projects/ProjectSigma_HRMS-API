@@ -16,6 +16,15 @@ class StoreScheduleRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        if (gettype($this->daysOfWeek) == "string") {
+            $this->merge([
+                "daysOfWeek" => json_decode($this->daysOfWeek, false)
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

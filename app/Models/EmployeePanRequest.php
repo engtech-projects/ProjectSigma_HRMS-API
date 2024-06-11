@@ -20,7 +20,7 @@ use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class EmployeePersonnelActionNoticeRequest extends Model
+class EmployeePanRequest extends Model
 {
     use HasApiTokens;
     use HasFactory;
@@ -53,28 +53,25 @@ class EmployeePersonnelActionNoticeRequest extends Model
 
     protected $fillable = [
         'id',
-        'employee_id',
-        'type',
         'date_of_effictivity',
-        'section_department_id',
-        'designation_position',
+        'type',
+        'pan_job_applicant_id',
+        'employee_id',
+        'company_id_num',
         'hire_source',
+        'employment_status',
+        'salary_type',
+        'designation_position',
+        'salary_grades',
         'work_location',
-        'new_section_id',
-        'new_location',
-        'new_employment_status',
-        'new_position',
+        'section_department_id',
         'type_of_termination',
         'reasons_for_termination',
         'eligible_for_rehire',
         'last_day_worked',
-        'approvals',
+        'comments',
         'created_by',
-        'new_salary_grades',
-        'pan_job_applicant_id',
-        'salary_grades',
-        'salary_type',
-        'employment_status'
+        'approvals',
     ];
 
 
@@ -86,17 +83,17 @@ class EmployeePersonnelActionNoticeRequest extends Model
     public static function boot()
     {
         parent::boot();
-        static::creating(function ($employeePersonnelActionNoticeRequest) {
-            $employeePersonnelActionNoticeRequest->created_by = auth()->user()->id;
+        static::creating(function ($EmployeePanRequest) {
+            $EmployeePanRequest->created_by = auth()->user()->id;
         });
     }
 
     public function getFullNameAttribute()
     {
         if ($this->type == "New Hire") {
-            return $this->jobapplicant->lastname . ", " . $this->jobapplicant->firstname . " " . $this->jobapplicant->middlename;
+            return $this->jobapplicant?->lastname . ", " . $this->jobapplicant?->firstname . " " . $this->jobapplicant?->middlename;
         } else {
-            return $this->employee->family_name . ", " . $this->employee->first_name . " " . $this->employee->middle_name;
+            return $this->employee?->family_name . ", " . $this->employee?->first_name . " " . $this->employee?->middle_name;
         }
     }
     public function requestCreatedAt(): Attribute
@@ -105,7 +102,6 @@ class EmployeePersonnelActionNoticeRequest extends Model
             get: fn () => $this->created_at->format('F j, Y')
         );
     }
-
 
     public function scopeRequestStatusPending(Builder $query): void
     {
@@ -155,19 +151,24 @@ class EmployeePersonnelActionNoticeRequest extends Model
         return $this->hasOne(Employee::class, "id", "employee_id");
     }
 
+    public function position(): HasOne
+    {
+        return $this->hasOne(Position::class, "id", "designation_position");
+    }
+
     public function completeRequestStatus()
     {
         switch ($this->type) {
-            case EmployeePersonnelActionNoticeRequest::NEW_HIRE:
+            case EmployeePanRequest::NEW_HIRE:
                 $this->hireRequest();
                 break;
-            case EmployeePersonnelActionNoticeRequest::TRANSFER:
+            case EmployeePanRequest::TRANSFER:
                 $this->transferRequest();
                 break;
-            case EmployeePersonnelActionNoticeRequest::PROMOTION:
+            case EmployeePanRequest::PROMOTION:
                 $this->promotionRequest();
                 break;
-            case EmployeePersonnelActionNoticeRequest::TERMINATION:
+            case EmployeePanRequest::TERMINATION:
                 $this->terminationRequest();
                 break;
         }
@@ -237,15 +238,15 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $employeeInternal = $this->toArray();
         unset($employeeInternal["id"]);
         $employeeInternal["status"] = EmployeeInternalWorkExperiencesStatus::CURRENT;
-        $employeeInternal['actual_salary'] = $this->salarygrade;
-        $employeeInternal["position_title"] = $this->designation_position;
+        $employeeInternal['actual_salary'] = $this->salarygrade->monthly_salary_amount;
+        $employeeInternal["position_id"] = $this->designation_position;
         $employeeInternal["employment_status"] = $this->employment_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employee->employee_internal()->create($employeeInternal);
 
         /*         dd($jobApplicant); */
         $employee->company_employments()->create([
-            "employeedisplay_id" => null,
+            "employeedisplay_id" => $this->company_id_num,
             "date_hired" => $this->date_of_effictivity,
             "phic_number" => $jobApplicant->philhealth ?: "N/A",
             "sss_number" => $jobApplicant->sss ?: "N/A",
@@ -354,22 +355,14 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
-        InternalWorkExperience::create([
-            // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
-            'department_id' => $this->new_section_id ?? $interWorkExp->department_id,
-            'work_location' => $this->new_location ?? $interWorkExp->work_location,
-            'date_from' => $this->date_of_effictivity,
-            // NO CHANGES ( COPY FROM OLD )
-            'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
-            'employee_id' => $interWorkExp->employee_id,
-            'position_title' => $interWorkExp->position_title,
-            'employment_status' => $interWorkExp->employment_status,
-            'hire_source' => $interWorkExp->hire_source,
-            'salary_grades' => $interWorkExp->salary_grades,
-            'actual_salary' => $interWorkExp->actual_salary,
-            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
-            'date_to' => null,
-        ]);
+        $newInterWorkExp = $interWorkExp->toArray();
+        unset($newInterWorkExp["id"]);
+        $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
+        $newInterWorkExp['work_location'] = $this->work_location ?? $interWorkExp->work_location;
+        $newInterWorkExp['date_from'] = $this->date_of_effictivity;
+        $newInterWorkExp['date_to'] = null;
+        $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        InternalWorkExperience::create($newInterWorkExp);
     }
 
     /** Promotion Employee PAN request approved
@@ -387,22 +380,16 @@ class EmployeePersonnelActionNoticeRequest extends Model
         $interWorkExp->date_to = $this->date_of_effictivity;
         $interWorkExp->save();
 
-        InternalWorkExperience::create([
-            // UPDATED VALUES, BUT NOT REQUIRED, COPY FROM OLD IF NO NEW
-            'position_title' => $this->new_position ?? $interWorkExp->position_title,
-            'employment_status' => $this->new_employment_status ?? $interWorkExp->position_title,
-            'salary_grades' => $this->new_salary_grades ?? $interWorkExp->salary_grades,
-            'actual_salary' => $this->salarygrade?->monthly_salary_amount ?? "",
-            'date_from' => $this->date_of_effictivity,
-            // NO CHANGES ( COPY FROM OLD )
-            'employee_id' => $interWorkExp->employee_id,
-            'department_id' => $interWorkExp->department_id,
-            'immediate_supervisor' => $interWorkExp->immediate_supervisor ?? "N/A",
-            'work_location' => $interWorkExp->work_location,
-            'hire_source' => $interWorkExp->hire_source,
-            'date_to' => null,
-            'status' => EmployeeInternalWorkExperiencesStatus::CURRENT,
-        ]);
+        $newInterWorkExp = $interWorkExp->toArray();
+        unset($newInterWorkExp["id"]);
+        $newInterWorkExp['position_id'] = $this->designation_position ?? $interWorkExp->position_id;
+        $newInterWorkExp['employment_status'] = $this->employment_status ?? $interWorkExp->employment_status;
+        $newInterWorkExp['salary_grades'] = $this->salary_grades ?? $interWorkExp->salary_grades;
+        $newInterWorkExp['actual_salary'] = $this->salarygrade?->monthly_salary_amount ?? $interWorkExp->actual_salary;
+        $newInterWorkExp['date_from'] = $this->date_of_effictivity;
+        $newInterWorkExp['date_to'] = null;
+        $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
+        InternalWorkExperience::create($newInterWorkExp);
     }
     /** Termination Employee PAN  request approved
      * to terminate proccessed.
@@ -420,10 +407,11 @@ class EmployeePersonnelActionNoticeRequest extends Model
         ]);
 
         Termination::create([
-            'employee_id' => $interWorkExp->id,
+            'employee_id' => $this->employee_id,
             'type_of_termination' => $this->type_of_termination,
             'reason_for_termination' => $this->reasons_for_termination,
             'eligible_for_rehire' => $this->eligible_for_rehire,
+            'last_day_worked' => $this->last_day_worked,
         ]);
     }
     public function rehire()

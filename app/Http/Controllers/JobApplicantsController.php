@@ -48,7 +48,8 @@ class JobApplicantsController extends Controller
             ->where("status", JobApplicationStatusEnums::FOR_HIRING)
             ->limit(25)
             ->orderBy('lastname')
-            ->get();
+            ->get()
+            ->append(["fullname_first", "fullname_last"]);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

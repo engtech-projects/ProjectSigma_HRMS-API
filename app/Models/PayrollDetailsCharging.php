@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class PayrollDetailsCharging extends Model
 {
@@ -29,7 +30,7 @@ class PayrollDetailsCharging extends Model
 
     public function payroll_details(): BelongsTo
     {
-        return $this->belongsTo(payrollDetails::class);
+        return $this->belongsTo(PayrollDetail::class);
     }
 
     public function charge(): MorphTo
