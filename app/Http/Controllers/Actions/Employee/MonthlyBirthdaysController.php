@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Actions\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\EmployeeBirthdays;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 
@@ -24,7 +25,7 @@ class MonthlyBirthdaysController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => $employees,
+            'data' => EmployeeBirthdays::collection($employees),
         ]);
     }
 }
