@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreEventsRequest extends FormRequest
 {
@@ -28,7 +29,8 @@ class StoreEventsRequest extends FormRequest
             ],
             'event_type' => [
                 "required",
-                'in:Holiday,Company Event'
+                "string",
+                new Enum(EventTypes::class)
             ],
             'repetition_type' => [
                 "required",
