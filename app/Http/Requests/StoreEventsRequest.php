@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EventTypes;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
