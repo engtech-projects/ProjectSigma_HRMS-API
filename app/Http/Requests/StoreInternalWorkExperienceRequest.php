@@ -13,9 +13,9 @@ class StoreInternalWorkExperienceRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize($request): bool
     {
-        return true;
+        return in_array($request->user()->id, config('app.salary_grade_setter'));
     }
 
     /**
