@@ -30,6 +30,7 @@ trait Attendance
         $totalLate = 0;
         $undertime = 0;
         $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
+        $lateAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value;
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
@@ -48,6 +49,9 @@ trait Attendance
                 if ($lateMinutes <= $lateAllowance) {
                     $dtrIn= $startTime;
                     $lateMinutes = 0;
+                }
+                if ($lateMinutes >= $lateAbsent) {
+                    $dtrIn= $dtrOut;
                 }
                 $totalLate += $lateMinutes;
             }
