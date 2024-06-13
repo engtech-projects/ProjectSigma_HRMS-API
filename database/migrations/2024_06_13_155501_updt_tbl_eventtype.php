@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->enum('event_type', ["Regular Holiday", "Special Holiday", "Company Event"])->change();
+            $table->enum('event_type', ['Regular Holiday', 'Special Holiday', 'Company Event'])->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->enum('event_type', ["Holiday","Company Event"])->change();
+            $table->enum('event_type', ['Holiday','Company Event'])->change();
         });
     }
 };
