@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,9 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->enum('event_type', ['Regular Holiday', 'Special Holiday', 'Company Event'])->change();
-        });
+        // Schema::table('events', function (Blueprint $table) {
+        //     $table->enum('event_type', ['Regular Holiday', 'Special Holiday', 'Company Event'])->change();
+        // });
+        DB::statement("ALTER TABLE `events` CHANGE `event_type` `event_type` ENUM('Regular Holiday', 'Special Holiday', 'Company Event') NOT NULL; ");
     }
 
     /**
