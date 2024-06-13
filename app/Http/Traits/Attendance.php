@@ -31,7 +31,6 @@ trait Attendance
         $undertime = 0;
         $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
         foreach ($attendances as $attendance) {
-            $durationMins = 0;
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
             if(!$timeIn || !$timeOut){
@@ -43,12 +42,11 @@ trait Attendance
             $endTime = Carbon::parse($attendance["endTime"]);
             $dtrIn = $in->gt($startTime) ? $in : $startTime;
             $dtrOut = $out->gt($endTime) ? $endTime : $out;
-            $durationMins += $dtrIn->diffInMinutes($dtrOut);
 
             if ($in->gt($attendance["startTime"])) {
                 $lateMinutes = $startTime->diffInMinutes($in);
                 if ($lateMinutes <= $lateAllowance) {
-                    $durationMins += $lateMinutes;
+                    $dtrIn= $startTime;
                     $lateMinutes = 0;
                 }
                 $totalLate += $lateMinutes;
@@ -57,7 +55,7 @@ trait Attendance
                 $undertimeMinutes = $out->diffInMinutes($endTime);
                 $undertime += $undertimeMinutes;
             }
-            $duration += round($durationMins / 60, 2);
+            $duration += round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
         }
         return [
             "rendered" => $duration,
