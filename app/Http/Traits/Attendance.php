@@ -3,11 +3,13 @@
 namespace App\Http\Traits;
 
 use App\Enums\AttendanceLogType;
+use App\Enums\AttendanceSettings;
 use App\Helpers;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Events;
 use App\Models\Leave;
+use App\Models\Settings;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -27,6 +29,7 @@ trait Attendance
         $duration = 0;
         $totalLate = 0;
         $undertime = 0;
+        $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
@@ -43,6 +46,10 @@ trait Attendance
 
             if ($in->gt($attendance["startTime"])) {
                 $lateMinutes = $startTime->diffInMinutes($in);
+                if ($lateMinutes <= $lateAllowance) {
+                    $duration += $lateMinutes;
+                    $lateMinutes = 0;
+                }
                 $totalLate += $lateMinutes;
             }
             if ($endTime->gt($out)) {
