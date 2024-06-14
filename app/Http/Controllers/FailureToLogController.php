@@ -40,7 +40,10 @@ class FailureToLogController extends Controller
     public function store(StoreFailureToLogRequest $request)
     {
         try {
-            FailureToLog::create($request->validated());
+            $valid = $request->validated();
+            if($valid){
+                FailureToLog::create($request->validated());
+            }
         } catch (\Exception $e) {
             throw new TransactionFailedException("Transaction failed.", 500, $e);
         }
