@@ -60,8 +60,9 @@ class StoreTravelOrderRequest extends FormRequest
             ],
             'duration_of_travel' => [
                 "required",
-                "integer",
-                "min:1"
+                "numeric",
+                "min:0",
+                'decimal:0,2',
             ],
             'means_of_transportation' => [
                 "required",

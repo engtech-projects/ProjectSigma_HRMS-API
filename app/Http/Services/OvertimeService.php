@@ -15,7 +15,7 @@ class OvertimeService
 
     public function getAll()
     {
-        return Overtime::with("employees")->get();
+        return Overtime::with("employees")->orderBy('created_at', 'desc')->get();
     }
 
     public function create($attributes)
@@ -27,6 +27,7 @@ class OvertimeService
     {
         return Overtime::with(['employees', 'department', 'project'])
             ->where("created_by", auth()->user()->id)
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 

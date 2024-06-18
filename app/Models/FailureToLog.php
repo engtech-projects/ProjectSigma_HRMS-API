@@ -6,6 +6,7 @@ use App\Traits\HasApproval;
 use App\Enums\AttendanceLogType;
 use App\Enums\PersonelAccessForm;
 use App\Models\Traits\HasEmployee;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +24,7 @@ class FailureToLog extends Model
         'log_type',
         'reason',
         'approvals',
+        'request_status',
         'employee_id',
     ];
     protected $casts = [
@@ -79,5 +81,15 @@ class FailureToLog extends Model
             return true;
         }
         return false;
+    }
+
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
+
+    public function scopeRequestStatusApproved(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 }
