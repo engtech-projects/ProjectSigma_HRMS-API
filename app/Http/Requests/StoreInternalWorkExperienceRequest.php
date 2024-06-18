@@ -6,6 +6,7 @@ use App\Enums\EmploymentType;
 use App\Enums\PersonelAccessForm;
 use App\Enums\SalaryRequestType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreInternalWorkExperienceRequest extends FormRequest
@@ -13,9 +14,9 @@ class StoreInternalWorkExperienceRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize($request): bool
+    public function authorize(): bool
     {
-        return in_array($request->user()->id, config('app.salary_grade_setter'));
+        return in_array(Auth::user()->id, config('app.201_editor'));
     }
 
     /**
@@ -66,16 +67,12 @@ class StoreInternalWorkExperienceRequest extends FormRequest
             'work_location' => [
                 "required",
                 "string",
-                'in:pms,office,project_code'
+                'in:Office,Project Code'
             ],
             'hire_source' => [
                 "required",
                 "string",
-                'in:internal,external'
-            ],
-            'status' => [
-                "required",
-                'in:current,previous'
+                'in:Internal,External'
             ],
             'date_from' => [
                 "nullable",

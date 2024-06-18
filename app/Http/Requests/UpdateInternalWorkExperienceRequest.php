@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\PersonelAccessForm;
 use App\Enums\SalaryRequestType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
 
 class UpdateInternalWorkExperienceRequest extends FormRequest
@@ -12,9 +13,9 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize($request): bool
+    public function authorize(): bool
     {
-        return in_array($request->user()->id, config('app.salary_grade_setter'));
+        return in_array(Auth::user()->id, config('app.201_editor'));
     }
 
     /**
@@ -30,9 +31,10 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
-            'position_title' => [
+            'position_id' => [
                 "nullable",
-                "string"
+                "integer",
+                "exists:positions,id",
             ],
             'employment_status' => [
                 "nullable",
@@ -59,16 +61,12 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
             'work_location' => [
                 "nullable",
                 "string",
-                'in:pms,office,project_code'
+                'in:Office,Project Code'
             ],
             'hire_source' => [
                 "nullable",
                 "string",
-                'in:internal,external'
-            ],
-            'status' => [
-                "nullable",
-                'in:active,inactive'
+                'in:Internal,External'
             ],
             'date_from' => [
                 "nullable",
