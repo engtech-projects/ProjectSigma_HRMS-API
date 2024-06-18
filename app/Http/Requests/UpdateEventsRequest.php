@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EventTypes;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateEventsRequest extends FormRequest
 {
@@ -28,7 +30,8 @@ class UpdateEventsRequest extends FormRequest
             ],
             'event_type' => [
                 "nullable",
-                'in:Holiday,Company Event'
+                "string",
+                new Enum(EventTypes::class)
             ],
             'repetition_type' => [
                 "nullable",

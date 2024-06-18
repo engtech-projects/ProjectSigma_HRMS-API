@@ -80,8 +80,8 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 10,
-                    'accessibilities_name' => "hrms:employee_201",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => "hrms:employee_201_edit",
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],

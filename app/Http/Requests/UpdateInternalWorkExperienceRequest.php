@@ -2,19 +2,21 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\PersonelAccessForm;
 use App\Enums\SalaryRequestType;
+use App\Http\Traits\CheckAccessibility;
+use App\Models\Accessibilities;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class UpdateInternalWorkExperienceRequest extends FormRequest
 {
+    use CheckAccessibility;
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->checkUserAccess([Accessibilities::HRMS_EMPLOYEE_201_EDIT]);
     }
 
     /**
@@ -30,9 +32,10 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
-            'position_title' => [
+            'position_id' => [
                 "nullable",
-                "string"
+                "integer",
+                "exists:positions,id",
             ],
             'employment_status' => [
                 "nullable",
@@ -59,16 +62,12 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
             'work_location' => [
                 "nullable",
                 "string",
-                'in:pms,office,project_code'
+                'in:Office,Project Code'
             ],
             'hire_source' => [
                 "nullable",
                 "string",
-                'in:internal,external'
-            ],
-            'status' => [
-                "nullable",
-                'in:active,inactive'
+                'in:Internal,External'
             ],
             'date_from' => [
                 "nullable",

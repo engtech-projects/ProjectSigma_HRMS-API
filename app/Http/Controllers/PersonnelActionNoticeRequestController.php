@@ -6,11 +6,8 @@ use Carbon\Carbon;
 use App\Models\Employee;
 use App\Models\Termination;
 use App\Models\JobApplicants;
-use App\Models\ManpowerRequest;
 use Illuminate\Http\JsonResponse;
 use App\Enums\EmployeeAddressType;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\StoreDisapprove;
 use App\Models\InternalWorkExperience;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Utils\PaginateResourceCollection;
@@ -43,7 +40,7 @@ class PersonnelActionNoticeRequestController extends Controller
         $paginated = EmployeePanRequestResource::collection($panRequest);
         return new JsonResponse([
             "success" => true,
-            "message" => "Successfully fetch.",
+            "message" => "Successfully fetched.",
             "data" => PaginateResourceCollection::paginate(collect($paginated), 15)
         ]);
     }
@@ -81,10 +78,11 @@ class PersonnelActionNoticeRequestController extends Controller
                 "message" => "No data found.",
             ]);
         }
+        $paginated = EmployeePanRequestResource::collection($noticeRequest);
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",
-            "data" => EmployeePanRequestResource::collection($noticeRequest)
+            "data" => PaginateResourceCollection::paginate(collect($paginated), 15)
         ]);
     }
 
@@ -107,14 +105,6 @@ class PersonnelActionNoticeRequestController extends Controller
         ]);
     }
 
-    public function failedMessage($newdata, $message)
-    {
-        $newdata->success = false;
-        $newdata->message = $message;
-        // $newdata->message = "Failed approved.";
-        return response()->json($newdata);
-    }
-
     /**
      * Display the specified resource.
      */
@@ -123,7 +113,7 @@ class PersonnelActionNoticeRequestController extends Controller
         $main = EmployeePanRequest::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
-            $data->message = "Successfully fetch.";
+            $data->message = "Successfully fetched.";
             $data->success = true;
             $data->data = $main;
             return response()->json($data);

@@ -27,18 +27,23 @@ class EventsController extends Controller
     public function store(StoreEventsRequest $request)
     {
         $main = new Events();
-        $main->fill($request->validated());
+        $valid = $request->validated();
         $data = json_decode('{}');
-
-        if (!$main->save()) {
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        if($valid){
+            $main->fill($valid);
+            if (!$main->save()) {
+                $data->message = "Save failed.";
+                $data->success = false;
+                return response()->json($data, 400);
+            }
+            $data->message = "Successfully save.";
+            $data->success = true;
+            $data->data = $main;
+            return response()->json($data);
         }
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $data->message = "Save failed.";
+        $data->success = false;
+        return response()->json($data, 400);
     }
 
     /**
