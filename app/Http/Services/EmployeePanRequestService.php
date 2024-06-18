@@ -14,22 +14,19 @@ class EmployeePanRequestService
 
     public function getAll()
     {
-        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])->orderBy('created_at', 'desc')->get();
+        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])->get();
     }
 
     public function create($attributes)
     {
         return EmployeePanRequest::create($attributes);
     }
-
     public function getMyRequests()
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->where("created_by", auth()->user()->id)
-            ->orderBy('created_at', 'desc')
             ->get();
     }
-
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
