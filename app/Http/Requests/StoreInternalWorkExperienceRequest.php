@@ -5,18 +5,21 @@ namespace App\Http\Requests;
 use App\Enums\EmploymentType;
 use App\Enums\PersonelAccessForm;
 use App\Enums\SalaryRequestType;
+use App\Http\Traits\CheckAccessibility;
+use App\Models\Accessibilities;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreInternalWorkExperienceRequest extends FormRequest
 {
+    use CheckAccessibility;
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return in_array(Auth::user()->id, config('app.201_editor'));
+        return false; // FALSE TO DISABLE CREATING DIRECTLY
     }
 
     /**
