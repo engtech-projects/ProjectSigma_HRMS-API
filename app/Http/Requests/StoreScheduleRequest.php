@@ -66,8 +66,9 @@ class StoreScheduleRequest extends FormRequest
             'daysOfWeek' => [
                 "nullable",
                 "array",
-                "required_if:scheduleType,==,Regular",
-                "exclude_if:scheduleType,!=,Regular"
+                "min:1",
+                "required_if:scheduleType,Regular",
+                "exclude_if:scheduleType,Irregular"
             ],
             'daysOfWeek.*' => [
                 "required",
