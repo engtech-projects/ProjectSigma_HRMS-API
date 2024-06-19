@@ -12,10 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Schema::table('events', function (Blueprint $table) {
-        //     $table->enum('event_type', ['Regular Holiday', 'Special Holiday', 'Company Event'])->change();
-        // });
-        DB::statement("ALTER TABLE `events` CHANGE `event_type` `event_type` ENUM('Regular Holiday', 'Special Holiday', 'Company Event') NOT NULL; ");
+        Schema::useNativeSchemaOperationsIfPossible();
+        Schema::table('events', function (Blueprint $table) {
+            $table->enum('event_type', ['Regular Holiday', 'Special Holiday', 'Company Event'])->change();
+        });
+        Schema::useNativeSchemaOperationsIfPossible(false);
     }
 
     /**
@@ -23,8 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('events', function (Blueprint $table) {
             $table->enum('event_type', ['Holiday','Company Event'])->change();
         });
+        Schema::useNativeSchemaOperationsIfPossible(false);
     }
 };
