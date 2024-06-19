@@ -16,6 +16,7 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        return true; // Temp for ID Deployment
         return $this->checkUserAccess([Accessibilities::HRMS_EMPLOYEE_201_EDIT]);
     }
 

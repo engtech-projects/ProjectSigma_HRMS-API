@@ -14,9 +14,9 @@ trait CheckAccessibility
             return true;
         }
         $userAllowed = false;
-        $allowedAccessibilities->each(function($element) use($userAccessibilities, $userAllowed) {
-            $userAccessibilities->each(function($useraccess) use($element, $userAllowed) {
-                if ($useraccess->startsWith($element)) {
+        collect($allowedAccessibilities)->each(function($element) use($userAccessibilities, $userAllowed) {
+            collect($userAccessibilities)->each(function($useraccess) use($element, $userAllowed) {
+                if (str_starts_with($useraccess, $element)) {
                     $userAllowed = true;
                 }
             });
