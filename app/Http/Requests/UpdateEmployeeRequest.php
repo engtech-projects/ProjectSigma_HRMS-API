@@ -89,8 +89,7 @@ class UpdateEmployeeRequest extends FormRequest
             ],
             'religion' => [
                 "nullable",
-                "string",
-                "max:35"
+                "string"
             ],
             'weight' => [
                 "nullable",

@@ -88,9 +88,8 @@ class StoreEmployeeRequest extends FormRequest
                 "max:35"
             ],
             'religion' => [
-                "required",
-                "string",
-                "max:35"
+                "nullable",
+                "string"
             ],
             'weight' => [
                 "required",
