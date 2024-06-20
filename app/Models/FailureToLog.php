@@ -7,6 +7,7 @@ use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
 use App\Enums\PersonelAccessForm;
 use App\Models\Traits\HasEmployee;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -100,5 +101,15 @@ class FailureToLog extends Model
     public function scopeRequestStatusApproved(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
+    }
+
+    public function getTimeHumanAttribute()
+    {
+        return Carbon::parse($this->time)->format("h:i A");
+    }
+
+    public function getDateHumanAttribute()
+    {
+        return Carbon::parse($this->date)->format("F j, Y");
     }
 }

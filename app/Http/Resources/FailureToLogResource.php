@@ -17,7 +17,9 @@ class FailureToLogResource extends JsonResource
         return [
             'id' => $this->id,
             'date' => $this->date,
+            'date_human' => $this->date_human,
             'time' => $this->time,
+            'time_human' => $this->time_human,
             'log_type' => $this->log_type,
             'reason' => $this->reason,
             'approvals' => ApprovalAttributeResource::collection($this->approvals),
