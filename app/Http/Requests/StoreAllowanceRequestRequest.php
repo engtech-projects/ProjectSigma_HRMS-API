@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use App\Http\Traits\HasApprovalValidation;
 
-class StoreEmployeeAllowancesRequest extends FormRequest
+class StoreAllowanceRequestRequest extends FormRequest
 {
     use HasApprovalValidation;
     /**
@@ -80,18 +80,6 @@ class StoreEmployeeAllowancesRequest extends FormRequest
             'total_days' => [
                 "required",
                 "integer",
-            ],
-            'allowance_rate' => [
-                "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
-            ],
-            'allowance_days' => [
-                "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
             ],
             ...$this->storeApprovals(),
         ];
