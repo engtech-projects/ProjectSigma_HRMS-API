@@ -34,7 +34,7 @@ trait Attendance
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
-            if(!$timeOut && $data["overtime"]) {
+            if(!$timeOut && sizeof($data["overtime"]) > 0) {
                 $timeOut = (object)["time" => $attendance["endTime"]];
             }
             if(!$timeIn || !$timeOut){

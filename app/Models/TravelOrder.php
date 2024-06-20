@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
+use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,7 +30,6 @@ class TravelOrder extends Model
         "approvals" => "array",
         "date_of_travel" => "date:Y-m-d",
         "time_of_travel" => "date:H:i",
-        "date_of_absence_to" => "date:Y-m-d"
     ];
 
     protected $fillable = [
@@ -75,5 +75,14 @@ class TravelOrder extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function getTimeOfTravelHumanAttribute()
+    {
+        return Carbon::parse($this->time_of_travel)->format("h:i A");
+    }
+    public function getDateOfTravelHumanAttribute()
+    {
+        return Carbon::parse($this->date_of_travel)->format("F j, Y");
     }
 }
