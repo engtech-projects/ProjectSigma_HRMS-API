@@ -181,10 +181,6 @@ class Schedule extends Model
         });
     }
 
-
-
-
-
     public function scopePayrollSchedule(Builder $query, array $filters = [])
     {
         $query->whereBetween('startRecur', array($filters['cutoff_start'], $filters['cutoff_end']))

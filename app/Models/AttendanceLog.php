@@ -31,7 +31,7 @@ class AttendanceLog extends Model
 
     protected $cast = [
         'date' => 'date:Y-m-d',
-        'time' => 'time:H:i:s',
+        'time' => 'time:H:i',
         'attendace_type' => AttendanceType::class,
         'log_type' => AttendanceLogType::class,
         'project_id' => 'integer',
