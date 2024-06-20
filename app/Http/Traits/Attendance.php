@@ -34,6 +34,9 @@ trait Attendance
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
+            if(!$timeOut && $data["overtime"]) {
+                $timeOut = (object)["time" => $attendance["endTime"]];
+            }
             if(!$timeIn || !$timeOut){
                 continue;
             }
@@ -102,7 +105,15 @@ trait Attendance
         $total = 0;
         if ($overtime) {
             foreach ($overtime as $otVal) {
-                $total += $otVal->overtime_start_time->diffInHours($otVal->overtime_end_time);
+                $appliedOut = $otVal["applied_out"];
+                if(!$appliedOut){
+                    continue;
+                }
+                $timeOut = Carbon::parse($appliedOut->time);
+                $schedOut = Carbon::parse($otVal['overtime_end_time']);
+                $renderIn = Carbon::parse($otVal['overtime_start_time']);
+                $renderOut = $timeOut->gt($schedOut) ? $schedOut : $timeOut;
+                $total += round($renderIn->diffInMinutes($renderOut) / 60, 2);
             }
         }
         return $total;

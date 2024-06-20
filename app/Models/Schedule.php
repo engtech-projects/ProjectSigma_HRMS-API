@@ -42,8 +42,8 @@ class Schedule extends Model
 
     protected $casts = [
         'daysOfWeek' => 'array',
-        'startTime' => 'date:H:i:s',
-        'endTime' => 'date:H:i:s',
+        'startTime' => 'date:H:i',
+        'endTime' => 'date:H:i',
         'startRecur' => 'date:Y-m-d',
         'endRecur' => 'date:Y-m-d',
     ];
@@ -180,10 +180,6 @@ class Schedule extends Model
             $query->whereDate('startRecur', '<=', $date)->whereNull('endRecur');
         });
     }
-
-
-
-
 
     public function scopePayrollSchedule(Builder $query, array $filters = [])
     {

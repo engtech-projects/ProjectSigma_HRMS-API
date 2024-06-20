@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AttendanceLogType;
 use App\Enums\PersonelAccessForm;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
@@ -30,7 +31,6 @@ class Overtime extends Model
 
     protected $fillable = [
         'id',
-        'employee_id',
         'project_id',
         'department_id',
         'overtime_date',
@@ -44,8 +44,8 @@ class Overtime extends Model
 
     protected $casts = [
         'approvals' => 'array',
-        'overtime_start_time' => 'date:H:i:s',
-        'overtime_end_time' => 'date:H:i:s',
+        'overtime_start_time' => 'date:H:i',
+        'overtime_end_time' => 'date:H:i',
         'overtime_date' => "datetime:Y-m-d",
     ];
 
@@ -108,6 +108,30 @@ class Overtime extends Model
             return $this->department->department_name;
         }
         return 'No charging found.';
+    }
+
+    public function getAttendanceLogInsAttribute()
+    {
+        $bufferInTimeEarly = Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
+        $bufferInTimeLate = Carbon::parse($this->overtime_start_time)->addHour((int)config("app.login_late"));
+        return AttendanceLog::with(["department", "project"])
+            ->where("log_type", AttendanceLogType::TIME_IN)
+            ->whereDate("date", "=", $this->overtime_date)
+            ->whereTime('time', ">=", $bufferInTimeEarly)
+            ->whereTime('time', "<=", $bufferInTimeLate)
+            ->get();
+    }
+
+    public function getAttendanceLogOutsAttribute()
+    {
+        $bufferOutTimeEarly = $this->overtime_start_time;
+        $bufferOutTimeLate = $this->overtime_end_time->addUnitNoOverflow("hour", (int)config("app.logout_late"), "day");
+        return AttendanceLog::with(["department", "project"])
+            ->where("log_type", AttendanceLogType::TIME_OUT)
+            ->whereDate("date", "=", $this->overtime_date)
+            ->whereTime('time', ">=", $bufferOutTimeEarly)
+            ->whereTime('time', "<=", $bufferOutTimeLate)
+            ->get();
     }
 
 }

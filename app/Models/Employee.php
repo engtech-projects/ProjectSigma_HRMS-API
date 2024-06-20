@@ -387,6 +387,7 @@ class Employee extends Model
         }
         return collect([]); // returns collection of empty array if no schedule is found
     }
+
     public function applied_schedule_with_attendance($date)
     {
         $schedWithLogs =  $this->applied_schedule($date);
@@ -395,6 +396,19 @@ class Employee extends Model
                 ...$sched->toArray(),
                 "applied_ins" => $sched->attendance_log_ins?->where("employee_id", $this->id)->where("date", $date)->first(),
                 "applied_outs" => $sched->attendance_log_outs?->where("employee_id", $this->id)->where("date", $date)->last()
+            ];
+        });
+
+    }
+
+    public function applied_overtime_with_attendance($date)
+    {
+        $otSchedWithLogs =  $this->employee_overtime()->whereDate('overtime_date', "=", $date)->get();
+        return $otSchedWithLogs->map(function ($sched) use ($date) {
+            return [
+                ...$sched->toArray(),
+                "applied_in" => $sched->attendance_log_ins?->where("employee_id", $this->id)->first(),
+                "applied_out" => $sched->attendance_log_outs?->where("employee_id", $this->id)->last()
             ];
         });
 

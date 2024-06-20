@@ -14,7 +14,7 @@ class EmployeePanRequestService
 
     public function getAll()
     {
-        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])->get();
+        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])->orderBy('created_at', 'desc')->get();
     }
 
     public function create($attributes)

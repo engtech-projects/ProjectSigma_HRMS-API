@@ -15,7 +15,7 @@ class EmployeeService
         $schedules_attendances = $employee->applied_schedule_with_attendance($date);
         $events = $employee->events_dtr($date);
         $travelOrders = $employee->travel_order_dtr($date);
-        $overtime = $employee->employee_overtime()->where('overtime_date', $date)->get();
+        $overtime = $employee->applied_overtime_with_attendance($date);
 
         $leave = $employee->leave_dtr($date);
         $collection = [
