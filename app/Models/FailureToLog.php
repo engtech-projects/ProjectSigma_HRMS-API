@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasApproval;
 use App\Enums\AttendanceLogType;
+use App\Enums\AttendanceType;
 use App\Enums\PersonelAccessForm;
 use App\Models\Traits\HasEmployee;
 use Illuminate\Database\Eloquent\Builder;
@@ -46,6 +47,14 @@ class FailureToLog extends Model
     public function completeRequestStatus()
     {
         $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
+        AttendanceLog::create([
+            'date' => $this->date,
+            'time' => $this->time,
+            'log_type' => $this->log_type,
+            'attendance_type' => AttendanceType::MANUAL, // SHOULD BE FAILURE TO LOG
+            'department_id' => 4, // DEFAULT NEED TO ADD Charging Morph in FAILURE TO LOG
+            'employee_id' => $this->employee_id,
+        ]);
         $this->save();
         $this->refresh();
     }
