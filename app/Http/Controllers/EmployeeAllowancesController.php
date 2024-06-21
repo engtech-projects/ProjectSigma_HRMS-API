@@ -129,30 +129,31 @@ class EmployeeAllowancesController extends Controller
                             $data_amt = $data->current_employment->position->allowances->amount;
                             $employee_allowance = new EmployeeAllowances();
                             $allowance_request = new AllowanceRequest();
-                            $type = $request["group_type"];
+                            $type = $valData["group_type"];
                             switch ($type) {
                                 case AssignTypes::DEPARTMENT->value:
                                     $allowance_request->charge_assignment_type = EmployeeAllowancesController::DEPARTMENT;
-                                    $allowance_request->charge_assignment_id = $request["department_id"];
+                                    $allowance_request->charge_assignment_id = $valData["department_id"];
                                     break;
                                 case AssignTypes::PROJECT->value:
                                     $allowance_request->charge_assignment_type = EmployeeAllowancesController::PROJECT;
-                                    $allowance_request->charge_assignment_id = $request["project_id"];
+                                    $allowance_request->charge_assignment_id = $valData["project_id"];
                                     break;
                             }
-                            $allowance_request->allowance_date = $request["allowance_date"];
+                            $allowance_request->allowance_date = $valData["allowance_date"];
                             $allowance_request->allowance_amount = $data_amt;
-                            $allowance_request->cutoff_start = $request["cutoff_start"];
-                            $allowance_request->cutoff_end = $request["cutoff_end"];
-                            $allowance_request->total_days = $request["total_days"];
+                            $allowance_request->cutoff_start = $valData["cutoff_start"];
+                            $allowance_request->cutoff_end = $valData["cutoff_end"];
+                            $allowance_request->total_days = $valData["total_days"];
                             $allowance_request->request_status = RequestStatusType::PENDING;
-                            $allowance_request->approvals = $request["approvals"];
+                            $allowance_request->approvals = $valData["approvals"];
                             $allowance_request->save();
-                            $employee_allowance->allowance_amount = $data_amt;
+                            $total_amt = $data_amt * $valData["allowance_days"];
+                            $employee_allowance->allowance_amount = $total_amt;
                             $employee_allowance->allowance_request_id = $allowance_request->id;
                             $employee_allowance->employee_id = $key;
-                            $employee_allowance->allowance_rate = $request["allowance_rate"];
-                            $employee_allowance->allowance_days = $request["allowance_days"];
+                            $employee_allowance->allowance_rate = $data_amt;
+                            $employee_allowance->allowance_days = $valData["allowance_days"];
                             $employee_allowance->created_by = auth()->user()->id;;
                             $employee_allowance->save();
                         }
@@ -199,65 +200,7 @@ class EmployeeAllowancesController extends Controller
      */
     public function update(UpdateEmployeeAllowancesRequest $request, $id)
     {
-        // $valData = $request->validated();
-        // try {
-        //     if ($valData) {
-        //         foreach ($request["employees"] as $key) {
-        //             $data = Employee::with('current_employment.position.allowances')->find($key);
-        //             if ($data->current_employment) {
-        //                 if ($data->current_employment->position_id) {
 
-        //                     if ($data->current_employment->position->allowances == null) {
-        //                         return new JsonResponse([
-        //                             'success' => false,
-        //                             'message' => 'No amount found',
-        //                         ], 400);
-        //                     }
-
-        //                     $data_amt = $data->current_employment->position->allowances->amount;
-        //                     $employee_allowance = new EmployeeAllowances();
-        //                     $type = $request["group_type"];
-        //                     switch ($type) {
-        //                         case AssignTypes::DEPARTMENT->value:
-        //                             $employee_allowance->charge_assignment_type = EmployeeAllowancesController::DEPARTMENT;
-        //                             $employee_allowance->charge_assignment_id = $request["department_id"];
-        //                             break;
-        //                         case AssignTypes::PROJECT->value:
-        //                             $employee_allowance->charge_assignment_type = EmployeeAllowancesController::PROJECT;
-        //                             $employee_allowance->charge_assignment_id = $request["project_id"];
-        //                             break;
-        //                     }
-        //                     $employee_allowance->allowance_date = $request["allowance_date"];
-        //                     $employee_allowance->cutoff_start = $request["cutoff_start"];
-        //                     $employee_allowance->cutoff_end = $request["cutoff_end"];
-        //                     $employee_allowance->total_days = $request["total_days"];
-        //                     $employee_allowance->allowance_amount = $data_amt;
-        //                     $employee_allowance->save();
-
-        //                     return new JsonResponse([
-        //                         'success' => true,
-        //                         'message' => 'Successfully save.',
-        //                     ], JsonResponse::HTTP_OK);
-        //                 }
-        //                 return new JsonResponse([
-        //                     'success' => false,
-        //                     'message' => 'Employee ' . $data->fullname_first . " doesn't have a position",
-        //                 ], 400);
-        //             } else {
-        //                 return new JsonResponse([
-        //                     'success' => false,
-        //                     'message' => 'User ' . $data->fullname_first . " not found as not a current employee",
-        //                 ], 400);
-        //             }
-        //         }
-        //     }
-        // } catch (\Throwable $th) {
-        //     return new JsonResponse([
-        //         'success' => false,
-        //         'error' => $th->getMessage(),
-        //         'message' => 'Failed save.',
-        //     ], 400);
-        // }
     }
 
     /**
