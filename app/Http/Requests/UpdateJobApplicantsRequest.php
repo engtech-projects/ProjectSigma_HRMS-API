@@ -41,11 +41,6 @@ class UpdateJobApplicantsRequest extends FormRequest
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'status' => [
-                "nullable",
-                "string",
-                'in:Contact Extended,Pending,Interviewed,Rejected,Hired,For Hiring,Test,Interview,Reference Checking,Medical Examination,Contract Signed'
-            ],
             'lastname' => [
                 "nullable",
                 "string",
@@ -325,11 +320,7 @@ class UpdateJobApplicantsRequest extends FormRequest
             'icoe_province' => [
                 "nullable",
                 "string",
-            ],
-            'remarks' => [
-                "nullable",
-                "string",
-            ],
+            ]
         ];
     }
 }

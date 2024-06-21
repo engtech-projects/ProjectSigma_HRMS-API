@@ -23,7 +23,6 @@ class JobApplicants extends Model
         'name_suffix',
         'application_letter_attachment',
         'resume_attachment',
-        'status',
         'lastname',
         'firstname',
         'middlename',
@@ -75,7 +74,6 @@ class JobApplicants extends Model
         'icoe_city',
         'icoe_zip',
         'icoe_province',
-        'remarks'
     ];
 
 
