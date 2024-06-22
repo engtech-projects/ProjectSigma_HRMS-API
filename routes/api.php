@@ -72,6 +72,7 @@ use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ExternalWorkExperienceController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LoansController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OtherDeductionController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
@@ -279,6 +280,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('face-pattern')->group(function () {
         Route::resource('resource', EmployeeFacePattern::class);
+    });
+
+    Route::prefix('notifications')->group(function () {
+        Route::get('unread', [NotificationsController::class, "getUnreadNotifications"]);
+        Route::get('unread-stream', [NotificationsController::class, "getUnreadNotificationsStream"]);
+        Route::put('read/{notif}', [NotificationsController::class, "readNotification"]);
+        Route::put('mark-read', [NotificationsController::class, "readAllNotifications"]);
     });
 });
 

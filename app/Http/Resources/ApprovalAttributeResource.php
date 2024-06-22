@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\User;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,7 +15,7 @@ class ApprovalAttributeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user = User::with('employee')->where('id', $this["user_id"])->first();
+        $user = Users::with('employee')->where('id', $this["user_id"])->first();
         $employee = null;
         if ($user) {
             $employee = $user->employee ? new EmployeeUserResource($user->employee) : null;

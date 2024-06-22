@@ -2,23 +2,12 @@
 
 namespace App\Providers;
 
-use App\Models\Leave;
+use App\Enums\ApprovalModels;
 use App\Models\Project;
-use App\Models\Overtime;
-use App\Models\CashAdvance;
-use App\Models\TravelOrder;
-use App\Models\FailureToLog;
 use Illuminate\Http\Request;
-use App\Models\EmployeeLeaves;
-use App\Models\ManpowerRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
-use App\Exceptions\TransactionFailedException;
-use App\Models\EmployeeAllowances;
-use App\Models\EmployeePanRequest;
-use App\Models\PayrollRecord;
-use App\Models\SalaryGradeLevel;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -69,17 +58,7 @@ class RouteServiceProvider extends ServiceProvider
 
     private function getModelClass($modelName)
     {
-        $modelHasApprovals = [
-            'ManpowerRequest' => ManpowerRequest::class,
-            'FailureToLog' => FailureToLog::class,
-            'EmployeePanRequest' => EmployeePanRequest::class,
-            'LeaveEmployeeRequest' => EmployeeLeaves::class,
-            'TravelOrder' => TravelOrder::class,
-            'CashAdvance' => CashAdvance::class,
-            'Overtime' => Overtime::class,
-            'GenerateAllowance' => EmployeeAllowances::class,
-            'Payroll' => PayrollRecord::class,
-        ];
+        $modelHasApprovals = ApprovalModels::toArray();
         try {
             array_key_exists($modelName, $modelHasApprovals);
             return $modelHasApprovals[$modelName];

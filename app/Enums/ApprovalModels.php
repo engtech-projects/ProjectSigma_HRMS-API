@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Enums;
+
+use App\Models\CashAdvance;
+use App\Models\EmployeeAllowances;
+use App\Models\EmployeeLeaves;
+use App\Models\EmployeePanRequest;
+use App\Models\FailureToLog;
+use App\Models\ManpowerRequest;
+use App\Models\Overtime;
+use App\Models\PayrollRecord;
+use App\Models\TravelOrder;
+
+enum ApprovalModels: string
+{
+    case ManpowerRequest = ManpowerRequest::class;
+    case FailureToLog = FailureToLog::class;
+    case EmployeePanRequest = EmployeePanRequest::class;
+    case LeaveEmployeeRequest = EmployeeLeaves::class;
+    case TravelOrder = TravelOrder::class;
+    case CashAdvance = CashAdvance::class;
+    case Overtime = Overtime::class;
+    case GenerateAllowance = EmployeeAllowances::class;
+    case Payroll = PayrollRecord::class;
+
+    public static function toArray(): array
+    {
+        $array = [];
+        foreach (self::cases() as $case) {
+            $array[$case->name] = $case->value;
+        }
+        return $array;
+    }
+
+    public static function toArraySwapped(): array
+    {
+        $array = [];
+        foreach (self::cases() as $case) {
+            $array[$case->value] = $case->name;
+        }
+        return $array;
+    }
+}
