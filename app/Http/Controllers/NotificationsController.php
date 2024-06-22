@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Resources\NotificationResource;
 use App\Models\EmployeeLeaves;
 use App\Notifications\LeaveRequestForApproval;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationsController extends Controller
 {
-    //
+
     public function getUnreadNotifications()
     {
         return new JsonResponse
@@ -22,31 +23,46 @@ class NotificationsController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
+    public function getNotifications()
+    {
+        return new JsonResponse
+        ([
+            'success' => false,
+            'message' => 'Fetched Notifications',
+            'data' => NotificationResource::collection(Auth::user()->notifications),
+        ], JsonResponse::HTTP_OK);
+    }
+
     public function getUnreadNotificationsStream()
     {
         return response()->stream(function() {
             $lastLength = 0;
+            $lastRequestSent = null;
             while (true) {
-                $notifs = Auth::user()->unreadNotifications;
-                $newLength = sizeof($notifs);
-                if($newLength != $lastLength){
-                    echo "data: ".json_encode($notifs). "\n\n";
+                if (sizeof(Auth::user()->unreadNotifications) != $lastLength) { // Notif Changes Submit directly new updates to Notifs
+                    $lastLength = sizeof(Auth::user()->unreadNotifications);
+                    echo "data: ".json_encode(Auth::user()->unreadNotifications). "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
                     flush();
-                    sleep(2);
-                }else{
-                    echo "data: none\n\n";
+                    $lastRequestSent = Carbon::now();
+                } else { // no changes submit every 13 seconds
+                    if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
+                        continue;
+                    }
+                    echo "data: ".json_encode(Auth::user()->unreadNotifications). "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
                     flush();
-                    usleep(500000); // usleep 1 sec = 1000000
+                    $lastRequestSent = Carbon::now();
                 }
+                // usleep(500000); // usleep 1 sec = 1000000
                 if(connection_aborted()){
                     break;
                 }
+                sleep(1); // Will check for updates every second
             }
         }, 200, [
             "Content-Type" => "text/event-stream",
@@ -60,9 +76,15 @@ class NotificationsController extends Controller
     {
         Auth::user()->unreadNotifications->markAsRead();
     }
+
     public function readNotification($notif)
     {
-        Auth::user()->unreadNotifications->find($notif)->markAsRead();
+        Auth::user()->notifications->find($notif)->markAsRead();
+    }
+
+    public function unreadNotification($notif)
+    {
+        Auth::user()->notifications->find($notif)->markAsUnread();
     }
 
     public function testCreateNotif()
