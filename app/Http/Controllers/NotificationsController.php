@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\NotificationResource;
 use App\Models\EmployeeLeaves;
+use App\Models\Users;
 use App\Notifications\LeaveRequestForApproval;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -39,9 +40,11 @@ class NotificationsController extends Controller
             $lastLength = 0;
             $lastRequestSent = null;
             while (true) {
-                if (sizeof(Auth::user()->unreadNotifications) != $lastLength) { // Notif Changes Submit directly new updates to Notifs
-                    $lastLength = sizeof(Auth::user()->unreadNotifications);
-                    echo "data: ".json_encode(Auth::user()->unreadNotifications). "\n\n";
+                $notifs = Users::find(Auth::user()->id)->unreadNotifications;
+                $newLength = sizeof($notifs);
+                if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
+                    $lastLength = $newLength;
+                    echo "data: ".json_encode($notifs). "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -51,7 +54,7 @@ class NotificationsController extends Controller
                     if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
                         continue;
                     }
-                    echo "data: ".json_encode(Auth::user()->unreadNotifications). "\n\n";
+                    echo "data: ".json_encode($notifs). "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
