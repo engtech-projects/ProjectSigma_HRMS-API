@@ -19,7 +19,7 @@ class NotificationsController extends Controller
         return new JsonResponse
         ([
             'success' => false,
-            'message' => 'Fetched Notifications',
+            'message' => 'Fetched unread notifications.',
             'data' => NotificationResource::collection(Auth::user()->unreadNotifications),
         ], JsonResponse::HTTP_OK);
     }
@@ -29,7 +29,7 @@ class NotificationsController extends Controller
         return new JsonResponse
         ([
             'success' => false,
-            'message' => 'Fetched Notifications',
+            'message' => 'Fetched all notifications.',
             'data' => NotificationResource::collection(Auth::user()->notifications),
         ], JsonResponse::HTTP_OK);
     }

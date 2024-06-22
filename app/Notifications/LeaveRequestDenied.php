@@ -56,6 +56,7 @@ class LeaveRequestDenied extends Notification
         return [
             "message" => "Your LEAVE REQUEST has been DENIED",
             "type" => "LeaveRequest",
+            "action_type" => "View",
             "metadata" => $this->leaveRequest->toArray(),
         ];
     }

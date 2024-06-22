@@ -56,6 +56,7 @@ class LeaveRequestForApproval extends Notification
         return [
             "message" => "A Leave Request is for your approval",
             "type" => "LeaveRequest",
+            "action_type" => "Approve",
             "metadata" => $this->leaveRequest->toArray(),
         ];
     }
