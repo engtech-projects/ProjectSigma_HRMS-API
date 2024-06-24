@@ -164,6 +164,13 @@ class Employee extends Model
             ->with("employee_salarygrade.salary_grade_level", "employee_department");
     }
 
+    public function events_dtr($date)
+    {
+        return Events::whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->get();
+    }
+
     public function employee_internal(): HasMany
     {
         return $this->hasMany(InternalWorkExperience::class)
@@ -394,11 +401,20 @@ class Employee extends Model
         return $schedWithLogs->map(function ($sched) use ($date) {
             return [
                 ...$sched->toArray(),
+                "designation" => $this->get_designation($sched->project_id, $sched->department_id),
                 "applied_ins" => $sched->attendance_log_ins?->where("employee_id", $this->id)->where("date", $date)->first(),
                 "applied_outs" => $sched->attendance_log_outs?->where("employee_id", $this->id)->where("date", $date)->last()
             ];
         });
+    }
 
+    public function get_designation($project_id, $department_id){
+        if ($department_id != null) {
+            return Department::find($department_id)->department_name;
+        }
+        if ($project_id != null) {
+            return Project::find($project_id)->project_code;
+        }
     }
 
     public function applied_overtime_with_attendance($date)
