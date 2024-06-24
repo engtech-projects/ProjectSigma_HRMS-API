@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\ApprovalModels;
 use App\Models\EmployeeLeaves;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,9 +42,9 @@ class LeaveRequestForApproval extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -54,8 +55,8 @@ class LeaveRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A Leave Request is for your approval",
-            "type" => "LeaveRequest",
+            "message" => "A LEAVE REQUEST is for your approval",
+            "type" => ApprovalModels::LeaveEmployeeRequest->name,,
             "action_type" => "Approve",
             "metadata" => $this->leaveRequest->toArray(),
         ];
