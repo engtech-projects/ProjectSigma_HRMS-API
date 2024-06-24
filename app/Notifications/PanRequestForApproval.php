@@ -54,7 +54,7 @@ class PanRequestForApproval extends Notification
         return [
             "message" => "A PERSONNEL ACTION REQUEST is for your approval",
             "type" => "LeaveRequest",
-            "action_type" => "View",
+            "action_type" => "Approve",
             "metadata" => $this->panRequest->toArray(),
         ];
     }

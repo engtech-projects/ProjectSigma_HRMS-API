@@ -56,7 +56,7 @@ class ManpowerRequestDenied extends Notification
         return [
             "message" => "Your MANPOWER REQUEST has been DENIED",
             "type" => ApprovalModels::ManpowerRequest->name,
-            "action_type" => "Approve",
+            "action_type" => "View",
             "metadata" => $this->manpowerRequest->toArray(),
         ];
     }
