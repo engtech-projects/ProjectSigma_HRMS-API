@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class FailureToLogForRequestApproval extends Notification
+class FailureToLogRequestForApproval extends Notification
 {
     use Queueable;
     protected $failureToLogRequest;
