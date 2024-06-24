@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\ApprovalModels;
 use App\Models\EmployeePanRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,6 +12,7 @@ use Illuminate\Notifications\Notification;
 class PanRequestDenied extends Notification
 {
     use Queueable;
+    protected $panRequest;
 
     /**
      * Create a new notification instance.
@@ -52,7 +54,10 @@ class PanRequestDenied extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            "message" => "Your PERSONNEL ACTION REQUEST has been DENIED",
+            "type" => ApprovalModels::ManpowerRequest->name,
+            "action_type" => "View",
+            "metadata" => $this->panRequest->toArray(),
         ];
     }
 }

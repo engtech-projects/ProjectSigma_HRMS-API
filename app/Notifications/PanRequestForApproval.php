@@ -52,7 +52,7 @@ class PanRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "Your LEAVE REQUEST has been APPROVED",
+            "message" => "A PERSONNEL ACTION REQUEST is for your approval",
             "type" => "LeaveRequest",
             "action_type" => "View",
             "metadata" => $this->panRequest->toArray(),

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\ApprovalModels;
 use App\Models\EmployeePanRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -53,8 +54,8 @@ class PanRequestApproved extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "Your LEAVE REQUEST has been APPROVED",
-            "type" => "LeaveRequest",
+            "message" => "Your PERSONAL ACTION REQUEST has been APPROVED",
+            "type" => ApprovalModels::ManpowerRequest->name,
             "action_type" => "View",
             "metadata" => $this->panRequest->toArray(),
         ];
