@@ -11,6 +11,7 @@ use App\Http\Requests\CashAdvanceRequest;
 use App\Http\Resources\CashAdvanceResource;
 use App\Http\Services\CashAdvanceService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class CashAdvanceController extends Controller
 {
@@ -40,6 +41,7 @@ class CashAdvanceController extends Controller
         $main = new CashAdvance();
         $main->fill($request->validated());
         $main->request_status = RequestStatusType::PENDING;
+        $main->created_by = Auth::user()->id;
         $data = json_decode('{}');
 
         if (!$main->save()) {
