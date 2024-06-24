@@ -34,7 +34,7 @@ class DisapproveApproval extends Controller
                     Users::find($model->requested_by)->notify(new TravelRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::CashAdvance->name:
-                    Users::find($model->requested_by)->notify(new CashAdvanceDenied($model)); // Notify Request Creator Request DENIED
+                    Users::find(1)->notify(new CashAdvanceDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::FailureToLog->name:
                     Users::find($model->requested_by)->notify(new FailureToLogRequestDenied($model)); // Notify Request Creator Request DENIED
