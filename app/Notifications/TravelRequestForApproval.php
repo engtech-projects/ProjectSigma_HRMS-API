@@ -3,23 +3,22 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\CashAdvance;
+use App\Models\TravelOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CashAdvanceApproval extends Notification
+class TravelRequestForApproval extends Notification
 {
     use Queueable;
-    protected $cashAdvanceRequest;
-
+    protected $travelRequest;
     /**
      * Create a new notification instance.
      */
-    public function __construct(CashAdvance $cashAdvance)
+    public function __construct(TravelOrder $travelOrder)
     {
-        $this->cashAdvanceRequest = $cashAdvance;
+        $this->travelRequest = $travelOrder;
     }
 
     /**
@@ -54,10 +53,10 @@ class CashAdvanceApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A CASH ADVANCE REQUEST is for your approval",
-            "type" => ApprovalModels::CashAdvance->name,
+            "message" => "A TRAVEL ORDER REQUEST is for your approval",
+            "type" => ApprovalModels::TravelOrder->name,
             "action_type" => "Approve",
-            "metadata" => $this->cashAdvanceRequest->toArray(),
+            "metadata" => $this->travelRequest->toArray(),
         ];
     }
 }

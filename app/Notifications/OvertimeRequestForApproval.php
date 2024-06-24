@@ -3,22 +3,23 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\TravelOrder;
+use App\Models\Overtime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TravelRequestApproval extends Notification
+class OvertimeRequestForApproval extends Notification
 {
     use Queueable;
-    protected $travelRequest;
+    protected $overtimeRequest;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct(TravelOrder $travelOrder)
+    public function __construct(Overtime $overtime)
     {
-        $this->travelRequest = $travelOrder;
+        $this->overtimeRequest= $overtime;
     }
 
     /**
@@ -53,10 +54,10 @@ class TravelRequestApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A TRAVEL ORDER REQUEST is for your approval",
-            "type" => ApprovalModels::TravelOrder->name,
+            "message" => "A OVERTIME REQUEST is for your approval",
+            "type" => ApprovalModels::ManpowerRequest->name,
             "action_type" => "Approve",
-            "metadata" => $this->travelRequest->toArray(),
+            "metadata" => $this->overtimeRequest->toArray(),
         ];
     }
 }

@@ -3,23 +3,23 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\Overtime;
+use App\Models\FailureToLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class OvertimeRequestApproval extends Notification
+class FailureToLogForRequestApproval extends Notification
 {
     use Queueable;
-    protected $overtimeRequest;
+    protected $failureToLogRequest;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Overtime $overtime)
+    public function __construct(FailureToLog $flogRequest)
     {
-        $this->overtimeRequest= $overtime;
+        $this->failureToLogRequest = $flogRequest;
     }
 
     /**
@@ -54,10 +54,10 @@ class OvertimeRequestApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A OVERTIME REQUEST is for your approval",
-            "type" => ApprovalModels::ManpowerRequest->name,
+            "message" => "A FAILURE TO LOG REQUEST is for your approval",
+            "type" => ApprovalModels::FailureToLog->name,
             "action_type" => "Approve",
-            "metadata" => $this->overtimeRequest->toArray(),
+            "metadata" => $this->failureToLogRequest->toArray(),
         ];
     }
 }

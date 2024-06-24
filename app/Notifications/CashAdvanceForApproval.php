@@ -3,23 +3,23 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\FailureToLog;
+use App\Models\CashAdvance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class FailureToLogRequestApproval extends Notification
+class CashAdvanceForApproval extends Notification
 {
     use Queueable;
-    protected $failureToLogRequest;
+    protected $cashAdvanceRequest;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(FailureToLog $flogRequest)
+    public function __construct(CashAdvance $cashAdvance)
     {
-        $this->failureToLogRequest = $flogRequest;
+        $this->cashAdvanceRequest = $cashAdvance;
     }
 
     /**
@@ -54,10 +54,10 @@ class FailureToLogRequestApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A FAILURE TO LOG REQUEST is for your approval",
-            "type" => ApprovalModels::FailureToLog->name,
+            "message" => "A CASH ADVANCE REQUEST is for your approval",
+            "type" => ApprovalModels::CashAdvance->name,
             "action_type" => "Approve",
-            "metadata" => $this->failureToLogRequest->toArray(),
+            "metadata" => $this->cashAdvanceRequest->toArray(),
         ];
     }
 }

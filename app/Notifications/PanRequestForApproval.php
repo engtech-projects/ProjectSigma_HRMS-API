@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\ApprovalModels;
 use App\Models\EmployeePanRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -53,7 +54,7 @@ class PanRequestForApproval extends Notification
     {
         return [
             "message" => "A PERSONNEL ACTION REQUEST is for your approval",
-            "type" => "LeaveRequest",
+            "type" => ApprovalModels::EmployeePanRequest->name,
             "action_type" => "Approve",
             "metadata" => $this->panRequest->toArray(),
         ];
