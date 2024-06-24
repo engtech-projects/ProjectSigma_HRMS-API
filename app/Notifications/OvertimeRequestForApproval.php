@@ -54,8 +54,8 @@ class OvertimeRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A OVERTIME REQUEST is for your approval",
-            "type" => ApprovalModels::ManpowerRequest->name,
+            "message" => "An OVERTIME REQUEST is for your approval",
+            "type" => ApprovalModels::Overtime->name,
             "action_type" => "Approve",
             "metadata" => $this->overtimeRequest->toArray(),
         ];

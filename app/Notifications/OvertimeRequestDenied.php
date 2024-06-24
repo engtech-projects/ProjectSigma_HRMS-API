@@ -55,7 +55,7 @@ class OvertimeRequestDenied extends Notification
     {
         return [
             "message" => "Your OVERTIME REQUEST has been DENIED",
-            "type" => ApprovalModels::ManpowerRequest->name,
+            "type" => ApprovalModels::Overtime->name,
             "action_type" => "View",
             "metadata" => $this->overtimeRequest->toArray(),
         ];

@@ -55,7 +55,7 @@ class OvertimeRequestApproved extends Notification
     {
         return [
             "message" => "Your OVERTIME REQUEST has been APPROVED",
-            "type" => ApprovalModels::ManpowerRequest->name,
+            "type" => ApprovalModels::Overtime->name,
             "action_type" => "View",
             "metadata" => $this->overtimeRequest->toArray(),
         ];

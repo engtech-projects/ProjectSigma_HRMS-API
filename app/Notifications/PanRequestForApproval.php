@@ -53,7 +53,7 @@ class PanRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A PERSONNEL ACTION REQUEST is for your approval",
+            "message" => "A PERSONNEL ACTION NOTICE REQUEST is for your approval",
             "type" => ApprovalModels::EmployeePanRequest->name,
             "action_type" => "Approve",
             "metadata" => $this->panRequest->toArray(),

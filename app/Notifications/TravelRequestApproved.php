@@ -55,7 +55,7 @@ class TravelRequestApproved extends Notification
     {
         return [
             "message" => "Your TRAVEL ORDER REQUEST has been APPROVED",
-            "type" => ApprovalModels::ManpowerRequest->name,
+            "type" => ApprovalModels::TravelOrder->name,
             "action_type" => "View",
             "metadata" => $this->travelRequest->toArray(),
         ];

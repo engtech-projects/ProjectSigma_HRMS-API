@@ -30,7 +30,7 @@ class EmployeeLeavesController extends Controller
         if ($request->has("employee_id") && $request->input("employee_id")) {
             $query->where('employee_id', $request->input("employee_id"));
         }
-        $data = $query->paginate(15);
+        $data = $query->orderBy("created_at", "DESC")->paginate(15);
         return EmployeeLeaveResource::collection($data);
     }
 
@@ -55,7 +55,7 @@ class EmployeeLeavesController extends Controller
             Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
             $data->message = "Successfully save.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new EmployeeLeaveResource($main);
             return response()->json($data, 200);
         }
         $data->message = "Save failed.";

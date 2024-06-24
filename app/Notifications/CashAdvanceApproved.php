@@ -55,8 +55,8 @@ class CashAdvanceApproved extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "Your FAILURE TO LOG REQUEST has been APPROVED",
-            "type" => ApprovalModels::FailureToLog->name,
+            "message" => "Your CASH ADVANCE REQUEST has been APPROVED",
+            "type" => ApprovalModels::CashAdvance->name,
             "action_type" => "View",
             "metadata" => $this->cashAdvanceRequest->toArray(),
         ];

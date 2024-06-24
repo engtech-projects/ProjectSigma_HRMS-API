@@ -34,6 +34,7 @@ class OvertimeResource extends JsonResource
             "project" => $this->project,
             "department" => $this->department,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
             "prepared_by" => $user,
             "request_status" => $this->request_status,
         ];
