@@ -3,24 +3,23 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\EmployeeLeaves;
+use App\Models\Overtime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LeaveRequestForApproval extends Notification
+class OvertimeRequestDenied extends Notification
 {
     use Queueable;
-
-    private $leaveRequest;
+    private $overtimeRequest;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(EmployeeLeaves $lreq)
+    public function __construct(Overtime $overtime)
     {
-        $this->leaveRequest = $lreq;
+        $this->overtimeRequest= $overtime;
     }
 
     /**
@@ -55,10 +54,10 @@ class LeaveRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A LEAVE REQUEST is for your approval",
-            "type" => ApprovalModels::LeaveEmployeeRequest->name,,
-            "action_type" => "Approve",
-            "metadata" => $this->leaveRequest->toArray(),
+            "message" => "Your OVERTIME REQUEST has been DENIED",
+            "type" => ApprovalModels::ManpowerRequest->name,
+            "action_type" => "View",
+            "metadata" => $this->overtimeRequest->toArray(),
         ];
     }
 }

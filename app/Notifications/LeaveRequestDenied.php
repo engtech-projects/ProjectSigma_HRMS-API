@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\ApprovalModels;
 use App\Models\EmployeeLeaves;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,9 +42,9 @@ class LeaveRequestDenied extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -55,7 +56,7 @@ class LeaveRequestDenied extends Notification
     {
         return [
             "message" => "Your LEAVE REQUEST has been DENIED",
-            "type" => "LeaveRequest",
+            "type" => ApprovalModels::LeaveEmployeeRequest->name,
             "action_type" => "View",
             "metadata" => $this->leaveRequest->toArray(),
         ];

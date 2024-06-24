@@ -3,24 +3,22 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\EmployeeLeaves;
+use App\Models\FailureToLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LeaveRequestForApproval extends Notification
+class FailureToLogRequestDenied extends Notification
 {
     use Queueable;
-
-    private $leaveRequest;
-
+    protected $failureToLogRequest;
     /**
      * Create a new notification instance.
      */
-    public function __construct(EmployeeLeaves $lreq)
+    public function __construct(FailureToLog $flogRequest)
     {
-        $this->leaveRequest = $lreq;
+        $this->failureToLogRequest = $flogRequest;
     }
 
     /**
@@ -55,10 +53,10 @@ class LeaveRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A LEAVE REQUEST is for your approval",
-            "type" => ApprovalModels::LeaveEmployeeRequest->name,,
-            "action_type" => "Approve",
-            "metadata" => $this->leaveRequest->toArray(),
+            "message" => "Your FAILURE TO LOG REQUEST has been DENIED",
+            "type" => ApprovalModels::FailureToLog->name,
+            "action_type" => "View",
+            "metadata" => $this->failureToLogRequest->toArray(),
         ];
     }
 }

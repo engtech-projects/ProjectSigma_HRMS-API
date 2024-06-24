@@ -79,7 +79,7 @@ class TravelOrderController extends Controller
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new TravelOrderResource($main);
             return response()->json($data);
         }
         $data->message = "No data found.";

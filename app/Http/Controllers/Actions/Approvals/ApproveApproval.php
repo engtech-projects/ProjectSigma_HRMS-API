@@ -3,6 +3,20 @@
 namespace App\Http\Controllers\Actions\Approvals;
 
 use App\Enums\ApprovalModels;
+use App\Notifications\CashAdvanceApproved;
+use App\Notifications\CashAdvanceForApproval;
+use App\Notifications\FailureToLogRequestApproved;
+use App\Notifications\FailureToLogRequestForApproval;
+use App\Notifications\ManpowerRequestApproved;
+use App\Notifications\ManpowerRequestForApproval;
+use App\Notifications\OvertimeRequestApproved;
+use App\Notifications\OvertimeRequestForApproval;
+use App\Notifications\PanRequestApproved;
+use App\Notifications\PanRequestForApproval;
+use App\Notifications\PayrollRequestApproved;
+use App\Notifications\TravelRequestApproval;
+use App\Notifications\TravelRequestApproved;
+use App\Notifications\TravelRequestForApproval;
 use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
@@ -23,11 +37,47 @@ class ApproveApproval extends Controller
                 case ApprovalModels::LeaveEmployeeRequest->name:
                     Users::find($model->getNextPendingApproval()->user_id)->notify(new LeaveRequestForApproval($model)); // Notify the next Approval
                     break;
+                case ApprovalModels::TravelOrder->name:
+                    Users::find($model->getNextPendingApproval()->user_id)->notify(new TravelRequestForApproval($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::CashAdvance->name:
+                    Users::find($model->getNextPendingApproval()->user_id)->notify(new CashAdvanceForApproval($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::FailureToLog->name:
+                    Users::find($model->getNextPendingApproval()->user_id)->notify(new FailureToLogRequestForApproval($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::ManpowerRequest->name:
+                    Users::find($model->getNextPendingApproval()->user_id)->notify(new ManpowerRequestForApproval($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::Overtime->name:
+                    Users::find($model->getNextPendingApproval()->user_id)->notify(new OvertimeRequestForApproval($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::EmployeePanRequest->name:
+                    Users::find($model->getNextPendingApproval()->user_id)->notify(new PanRequestForApproval($model)); // Notify the next Approval
+                    break;
             }
         } else {
             switch ($modelType) {
                 case ApprovalModels::LeaveEmployeeRequest->name:
-                    Users::find(1)->notify(new LeaveRequestApproved($model)); // Notify Request Creator Request fully Approved
+                    Users::find(1)->notify(new LeaveRequestApproved($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::TravelOrder->name:
+                    Users::find($model->requested_by)->notify(new TravelRequestApproved($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::CashAdvance->name:
+                    Users::find($model->requested_by)->notify(new CashAdvanceApproved($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::FailureToLog->name:
+                    Users::find($model->requested_by)->notify(new FailureToLogRequestApproved($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::ManpowerRequest->name:
+                    Users::find($model->requested_by)->notify(new ManpowerRequestApproved($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::Overtime->name:
+                    Users::find($model->requested_by)->notify(new OvertimeRequestApproved($model)); // Notify the next Approval
+                    break;
+                case ApprovalModels::EmployeePanRequest->name:
+                    Users::find($model->requested_by)->notify(new PanRequestApproved($model)); // Notify the next Approval
                     break;
             }
         }

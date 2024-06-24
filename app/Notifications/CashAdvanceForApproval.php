@@ -3,24 +3,23 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\EmployeeLeaves;
+use App\Models\CashAdvance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LeaveRequestForApproval extends Notification
+class CashAdvanceForApproval extends Notification
 {
     use Queueable;
-
-    private $leaveRequest;
+    protected $cashAdvanceRequest;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(EmployeeLeaves $lreq)
+    public function __construct(CashAdvance $cashAdvance)
     {
-        $this->leaveRequest = $lreq;
+        $this->cashAdvanceRequest = $cashAdvance;
     }
 
     /**
@@ -55,10 +54,10 @@ class LeaveRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A LEAVE REQUEST is for your approval",
-            "type" => ApprovalModels::LeaveEmployeeRequest->name,,
+            "message" => "A CASH ADVANCE REQUEST is for your approval",
+            "type" => ApprovalModels::CashAdvance->name,
             "action_type" => "Approve",
-            "metadata" => $this->leaveRequest->toArray(),
+            "metadata" => $this->cashAdvanceRequest->toArray(),
         ];
     }
 }

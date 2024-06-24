@@ -3,24 +3,22 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\EmployeeLeaves;
+use App\Models\TravelOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LeaveRequestForApproval extends Notification
+class TravelRequestForApproval extends Notification
 {
     use Queueable;
-
-    private $leaveRequest;
-
+    protected $travelRequest;
     /**
      * Create a new notification instance.
      */
-    public function __construct(EmployeeLeaves $lreq)
+    public function __construct(TravelOrder $travelOrder)
     {
-        $this->leaveRequest = $lreq;
+        $this->travelRequest = $travelOrder;
     }
 
     /**
@@ -55,10 +53,10 @@ class LeaveRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A LEAVE REQUEST is for your approval",
-            "type" => ApprovalModels::LeaveEmployeeRequest->name,,
+            "message" => "A TRAVEL ORDER REQUEST is for your approval",
+            "type" => ApprovalModels::TravelOrder->name,
             "action_type" => "Approve",
-            "metadata" => $this->leaveRequest->toArray(),
+            "metadata" => $this->travelRequest->toArray(),
         ];
     }
 }

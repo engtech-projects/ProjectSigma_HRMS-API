@@ -3,24 +3,22 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
-use App\Models\EmployeeLeaves;
+use App\Models\EmployeePanRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LeaveRequestForApproval extends Notification
+class PanRequestForApproval extends Notification
 {
     use Queueable;
-
-    private $leaveRequest;
-
+    private $panRequest;
     /**
      * Create a new notification instance.
      */
-    public function __construct(EmployeeLeaves $lreq)
+    public function __construct(EmployeePanRequest $pan)
     {
-        $this->leaveRequest = $lreq;
+        $this->panRequest = $pan;
     }
 
     /**
@@ -32,7 +30,7 @@ class LeaveRequestForApproval extends Notification
     {
         return [
             'database',
-            // 'mail',
+            // 'mail'
         ];
     }
 
@@ -55,10 +53,10 @@ class LeaveRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A LEAVE REQUEST is for your approval",
-            "type" => ApprovalModels::LeaveEmployeeRequest->name,,
+            "message" => "A PERSONNEL ACTION REQUEST is for your approval",
+            "type" => ApprovalModels::EmployeePanRequest->name,
             "action_type" => "Approve",
-            "metadata" => $this->leaveRequest->toArray(),
+            "metadata" => $this->panRequest->toArray(),
         ];
     }
 }
