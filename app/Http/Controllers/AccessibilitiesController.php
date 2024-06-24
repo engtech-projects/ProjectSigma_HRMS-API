@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\HrmsAccessibility;
 use App\Enums\UserTypes;
 use App\Models\Accessibilities;
 use App\Http\Requests\StoreAccessibilitiesRequest;
@@ -19,9 +20,9 @@ class AccessibilitiesController extends Controller
         $showSetupSalary = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.salary_grade_setter'));
         $showEdit201 = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.201_editor'));
         $access = Accessibilities::when(!$showSetupSalary , function (Builder $builder) {
-            $builder->where("accessibilities_name", "!=", Accessibilities::HRMS_SETUP_SALARY_GRADE);
+            $builder->where("accessibilities_name", "!=", HrmsAccessibility::HRMS_SETUP_SALARY_GRADE->value);
         })->when(!$showEdit201 , function (Builder $builder) {
-            $builder->where("accessibilities_name", "!=", Accessibilities::HRMS_EMPLOYEE_201_EDIT);
+            $builder->where("accessibilities_name", "!=", HrmsAccessibility::HRMS_EMPLOYEE_201_EDIT->value);
         })->orderBy("accessibilities_name")->get();
         return response()->json([
             "data" => $access,
