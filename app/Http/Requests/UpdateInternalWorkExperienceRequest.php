@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\HrmsAccessibility;
+use App\Enums\AccessibilityHrms;
 use App\Enums\SalaryRequestType;
 use App\Http\Traits\CheckAccessibility;
 use App\Models\Accessibilities;
@@ -18,7 +18,7 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
     public function authorize(): bool
     {
         // return true; // Temp for ID Deployment
-        return $this->checkUserAccess([HrmsAccessibility::HRMS_EMPLOYEE_201_EDIT->value]);
+        return $this->checkUserAccess([AccessibilityHrms::HRMS_EMPLOYEE_201_EDIT->value]);
     }
 
     /**

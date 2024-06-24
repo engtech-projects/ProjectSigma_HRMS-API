@@ -169,7 +169,7 @@ class CashAdvanceController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Leave Request fetched.',
-            'data' => CashAdvanceResource::collection($myRequest)
+            'data' => $myRequest
         ]);
     }
 

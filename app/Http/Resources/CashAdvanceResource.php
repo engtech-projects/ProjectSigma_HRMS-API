@@ -26,7 +26,7 @@ class CashAdvanceResource extends JsonResource
             "remarks" => $this->remarks,
             "request_status" => $this->request_status,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
-            "released_by" => $this->released_by,
+            "created_by" => $this->created_by,
         ];
     }
 }

@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -43,6 +44,7 @@ class CashAdvance extends Model
         'purpose',
         'remarks',
         'request_status',
+        'created_by',
         'approvals',
     ];
 
@@ -69,6 +71,11 @@ class CashAdvance extends Model
     public function cashAdvancePayments(): HasMany
     {
         return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id');
+    }
+
+    public function created_by_user(): BelongsTo
+    {
+        return $this->belongsTo(Users::class, "created_by", "id");
     }
 
     public function getBalanceAttribute()
