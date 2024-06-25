@@ -67,10 +67,6 @@ class StoreJobApplicantsRequest extends FormRequest
                 "string",
                 "max:35"
             ],
-            'date_of_application' => [
-                "nullable",
-                "date",
-            ],
             'date_of_birth' => [
                 "nullable",
                 "date",
