@@ -10,6 +10,8 @@ use App\Http\Resources\FailureToLogResource;
 use App\Exceptions\TransactionFailedException;
 use App\Http\Requests\StoreFailureToLogRequest;
 use App\Http\Requests\UpdateFailureToLogRequest;
+use App\Models\Users;
+use App\Notifications\FailureToLogRequestForApproval;
 
 class FailureToLogController extends Controller
 {
@@ -42,7 +44,11 @@ class FailureToLogController extends Controller
         try {
             $valid = $request->validated();
             if($valid){
-                FailureToLog::create($request->validated());
+                $main = FailureToLog::create($request->validated());
+                $main->refresh();
+                if ($main->getNextPendingApproval()) {
+                    Users::find($main->getNextPendingApproval()['user_id'])->notify(new FailureToLogRequestForApproval($main));
+                }
             }
         } catch (\Exception $e) {
             throw new TransactionFailedException("Transaction failed.", 500, $e);

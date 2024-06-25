@@ -3,6 +3,8 @@
 namespace App\Http\Services;
 
 use App\Models\EmployeePanRequest;
+use App\Models\Users;
+use App\Notifications\PanRequestForApproval;
 
 class EmployeePanRequestService
 {
@@ -19,7 +21,12 @@ class EmployeePanRequestService
 
     public function create($attributes)
     {
-        return EmployeePanRequest::create($attributes);
+        $main = EmployeePanRequest::create($attributes);
+        $main->refresh();
+        if ($main->getNextPendingApproval()) {
+            Users::find($main->getNextPendingApproval()['user_id'])->notify(new PanRequestForApproval($main));
+        }
+        return $main;
     }
     public function getMyRequests()
     {

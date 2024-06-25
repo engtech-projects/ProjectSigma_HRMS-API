@@ -51,6 +51,7 @@ class OvertimeController extends Controller
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->save();
                 $main->employees()->attach($validData["employees"]);
+                $main->refresh();
                 if ($main->getNextPendingApproval()) {
                     Users::find($main->getNextPendingApproval()['user_id'])->notify(new OvertimeRequestForApproval($main));
                 }
