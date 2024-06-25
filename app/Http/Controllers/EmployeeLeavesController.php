@@ -52,6 +52,7 @@ class EmployeeLeavesController extends Controller
                 $data->success = false;
                 return response()->json($data, 400);
             }
+            $main->refresh();
             if ($main->getNextPendingApproval()) {
                 Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
             }
