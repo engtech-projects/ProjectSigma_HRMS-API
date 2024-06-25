@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Enums\RequestApprovalStatus;
 use App\Models\ManpowerRequest;
+use App\Models\Users;
+use App\Notifications\ManpowerRequestForApproval;
 
 class ManpowerServices
 {
@@ -54,6 +56,10 @@ class ManpowerServices
 
     public function createManpowerRequest(array $attributes)
     {
-        $this->manpowerRequest->create($attributes);
+        $main = $this->manpowerRequest->create($attributes);
+        $main->refresh();
+        if ($main->getNextPendingApproval()) {
+            Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
+        }
     }
 }

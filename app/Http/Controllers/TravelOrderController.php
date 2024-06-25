@@ -9,6 +9,8 @@ use App\Http\Requests\UpdateTravelOrderRequest;
 use App\Http\Resources\TravelOrderResource;
 use App\Http\Services\TravelOrderService;
 use App\Models\TravelOrderMembers;
+use App\Models\Users;
+use App\Notifications\TravelRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +57,10 @@ class TravelOrderController extends Controller
                 $main->requested_by = auth()->user()->id;
                 $main->save();
                 $main->employees()->attach($validdata["employee_ids"]);
+                $main->refresh();
+                if ($main->getNextPendingApproval()) {
+                    Users::find($main->getNextPendingApproval()['user_id'])->notify(new TravelRequestForApproval($main));
+                }
             });
             return new JsonResponse([
                 'success' => true,
