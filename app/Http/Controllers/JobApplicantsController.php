@@ -8,6 +8,7 @@ use App\Models\JobApplicants;
 use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantStatus;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -129,7 +130,8 @@ class JobApplicantsController extends Controller
         $main->education = $validatedData['education'];
         $main->workexperience = $validatedData['workexperience'];
         $main->children = $validatedData['children'];
-
+        $main->status = JobApplicationStatusEnums::PENDING;
+        $main->date_of_application = Carbon::now();
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;

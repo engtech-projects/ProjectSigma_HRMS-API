@@ -52,11 +52,6 @@ class StoreJobApplicantsRequest extends FormRequest
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'status' => [
-                "required",
-                "string",
-                new Enum(JobApplicationStatusEnums::class),
-            ],
             'lastname' => [
                 "required",
                 "string",
@@ -71,10 +66,6 @@ class StoreJobApplicantsRequest extends FormRequest
                 "nullable",
                 "string",
                 "max:35"
-            ],
-            'date_of_application' => [
-                "nullable",
-                "date",
             ],
             'date_of_birth' => [
                 "nullable",
@@ -345,10 +336,6 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'icoe_province' => [
                 "required",
-                "string",
-            ],
-            'remarks' => [
-                "nullable",
                 "string",
             ],
         ];

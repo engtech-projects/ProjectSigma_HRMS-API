@@ -28,6 +28,7 @@ class EmployeeLeaveResource extends JsonResource
             "date_of_absence_to" => $this->date_of_absence_to->format('F j, Y'),
             "reason_for_absence" => $this->reason_for_absence,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
             "requested_by_user" => $this->whenLoaded('user', function ($user) {
                 return [
                     "name" => $user->employee?->fullname_last,

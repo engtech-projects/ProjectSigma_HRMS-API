@@ -44,6 +44,7 @@ class TravelOrderResource extends JsonResource
             "means_of_transportation" => $this->means_of_transportation,
             "remarks" => $this->remarks,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
             "department" => $this->department,
             "requested_by" => $user,
             "request_status" => $this->request_status,

@@ -28,7 +28,7 @@ class EmployeeService
         return [
             "schedules_attendances" => $schedules_attendances,
             "travel_order" => $travelOrders,
-            "ovetime" => $overtime,
+            "overtime" => $overtime,
             "leave" => $leave,
             "events" => $events,
             "metadata" => $employee->getMetaData($collection, $date),

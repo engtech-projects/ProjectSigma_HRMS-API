@@ -52,8 +52,12 @@ class CashAdvanceService
 
     public function getMyRequest()
     {
-        $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('released_by', auth()->user()->id)->load('user.employee');
+        $manpowerRequest = CashAdvance::with("employee", "department", "project")
+            ->requestStatusPending()
+            ->authUserPending()
+            ->where('created_by', auth()->user()->id)
+            ->get();
+        return $manpowerRequest;
     }
 
     public function getMyApprovals()

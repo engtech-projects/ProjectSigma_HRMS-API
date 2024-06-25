@@ -8,6 +8,8 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
+use App\Models\Users;
+use App\Notifications\LeaveRequestForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,7 +30,7 @@ class EmployeeLeavesController extends Controller
         if ($request->has("employee_id") && $request->input("employee_id")) {
             $query->where('employee_id', $request->input("employee_id"));
         }
-        $data = $query->paginate(15);
+        $data = $query->orderBy("created_at", "DESC")->paginate(15);
         return EmployeeLeaveResource::collection($data);
     }
 
@@ -50,9 +52,12 @@ class EmployeeLeavesController extends Controller
                 $data->success = false;
                 return response()->json($data, 400);
             }
+            if ($main->getNextPendingApproval()) {
+                Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
+            }
             $data->message = "Successfully save.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new EmployeeLeaveResource($main);
             return response()->json($data, 200);
         }
         $data->message = "Save failed.";
@@ -65,12 +70,12 @@ class EmployeeLeavesController extends Controller
      */
     public function show($id)
     {
-        $main = EmployeeLeaves::with('employee', 'department', 'project')->find($id);
+        $main = EmployeeLeaves::with(['employee', 'department', 'project', 'leave'])->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new EmployeeLeaveResource($main);
             return response()->json($data);
         }
         $data->message = "No data found.";

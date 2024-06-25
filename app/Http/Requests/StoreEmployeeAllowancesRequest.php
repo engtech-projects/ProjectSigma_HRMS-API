@@ -81,6 +81,12 @@ class StoreEmployeeAllowancesRequest extends FormRequest
                 "required",
                 "integer",
             ],
+            'allowance_days' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
             ...$this->storeApprovals(),
         ];
     }

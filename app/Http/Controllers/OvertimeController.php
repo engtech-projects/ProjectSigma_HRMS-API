@@ -10,6 +10,8 @@ use App\Http\Requests\UpdateOvertimeRequest;
 use App\Http\Resources\OvertimeResource;
 use App\Http\Services\OvertimeService;
 use App\Models\OvertimeEmployees;
+use App\Models\Users;
+use App\Notifications\OvertimeRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -49,6 +51,9 @@ class OvertimeController extends Controller
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->save();
                 $main->employees()->attach($validData["employees"]);
+                if ($main->getNextPendingApproval()) {
+                    Users::find($main->getNextPendingApproval()['user_id'])->notify(new OvertimeRequestForApproval($main));
+                }
             });
             return new JsonResponse([
                 'success' => true,
@@ -68,12 +73,12 @@ class OvertimeController extends Controller
      */
     public function show($id)
     {
-        $main = Overtime::with("employee", "department", "project")->append(['charging_name'])->find($id);
+        $main = Overtime::with("employees", "department", "project")->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new OvertimeResource($main);
             return response()->json($data);
         }
         $data->message = "No data found.";
