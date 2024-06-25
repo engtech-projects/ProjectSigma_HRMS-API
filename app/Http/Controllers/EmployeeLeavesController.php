@@ -52,7 +52,9 @@ class EmployeeLeavesController extends Controller
                 $data->success = false;
                 return response()->json($data, 400);
             }
-            Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
+            if ($main->getNextPendingApproval()) {
+                Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
+            }
             $data->message = "Successfully save.";
             $data->success = true;
             $data->data = new EmployeeLeaveResource($main);
