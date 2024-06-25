@@ -113,7 +113,7 @@ trait EmployeePayroll
             "total_compensation" => 0,
         ];
         if ($philhealth) {
-            if ($deduction->share_type == 'Amount') {
+            if ($philhealth->share_type == 'Amount') {
                 $employeeCompensation = $philhealth->employee_share;
                 $employeerCompensation = $philhealth->employer_share;
             } else {
