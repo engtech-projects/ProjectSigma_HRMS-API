@@ -41,6 +41,7 @@ class AttendanceLog extends Model
 
     protected $appends = [
         'time_human',
+        'charging_designation',
     ];
 
     public function project(): BelongsTo
