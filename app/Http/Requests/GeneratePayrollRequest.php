@@ -25,12 +25,16 @@ class GeneratePayrollRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->prepareApprovalValidation();
-        $this->merge([
-            'employee_ids' => json_decode($this->employee_ids, true),
-        ]);
-        $this->merge([
-            'adjustments' => json_decode($this->adjustments, true),
-        ]);
+        if (gettype($this->employee_ids) == "string") {
+            $this->merge([
+                'employee_ids' => json_decode($this->employee_ids, true),
+            ]);
+        }
+        if (gettype($this->adjustments) == "string") {
+            $this->merge([
+                'adjustments' => json_decode($this->adjustments, true),
+            ]);
+        }
     }
 
     /**
