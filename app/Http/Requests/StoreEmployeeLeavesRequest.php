@@ -36,13 +36,20 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
+            "charging" => [
+                "string",
+                "required",
+                "in:Department,Project"
+            ],
             'department_id' => [
                 "nullable",
+                "required_if:charging,Department",
                 "integer",
                 "exists:departments,id",
             ],
             'project_id' => [
                 "nullable",
+                "required_if:charging,Project",
                 "integer",
                 "exists:projects,id",
             ],
