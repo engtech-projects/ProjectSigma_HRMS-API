@@ -24,9 +24,11 @@ class StorePayrollRecordRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->prepareApprovalValidation();
-        $this->merge([
-            "payroll_details" => json_decode($this->payroll_details, true)
-        ]);
+        if (gettype($this->payroll_details) == "string") {
+            $this->merge([
+                "payroll_details" => json_decode($this->payroll_details, true)
+            ]);
+        }
     }
     /**
      * Get the validation rules that apply to the request.

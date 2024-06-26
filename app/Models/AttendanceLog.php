@@ -41,6 +41,7 @@ class AttendanceLog extends Model
 
     protected $appends = [
         'time_human',
+        'charging_designation',
     ];
 
     public function project(): BelongsTo
@@ -115,5 +116,15 @@ class AttendanceLog extends Model
     public function getTimeHumanAttribute()
     {
         return Carbon::parse($this->time)->format("h:i A");
+    }
+    public function getChargingDesignationAttribute()
+    {
+        if ($this->department_id != null) {
+            return Department::find($this->department_id)->department_name;
+        }
+        if ($this->project_id != null) {
+            return Project::find($this->project_id)->project_code;
+        }
+        return "No charging found.";
     }
 }

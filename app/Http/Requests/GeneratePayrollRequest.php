@@ -70,6 +70,11 @@ class GeneratePayrollRequest extends FormRequest
                 "required",
                 "array",
             ],
+            'adjustments.*.employee_id' => [
+                "required",
+                "integer",
+                "exists:employees,id",
+            ],
             'adjustments.*.adjustment_name' => [
                 "required",
                 "string",
@@ -81,7 +86,6 @@ class GeneratePayrollRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
-
         ];
     }
 }
