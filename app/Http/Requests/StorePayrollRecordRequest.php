@@ -280,6 +280,7 @@ class StorePayrollRecordRequest extends FormRequest
             ],
             // adjustments = name,amount
             'payroll_details.*.adjustment' => 'required|array',
+            'payroll_details.*.adjustment.*.employee_id' => 'required|integer|exists:employees,id',
             'payroll_details.*.adjustment.*.name' => 'required|string',
             'payroll_details.*.adjustment.*.amount' => [
                 "required",

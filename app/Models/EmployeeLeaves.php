@@ -46,6 +46,7 @@ class EmployeeLeaves extends Model
         'request_status',
         'number_of_days',
         'with_pay',
+        'created_by',
     ];
 
     public function scopeRequestStatusPending(Builder $query): void
