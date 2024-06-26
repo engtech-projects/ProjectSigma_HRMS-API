@@ -68,7 +68,7 @@ class FailureToLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetch.",
-            "data" => new FailureToLogResource($failedLog),
+            "data" => new FailureToLogResource($failedLog->load('employee')),
         ], JsonResponse::HTTP_OK);
     }
 
