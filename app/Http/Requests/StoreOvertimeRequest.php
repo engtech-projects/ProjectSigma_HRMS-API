@@ -47,13 +47,20 @@ class StoreOvertimeRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
+            "charging" => [
+                "string",
+                "required",
+                "in:Department,Project"
+            ],
             'project_id' => [
-                'nullable',
+                "nullable",
+                "required_if:charging,Project",
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
-                'nullable',
+                "nullable",
+                "required_if:charging,Department",
                 "integer",
                 "exists:departments,id",
             ],
