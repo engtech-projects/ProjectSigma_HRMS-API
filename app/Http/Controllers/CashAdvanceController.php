@@ -98,7 +98,7 @@ class CashAdvanceController extends Controller
      */
     public function show($id)
     {
-        $main = CashAdvance::with("employee", "department", "project")->find($id);
+        $main = CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->find($id);
         $data = json_decode('{}');
 
         if (!is_null($main)) {
