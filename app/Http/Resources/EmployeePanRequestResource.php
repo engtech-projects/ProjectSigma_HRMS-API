@@ -51,6 +51,7 @@ class EmployeePanRequestResource extends JsonResource
             "request_status" => $this->request_status,
             "comments" => $this->comments,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
         ];
         //return parent::toArray($request);
     }

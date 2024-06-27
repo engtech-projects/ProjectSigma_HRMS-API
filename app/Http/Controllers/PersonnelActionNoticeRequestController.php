@@ -115,7 +115,7 @@ class PersonnelActionNoticeRequestController extends Controller
         if (!is_null($main)) {
             $data->message = "Successfully fetched.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new EmployeePanRequestResource($main);
             return response()->json($data);
         }
         $data->message = "No data found.";
