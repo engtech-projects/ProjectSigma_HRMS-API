@@ -38,7 +38,6 @@ class EmployeeService
     public function generatePayroll(array $period, array $filters, $employee)
     {
         $total = 0;
-
         $dtr = collect($period)->groupBy(function ($period) use ($filters) {
             return $period["date"];
         })->map(function ($period) use ($employee, $filters) {
@@ -51,12 +50,13 @@ class EmployeeService
 
         $adjustments = [];
         $total_adjustment = 0;
-
         if(isset($filters["adjustments"])){
-            $adjustments = collect($filters["adjustments"])->map(function($data){
+            $adjustments = collect($filters["adjustments"])->filter(function ($key) use ($employee){
+                return $key["employee_id"] === $employee->id;
+            })->map(function($data){
                 return $data;
             });
-            $total_adjustment = $adjustments->values()->sum("amount");
+            $total_adjustment = $adjustments->values()->sum("adjustment_amount");
         }
 
         $dtrs = $dtr->values();
