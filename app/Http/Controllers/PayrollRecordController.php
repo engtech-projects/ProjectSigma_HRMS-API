@@ -89,7 +89,6 @@ class PayrollRecordController extends Controller
             });
         } catch (Exception $e) {
             throw new TransactionFailedException("Transaction failed.", 500, $e);
-            // throw new TransactionFailedException($e, 500, $e);
         }
 
         return new JsonResponse([
