@@ -21,7 +21,7 @@ class ManpowerServices
     }
     public function getAll()
     {
-        return $this->manpowerRequest->with(["position"])->get();
+        return $this->manpowerRequest->with(["position"])->orderBy('created_at', 'desc')->get();
     }
     public function getAllForHiring()
     {
@@ -35,6 +35,7 @@ class ManpowerServices
             ->with(['user.employee', "position"])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
