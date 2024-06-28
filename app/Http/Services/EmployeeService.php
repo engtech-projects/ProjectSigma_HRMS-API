@@ -91,6 +91,16 @@ class EmployeeService
                 "undertime" => round($dtrs->sum("metadata.special_holidays.undertime"), 2),
             ]
         ];
+
+        $collectAdjustments = collect();
+        foreach($adjustments as $key){
+            $collectAdjustments->push((object)[
+                "employee_id" => $key["employee_id"],
+                "adjustment_name" => $key["adjustment_name"],
+                "adjustment_amount" => $key["adjustment_amount"],
+            ]);
+        }
+
         $grossPays = collect([
             "regular" => [
                 "regular" => round($dtrs->sum("grosspay.regular.reg_hrs"), 2),
@@ -108,8 +118,9 @@ class EmployeeService
                 "regular" => round($dtrs->sum("grosspay.special_holidays.reg_hrs"), 2),
                 "overtime" => round($dtrs->sum("grosspay.special_holidays.overtime"), 2),
             ],
-            "adjustments" => $adjustments
+            "adjustments" => $collectAdjustments
         ]);
+
         $totalGrossPay = round($grossPays->values()->sum("regular") + $total_adjustment + $grossPays->values()->sum("overtime"), 2);
         $totalSalaryDeduction = $this->getTotalSalaryDeduction($result["salary_deduction"]);
         $totalNetPay = $totalGrossPay - $totalSalaryDeduction;
