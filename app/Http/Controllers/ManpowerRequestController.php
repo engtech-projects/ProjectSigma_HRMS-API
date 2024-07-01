@@ -139,14 +139,32 @@ class ManpowerRequestController extends Controller
     public function update(UpdateManpowerRequestRequest $request, $id)
     {
         try {
-            $this->manpowerService->update($request->validated(), $id);
-        } catch (\Exception $e) {
-            throw new TransactionFailedException("Update transaction failed.", 400, $e);
+            $main = ManpowerRequest::find($id);
+            if (is_null($main)) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'No data found.',
+                ], 404);
+            }
+            $data = $this->manpowerService->update($request->validated(), $main);
+            if ($data) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Successfully save.',
+                    'data' => $main,
+                ], JsonResponse::HTTP_OK);
+            }
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Update failed.',
+            ], 400);
+        } catch (\Throwable $th) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $th->getMessage(),
+                'message' => 'Update transaction failed.',
+            ], 400);
         }
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully updated."
-        ], JsonResponse::HTTP_OK);
     }
 
     /**

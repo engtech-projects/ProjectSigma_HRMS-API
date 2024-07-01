@@ -6,6 +6,7 @@ use App\Enums\RequestApprovalStatus;
 use App\Models\ManpowerRequest;
 use App\Models\Users;
 use App\Notifications\ManpowerRequestForApproval;
+use Illuminate\Http\JsonResponse;
 
 class ManpowerServices
 {
@@ -64,23 +65,11 @@ class ManpowerServices
         }
     }
 
-    public function update($request, $id)
+    public function update($request, $query)
     {
-        $main = ManpowerRequest::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $main->fill($request);
-            if ($main->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Update failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        $query->fill($request);
+        if ($query->save()) {
+            return $query;
         }
-
-        return $this->manpowerRequest->with(["position"])->orderBy('created_at', 'desc')->get();
     }
 }
