@@ -360,6 +360,7 @@ class EmployeePanRequest extends Model
         $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
         $newInterWorkExp['work_location'] = $this->work_location ?? $interWorkExp->work_location;
         $newInterWorkExp['date_from'] = $this->date_of_effictivity;
+        $newInterWorkExp['salary_type'] = $this->salary_type;
         $newInterWorkExp['date_to'] = null;
         $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
         InternalWorkExperience::create($newInterWorkExp);
@@ -387,6 +388,7 @@ class EmployeePanRequest extends Model
         $newInterWorkExp['salary_grades'] = $this->salary_grades ?? $interWorkExp->salary_grades;
         $newInterWorkExp['actual_salary'] = $this->salarygrade?->monthly_salary_amount ?? $interWorkExp->actual_salary;
         $newInterWorkExp['date_from'] = $this->date_of_effictivity;
+        $newInterWorkExp['salary_type'] = $this->salary_type;
         $newInterWorkExp['date_to'] = null;
         $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
         InternalWorkExperience::create($newInterWorkExp);

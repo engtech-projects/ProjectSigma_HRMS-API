@@ -37,6 +37,7 @@ class ManpowerRequestResource extends JsonResource
             "educational_requirement" => $this->educational_requirement,
             "preferred_qualifications" => $this->preferred_qualifications,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
             "remarks" => $this->remarks,
             "request_status" => $this->request_status,
             "charged_to" => $this->charged_to,

@@ -8,10 +8,12 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
+use App\Models\Employee;
 use App\Models\Users;
 use App\Notifications\LeaveRequestForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeLeavesController extends Controller
 {
@@ -44,6 +46,8 @@ class EmployeeLeavesController extends Controller
         $data = json_decode('{}');
 
         if ($valData) {
+            $main->created_by = Auth::user()->id;
+            $createdBy = Employee::find(Auth::user()->id);
             $main->fill($valData);
             $main->request_status = RequestStatusType::PENDING;
 
@@ -56,6 +60,7 @@ class EmployeeLeavesController extends Controller
             if ($main->getNextPendingApproval()) {
                 Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
             }
+            $main->created_by = collect($createdBy)->only(['id', 'fullname_last', 'fullname_first']);
             $data->message = "Successfully save.";
             $data->success = true;
             $data->data = new EmployeeLeaveResource($main);

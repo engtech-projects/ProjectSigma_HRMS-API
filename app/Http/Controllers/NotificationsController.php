@@ -36,15 +36,17 @@ class NotificationsController extends Controller
 
     public function getUnreadNotificationsStream()
     {
+        ini_set('max_execution_time', '999999');
         return response()->stream(function() {
             $lastLength = 0;
             $lastRequestSent = null;
+            $broadcastCount = 0;
             while (true) {
                 $notifs = Users::find(Auth::user()->id)->unreadNotifications;
                 $newLength = sizeof($notifs);
                 if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
                     $lastLength = $newLength;
-                    echo "data: ".json_encode($notifs). "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notifs) . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -54,7 +56,7 @@ class NotificationsController extends Controller
                     if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
                         continue;
                     }
-                    echo "data: ".json_encode($notifs). "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notifs) . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -88,11 +90,5 @@ class NotificationsController extends Controller
     public function unreadNotification($notif)
     {
         Auth::user()->notifications->find($notif)->markAsUnread();
-    }
-
-    public function testCreateNotif()
-    {
-        $theLeave = EmployeeLeaves::find(1);
-        Auth::user()->notify(new LeaveRequestForApproval($theLeave));
     }
 }

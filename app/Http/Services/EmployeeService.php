@@ -38,7 +38,6 @@ class EmployeeService
     public function generatePayroll(array $period, array $filters, $employee)
     {
         $total = 0;
-
         $dtr = collect($period)->groupBy(function ($period) use ($filters) {
             return $period["date"];
         })->map(function ($period) use ($employee, $filters) {
@@ -51,12 +50,13 @@ class EmployeeService
 
         $adjustments = [];
         $total_adjustment = 0;
-
         if(isset($filters["adjustments"])){
-            $adjustments = collect($filters["adjustments"])->map(function($data){
+            $adjustments = collect($filters["adjustments"])->filter(function ($key) use ($employee){
+                return $key["employee_id"] === $employee->id;
+            })->map(function($data){
                 return $data;
             });
-            $total_adjustment = $adjustments->values()->sum("amount");
+            $total_adjustment = $adjustments->values()->sum("adjustment_amount");
         }
 
         $dtrs = $dtr->values();
@@ -91,6 +91,16 @@ class EmployeeService
                 "undertime" => round($dtrs->sum("metadata.special_holidays.undertime"), 2),
             ]
         ];
+
+        $collectAdjustments = collect();
+        foreach($adjustments as $key){
+            $collectAdjustments->push((object)[
+                "employee_id" => $key["employee_id"],
+                "adjustment_name" => $key["adjustment_name"],
+                "adjustment_amount" => $key["adjustment_amount"],
+            ]);
+        }
+
         $grossPays = collect([
             "regular" => [
                 "regular" => round($dtrs->sum("grosspay.regular.reg_hrs"), 2),
@@ -108,8 +118,9 @@ class EmployeeService
                 "regular" => round($dtrs->sum("grosspay.special_holidays.reg_hrs"), 2),
                 "overtime" => round($dtrs->sum("grosspay.special_holidays.overtime"), 2),
             ],
-            "adjustments" => $adjustments
+            "adjustments" => $collectAdjustments
         ]);
+
         $totalGrossPay = round($grossPays->values()->sum("regular") + $total_adjustment + $grossPays->values()->sum("overtime"), 2);
         $totalSalaryDeduction = $this->getTotalSalaryDeduction($result["salary_deduction"]);
         $totalNetPay = $totalGrossPay - $totalSalaryDeduction;

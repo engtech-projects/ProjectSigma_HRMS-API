@@ -8,6 +8,7 @@ use App\Enums\ReleaseType;
 use App\Enums\RequestApprovalStatus;
 use App\Enums\StringRequestApprovalStatus;
 use App\Http\Traits\HasApprovalValidation;
+use App\Enums\PayrollDetailsDeductionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -25,12 +26,21 @@ class GeneratePayrollRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->prepareApprovalValidation();
-        $this->merge([
-            'employee_ids' => json_decode($this->employee_ids, true),
-        ]);
-        $this->merge([
-            'adjustments' => json_decode($this->adjustments, true),
-        ]);
+        if (gettype($this->employee_ids) == "string") {
+            $this->merge([
+                'employee_ids' => json_decode($this->employee_ids, true),
+            ]);
+        }
+        if (gettype($this->adjustments) == "string") {
+            $this->merge([
+                'adjustments' => json_decode($this->adjustments, true),
+            ]);
+        }
+        if (gettype($this->chargings) == "string") {
+            $this->merge([
+                'chargings' => json_decode($this->chargings, true),
+            ]);
+        }
     }
 
     /**
@@ -85,6 +95,30 @@ class GeneratePayrollRequest extends FormRequest
                 'max:999999',
                 "min:0",
                 'decimal:0,2',
+            ],
+            'chargings' => 'nullable|array',
+            'chargings.*' => [
+                "required",
+                "array",
+            ],
+            'chargings.*.name' => [
+                "required",
+                "string",
+            ],
+            'chargings.*.amount' => [
+                "required",
+                "numeric",
+                "min:0",
+                'decimal:0,2',
+            ],
+            'chargings.*.charge_id' => [
+                "required",
+                "integer",
+            ],
+            'chargings.*.type' => [
+                "required",
+                "string",
+                new Enum(PayrollDetailsDeductionType::class)
             ],
         ];
     }

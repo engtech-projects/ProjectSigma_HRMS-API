@@ -6,6 +6,7 @@ use App\Enums\RequestApprovalStatus;
 use App\Models\ManpowerRequest;
 use App\Models\Users;
 use App\Notifications\ManpowerRequestForApproval;
+use Illuminate\Http\JsonResponse;
 
 class ManpowerServices
 {
@@ -21,7 +22,7 @@ class ManpowerServices
     }
     public function getAll()
     {
-        return $this->manpowerRequest->with(["position"])->get();
+        return $this->manpowerRequest->with(["position"])->orderBy('created_at', 'desc')->get();
     }
     public function getAllForHiring()
     {
@@ -35,6 +36,7 @@ class ManpowerServices
             ->with(['user.employee', "position"])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
@@ -60,6 +62,14 @@ class ManpowerServices
         $main->refresh();
         if ($main->getNextPendingApproval()) {
             Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
+        }
+    }
+
+    public function update($request, $query)
+    {
+        $query->fill($request);
+        if ($query->save()) {
+            return $query;
         }
     }
 }

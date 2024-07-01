@@ -40,6 +40,7 @@ class EmployeeLeaveResource extends JsonResource
             "project" => $this->project,
             "request_status" => $this->request_status,
             "with_pay" => $this->with_pay,
+            "created_by" => $this->created_by
         ];
     }
 }

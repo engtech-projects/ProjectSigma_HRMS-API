@@ -80,7 +80,7 @@ class TravelOrderController extends Controller
      */
     public function show($id)
     {
-        $main = TravelOrder::find($id);
+        $main = TravelOrder::with(['department',"employees"])->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";

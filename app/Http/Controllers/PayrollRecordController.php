@@ -84,12 +84,11 @@ class PayrollRecordController extends Controller
                     $empPayrollDetail = $payroll->payroll_details()->create($payrollData);
                     $empPayrollDetail->adjustments()->createMany($payrollData["adjustment"]);
                     PayrollDetailDeduction::create($this->setPayrollDetails($payrollData["deductions"], $empPayrollDetail));
-                    // PayrollDetailsCharging::create($this->setPayrollDetails($payrollData["charging"], $empPayrollDetail));
+                    PayrollDetailsCharging::create($this->setPayrollDetails($payrollData["charging"], $empPayrollDetail));
                 }
             });
         } catch (Exception $e) {
             throw new TransactionFailedException("Transaction failed.", 500, $e);
-            // throw new TransactionFailedException($e, 500, $e);
         }
 
         return new JsonResponse([

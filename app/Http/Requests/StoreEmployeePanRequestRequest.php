@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\EmploymentStatus;
+use App\Enums\HireSourceType;
 use App\Enums\SalaryRequestType;
 use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
@@ -61,7 +62,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'hire_source' => [
                 "nullable",
                 "string",
-                'in:Internal,External',
+                new Enum(HireSourceType::class),
                 'required_if:type,==,New Hire',
             ],
             'employment_status' => [

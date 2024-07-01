@@ -58,13 +58,20 @@ class PersonnelActionNoticeRequestController extends Controller
                     "message" => "Create transaction failed."
                     ], JsonResponse::HTTP_EXPECTATION_FAILED);
             }
-            $this->panRequestService->create($valid);
+            $data = $this->panRequestService->create($valid);
+            $dataResource = new EmployeePanRequestResource($data);
+
+            return new JsonResponse([
+                "success" => true,
+                "message" => "Successfully created.",
+                "data" => $dataResource
+            ], JsonResponse::HTTP_CREATED);
         } catch (\Exception $e) {
             throw new TransactionFailedException("Create transaction failed.", 500, $e);
         }
         return new JsonResponse([
             "success" => true,
-            "message" => "Successfully created."
+            "message" => "Successfully created.",
         ], JsonResponse::HTTP_CREATED);
     }
 
@@ -115,7 +122,7 @@ class PersonnelActionNoticeRequestController extends Controller
         if (!is_null($main)) {
             $data->message = "Successfully fetched.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new EmployeePanRequestResource($main);
             return response()->json($data);
         }
         $data->message = "No data found.";
