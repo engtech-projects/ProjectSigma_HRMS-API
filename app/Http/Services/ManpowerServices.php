@@ -63,4 +63,24 @@ class ManpowerServices
             Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
         }
     }
+
+    public function update($request, $id)
+    {
+        $main = ManpowerRequest::find($id);
+        $data = json_decode('{}');
+        if (!is_null($main)) {
+            $main->fill($request);
+            if ($main->save()) {
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $main;
+                return response()->json($data);
+            }
+            $data->message = "Update failed.";
+            $data->success = false;
+            return response()->json($data, 400);
+        }
+
+        return $this->manpowerRequest->with(["position"])->orderBy('created_at', 'desc')->get();
+    }
 }

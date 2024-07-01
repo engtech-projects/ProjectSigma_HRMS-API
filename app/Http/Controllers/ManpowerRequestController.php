@@ -136,10 +136,10 @@ class ManpowerRequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateManpowerRequestRequest $request, ManpowerRequest $resource)
+    public function update(UpdateManpowerRequestRequest $request, $id)
     {
         try {
-            $this->manpowerService->update($request->validated(), $resource);
+            $this->manpowerService->update($request->validated(), $id);
         } catch (\Exception $e) {
             throw new TransactionFailedException("Update transaction failed.", 400, $e);
         }
