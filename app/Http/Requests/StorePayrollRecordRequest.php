@@ -260,7 +260,6 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
-            // deductions = polymorp(Cash Advance ,Loan ,Other Deduction ,Others)  type, deduction_type, deduction_id
             'payroll_details.*.deductions' => 'required|array',
             'payroll_details.*.deductions.*.charge_id' =>[
                 "nullable",
@@ -278,30 +277,28 @@ class StorePayrollRecordRequest extends FormRequest
                 "string",
                 new Enum(PayrollDetailsDeductionType::class)
             ],
-            // adjustments = name,amount
-            'payroll_details.*.adjustment' => 'required|array',
-            'payroll_details.*.adjustment.*.employee_id' => 'required|integer|exists:employees,id',
-            'payroll_details.*.adjustment.*.name' => 'required|string',
-            'payroll_details.*.adjustment.*.amount' => [
+            'payroll_details.*.adjustments' => 'required|array',
+            'payroll_details.*.adjustments.*.employee_id' => 'required|integer|exists:employees,id',
+            'payroll_details.*.adjustments.*.name' => 'required|string',
+            'payroll_details.*.adjustments.*.amount' => [
                 "required",
                 "numeric",
                 "min:0",
                 'decimal:0,2',
             ],
-            // chargings = polymorp(Cash Advance ,Loan ,Other Deduction ,Others)  name, amount, charge_type, charge_id
-            'payroll_details.*.charging' => 'required|array',
-            'payroll_details.*.charging.*.name' => 'required|string',
-            'payroll_details.*.charging.*.amount' => [
+            'payroll_details.*.chargings' => 'required|array',
+            'payroll_details.*.chargings.*.name' => 'required|string',
+            'payroll_details.*.chargings.*.amount' => [
                 "required",
                 "numeric",
                 "min:0",
                 'decimal:0,2',
             ],
-            'payroll_details.*.charging.*.charge_id' =>[
+            'payroll_details.*.chargings.*.charge_id' =>[
                 "nullable",
                 "integer",
             ],
-            'payroll_details.*.charging.*.type' => [
+            'payroll_details.*.chargings.*.type' => [
                 "required",
                 "string",
                 new Enum(PayrollDetailsDeductionType::class)
