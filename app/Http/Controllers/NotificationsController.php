@@ -46,7 +46,7 @@ class NotificationsController extends Controller
                 $newLength = sizeof($notifs);
                 if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
                     $lastLength = $newLength;
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode(["notifs" => $notifs]) . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notifs) . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -56,7 +56,7 @@ class NotificationsController extends Controller
                     if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
                         continue;
                     }
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode(["notifs" => $notifs]) . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notifs) . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
