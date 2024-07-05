@@ -34,7 +34,13 @@ trait Attendance
         foreach ($attendances as $attendance) {
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
-            if(!$timeOut && sizeof($data["overtime"]) > 0) {
+            $hasOTContinuation = collect($data['overtime'])->contains(function ($otData) use($attendance) {
+                $otSchedInLowerLimit = Carbon::parse($otData['overtime_start_time'])->subHour();
+                $otSchedInUpperLimit = Carbon::parse($otData['overtime_start_time'])->addHour();
+                $schedOut = Carbon::parse($attendance["endTime"]);
+                return $schedOut->gt($otSchedInLowerLimit) && $schedOut->lt($otSchedInUpperLimit); // && $otData["applied_out"] // Add to condition if allow if no time out in OT
+            });
+            if(!$timeOut && $hasOTContinuation) {
                 $timeOut = (object)["time" => $attendance["endTime"]];
             }
             if(!$timeIn || !$timeOut){
