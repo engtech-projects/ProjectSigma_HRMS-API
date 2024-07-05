@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Utils\PaginateResourceCollection;
 
 class NotificationsController extends Controller
 {
@@ -26,11 +27,12 @@ class NotificationsController extends Controller
 
     public function getNotifications()
     {
+        $collection = collect(NotificationResource::collection(Auth::user()->notifications));
         return new JsonResponse
         ([
             'success' => false,
             'message' => 'Fetched all notifications.',
-            'data' => NotificationResource::collection(Auth::user()->notifications),
+            'data' => PaginateResourceCollection::paginate($collection, 15)
         ], JsonResponse::HTTP_OK);
     }
 
