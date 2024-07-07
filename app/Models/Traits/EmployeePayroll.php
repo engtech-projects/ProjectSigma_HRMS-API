@@ -37,6 +37,17 @@ trait EmployeePayroll
         return $result;
     }
 
+    public function salary_charging_pay($dtr)
+    {
+        $salaryGrade = $this->current_employment?->employee_salarygrade;
+        $dailyRate = $salaryGrade?->dailyRate ?: 0;
+        $result = [];
+        foreach ($dtr as $key => $value) {
+            // $result[$key]["reg_hrs"] = round($value["reg_hrs"] / 8 * $dailyRate, 2);
+        }
+        return $result;
+    }
+
     public function salary_deduction($filters)
     {
         $salaryGrade = $this->current_employment?->employee_salarygrade;

@@ -32,6 +32,7 @@ class EmployeeService
             "leave" => $leave,
             "events" => $events,
             "metadata" => $employee->getMetaData($collection, $date),
+            "charging" => $employee->getCharging($collection, $date),
         ];
     }
 
@@ -44,6 +45,7 @@ class EmployeeService
             $date = $period[0]["date"];
             $dtr = $this->employeeDTR($employee, $date);
             $grossPay =  $employee->salary_gross_pay($dtr["metadata"]);
+            $chargingPay =  $employee->salary_charging_pay($dtr["charging"]);
             $dtr["grosspay"] = $grossPay;
             return $dtr;
         });
@@ -63,6 +65,48 @@ class EmployeeService
         $result = [
             "dtr" => $dtr,
             "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
+        ];
+
+        $projects = collect();
+        $departments = collect();
+
+        foreach ($dtr as $data) {
+            $dtrChargingProject = $data["charging"]["projects"];
+            $dtrChargingDepartment = $data["charging"]["departments"];
+            foreach($dtrChargingProject as $data){
+                if($projects->where('id', $data["id"])->count() === 0){
+                    $projects->push([
+                        'id' => $data["id"],
+                        'reg_hrs' => $data["reg_hrs"],
+                    ]);
+                }else{
+                    $projects = $projects->filter(function ($thisData) use ($data) {
+                        return $thisData["id"] === $data["id"];
+                    })->map(function ($thisData) use($data) {
+                        $thisData['reg_hrs'] = $thisData['reg_hrs'] + $data['reg_hrs'];
+                        return $thisData;
+                    });
+                }
+            }
+            foreach($dtrChargingDepartment as $data){
+                if($departments->where('id', $data["id"])->count() === 0){
+                    $departments->push([
+                        'id' => $data["id"],
+                        'reg_hrs' => $data["reg_hrs"],
+                    ]);
+                }else{
+                    $departments = $departments->filter(function ($thisData) use ($data) {
+                        return $thisData["id"] === $data["id"];
+                    })->map(function ($thisData) use($data) {
+                        $thisData['reg_hrs'] = $thisData['reg_hrs'] + $data['reg_hrs'];
+                        return $thisData;
+                    });
+                }
+            }
+        }
+        $chargings = [
+            $projects,
+            $departments,
         ];
 
         $totalHoursWorked = [
@@ -118,7 +162,8 @@ class EmployeeService
                 "regular" => round($dtrs->sum("grosspay.special_holidays.reg_hrs"), 2),
                 "overtime" => round($dtrs->sum("grosspay.special_holidays.overtime"), 2),
             ],
-            "adjustments" => $collectAdjustments
+            "adjustments" => $collectAdjustments,
+            "chargings" => $chargings,
         ]);
 
         $totalGrossPay = round($grossPays->values()->sum("regular") + $total_adjustment + $grossPays->values()->sum("overtime"), 2);
