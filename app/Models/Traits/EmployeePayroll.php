@@ -37,14 +37,42 @@ trait EmployeePayroll
         return $result;
     }
 
-    public function salary_charging_pay($dtr)
+    public function salary_charge_pay($dtr, $getId)
     {
         $salaryGrade = $this->current_employment?->employee_salarygrade;
         $dailyRate = $salaryGrade?->dailyRate ?: 0;
-        $result = [];
-        foreach ($dtr as $key => $value) {
-            // $result[$key]["reg_hrs"] = round($value["reg_hrs"] / 8 * $dailyRate, 2);
+        $tavelandleave = collect();
+        $projects = collect();
+        $departments = collect();
+        foreach ($dtr["departments"] as $key => $value) {
+            if(count($dtr["departments"])>0){
+                $departments->push([
+                    "id" => $value["id"],
+                    "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                ]);
+            }
         }
+        foreach ($dtr["tavelandleave"] as $key => $value) {
+            if(count($dtr["tavelandleave"])>0){
+                $tavelandleave->push([
+                    "id" => $getId,
+                    "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                ]);
+            }
+        }
+        foreach ($dtr["projects"] as $key => $value) {
+            if(count($dtr["projects"])>0){
+                $projects->push([
+                    "id" => $value["id"],
+                    "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                ]);
+            }
+        }
+        $result = [
+            "tavelandleave" => $tavelandleave,
+            "projects" => $projects,
+            "departments" => $departments,
+        ];
         return $result;
     }
 
