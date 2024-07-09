@@ -215,7 +215,7 @@ trait Attendance
         $regHolidayUndertime = 0;
         $leave += $this->getTotalRendered($data["leave"], $date);
         $travel += $this->getTotalRendered($data["travel_orders"], $date);
-        if (count($data["events"]) > 0) {
+        if (count(collect($data["events"])->where("with_work", '=', 0)) > 0) {
             $result = $this->calculateWorkRendered($data);
             $regHoliday += $result["rendered"] + $leave + $travel;;
             $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
