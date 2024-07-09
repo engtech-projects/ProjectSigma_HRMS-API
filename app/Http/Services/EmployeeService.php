@@ -83,10 +83,12 @@ class EmployeeService
         $projects = collect();
         $departments = collect();
         $getId = 0;
+
         foreach ($dtr as $data) {
             $dtrChargingTavelAndLeave = $data["daily_charge"]["tavelandleave"];
             $dtrChargingProject = $data["daily_charge"]["projects"];
             $dtrChargingDepartment = $data["daily_charge"]["departments"];
+
             if(count($dtrChargingDepartment) > 0){
                 foreach ($dtrChargingDepartment as $key) {
                     $getPay = $data["chargepay"]["departments"]->where("id", $key["id"])->first();
@@ -114,6 +116,7 @@ class EmployeeService
                     ]);
                 }
             }
+
             if(count($dtrChargingTavelAndLeave) > 0){
                 switch (strtolower($filters["group_type"])) {
                     case strtolower(AssignTypes::DEPARTMENT->value):
@@ -133,59 +136,28 @@ class EmployeeService
             }
         }
 
-        $uniquetavelandleave = collect();
-        $tavelandleave = $tavelandleave->map(function($items) use($uniquetavelandleave) {
-            if($uniquetavelandleave->where('id', $items["id"])->count() === 0){
-                $uniquetavelandleave->push($items);
-            }else{
-                $uniquetavelandleave = $uniquetavelandleave->filter(function ($data) use ($items) {
-                    return $data["id"] === $items["id"];
-                })->map(function ($data) use($items) {
-                    $items["amount"] = $items["amount"] + $data["amount"];
-                    $items["reg_hrs"] = $data["reg_hrs"] + $items["reg_hrs"];
-                    return $items;
-                });
-                return $uniquetavelandleave->where('id', $items["id"])->first();
-            }
-        })->filter(function($data){
-            return $data!=null;
+        $tavelandleave = $tavelandleave->groupBy("id")->map(function($data, $index) {
+            return [
+                "id" => $index,
+                "amt" => round($data->sum('amount'), 2),
+                "reg_hrs" => round($data->sum('reg_hrs'), 2),
+            ];
         });
 
-        $itemCollection = collect();
-        $departments = $departments->map(function($data) use($itemCollection){
-            if($itemCollection->where('id', $data["id"])->count() === 0){
-                $itemCollection->push($data);
-            }else{
-                $itemCollection = $itemCollection->filter(function ($itemData) use ($data) {
-                    return $itemData["id"] === $data["id"];
-                })->map(function ($itemData) use($data) {
-                    $data["name"] = "Salary Department";
-                    $data["amount"] = $itemData["amount"] + $data["amount"];
-                    $data["reg_hrs"] = $itemData["reg_hrs"] + $data["reg_hrs"];
-                    return $data;
-                });
-                return $itemCollection->where('id', $data["id"])->first();
-            }
-        })->filter(function($data){
-            return $data!=null;
+        $departments = $departments->groupBy("id")->map(function($data, $index) {
+            return [
+                "id" => $index,
+                "amt" => round($data->sum('amount'), 2),
+                "reg_hrs" => round($data->sum('reg_hrs'), 2),
+            ];
         });
 
-        $itemCollection = collect();
-        $projects = $projects->map(function($data) use($itemCollection){
-            if($itemCollection->where('id', $data["id"])->count() === 0){
-                $itemCollection->push($data);
-            }else{
-                $itemCollection = $itemCollection->filter(function ($itemData) use ($data) {
-                    return $itemData["id"] === $data["id"];
-                })->map(function ($itemData) use($data) {
-                    $data["name"] = "Salary Project";
-                    $data["reg_hrs"] = $itemData["reg_hrs"] + $data["reg_hrs"];
-                    return $data;
-                });
-                return $itemCollection->where('id', $data["id"])->first();
-            }
-        })->filter(function($data){
-            return $data!=null;
+        $projects = $projects->groupBy("id")->map(function($data, $index) {
+            return [
+                "id" => $index,
+                "amt" => round($data->sum('amount'), 2),
+                "reg_hrs" => round($data->sum('reg_hrs'), 2),
+            ];
         });
 
         $chargings = [
