@@ -234,22 +234,22 @@ trait Attendance
 
         return [
             "regular" => [
-                "reg_hrs" => $reg,
-                "overtime" => $regOvertime,
-                "late" => $late,
-                "undertime" => $regUndertime,
+                "reg_hrs" => round($reg, 2),
+                "overtime" => round($regOvertime, 2),
+                "late" => round($late, 2),
+                "undertime" => round($regUndertime, 2),
             ],
             "rest" => [
-                "reg_hrs" => $rest,
-                "overtime" => $restOvertime,
+                "reg_hrs" => round($rest, 2),
+                "overtime" => round($restOvertime, 2),
                 "late" => 0,
-                "undertime" => $restUndertime,
+                "undertime" => round($restUndertime, 2),
             ],
             "regular_holidays" => [
-                "reg_hrs" => $regHoliday,
-                "overtime" => $regHolidayOvertime,
+                "reg_hrs" => round($regHoliday, 2),
+                "overtime" => round($regHolidayOvertime, 2),
                 "late" => 0,
-                "undertime" => $regHolidayUndertime,
+                "undertime" => round($regHolidayUndertime, 2),
             ],
             "special_holidays" => [
                 "reg_hrs" => 0,
