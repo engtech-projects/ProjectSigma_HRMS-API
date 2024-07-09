@@ -83,20 +83,21 @@ class EmployeeService
             "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
         ];
 
+        switch (strtolower($filters["group_type"])) {
+            case strtolower(AssignTypes::DEPARTMENT->value):
+                $getId = $filters["department_id"];
+                break;
+            case strtolower(AssignTypes::PROJECT->value):
+                $getId = $filters["project_id"];
+                break;
+        }
+
         foreach ($dtr as $data) {
             $dtrChargeTavelAndLeave = $data["daily_charge"]["tavelandleave"];
             $departments->push($this->getChargeAmount($data["daily_charge"]["departments"], $data));
             $projects->push($this->getChargeAmount($data["daily_charge"]["projects"], $data));
 
             if(count($dtrChargeTavelAndLeave) > 0){
-                switch (strtolower($filters["group_type"])) {
-                    case strtolower(AssignTypes::DEPARTMENT->value):
-                        $getId = $filters["department_id"];
-                        break;
-                    case strtolower(AssignTypes::PROJECT->value):
-                        $getId = $filters["project_id"];
-                        break;
-                }
                 $getPay = $data["chargepay"]["tavelandleave"]->where("id", $getId)->first();
                 $tavelandleave->push([
                     "type" => $filters["group_type"],
@@ -110,11 +111,17 @@ class EmployeeService
         $tavelandleave = $this->getTotalChargeAmount($tavelandleave);
         $departments = $this->getTotalChargeAmount($departments);
         $projects = $this->getTotalChargeAmount($projects);
+        $pagibig = $this->getBenefitsCharge($data["chargepay"]["pagibig"], $getId, $filters["group_type"]);
+        $philhealth = $this->getBenefitsCharge($data["chargepay"]["philhealth"], $getId, $filters["group_type"]);
+        $sss = $this->getBenefitsCharge($data["chargepay"]["sss"], $getId, $filters["group_type"]);
 
         $chargings = [
             "tavelandleave" => $tavelandleave,
             "projects" => $projects,
             "departments" => $departments,
+            "pagibig" => $pagibig,
+            "sss" => $sss,
+            "philhealth" => $philhealth,
         ];
 
         $totalHoursWorked = [
@@ -187,6 +194,15 @@ class EmployeeService
         $result["hours_worked"] = $totalHoursWorked;
         $result["gross_pays"] = $grossPays;
         return $result;
+    }
+
+    function getBenefitsCharge($charge, $id, $type) {
+        return [
+            "id" => $id,
+            "type" =>$type,
+            "employer_maximum_contribution" => $charge["employer_maximum_contribution"] ? $charge["employer_maximum_contribution"] : $charge["employer_contribution"],
+            "employer_compensation" => $charge["employer_compensation"] ? $charge["employer_compensation"] : $charge["employer_share"],
+        ];
     }
 
     function getTotalChargeAmount($charge){

@@ -68,10 +68,19 @@ trait EmployeePayroll
                 ]);
             }
         }
+        $deduction = new SSSContribution();
+        $sss =  $deduction->contribution($salaryGrade?->monthly_salary_amount);
+        $deduction = new PhilhealthContribution();
+        $philhealth = $deduction->contribution($salaryGrade?->monthly_salary_amount);
+        $deduction = new PagibigContribution();
+        $pagibig = $deduction->contribution($salaryGrade?->monthly_salary_amount);
         $result = [
             "tavelandleave" => $tavelandleave,
             "projects" => $projects,
             "departments" => $departments,
+            "sss" => $sss,
+            "philhealth" => $philhealth,
+            "pagibig" => $pagibig,
         ];
         return $result;
     }
