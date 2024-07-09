@@ -46,14 +46,20 @@ trait Attendance
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
             $hasOTContinuation = collect($data['overtime'])->contains(function ($otData) use($attendance) {
-                $otSchedInLowerLimit = Carbon::parse($otData['overtime_start_time'])->subHour();
-                $otSchedInUpperLimit = Carbon::parse($otData['overtime_start_time'])->addHour();
+                $otSchedIn = $otData['overtime_start_time'];
                 $schedOut = Carbon::parse($attendance["endTime"]);
-                return $schedOut->gt($otSchedInLowerLimit) && $schedOut->lt($otSchedInUpperLimit); // && $otData["applied_out"] // Add to condition if allow if no time out in OT
+                return $schedOut->equalTo($otSchedIn);
             });
-
+            $hasOTStart = collect($data['overtime'])->contains(function ($otData) use($attendance) {
+                $otSchedOut = $otData['overtime_end_time'];
+                $schedIn = Carbon::parse($attendance["startTime"]);
+                return $schedIn->equalTo($otSchedOut);
+            });
             if(!$timeOut && $hasOTContinuation) {
                 $timeOut = (object)["time" => $attendance["endTime"]];
+            }
+            if(!$timeIn && $hasOTStart) {
+                $timeIn = (object)["time" => $attendance["startTime"]];
             }
             if(!$timeIn || !$timeOut){
                 continue;
@@ -288,7 +294,7 @@ trait Attendance
             if(count($result["projects"]) > 0){
                 foreach ($result["projects"] as $key) {
                     $projects->push([
-                        'id' => $data["project_id"],
+                        'id' => $key["id"],
                         "reg_hrs" => $reg,
                         "overtime" => $regOvertime,
                         "late" => $late,
