@@ -37,6 +37,45 @@ trait EmployeePayroll
         return $result;
     }
 
+    public function salary_charge_pay($dtr, $getId)
+    {
+        $salaryGrade = $this->current_employment?->employee_salarygrade;
+        $dailyRate = $salaryGrade?->dailyRate ?: 0;
+        $tavelandleave = collect();
+        $projects = collect();
+        $departments = collect();
+        foreach ($dtr["departments"] as $key => $value) {
+            if(count($dtr["departments"])>0){
+                $departments->push([
+                    "id" => $value["id"],
+                    "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                ]);
+            }
+        }
+        foreach ($dtr["tavelandleave"] as $key => $value) {
+            if(count($dtr["tavelandleave"])>0){
+                $tavelandleave->push([
+                    "id" => $getId,
+                    "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                ]);
+            }
+        }
+        foreach ($dtr["projects"] as $key => $value) {
+            if(count($dtr["projects"])>0){
+                $projects->push([
+                    "id" => $value["id"],
+                    "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                ]);
+            }
+        }
+        $result = [
+            "tavelandleave" => $tavelandleave,
+            "projects" => $projects,
+            "departments" => $departments,
+        ];
+        return $result;
+    }
+
     public function salary_deduction($filters)
     {
         $salaryGrade = $this->current_employment?->employee_salarygrade;

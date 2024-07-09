@@ -37,7 +37,7 @@ class Department extends Model
 
     public function internal_work_exp(): HasMany
     {
-        return $this->hasMany(ExternalWorkExperience::class, 'id', 'department_id');
+        return $this->hasMany(InternalWorkExperience::class, 'department_id', 'id');
     }
 
     public function employee_allowance(): MorphOne

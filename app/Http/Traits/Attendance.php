@@ -13,6 +13,7 @@ use App\Models\Settings;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use App\Enums\AssignTypes;
 
 trait Attendance
 {
@@ -23,6 +24,12 @@ trait Attendance
         return $this->calculateAttendance($data, $date);
     }
 
+    public function getCharging($data, $date)
+    {
+        $date = Carbon::parse($date);
+        return $this->calculateCharging($data, $date);
+    }
+
     public function calculateWorkRendered($data)
     {
         $attendances = $data["schedules_attendances"];
@@ -31,15 +38,27 @@ trait Attendance
         $undertime = 0;
         $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
         $lateAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value;
+        $projects = collect();
+        $departments = collect();
+
         foreach ($attendances as $attendance) {
+
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
-            if(!$timeOut && sizeof($data["overtime"]) > 0) {
+            $hasOTContinuation = collect($data['overtime'])->contains(function ($otData) use($attendance) {
+                $otSchedInLowerLimit = Carbon::parse($otData['overtime_start_time'])->subHour();
+                $otSchedInUpperLimit = Carbon::parse($otData['overtime_start_time'])->addHour();
+                $schedOut = Carbon::parse($attendance["endTime"]);
+                return $schedOut->gt($otSchedInLowerLimit) && $schedOut->lt($otSchedInUpperLimit); // && $otData["applied_out"] // Add to condition if allow if no time out in OT
+            });
+
+            if(!$timeOut && $hasOTContinuation) {
                 $timeOut = (object)["time" => $attendance["endTime"]];
             }
             if(!$timeIn || !$timeOut){
                 continue;
             }
+
             $in = Carbon::parse($timeIn?->time);
             $out = Carbon::parse($timeOut?->time);
             $startTime = Carbon::parse($attendance["startTime"]);
@@ -62,15 +81,71 @@ trait Attendance
                 $undertimeMinutes = $out->diffInMinutes($endTime);
                 $undertime += $undertimeMinutes;
             }
+
             $duration += round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
+
+            switch (strtolower($attendance["groupType"])) {
+                case strtolower(AssignTypes::DEPARTMENT->value):
+                    if($departments->where('id', $attendance["department_id"])->count() === 0){
+                        $departments->push([
+                            'id' => $attendance["department_id"],
+                            "rendered" => $duration,
+                            "late" => $totalLate,
+                            "undertime" => $undertime,
+                        ]);
+                    }else{
+                        $departments = $departments->filter(function ($data) use ($attendance) {
+                            return $data["id"] === $attendance["department_id"];
+                        })->map(function ($data) use($duration, $totalLate, $undertime) {
+                            $data['rendered'] = $duration;
+                            $data['late'] = $totalLate;
+                            $data['undertime'] = $undertime;
+                            return $data;
+                        });
+                    }
+                    break;
+                case strtolower(AssignTypes::PROJECT->value):
+                    if($projects->where('id', $attendance["project_id"])->count() === 0){
+                        $projects->push([
+                            'id' => $attendance["project_id"],
+                            "rendered" => $duration,
+                            "late" => $totalLate,
+                            "undertime" => $undertime,
+                        ]);
+                    }else{
+                        $projects = $projects->filter(function ($data) use ($attendance) {
+                            return $data["id"] === $attendance["project_id"];
+                        })->map(function ($data) use($duration, $totalLate, $undertime) {
+                            $data['rendered'] = $duration;
+                            $data['late'] = $totalLate;
+                            $data['undertime'] = $undertime;
+                            return $data;
+                        });
+                    }
+                    break;
+                default:
+                    $projects->push([
+                        "rendered" => $duration,
+                        "late" => $totalLate,
+                        "undertime" => $undertime,
+                    ]);
+                    $departments->push([
+                        "rendered" => $duration,
+                        "late" => $totalLate,
+                        "undertime" => $undertime,
+                    ]);
+                break;
+            }
         }
+
         return [
+            "projects" => $projects,
+            "departments" => $departments,
             "rendered" => $duration,
             "late" => $totalLate,
             "undertime" => $undertime,
         ];
     }
-
 
     public function getTotalRendered($data, $date)
     {
@@ -122,7 +197,6 @@ trait Attendance
     {
         $leave = 0;
         $travel = 0;
-
         $reg = 0;
         $regOvertime = 0;
         $regUndertime = 0;
@@ -133,7 +207,6 @@ trait Attendance
         $regHoliday = 0;
         $regHolidayOvertime = 0;
         $regHolidayUndertime = 0;
-
         $leave += $this->getTotalRendered($data["leave"], $date);
         $travel += $this->getTotalRendered($data["travel_orders"], $date);
         if (count($data["events"]) > 0) {
@@ -143,7 +216,7 @@ trait Attendance
             $regHolidayUndertime += $result["undertime"];
         } else if ($data["schedules_attendances"]) {
             $result = $this->calculateWorkRendered($data);
-            $reg += $result["rendered"] + $leave + $travel;;
+            $reg += $result["rendered"] + $leave + $travel;
             $regOvertime += $this->getOvertimeRendered($data["overtime"]);
             $late += $result["late"];
             $regUndertime += $result["undertime"];
@@ -178,7 +251,106 @@ trait Attendance
                 "late" => 0,
                 "undertime" => 0,
             ],
+        ];
+    }
 
+    function calculateCharging($data, $date){
+
+        $leave = 0;
+        $travel = 0;
+        $reg = 0;
+        $regOvertime = 0;
+        $regUndertime = 0;
+        $late = 0;
+        $rest = 0;
+        $restOvertime = 0;
+        $restUndertime = 0;
+        $regHoliday = 0;
+        $regHolidayOvertime = 0;
+        $regHolidayUndertime = 0;
+        $tavelandleave = collect();
+        $projects = collect();
+        $departments = collect();
+        $leave += $this->getTotalRendered($data["leave"], $date);
+        $travel += $this->getTotalRendered($data["travel_orders"], $date);
+        if (count($data["events"]) > 0) {
+            $result = $this->calculateWorkRendered($data);
+            $regHoliday += $result["rendered"] + $leave + $travel;;
+            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
+            $regHolidayUndertime += $result["undertime"];
+        } else if ($data["schedules_attendances"]) {
+            $result = $this->calculateWorkRendered($data);
+            $reg += $result["rendered"] + $leave + $travel;
+            $regOvertime += $this->getOvertimeRendered($data["overtime"]);
+            $late += $result["late"];
+            $regUndertime += $result["undertime"];
+
+            if(count($result["projects"]) > 0){
+                foreach ($result["projects"] as $key) {
+                    $projects->push([
+                        'id' => $data["project_id"],
+                        "reg_hrs" => $reg,
+                        "overtime" => $regOvertime,
+                        "late" => $late,
+                        "undertime" => $regUndertime,
+                    ]);
+                }
+            }
+
+            if(count($result["departments"]) > 0){
+                foreach ($result["departments"] as $key) {
+                    $departments->push([
+                        'id' => $key["id"],
+                        "reg_hrs" => $reg,
+                        "overtime" => $regOvertime,
+                        "late" => $late,
+                        "undertime" => $regUndertime,
+                    ]);
+                }
+            }
+
+            if(count($result["departments"])==0 && count($result["projects"])==0){
+                if($reg > 0 ){
+                    $tavelandleave->push([
+                        "reg_hrs" => $reg,
+                    ]);
+                }
+            }
+
+        } else {
+            $result = $this->calculateWorkRendered($data);
+            $rest += $result["rendered"] + $leave + $travel;
+            $restUndertime += $result["undertime"];
+        }
+
+        return [
+            "tavelandleave" => $tavelandleave,
+            "projects" => $projects,
+            "departments" => $departments,
+            "regular" => [
+                "reg_hrs" => $reg,
+                "overtime" => $regOvertime,
+                "late" => $late,
+                "undertime" => $regUndertime,
+            ],
+            "rest" => [
+                "reg_hrs" => $rest,
+                "overtime" => $restOvertime,
+                "late" => 0,
+                "undertime" => $restUndertime,
+            ],
+            "regular_holidays" => [
+                "reg_hrs" => $regHoliday,
+                "overtime" => $regHolidayOvertime,
+                "late" => 0,
+                "undertime" => $regHolidayUndertime,
+            ],
+            "special_holidays" => [
+                "reg_hrs" => 0,
+                "overtime" => 0,
+                "late" => 0,
+                "undertime" => 0,
+            ],
         ];
     }
 }
