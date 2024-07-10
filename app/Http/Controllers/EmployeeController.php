@@ -200,11 +200,10 @@ class EmployeeController extends Controller
         $main = Employee::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
-            $main->fill($request->validated());
-            if ($main->save()) {
+            if ($main->update($request->validated())) {
                 $data->message = "Successfully update.";
                 $data->success = true;
-                $data->data = $main;
+                $data->data = $main->refresh();
                 return response()->json($data);
             }
             $data->message = "Update failed.";
