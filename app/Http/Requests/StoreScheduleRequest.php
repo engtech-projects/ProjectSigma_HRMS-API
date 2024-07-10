@@ -77,11 +77,11 @@ class StoreScheduleRequest extends FormRequest
             ],
             'startTime' => [
                 "required",
-                "date_format:H:i",
+                "date_format:H:i:s",
             ],
             'endTime' => [
                 "required",
-                "date_format:H:i",
+                "date_format:H:i:s",
                 "after:startTime",
             ],
             'startRecur' => [
