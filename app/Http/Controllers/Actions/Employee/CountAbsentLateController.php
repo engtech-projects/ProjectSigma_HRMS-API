@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Actions\Employee;
 
-use App\Helpers;
-use App\Http\Services\EmployeeService;
+use App\Enums\AttendanceLogType;
+use App\Enums\AttendanceSettings;
+use App\Models\AttendanceLog;
 use App\Models\Employee;
+use App\Models\Settings;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -14,42 +16,47 @@ class CountAbsentLateController extends Controller
 
     public function __invoke()
     {
+        $attendance = [];
+        $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
         if (!Cache::has('lateAndAbsent')) {
-            $periodDates = Helpers::dateRange([
-                'period_start' => Carbon::now()->startOfMonth(),
-                'period_end' => Carbon::now()->lastOfMonth()
-            ]);
-            $employee = Employee::get();
-            $employeeChartData = $employee->map(function($employee) use ($periodDates) {
-                $absent_count = 0;
-                $late_count = 0;
-                foreach ($periodDates as $period) {
-                    $sched = $employee->applied_schedule_with_attendance($period['date']);
-                    if (!$sched) {
-                        continue;
-                    }
-                    foreach($sched as $schd ) {
-                        if (!$schd['applied_ins'] || !$schd['applied_outs']) {
-                            $absent_count ++;
-                        }
-                    }
+            $attendance = AttendanceLog::whereBetween('date', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->lastOfMonth()
+            ])->where('log_type', AttendanceLogType::TIME_IN->value)->with(['department.schedule', 'project.project_schedule'])->get();
+            return array_values($attendance->where(function($attendance) use($lateAllowance) {
+                if ($attendance->department_id != null) {
+                    // return true;
+                    return sizeof($attendance->department->schedule->where(function($sched) use($attendance, $lateAllowance) {
+                        // return true;
+                        $schedTimeIn = Carbon::parse($sched->startTime);
+                        $schedTimeOut = Carbon::parse($sched->endTime);
+                        $attendanceTimeIn = Carbon::parse($attendance->time);
+                        return $attendanceTimeIn->gt($schedTimeIn->addMinutes($lateAllowance))
+                            && $attendanceTimeIn->lt($schedTimeOut)
+                            && in_array(Carbon::parse($attendance->date)->dayOfWeek, $sched->daysOfWeek);
+                    })) > 0;
+                } else {
+                    return sizeof($attendance->project->project_schedule->where(function($sched) use($attendance, $lateAllowance) {
+                        $schedTimeIn = Carbon::parse($sched->startTime);
+                        $schedTimeOut = Carbon::parse($sched->endTime);
+                        $attendanceTimeIn = Carbon::parse($attendance->time);
+                        return $attendanceTimeIn->gt($schedTimeIn->addMinutes($lateAllowance))
+                        && $attendanceTimeIn->lt($schedTimeOut)
+                        && in_array(Carbon::parse($attendance->date)->dayOfWeek, $sched->daysOfWeek);
+                    })) > 0;
                 }
-                return [
-                    'id'=> $employee->id,
-                    'fullname_first'=> $employee->fullname_first,
-                    'profile_photo'=> $employee->profile_photo,
-                    'absent_count' => $absent_count,
-                    'late_count' => $late_count,
+            })->countBy("employee_id")->map(function($val, $key) {
+                $emp = Employee::find($key);
+                return[
+                    'employee_id' => $key,
+                    'fullname_first' => $emp->fullname_first,
+                    'fullname_last' => $emp->fullname_last,
+                    'profile_photo' => $emp->profile_photo(),
+                    'lates' => $val
                 ];
-            })->where('absent_count', '>', 0)->where('late_count', '>', 0);
-
-            $chartData = [
-                'absent' => $employeeChartData->sum('absent_count'),
-                'late' => $employeeChartData->sum('absent_count'),
-                'employees' => $employeeChartData,
-            ];
-            Cache::store('database')->put('lateAndAbsent', $chartData, 864000);
+            })->toArray());
         }
+        Cache::store('database')->put('lateAndAbsent', $attendance, 864000);
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
