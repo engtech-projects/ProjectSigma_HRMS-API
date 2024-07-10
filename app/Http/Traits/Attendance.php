@@ -46,14 +46,20 @@ trait Attendance
             $timeIn = $attendance["applied_ins"];
             $timeOut = $attendance["applied_outs"];
             $hasOTContinuation = collect($data['overtime'])->contains(function ($otData) use($attendance) {
-                $otSchedInLowerLimit = Carbon::parse($otData['overtime_start_time'])->subHour();
-                $otSchedInUpperLimit = Carbon::parse($otData['overtime_start_time'])->addHour();
+                $otSchedIn = $otData['overtime_start_time'];
                 $schedOut = Carbon::parse($attendance["endTime"]);
-                return $schedOut->gt($otSchedInLowerLimit) && $schedOut->lt($otSchedInUpperLimit); // && $otData["applied_out"] // Add to condition if allow if no time out in OT
+                return $schedOut->equalTo($otSchedIn);
             });
-
+            $hasOTStart = collect($data['overtime'])->contains(function ($otData) use($attendance) {
+                $otSchedOut = $otData['overtime_end_time'];
+                $schedIn = Carbon::parse($attendance["startTime"]);
+                return $schedIn->equalTo($otSchedOut);
+            });
             if(!$timeOut && $hasOTContinuation) {
                 $timeOut = (object)["time" => $attendance["endTime"]];
+            }
+            if(!$timeIn && $hasOTStart) {
+                $timeIn = (object)["time" => $attendance["startTime"]];
             }
             if(!$timeIn || !$timeOut){
                 continue;
@@ -209,7 +215,7 @@ trait Attendance
         $regHolidayUndertime = 0;
         $leave += $this->getTotalRendered($data["leave"], $date);
         $travel += $this->getTotalRendered($data["travel_orders"], $date);
-        if (count($data["events"]) > 0) {
+        if (count(collect($data["events"])->where("with_work", '=', 0)) > 0) {
             $result = $this->calculateWorkRendered($data);
             $regHoliday += $result["rendered"] + $leave + $travel;;
             $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
@@ -228,22 +234,22 @@ trait Attendance
 
         return [
             "regular" => [
-                "reg_hrs" => $reg,
-                "overtime" => $regOvertime,
-                "late" => $late,
-                "undertime" => $regUndertime,
+                "reg_hrs" => round($reg, 2),
+                "overtime" => round($regOvertime, 2),
+                "late" => round($late, 2),
+                "undertime" => round($regUndertime, 2),
             ],
             "rest" => [
-                "reg_hrs" => $rest,
-                "overtime" => $restOvertime,
+                "reg_hrs" => round($rest, 2),
+                "overtime" => round($restOvertime, 2),
                 "late" => 0,
-                "undertime" => $restUndertime,
+                "undertime" => round($restUndertime, 2),
             ],
             "regular_holidays" => [
-                "reg_hrs" => $regHoliday,
-                "overtime" => $regHolidayOvertime,
+                "reg_hrs" => round($regHoliday, 2),
+                "overtime" => round($regHolidayOvertime, 2),
                 "late" => 0,
-                "undertime" => $regHolidayUndertime,
+                "undertime" => round($regHolidayUndertime, 2),
             ],
             "special_holidays" => [
                 "reg_hrs" => 0,
@@ -288,7 +294,7 @@ trait Attendance
             if(count($result["projects"]) > 0){
                 foreach ($result["projects"] as $key) {
                     $projects->push([
-                        'id' => $data["project_id"],
+                        'id' => $key["id"],
                         "reg_hrs" => $reg,
                         "overtime" => $regOvertime,
                         "late" => $late,

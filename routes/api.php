@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Actions\Employee\CountAbsentLateController;
 use App\Http\Controllers\EmployeeFacePattern;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HMOController;
@@ -149,7 +150,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('externalwork-experience', ExternalWorkExperienceController::class);
 
         Route::prefix('statistics')->group(function () {
-            Route::get('attendance-infractions', CountEmployeeGenderController::class);
+            Route::get('attendance-infractions', CountAbsentLateController::class);
             Route::get('gender', CountEmployeeGenderController::class);
             Route::get('department', CountEmployeeDepartmentController::class);
         });

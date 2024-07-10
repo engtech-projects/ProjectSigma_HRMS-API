@@ -47,7 +47,6 @@ class EmployeeService
             $date = $period[0]["date"];
             $dtr = $this->employeeDTR($employee, $date);
             $grossPay =  $employee->salary_gross_pay($dtr["metadata"]);
-            $getId = 0;
             switch (strtolower($filters["group_type"])) {
                 case strtolower(AssignTypes::DEPARTMENT->value):
                     $getId = $filters["department_id"];
@@ -62,136 +61,67 @@ class EmployeeService
             return $dtr;
         });
 
+        $tavelandleave = collect();
+        $projects = collect();
+        $departments = collect();
         $adjustments = [];
-        $total_adjustment = 0;
+
         if(isset($filters["adjustments"])){
-            $adjustments = collect($filters["adjustments"])->filter(function ($key) use ($employee){
-                return $key["employee_id"] === $employee->id;
-            })->map(function($data){
-                return $data;
+            $adjustments = collect($filters["adjustments"])->where("employee_id",$employee->id)->groupBy("employee_id")->map(function($data, $index){
+                return[
+                    "employee_id" => $index,
+                    "adjustment_name" => $data[0]["adjustment_name"],
+                    "adjustment_amount" => round($data->sum('adjustment_amount'), 2),
+                ];
             });
-            $total_adjustment = $adjustments->values()->sum("adjustment_amount");
         }
 
         $dtrs = $dtr->values();
+
         $result = [
             "dtr" => $dtr,
             "salary_deduction" => $this->getSalaryDeduction($employee, $filters),
         ];
 
-        $tavelandleave = collect();
-        $projects = collect();
-        $departments = collect();
-        $getId = 0;
-        foreach ($dtr as $data) {
-            $dtrChargingTavelAndLeave = $data["daily_charge"]["tavelandleave"];
-            $dtrChargingProject = $data["daily_charge"]["projects"];
-            $dtrChargingDepartment = $data["daily_charge"]["departments"];
-            if(count($dtrChargingDepartment) > 0){
-                foreach ($dtrChargingDepartment as $key) {
-                    $getPay = $data["chargepay"]["departments"]->where("id", $key["id"])->first();
-                    $departments->push([
-                        "id" => $key["id"],
-                        "amount" => $getPay["amount"],
-                        "reg_hrs" => round($dtrChargingDepartment->sum("reg_hrs"), 2),
-                        "overtime" => round($dtrChargingDepartment->sum("overtime"), 2),
-                        "late" => round($dtrChargingDepartment->sum("late"), 2),
-                        "undertime" => round($dtrChargingDepartment->sum("undertime"), 2),
-                    ]);
-                }
-            }
+        switch (strtolower($filters["group_type"])) {
+            case strtolower(AssignTypes::DEPARTMENT->value):
+                $getId = $filters["department_id"];
+                break;
+            case strtolower(AssignTypes::PROJECT->value):
+                $getId = $filters["project_id"];
+                break;
+        }
 
-            if(count($dtrChargingProject) > 0){
-                foreach ($dtrChargingProject as $key) {
-                    $getPay = $data["chargepay"]["projects"]->where("id", $key["id"])->first();
-                    $projects->push([
-                        "id" => $key["id"],
-                        "amount" => $getPay["amount"],
-                        "reg_hrs" => round($dtrChargingProject->sum("reg_hrs"), 2),
-                        "overtime" => round($dtrChargingProject->sum("overtime"), 2),
-                        "late" => round($dtrChargingProject->sum("late"), 2),
-                        "undertime" => round($dtrChargingProject->sum("undertime"), 2),
-                    ]);
-                }
-            }
-            if(count($dtrChargingTavelAndLeave) > 0){
-                switch (strtolower($filters["group_type"])) {
-                    case strtolower(AssignTypes::DEPARTMENT->value):
-                        $getId = $filters["department_id"];
-                        break;
-                    case strtolower(AssignTypes::PROJECT->value):
-                        $getId = $filters["project_id"];
-                        break;
-                }
+        foreach ($dtr as $data) {
+            $dtrChargeTavelAndLeave = $data["daily_charge"]["tavelandleave"];
+            $departments->push($this->getChargeAmount($data["daily_charge"]["departments"], $data));
+            $projects->push($this->getChargeAmount($data["daily_charge"]["projects"], $data));
+
+            if(count($dtrChargeTavelAndLeave) > 0){
                 $getPay = $data["chargepay"]["tavelandleave"]->where("id", $getId)->first();
                 $tavelandleave->push([
                     "type" => $filters["group_type"],
                     "id" => $getId,
                     "amount" => $getPay["amount"],
-                    "reg_hrs" => round($dtrChargingTavelAndLeave->sum("reg_hrs"), 2),
+                    "reg_hrs" => round($dtrChargeTavelAndLeave->sum("reg_hrs"), 2),
                 ]);
             }
         }
 
-        $uniquetavelandleave = collect();
-        $tavelandleave = $tavelandleave->map(function($items) use($uniquetavelandleave) {
-            if($uniquetavelandleave->where('id', $items["id"])->count() === 0){
-                $uniquetavelandleave->push($items);
-            }else{
-                $uniquetavelandleave = $uniquetavelandleave->filter(function ($data) use ($items) {
-                    return $data["id"] === $items["id"];
-                })->map(function ($data) use($items) {
-                    $items["amount"] = $items["amount"] + $data["amount"];
-                    $items["reg_hrs"] = $data["reg_hrs"] + $items["reg_hrs"];
-                    return $items;
-                });
-                return $uniquetavelandleave->where('id', $items["id"])->first();
-            }
-        })->filter(function($data){
-            return $data!=null;
-        });
-
-        $itemCollection = collect();
-        $departments = $departments->map(function($data) use($itemCollection){
-            if($itemCollection->where('id', $data["id"])->count() === 0){
-                $itemCollection->push($data);
-            }else{
-                $itemCollection = $itemCollection->filter(function ($itemData) use ($data) {
-                    return $itemData["id"] === $data["id"];
-                })->map(function ($itemData) use($data) {
-                    $data["name"] = "Salary Department";
-                    $data["amount"] = $itemData["amount"] + $data["amount"];
-                    $data["reg_hrs"] = $itemData["reg_hrs"] + $data["reg_hrs"];
-                    return $data;
-                });
-                return $itemCollection->where('id', $data["id"])->first();
-            }
-        })->filter(function($data){
-            return $data!=null;
-        });
-
-        $itemCollection = collect();
-        $projects = $projects->map(function($data) use($itemCollection){
-            if($itemCollection->where('id', $data["id"])->count() === 0){
-                $itemCollection->push($data);
-            }else{
-                $itemCollection = $itemCollection->filter(function ($itemData) use ($data) {
-                    return $itemData["id"] === $data["id"];
-                })->map(function ($itemData) use($data) {
-                    $data["name"] = "Salary Project";
-                    $data["reg_hrs"] = $itemData["reg_hrs"] + $data["reg_hrs"];
-                    return $data;
-                });
-                return $itemCollection->where('id', $data["id"])->first();
-            }
-        })->filter(function($data){
-            return $data!=null;
-        });
+        $tavelandleave = $this->getTotalChargeAmount($tavelandleave);
+        $departments = $this->getTotalChargeAmount($departments);
+        $projects = $this->getTotalChargeAmount($projects);
+        $pagibig = $this->getBenefitsCharge($data["chargepay"]["pagibig"], $getId, $filters["group_type"]);
+        $philhealth = $this->getBenefitsCharge($data["chargepay"]["philhealth"], $getId, $filters["group_type"]);
+        $sss = $this->getBenefitsCharge($data["chargepay"]["sss"], $getId, $filters["group_type"]);
 
         $chargings = [
             "tavelandleave" => $tavelandleave,
             "projects" => $projects,
             "departments" => $departments,
+            "pagibig" => $pagibig,
+            "sss" => $sss,
+            "philhealth" => $philhealth,
         ];
 
         $totalHoursWorked = [
@@ -255,7 +185,7 @@ class EmployeeService
             "chargings" => $chargings,
         ]);
 
-        $totalGrossPay = round($grossPays->values()->sum("regular") + $total_adjustment + $grossPays->values()->sum("overtime"), 2);
+        $totalGrossPay = round($grossPays->values()->sum("regular") + $adjustments->sum('adjustment_amount') + $grossPays->values()->sum("overtime"), 2);
         $totalSalaryDeduction = $this->getTotalSalaryDeduction($result["salary_deduction"]);
         $totalNetPay = $totalGrossPay - $totalSalaryDeduction;
         $result["total_gross_pay"] = round($totalGrossPay, 2);
@@ -264,6 +194,42 @@ class EmployeeService
         $result["hours_worked"] = $totalHoursWorked;
         $result["gross_pays"] = $grossPays;
         return $result;
+    }
+
+    function getBenefitsCharge($charge, $id, $type) {
+        return [
+            "id" => $id,
+            "type" =>$type,
+            "employer_maximum_contribution" => $charge["employer_maximum_contribution"] ? $charge["employer_maximum_contribution"] : $charge["employer_contribution"],
+            "employer_compensation" => $charge["employer_compensation"] ? $charge["employer_compensation"] : $charge["employer_share"],
+        ];
+    }
+
+    function getTotalChargeAmount($charge){
+        return $charge->groupBy("id")->map(function($data, $index) {
+            return [
+                "id" => $index,
+                "amt" => round($data->sum('amount'), 2),
+                "reg_hrs" => round($data->sum('reg_hrs'), 2),
+            ];
+        });
+    }
+
+    function getChargeAmount($charge, $data){
+        if(count($charge) > 0){
+            return $charge->map(function($item) use($data) {
+                $getCharge = $data["chargepay"]["departments"]->where("id", $item["id"])->sum('amount');
+                return [
+                    "id" => $item["id"],
+                    "amount" => $getCharge,
+                    "reg_hrs" => $item['reg_hrs'],
+                    "overtime" => $item['overtime'],
+                    "late" => $item['late'],
+                    "undertime" => $item['undertime'],
+                ];
+            })[0];
+        }
+        return;
     }
 
     public function getSalaryDeduction($employee, $filters)
