@@ -32,7 +32,7 @@ trait EmployeePayroll
         $result = [];
         foreach ($dtr as $key => $value) {
             $result[$key]["reg_hrs"] = round($value["reg_hrs"] / 8 * $dailyRate, 2);
-            $result[$key]["overtime"] = round($value["overtime"] / 8 * $dailyRate, 2);
+            $result[$key]["overtime"] = round($value["overtime"] / 8 * 1.25 * $dailyRate, 2);
         }
         return $result;
     }
