@@ -61,7 +61,9 @@ class EmployeeService
             return $dtr;
         });
 
-        $tavelandleave = collect();
+        $tavelcharge = collect();
+        $leavecharge = collect();
+        $spcholidaycharge = collect();
         $projects = collect();
         $departments = collect();
         $adjustments = [];
@@ -93,32 +95,58 @@ class EmployeeService
         }
 
         foreach ($dtr as $data) {
-            $dtrChargeTavelAndLeave = $data["daily_charge"]["tavelandleave"];
-            $departments->push($this->getChargeAmount($data["daily_charge"]["departments"], $data));
-            $projects->push($this->getChargeAmount($data["daily_charge"]["projects"], $data));
+            $dtrChargeLeave = $data["daily_charge"]["leaves"];
+            $dtrChargeTavel = $data["daily_charge"]["travels"];
+            $dtrChargeSpcHoliday = $data["daily_charge"]["special_holiday"];
 
-            if(count($dtrChargeTavelAndLeave) > 0){
-                $getPay = $data["chargepay"]["tavelandleave"]->where("id", $getId)->first();
-                $tavelandleave->push([
+            $departments->push($this->getChargeAmount($data["daily_charge"]["departments"], $data["chargepay"]["departments"]));
+            $projects->push($this->getChargeAmount($data["daily_charge"]["projects"], $data["chargepay"]["projects"]));
+
+            if(count($dtrChargeLeave) > 0){
+                $getPay = $data["chargepay"]["leaves"]->where("id", $getId)->first()["amount"];
+                $leavecharge->push([
                     "type" => $filters["group_type"],
                     "id" => $getId,
-                    "amount" => $getPay["amount"],
-                    "reg_hrs" => round($dtrChargeTavelAndLeave->sum("reg_hrs"), 2),
+                    "amount" => $getPay,
+                    "reg_hrs" => round($dtrChargeLeave->sum("reg_hrs"), 2),
+                ]);
+            }
+            if(count($dtrChargeTavel) > 0){
+                $getPay = $data["chargepay"]["travels"]->where("id", $getId)->first()["amount"];
+                $tavelcharge->push([
+                    "type" => $filters["group_type"],
+                    "id" => $getId,
+                    "amount" => $getPay,
+                    "reg_hrs" => round($dtrChargeTavel->sum("reg_hrs"), 2),
+                ]);
+            }
+            if(count($dtrChargeSpcHoliday) > 0){
+                $getPay = $data["chargepay"]["travels"]->where("id", $getId)->first()["amount"];
+                $spcholidaycharge->push([
+                    "type" => $filters["group_type"],
+                    "id" => $getId,
+                    "amount" => $getPay,
+                    "reg_hrs" => round($dtrChargeSpcHoliday->sum("reg_hrs"), 2),
                 ]);
             }
         }
 
-        $tavelandleave = $this->getTotalChargeAmount($tavelandleave);
+        $tavelcharge = $this->getTotalChargeAmount($tavelcharge);
+        $spcholidaycharge = $this->getTotalChargeAmount($spcholidaycharge);
+        $leavecharge = $this->getTotalChargeAmount($leavecharge);
         $departments = $this->getTotalChargeAmount($departments);
         $projects = $this->getTotalChargeAmount($projects);
+
         $pagibig = $this->getBenefitsCharge($data["chargepay"]["pagibig"], $getId, $filters["group_type"]);
         $philhealth = $this->getBenefitsCharge($data["chargepay"]["philhealth"], $getId, $filters["group_type"]);
         $sss = $this->getBenefitsCharge($data["chargepay"]["sss"], $getId, $filters["group_type"]);
 
         $chargings = [
-            "tavelandleave" => $tavelandleave,
+            "leaves" => $leavecharge,
+            "travels" => $tavelcharge,
             "projects" => $projects,
             "departments" => $departments,
+            "special_holiday" => $spcholidaycharge,
             "pagibig" => $pagibig,
             "sss" => $sss,
             "philhealth" => $philhealth,
@@ -210,6 +238,9 @@ class EmployeeService
             return [
                 "id" => $index,
                 "amt" => round($data->sum('amount'), 2),
+                "amt_overtime" => round($data->sum('amount_overtime'), 2),
+                "regular_holidays_ot_hrs" => round($data->sum('regular_holidays_ot_hrs'), 2),
+                "amount_regular_holidays_hrs" => round($data->sum('amount_regular_holidays_hrs'), 2),
                 "reg_hrs" => round($data->sum('reg_hrs'), 2),
             ];
         });
@@ -218,12 +249,16 @@ class EmployeeService
     function getChargeAmount($charge, $data){
         if(count($charge) > 0){
             return $charge->map(function($item) use($data) {
-                $getCharge = $data["chargepay"]["departments"]->where("id", $item["id"])->sum('amount');
+                $getCharge = $data->where("id", $item["id"])->sum('amount');
+                $getChargeOvertime = $data->where("id", $item["id"])->sum('amount_overtime');
                 return [
                     "id" => $item["id"],
                     "amount" => $getCharge,
+                    "amount_overtime" => $getCharge,
+                    "amount_regular_holidays_hrs" => $getCharge,
+                    "regular_holidays_ot_hrs" => $getCharge,
                     "reg_hrs" => $item['reg_hrs'],
-                    "overtime" => $item['overtime'],
+                    "overtime" => $getChargeOvertime,
                     "late" => $item['late'],
                     "undertime" => $item['undertime'],
                 ];

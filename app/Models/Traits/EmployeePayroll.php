@@ -41,7 +41,9 @@ trait EmployeePayroll
     {
         $salaryGrade = $this->current_employment?->employee_salarygrade;
         $dailyRate = $salaryGrade?->dailyRate ?: 0;
-        $tavelandleave = collect();
+        $travelcharge = collect();
+        $special_holidaycharge = collect();
+        $leavecharge = collect();
         $projects = collect();
         $departments = collect();
         foreach ($dtr["departments"] as $key => $value) {
@@ -49,12 +51,32 @@ trait EmployeePayroll
                 $departments->push([
                     "id" => $value["id"],
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                    "amount_overtime" => round($value["overtime"] / 8 * 1.25 * $dailyRate, 2),
+                    "amount_regular_holidays" => round($value["regular_holidays_hrs"] / 8 * 1 * $dailyRate, 2),
+                    "amount_regular_ot_holidays" => round($value["regular_holidays_hrs"] / 8 * 1.6 * $dailyRate, 2),
                 ]);
             }
         }
-        foreach ($dtr["tavelandleave"] as $key => $value) {
-            if(count($dtr["tavelandleave"])>0){
-                $tavelandleave->push([
+
+        foreach ($dtr["special_holiday"] as $key => $value) {
+            if(count($dtr["special_holiday"])>0){
+                $special_holidaycharge->push([
+                    "id" => $getId,
+                    "amount" => round($value["reg_hrs"] / 8 * 1.3 * $dailyRate, 2),
+                ]);
+            }
+        }
+        foreach ($dtr["travels"] as $key => $value) {
+            if(count($dtr["travels"])>0){
+                $travelcharge->push([
+                    "id" => $getId,
+                    "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                ]);
+            }
+        }
+        foreach ($dtr["leaves"] as $key => $value) {
+            if(count($dtr["leaves"])>0){
+                $leavecharge->push([
                     "id" => $getId,
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
                 ]);
@@ -65,6 +87,9 @@ trait EmployeePayroll
                 $projects->push([
                     "id" => $value["id"],
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
+                    "amount_overtime" => round($value["overtime"] / 8 * 1.25 * $dailyRate, 2),
+                    "amount_regular_holidays" => round($value["regular_holidays_hrs"] / 8 * 1 * $dailyRate, 2),
+                    "amount_regular_ot_holidays" => round($value["regular_holidays_hrs"] / 8 * 1.6 * $dailyRate, 2),
                 ]);
             }
         }
@@ -75,7 +100,8 @@ trait EmployeePayroll
         $deduction = new PagibigContribution();
         $pagibig = $deduction->contribution($salaryGrade?->monthly_salary_amount);
         $result = [
-            "tavelandleave" => $tavelandleave,
+            "travels" => $travelcharge,
+            "leaves" => $leavecharge,
             "projects" => $projects,
             "departments" => $departments,
             "sss" => $sss,
