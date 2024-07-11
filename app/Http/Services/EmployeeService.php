@@ -279,8 +279,8 @@ class EmployeeService
                             $designation = $employee->get_designation(null, $item["id"]);
                             break;
 
-                        case EmployeeService::DEPARTMENT:
-                            $designation = $employee->get_designation(null, $item["id"]);
+                        case EmployeeService::PROJECT:
+                            $designation = $employee->get_designation($item["id"], null);
                             break;
                     }
                     return [
