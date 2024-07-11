@@ -271,29 +271,31 @@ class EmployeeService
     function getChargeAmount($charge, $data, $type, $employee){
         if(count($charge) > 0){
             return $charge->map(function($item) use($data, $type, $employee) {
-                $getCharge = $data->where("id", $item["id"])->sum('amount');
-                $getChargeOvertime = $data->where("id", $item["id"])->sum('amount_overtime');
-                switch ($type) {
-                    case EmployeeService::DEPARTMENT:
-                        $designation = $employee->get_designation(null, $item["id"]);
-                        break;
+                if($item["id"]){
+                    $getCharge = $data->where("id", $item["id"])->sum('amount');
+                    $getChargeOvertime = $data->where("id", $item["id"])->sum('amount_overtime');
+                    switch ($type) {
+                        case EmployeeService::DEPARTMENT:
+                            $designation = $employee->get_designation(null, $item["id"]);
+                            break;
 
-                    case EmployeeService::DEPARTMENT:
-                        $designation = $employee->get_designation(null, $item["id"]);
-                        break;
+                        case EmployeeService::DEPARTMENT:
+                            $designation = $employee->get_designation(null, $item["id"]);
+                            break;
+                    }
+                    return [
+                        "id" => $item["id"],
+                        "designation" => $designation ? $designation : "" ,
+                        "amount" => $getCharge,
+                        "amount_overtime" => $getCharge,
+                        "amount_regular_holidays_hrs" => $getCharge,
+                        "regular_holidays_ot_hrs" => $getCharge,
+                        "reg_hrs" => $item['reg_hrs'],
+                        "overtime" => $getChargeOvertime,
+                        "late" => $item['late'],
+                        "undertime" => $item['undertime'],
+                    ];
                 }
-                return [
-                    "id" => $item["id"],
-                    "designation" => $designation,
-                    "amount" => $getCharge,
-                    "amount_overtime" => $getCharge,
-                    "amount_regular_holidays_hrs" => $getCharge,
-                    "regular_holidays_ot_hrs" => $getCharge,
-                    "reg_hrs" => $item['reg_hrs'],
-                    "overtime" => $getChargeOvertime,
-                    "late" => $item['late'],
-                    "undertime" => $item['undertime'],
-                ];
             })[0];
         }
         return;
