@@ -11,6 +11,9 @@ use App\Models\SSSContribution;
 
 class EmployeeService
 {
+    CONST DEPARTMENT = "Department";
+    CONST PROJECT = "Project";
+
     public function employeeDTR($employee, $date)
     {
         $schedules_attendances = $employee->applied_schedule_with_attendance($date);
@@ -41,6 +44,7 @@ class EmployeeService
 
     public function generatePayroll(array $period, array $filters, $employee)
     {
+
         $dtr = collect($period)->groupBy(function ($period) use ($filters) {
             return $period["date"];
         })->map(function ($period) use ($employee, $filters) {
@@ -50,14 +54,17 @@ class EmployeeService
             switch (strtolower($filters["group_type"])) {
                 case strtolower(AssignTypes::DEPARTMENT->value):
                     $getId = $filters["department_id"];
+                    $main_designation = $employee->get_designation(null, $filters["department_id"]);
                     break;
                 case strtolower(AssignTypes::PROJECT->value):
+                    $main_designation = $employee->get_designation(null, $filters["department_id"]);
                     $getId = $filters["project_id"];
                     break;
             }
             $chargePay =  $employee->salary_charge_pay($dtr["daily_charge"], $getId);
             $dtr["grosspay"] = $grossPay;
             $dtr["chargepay"] = $chargePay;
+            $dtr["main_designation"] = $main_designation;
             return $dtr;
         });
 
@@ -99,13 +106,14 @@ class EmployeeService
             $dtrChargeTavel = $data["daily_charge"]["travels"];
             $dtrChargeSpcHoliday = $data["daily_charge"]["special_holiday"];
 
-            $departments->push($this->getChargeAmount($data["daily_charge"]["departments"], $data["chargepay"]["departments"]));
-            $projects->push($this->getChargeAmount($data["daily_charge"]["projects"], $data["chargepay"]["projects"]));
+            $departments->push($this->getChargeAmount($data["daily_charge"]["departments"], $data["chargepay"]["departments"], EmployeeService::DEPARTMENT, $employee));
+            $projects->push($this->getChargeAmount($data["daily_charge"]["projects"], $data["chargepay"]["projects"], EmployeeService::PROJECT, $employee));
 
             if(count($dtrChargeLeave) > 0){
                 $getPay = $data["chargepay"]["leaves"]->where("id", $getId)->first()["amount"];
                 $leavecharge->push([
                     "type" => $filters["group_type"],
+                    "designation" => $data["main_designation"],
                     "id" => $getId,
                     "amount" => $getPay,
                     "reg_hrs" => round($dtrChargeLeave->sum("reg_hrs"), 2),
@@ -115,6 +123,7 @@ class EmployeeService
                 $getPay = $data["chargepay"]["travels"]->where("id", $getId)->first()["amount"];
                 $tavelcharge->push([
                     "type" => $filters["group_type"],
+                    "designation" => $data["main_designation"],
                     "id" => $getId,
                     "amount" => $getPay,
                     "reg_hrs" => round($dtrChargeTavel->sum("reg_hrs"), 2),
@@ -124,22 +133,21 @@ class EmployeeService
                 $getPay = $data["chargepay"]["travels"]->where("id", $getId)->first()["amount"];
                 $spcholidaycharge->push([
                     "type" => $filters["group_type"],
+                    "designation" => $data["main_designation"],
                     "id" => $getId,
                     "amount" => $getPay,
                     "reg_hrs" => round($dtrChargeSpcHoliday->sum("reg_hrs"), 2),
                 ]);
             }
         }
-
+        $departments = $this->getTotalChargeAmount($departments);
+        $projects = $this->getTotalChargeAmount($projects);
         $tavelcharge = $this->getTotalChargeAmount($tavelcharge);
         $spcholidaycharge = $this->getTotalChargeAmount($spcholidaycharge);
         $leavecharge = $this->getTotalChargeAmount($leavecharge);
-        $departments = $this->getTotalChargeAmount($departments);
-        $projects = $this->getTotalChargeAmount($projects);
-
-        $pagibig = $this->getBenefitsCharge($data["chargepay"]["pagibig"], $getId, $filters["group_type"]);
-        $philhealth = $this->getBenefitsCharge($data["chargepay"]["philhealth"], $getId, $filters["group_type"]);
-        $sss = $this->getBenefitsCharge($data["chargepay"]["sss"], $getId, $filters["group_type"]);
+        $pagibig = $this->getBenefitsCharge($data["chargepay"]["pagibig"], $getId, $filters["group_type"], $employee);
+        $philhealth = $this->getBenefitsCharge($data["chargepay"]["philhealth"], $getId, $filters["group_type"], $employee);
+        $sss = $this->getBenefitsCharge($data["chargepay"]["sss"], $getId, $filters["group_type"], $employee);
 
         $chargings = [
             "leaves" => $leavecharge,
@@ -224,9 +232,18 @@ class EmployeeService
         return $result;
     }
 
-    function getBenefitsCharge($charge, $id, $type) {
+    function getBenefitsCharge($charge, $id, $type, $employee) {
+        switch ($type) {
+            case EmployeeService::DEPARTMENT:
+                $designation = $employee->get_designation(null, $id);
+                break;
+            case EmployeeService::PROJECT:
+                $designation = $employee->get_designation($id, null);
+                break;
+        }
         return [
             "id" => $id,
+            "designation" => $designation,
             "type" =>$type,
             "employer_maximum_contribution" => $charge["employer_maximum_contribution"] ? $charge["employer_maximum_contribution"] : $charge["employer_contribution"],
             "employer_compensation" => $charge["employer_compensation"] ? $charge["employer_compensation"] : $charge["employer_share"],
@@ -235,33 +252,50 @@ class EmployeeService
 
     function getTotalChargeAmount($charge){
         return $charge->groupBy("id")->map(function($data, $index) {
-            return [
-                "id" => $index,
-                "amt" => round($data->sum('amount'), 2),
-                "amt_overtime" => round($data->sum('amount_overtime'), 2),
-                "regular_holidays_ot_hrs" => round($data->sum('regular_holidays_ot_hrs'), 2),
-                "amount_regular_holidays_hrs" => round($data->sum('amount_regular_holidays_hrs'), 2),
-                "reg_hrs" => round($data->sum('reg_hrs'), 2),
-            ];
+            if($index){
+                return [
+                    "id" => $index,
+                    "designation" => $data[0]["designation"],
+                    "amt" => round($data->sum('amount'), 2),
+                    "amt_overtime" => round($data->sum('amount_overtime'), 2),
+                    "regular_holidays_ot_hrs" => round($data->sum('regular_holidays_ot_hrs'), 2),
+                    "amount_regular_holidays_hrs" => round($data->sum('amount_regular_holidays_hrs'), 2),
+                    "reg_hrs" => round($data->sum('reg_hrs'), 2),
+                ];
+            }
+        })->filter(function($data){
+            return $data!=null;
         });
     }
 
-    function getChargeAmount($charge, $data){
+    function getChargeAmount($charge, $data, $type, $employee){
         if(count($charge) > 0){
-            return $charge->map(function($item) use($data) {
-                $getCharge = $data->where("id", $item["id"])->sum('amount');
-                $getChargeOvertime = $data->where("id", $item["id"])->sum('amount_overtime');
-                return [
-                    "id" => $item["id"],
-                    "amount" => $getCharge,
-                    "amount_overtime" => $getCharge,
-                    "amount_regular_holidays_hrs" => $getCharge,
-                    "regular_holidays_ot_hrs" => $getCharge,
-                    "reg_hrs" => $item['reg_hrs'],
-                    "overtime" => $getChargeOvertime,
-                    "late" => $item['late'],
-                    "undertime" => $item['undertime'],
-                ];
+            return $charge->map(function($item) use($data, $type, $employee) {
+                if($item["id"]){
+                    $getCharge = $data->where("id", $item["id"])->sum('amount');
+                    $getChargeOvertime = $data->where("id", $item["id"])->sum('amount_overtime');
+                    switch ($type) {
+                        case EmployeeService::DEPARTMENT:
+                            $designation = $employee->get_designation(null, $item["id"]);
+                            break;
+
+                        case EmployeeService::PROJECT:
+                            $designation = $employee->get_designation($item["id"], null);
+                            break;
+                    }
+                    return [
+                        "id" => $item["id"],
+                        "designation" => $designation ? $designation : "" ,
+                        "amount" => $getCharge,
+                        "amount_overtime" => $getCharge,
+                        "amount_regular_holidays_hrs" => $getCharge,
+                        "regular_holidays_ot_hrs" => $getCharge,
+                        "reg_hrs" => $item['reg_hrs'],
+                        "overtime" => $getChargeOvertime,
+                        "late" => $item['late'],
+                        "undertime" => $item['undertime'],
+                    ];
+                }
             })[0];
         }
         return;
