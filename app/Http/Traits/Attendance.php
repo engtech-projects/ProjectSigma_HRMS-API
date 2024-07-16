@@ -319,7 +319,7 @@ trait Attendance
             $regHolidayUndertime += $result["undertime"];
             if(count($result["departments"]) > 0){
                 $departments->push([
-                    'id' => $result["departments"][0][["id"]],
+                    'id' => $result["departments"][0]["id"],
                     "reg_hrs" => 0,
                     "regular_holidays_hrs" => $regHoliday,
                     "regular_holidays_ot_hrs" => $regHolidayOvertime,
@@ -330,7 +330,7 @@ trait Attendance
             }
             if(count($result["projects"]) > 0){
                 $projects->push([
-                    'id' => $result["projects"][0][["id"]],
+                    'id' => $result["projects"][0]["id"],
                     "reg_hrs" => 0,
                     "regular_holidays_hrs" => $regHoliday,
                     "regular_holidays_ot_hrs" => $regHolidayOvertime,
