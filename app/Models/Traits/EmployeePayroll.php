@@ -104,6 +104,7 @@ trait EmployeePayroll
             "leaves" => $leavecharge,
             "projects" => $projects,
             "departments" => $departments,
+            "special_holiday" => $special_holidaycharge,
             "sss" => $sss,
             "philhealth" => $philhealth,
             "pagibig" => $pagibig,

@@ -13,6 +13,7 @@ class EmployeeService
 {
     CONST DEPARTMENT = "Department";
     CONST PROJECT = "Project";
+    CONST SPECIALHOLIDAY = "Special Holiday";
 
     public function employeeDTR($employee, $date)
     {
@@ -105,7 +106,6 @@ class EmployeeService
             $dtrChargeLeave = $data["daily_charge"]["leaves"];
             $dtrChargeTavel = $data["daily_charge"]["travels"];
             $dtrChargeSpcHoliday = $data["daily_charge"]["special_holiday"];
-
             $departments->push($this->getChargeAmount($data["daily_charge"]["departments"], $data["chargepay"]["departments"], EmployeeService::DEPARTMENT, $employee));
             $projects->push($this->getChargeAmount($data["daily_charge"]["projects"], $data["chargepay"]["projects"], EmployeeService::PROJECT, $employee));
 
@@ -130,14 +130,16 @@ class EmployeeService
                 ]);
             }
             if(count($dtrChargeSpcHoliday) > 0){
-                $getPay = $data["chargepay"]["travels"]->where("id", $getId)->first()["amount"];
-                $spcholidaycharge->push([
-                    "type" => $filters["group_type"],
-                    "designation" => $data["main_designation"],
-                    "id" => $getId,
-                    "amount" => $getPay,
-                    "reg_hrs" => round($dtrChargeSpcHoliday->sum("reg_hrs"), 2),
-                ]);
+                if(count($data["chargepay"]["special_holiday"]) > 0){
+                    $getPay = $data["chargepay"]["special_holiday"]->where("id", $getId)->first()["amount"];
+                    $spcholidaycharge->push([
+                        "type" => $filters["group_type"],
+                        "designation" => $data["main_designation"],
+                        "id" => $getId,
+                        "amount" => $getPay,
+                        "reg_hrs" => round($dtrChargeSpcHoliday->sum("reg_hrs"), 2),
+                    ]);
+                }
             }
         }
         $departments = $this->getTotalChargeAmount($departments);
@@ -149,6 +151,10 @@ class EmployeeService
         $philhealth = $this->getBenefitsCharge($data["chargepay"]["philhealth"], $getId, $filters["group_type"], $employee);
         $sss = $this->getBenefitsCharge($data["chargepay"]["sss"], $getId, $filters["group_type"], $employee);
 
+        $charging_salary = collect();
+        $charging_salary = $this->appendCollection($projects, $charging_salary, EmployeeService::PROJECT);
+        $charging_salary = $this->appendCollection($departments, $charging_salary, EmployeeService::DEPARTMENT);
+        $charging_salary = $this->appendCollection($spcholidaycharge, $charging_salary, EmployeeService::SPECIALHOLIDAY);
         $chargings = [
             "leaves" => $leavecharge,
             "travels" => $tavelcharge,
@@ -158,6 +164,7 @@ class EmployeeService
             "pagibig" => $pagibig,
             "sss" => $sss,
             "philhealth" => $philhealth,
+            "all_charging_salary" => $charging_salary,
         ];
 
         $totalHoursWorked = [
@@ -186,10 +193,6 @@ class EmployeeService
                 "undertime" => round($dtrs->sum("metadata.special_holidays.undertime"), 2),
             ]
         ];
-
-        // Debug: merge time and split time(department, project)
-        // dd($chargings);
-        // dd($totalHoursWorked);
 
         $collectAdjustments = collect();
         foreach($adjustments as $key){
@@ -230,6 +233,22 @@ class EmployeeService
         $result["hours_worked"] = $totalHoursWorked;
         $result["gross_pays"] = $grossPays;
         return $result;
+    }
+
+    public function appendCollection($collection, $maincollection, $type){
+        foreach($collection as $key){
+            $maincollection->push((object)[
+                "id" => $key["id"],
+                "name" => $type,
+                "designation" => $key["designation"],
+                "amt" => $key["amt"],
+                "amt_overtime" => $key["amt_overtime"],
+                "regular_holidays_ot_hrs" => $key["regular_holidays_ot_hrs"],
+                "amount_regular_holidays_hrs" => $key["amount_regular_holidays_hrs"],
+                "reg_hrs" => $key["reg_hrs"],
+            ]);
+        }
+        return $maincollection;
     }
 
     function getBenefitsCharge($charge, $id, $type, $employee) {
