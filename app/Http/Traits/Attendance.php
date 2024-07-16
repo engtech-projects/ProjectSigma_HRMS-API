@@ -43,29 +43,27 @@ trait Attendance
         $departments = collect();
 
         foreach ($attendances as $attendance) {
-
             $timeIn = $attendance["applied_ins"];
+            $hasOTStart = collect($data['overtime'])->contains(function ($otData) use($attendance) {
+                $otSchedOut = $otData['overtime_end_time'];
+                $schedIn = Carbon::parse($attendance["startTime"]);
+                return $schedIn->equalTo($otSchedOut);
+            });
+            if(!$timeIn && $hasOTStart) {
+                $timeIn = (object)["time" => $attendance["startTime"]];
+            }
             $timeOut = $attendance["applied_outs"];
             $hasOTContinuation = collect($data['overtime'])->contains(function ($otData) use($attendance) {
                 $otSchedIn = $otData['overtime_start_time'];
                 $schedOut = Carbon::parse($attendance["endTime"]);
                 return $schedOut->equalTo($otSchedIn);
             });
-            $hasOTStart = collect($data['overtime'])->contains(function ($otData) use($attendance) {
-                $otSchedOut = $otData['overtime_end_time'];
-                $schedIn = Carbon::parse($attendance["startTime"]);
-                return $schedIn->equalTo($otSchedOut);
-            });
             if(!$timeOut && $hasOTContinuation) {
                 $timeOut = (object)["time" => $attendance["endTime"]];
-            }
-            if(!$timeIn && $hasOTStart) {
-                $timeIn = (object)["time" => $attendance["startTime"]];
             }
             if(!$timeIn || !$timeOut){
                 continue;
             }
-
             $in = Carbon::parse($timeIn?->time);
             $out = Carbon::parse($timeOut?->time);
             $startTime = Carbon::parse($attendance["startTime"]);
@@ -182,20 +180,42 @@ trait Attendance
         }
         return $totalHrs;
     }
-    public function getOvertimeRendered($overtime)
+    public function getOvertimeRendered($overtime, $regSchedule = [])
     {
         $total = 0;
         if ($overtime) {
             foreach ($overtime as $otVal) {
+                $appliedIn = $otVal["applied_in"];
+                $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use($otVal) {
+                    $schedOut = $schedData['endTime'];
+                    $otIn = Carbon::parse($otVal["overtime_start_time"]);
+                    return $otIn->equalTo($schedOut);
+                });
+                if($hasSchedStart) {
+                    $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
+                }
                 $appliedOut = $otVal["applied_out"];
-                if(!$appliedOut){
+                $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use($otVal) {
+                    $schedIn = $schedData['startTime'];
+                    $otOut = Carbon::parse($otVal["overtime_end_time"]);
+                    return $otOut->equalTo($schedIn);
+                });
+                if($hasSchedContinuation) {
+                    $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
+                }
+                if(!$appliedIn || !$appliedOut){
                     continue;
                 }
+                $timeIn = Carbon::parse($appliedIn->time);
                 $timeOut = Carbon::parse($appliedOut->time);
+                $schedIn = Carbon::parse($otVal['overtime_start_time']);
                 $schedOut = Carbon::parse($otVal['overtime_end_time']);
-                $renderIn = Carbon::parse($otVal['overtime_start_time']);
+                $renderIn = $timeIn->lt($schedIn) ? $schedIn : $timeIn;
                 $renderOut = $timeOut->gt($schedOut) ? $schedOut : $timeOut;
-                $total += round($renderIn->diffInMinutes($renderOut) / 60, 2);
+                $currentOtHrs = floor($renderIn->diffInMinutes($renderOut, false) / 60); // Changed due to OVERTIME IS ONLY COUNTED BY HOUR
+                $schedTotalHrs = floor($schedIn->diffInHours($schedOut, false));
+                $currentOtHrs -= $otVal["meal_deduction"] && $schedTotalHrs === $currentOtHrs ? 1 : 0;
+                $total += $currentOtHrs;
             }
         }
         return $total;
@@ -219,12 +239,12 @@ trait Attendance
         if (count(collect($data["events"])->where("with_work", '=', 0)) > 0) {
             $result = $this->calculateWorkRendered($data);
             $regHoliday += $result["rendered"] + $leave + $travel;;
-            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
+            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
             $regHolidayUndertime += $result["undertime"];
         } else if ($data["schedules_attendances"]) {
             $result = $this->calculateWorkRendered($data);
             $reg += $result["rendered"] + $leave + $travel;
-            $regOvertime += $this->getOvertimeRendered($data["overtime"]);
+            $regOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
             $late += $result["late"];
             $regUndertime += $result["undertime"];
         } else {
@@ -295,7 +315,7 @@ trait Attendance
         if (count(collect($data["events"])->where("with_work", '=', 0)) > 0) {
             $result = $this->calculateWorkRendered($data);
             $regHoliday += $result["rendered"] + $leave + $travel;
-            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"]);
+            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
             $regHolidayUndertime += $result["undertime"];
             if(count($result["departments"]) > 0){
                 $departments->push([
@@ -322,7 +342,7 @@ trait Attendance
         } else if ($data["schedules_attendances"]) {
             $result = $this->calculateWorkRendered($data);
             $reg += $result["rendered"] + $leave + $travel;
-            $regOvertime += $this->getOvertimeRendered($data["overtime"]);
+            $regOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
             $late += $result["late"];
             $regUndertime += $result["undertime"];
 

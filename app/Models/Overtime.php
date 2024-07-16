@@ -37,6 +37,7 @@ class Overtime extends Model
         'overtime_start_time',
         'overtime_end_time',
         'reason',
+        'meal_deduction',
         'prepared_by',
         'approvals',
         'request_status',

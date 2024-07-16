@@ -76,6 +76,10 @@ class UpdateOvertimeRequest extends FormRequest
                 "nullable",
                 "string",
             ],
+            'meal_deduction' => [
+                "nullable",
+                "boolean",
+            ],
             'approvals' => [
                 "nullable",
                 "array",
