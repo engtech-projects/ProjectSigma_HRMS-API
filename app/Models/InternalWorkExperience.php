@@ -108,8 +108,8 @@ class InternalWorkExperience extends Model
                 ->orWhereNull('date_to');
         })->where('date_to', '<', $date); */
     }
-    public function assignment() {
-        return $this->morphedToMany(InternalWorkExperience::EMPLOYEE_WORK_ASSIGNMENT, 'assignment');
+    public function work_assignment() {
+        return $this->morphedToMany(InternalWorkExperience::EMPLOYEE_WORK_ASSIGNMENT, 'work_assignment');
     }
 
 }

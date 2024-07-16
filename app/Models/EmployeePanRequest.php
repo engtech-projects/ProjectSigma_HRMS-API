@@ -420,7 +420,7 @@ class EmployeePanRequest extends Model
     {
         // JUST A PLACEHOLDER WILL PROBABLY BE USED SOON
     }
-    public function assignment() {
-        return $this->morphedToMany(EmployeePanRequest::EMPLOYEE_WORK_ASSIGNMENT, 'assignment');
+    public function work_assignment() {
+        return $this->morphedToMany(EmployeePanRequest::EMPLOYEE_WORK_ASSIGNMENT, 'work_assignment');
     }
 }
