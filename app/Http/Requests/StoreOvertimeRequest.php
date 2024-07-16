@@ -82,6 +82,10 @@ class StoreOvertimeRequest extends FormRequest
                 "required",
                 "string",
             ],
+            'meal_deduction' => [
+                "required",
+                "boolean",
+            ],
             'request_status' => [
                 "nullable",
                 "string",
