@@ -11,6 +11,7 @@ use App\Models\SSSContribution;
 
 class EmployeeService
 {
+    CONST OVERTIME = "Overtime";
     CONST DEPARTMENT = "Department";
     CONST PROJECT = "Project";
     CONST SPECIALHOLIDAY = "Special Holiday";
@@ -71,7 +72,9 @@ class EmployeeService
 
         $tavelcharge = collect();
         $leavecharge = collect();
+        $overtime = collect();
         $spcholidaycharge = collect();
+        $regularholiday = collect();
         $projects = collect();
         $departments = collect();
         $adjustments = [];
@@ -142,19 +145,25 @@ class EmployeeService
                 }
             }
         }
+        $overtime->push($this->getChargingOvertime($projects, EmployeeService::PROJECT));
+        $overtime->push($this->getChargingOvertime($departments, EmployeeService::DEPARTMENT));
+
         $departments = $this->getTotalChargeAmount($departments);
         $projects = $this->getTotalChargeAmount($projects);
         $tavelcharge = $this->getTotalChargeAmount($tavelcharge);
         $spcholidaycharge = $this->getTotalChargeAmount($spcholidaycharge);
         $leavecharge = $this->getTotalChargeAmount($leavecharge);
+        $overtime = $this->getTotalChargeAmount($overtime);
         $pagibig = $this->getBenefitsCharge($data["chargepay"]["pagibig"], $getId, $filters["group_type"], $employee);
         $philhealth = $this->getBenefitsCharge($data["chargepay"]["philhealth"], $getId, $filters["group_type"], $employee);
         $sss = $this->getBenefitsCharge($data["chargepay"]["sss"], $getId, $filters["group_type"], $employee);
 
         $charging_salary = collect();
+        $charging_salary = $this->appendCollection($overtime, $charging_salary, EmployeeService::OVERTIME);
         $charging_salary = $this->appendCollection($projects, $charging_salary, EmployeeService::PROJECT);
         $charging_salary = $this->appendCollection($departments, $charging_salary, EmployeeService::DEPARTMENT);
         $charging_salary = $this->appendCollection($spcholidaycharge, $charging_salary, EmployeeService::SPECIALHOLIDAY);
+
         $chargings = [
             "leaves" => $leavecharge,
             "travels" => $tavelcharge,
@@ -235,6 +244,22 @@ class EmployeeService
         return $result;
     }
 
+    function getChargingOvertime($collection, $type){
+        return $collection->groupBy("id")->map(function($data, $index) use ($type){
+            if($index){
+                return [
+                    "id" => $index,
+                    "type" => $type,
+                    "designation" => $data[0]["designation"],
+                    "amt" => round($data->sum('amount_overtime'), 2),
+                    "reg_hrs" => round($data->sum('overtime'), 2),
+                ];
+            }
+        })->filter(function($data){
+            return $data!=null;
+        });
+    }
+
     public function appendCollection($collection, $maincollection, $type){
         foreach($collection as $key){
             $maincollection->push((object)[
@@ -242,9 +267,6 @@ class EmployeeService
                 "name" => $type,
                 "designation" => $key["designation"],
                 "amt" => $key["amt"],
-                "amt_overtime" => $key["amt_overtime"],
-                "regular_holidays_ot_hrs" => $key["regular_holidays_ot_hrs"],
-                "amount_regular_holidays_hrs" => $key["amount_regular_holidays_hrs"],
                 "reg_hrs" => $key["reg_hrs"],
             ]);
         }
@@ -276,9 +298,6 @@ class EmployeeService
                     "id" => $index,
                     "designation" => $data[0]["designation"],
                     "amt" => round($data->sum('amount'), 2),
-                    "amt_overtime" => round($data->sum('amount_overtime'), 2),
-                    "regular_holidays_ot_hrs" => round($data->sum('regular_holidays_ot_hrs'), 2),
-                    "amount_regular_holidays_hrs" => round($data->sum('amount_regular_holidays_hrs'), 2),
                     "reg_hrs" => round($data->sum('reg_hrs'), 2),
                 ];
             }
@@ -346,7 +365,7 @@ class EmployeeService
         $loan = 0;
         $hmdf = 0;
         if ($deductions["sss"]) {
-            $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["total_contribution"];
+            $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_contribution"];
         }
         if ($deductions["phic"]) {
             $phic = $deductions["phic"]["employee_compensation"];
