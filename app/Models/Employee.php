@@ -402,8 +402,8 @@ class Employee extends Model
             return [
                 ...$sched->toArray(),
                 "designation" => $this->get_designation($sched->project_id, $sched->department_id),
-                "applied_ins" => $sched->attendance_log_ins?->where("employee_id", $this->id)->where("date", $date)->first(),
-                "applied_outs" => $sched->attendance_log_outs?->where("employee_id", $this->id)->where("date", $date)->last()
+                "applied_ins" => $sched->attendance_log_ins?->where("employee_id", $this->id)->where("date", $date)->sortBy('time')->first(),
+                "applied_outs" => $sched->attendance_log_outs?->where("employee_id", $this->id)->where("date", $date)->sortBy('time')->last()
             ];
         });
     }
