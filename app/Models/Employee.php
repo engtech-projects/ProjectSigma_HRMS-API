@@ -423,8 +423,8 @@ class Employee extends Model
         return $otSchedWithLogs->map(function ($sched) use ($date) {
             return [
                 ...$sched->toArray(),
-                "applied_in" => $sched->attendance_log_ins?->where("employee_id", $this->id)->first(),
-                "applied_out" => $sched->attendance_log_outs?->where("employee_id", $this->id)->last()
+                "applied_in" => $sched->attendance_log_ins?->where("employee_id", $this->id)->order_by('time')->first(),
+                "applied_out" => $sched->attendance_log_outs?->where("employee_id", $this->id)->order_by('time')->last()
             ];
         });
 
