@@ -164,7 +164,7 @@ class EmployeeService
             "pagibig" => $pagibig,
             "sss" => $sss,
             "philhealth" => $philhealth,
-            "all_charging_salary" => $charging_salary,
+            "salary" => $charging_salary,
         ];
 
         $totalHoursWorked = [
