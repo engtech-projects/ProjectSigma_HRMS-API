@@ -1,0 +1,26 @@
+# Deploying to staging server
+name: Deploy ProjectSigma_HRMS-API to evenpar SERVER
+
+on:
+  workflow_dispatch:
+env:
+  APP_NAME: "ProjectSigma_HRMS-API"
+
+concurrency:
+  group: "evenpar deployftp ProjectSigma_HRMS-API"
+  cancel-in-progress: true
+
+jobs:
+  deploy-evenpar:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ci-pipe-evenpar
+      - name: Upload ftp
+        uses : SamKirkland/FTP-Deploy-Action@4.3.2
+        with:
+          server: ${{ vars.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}

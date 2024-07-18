@@ -52,7 +52,7 @@ class UpdateEmployeeRequest extends FormRequest
                 "date",
             ],
             'place_of_birth' => [
-                "nullable",
+                "required",
                 "string",
             ],
             'date_of_marriage' => [

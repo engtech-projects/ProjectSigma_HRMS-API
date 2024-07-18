@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AttendanceLogType;
 use App\Enums\ScheduleGroupType;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -69,6 +70,18 @@ class Schedule extends Model
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
     }
+
+    public function employeesAssigned(): HasMany
+    {
+        if ($this->deparment_id) {
+            return $this->department->employees();
+        } else if ($this->project_id) {
+            return $this->project->project_has_employees();
+        } else {
+            return $this->hasMany(Employee::class, "id", "employee_id");
+        }
+    }
+
     public function getAttendanceLogInsAttribute()
     {
         $bufferInTimeEarly = Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));

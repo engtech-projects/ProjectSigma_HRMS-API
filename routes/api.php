@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AbsentController;
 use App\Http\Controllers\Actions\Employee\CountAbsentLateController;
 use App\Http\Controllers\EmployeeFacePattern;
+use App\Http\Controllers\LateController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HMOController;
 use App\Http\Controllers\AuthController;
@@ -156,8 +158,8 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::prefix('monthly')->group(function () {
             Route::get('birthdays', MonthlyBirthdaysController::class);
-            Route::get('lates', [EmployeeController::class, 'getLateThisMonth']);
-            Route::get('absences', [EmployeeController::class, 'getAbsenceThisMonth']);
+            Route::get('lates', [LateController::class, 'getLateThisMonth']);
+            Route::get('absences', [AbsentController::class, 'getAbsenceThisMonth']);
             Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
         });
     });

@@ -14,6 +14,7 @@ use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use App\Enums\AssignTypes;
+use App\Enums\EventTypes;
 
 trait Attendance
 {
@@ -291,19 +292,53 @@ trait Attendance
         $rest = 0;
         $restOvertime = 0;
         $restUndertime = 0;
+
         $regHoliday = 0;
+        $specHoliday = 0;
         $regHolidayOvertime = 0;
         $regHolidayUndertime = 0;
-        $tavelandleave = collect();
+
+        $specialholidaycharge = collect();
+        $leavecharge = collect();
+        $travelcharge = collect();
         $projects = collect();
         $departments = collect();
         $leave += $this->getTotalRendered($data["leave"], $date);
         $travel += $this->getTotalRendered($data["travel_orders"], $date);
+        if(count(collect($data["events"])->where("event_type", EventTypes::SPECIALHOLIDAY->value)) > 0){
+            $result = $this->calculateWorkRendered($data);
+            $specHoliday += $result["rendered"];
+            $specialholidaycharge->push([
+                "reg_hrs" => $specHoliday,
+            ]);
+        }
         if (count(collect($data["events"])->where("with_work", '=', 0)) > 0) {
             $result = $this->calculateWorkRendered($data);
             $regHoliday += $result["rendered"] + $leave + $travel;
             $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
             $regHolidayUndertime += $result["undertime"];
+            if(count($result["departments"]) > 0){
+                $departments->push([
+                    'id' => $result["departments"][0]["id"],
+                    "reg_hrs" => 0,
+                    "regular_holidays_hrs" => $regHoliday,
+                    "regular_holidays_ot_hrs" => $regHolidayOvertime,
+                    "overtime" => 0,
+                    "late" => 0,
+                    "undertime" => 0,
+                ]);
+            }
+            if(count($result["projects"]) > 0){
+                $projects->push([
+                    'id' => $result["projects"][0]["id"],
+                    "reg_hrs" => 0,
+                    "regular_holidays_hrs" => $regHoliday,
+                    "regular_holidays_ot_hrs" => $regHolidayOvertime,
+                    "overtime" => 0,
+                    "late" => 0,
+                    "undertime" => 0,
+                ]);
+            }
         } else if ($data["schedules_attendances"]) {
             $result = $this->calculateWorkRendered($data);
             $reg += $result["rendered"] + $leave + $travel;
@@ -316,6 +351,8 @@ trait Attendance
                     $projects->push([
                         'id' => $key["id"],
                         "reg_hrs" => $reg,
+                        "regular_holidays_hrs" => 0,
+                        "regular_holidays_ot_hrs" => 0,
                         "overtime" => $regOvertime,
                         "late" => $late,
                         "undertime" => $regUndertime,
@@ -328,6 +365,8 @@ trait Attendance
                     $departments->push([
                         'id' => $key["id"],
                         "reg_hrs" => $reg,
+                        "regular_holidays_hrs" => 0,
+                        "regular_holidays_ot_hrs" => 0,
                         "overtime" => $regOvertime,
                         "late" => $late,
                         "undertime" => $regUndertime,
@@ -336,9 +375,15 @@ trait Attendance
             }
 
             if(count($result["departments"])==0 && count($result["projects"])==0){
-                if($reg > 0 ){
-                    $tavelandleave->push([
-                        "reg_hrs" => $reg,
+                if($leave > 0 ){
+                    $leavecharge->push([
+                        "reg_hrs" => $leave,
+                    ]);
+                }
+
+                if($travel > 0 ){
+                    $travelcharge->push([
+                        "reg_hrs" => $travel,
                     ]);
                 }
             }
@@ -350,7 +395,9 @@ trait Attendance
         }
 
         return [
-            "tavelandleave" => $tavelandleave,
+            "special_holiday" => $specialholidaycharge,
+            "leaves" => $leavecharge,
+            "travels" => $travelcharge,
             "projects" => $projects,
             "departments" => $departments,
             "regular" => [

@@ -31,10 +31,9 @@ class FailureToLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+            "data" => PaginateResourceCollection::paginate($collection, 15)
         ], JsonResponse::HTTP_OK);
     }
-
 
     /**
      * Store a newly created resource in storage.

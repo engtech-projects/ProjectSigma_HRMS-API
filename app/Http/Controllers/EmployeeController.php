@@ -200,11 +200,10 @@ class EmployeeController extends Controller
         $main = Employee::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
-            $main->fill($request->validated());
-            if ($main->save()) {
+            if ($main->update($request->validated())) {
                 $data->message = "Successfully update.";
                 $data->success = true;
-                $data->data = $main;
+                $data->data = $main->refresh();
                 return response()->json($data);
             }
             $data->message = "Update failed.";
@@ -238,48 +237,6 @@ class EmployeeController extends Controller
         $data->message = "Failed delete.";
         $data->success = false;
         return response()->json($data, 404);
-    }
-
-    public function getAbsenceThisMonth(Schedule $req, AttendanceLog $log)
-    {
-        $getemployeeschedule = $req->scheduleEmployeeThisMonth($req);
-        $absenceEmployeeData = [];
-        foreach ($getemployeeschedule as $key => $value) {
-            $from = $value->startRecur;
-            $to = $value->endRecur;
-            $maxDays = $to->diffInWeekdays($from);
-            $EmployeeAbsence = $log->getAttendance($log, $value->employee_id, $value->startRecur, $value->endRecur);
-            $absenceEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
-            $absenceEmployeeData[$key]["absences"] = $maxDays - $EmployeeAbsence;
-            if ($EmployeeAbsence >= $maxDays) {
-                $absenceEmployeeData[$key]["absences"] = $maxDays;
-            }
-        }
-        $dataval = collect($absenceEmployeeData)->unique();
-        return new JsonResponse([
-            'success' => 'true',
-            'message' => 'Successfully fetched.',
-            'data' => $dataval
-        ]);
-    }
-
-    public function getLateThisMonth(Schedule $req, AttendanceLog $log)
-    {
-        $getemployeeschedule = $req->scheduleEmployeeThisMonth($req);
-        $lateEmployeeData = [];
-        foreach ($getemployeeschedule as $key => $value) {
-            $EmployeeLate = $log->getLate($log, $value->employee_id, $value->startTime);
-            if ($EmployeeLate > 0) {
-                $lateEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
-                $lateEmployeeData[$key]["lates"] = $EmployeeLate;
-            }
-        }
-        $dataval = collect($lateEmployeeData)->unique();
-        return new JsonResponse([
-            'success' => 'true',
-            'message' => 'Successfully fetched.',
-            'data' => $dataval
-        ]);
     }
 
     public function getFilterLate(Schedule $req, AttendanceLog $log, FilterDateRequest $request)

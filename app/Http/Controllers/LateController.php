@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\Actions\Employee;
+namespace App\Http\Controllers;
 
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceSettings;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
+use App\Models\Schedule;
 use App\Models\Settings;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-class CountAbsentLateController extends Controller
-{
 
-    public function __invoke()
+class LateController extends Controller
+{
+    public function getLateThisMonth(Schedule $req, AttendanceLog $log)
     {
         $attendance = [];
         $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
-        if (!Cache::has('lateAndAbsent')) {
+        if (!Cache::has('lates')) {
             $attendance = AttendanceLog::whereBetween('date', [
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->lastOfMonth()
@@ -56,11 +56,12 @@ class CountAbsentLateController extends Controller
                 ];
             })->toArray());
         }
-        Cache::store('database')->put('lateAndAbsent', $attendance, 864000);
+        Cache::store('database')->put('lates', $attendance, 864000);
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => Cache::get('dashboard'),
+            'data' => Cache::get('lates'),
         ]);
     }
+
 }

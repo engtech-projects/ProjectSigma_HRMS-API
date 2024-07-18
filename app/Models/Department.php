@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\InternalWorkExpStatus;
 use App\Models\Traits\HasAttendanceLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
@@ -50,4 +52,14 @@ class Department extends Model
         return $this->hasMany(Schedule::class);
     }
 
+    public function employees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'internal_work_exp')
+            ->withPivot([
+                'department_id',
+                'employee_id'
+            ])
+            ->where("status", InternalWorkExpStatus::CURRENT->value)
+            ->withtimestamps();
+    }
 }
