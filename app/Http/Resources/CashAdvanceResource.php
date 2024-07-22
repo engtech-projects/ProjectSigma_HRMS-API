@@ -31,7 +31,7 @@ class CashAdvanceResource extends JsonResource
             "amount_requested" => $this->amount_requested,
             "amount_approved" => $this->amount_approved,
             "installment_deduction" => $this->installment_deduction,
-            "deduction_date_start" => $this->deduction_date_start,
+            "deduction_date_start" => $this->deduction_date_start->format('F j, Y'),
             "purpose" => $this->purpose,
             "balance" => $this->balance,
             "total_paid" => $this->total_paid,
