@@ -14,6 +14,7 @@ use App\Models\Users;
 use App\Notifications\CashAdvanceForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Utils\PaginateResourceCollection;
 
 class CashAdvanceController extends Controller
 {
@@ -27,11 +28,12 @@ class CashAdvanceController extends Controller
      */
     public function index()
     {
-        $main = CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->orderBy("created_at", "DESC")->paginate(15);
+        $main = $this->RequestService->getAll();
+        $paginated = CashAdvanceResource::collection($main);
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetch.',
-            'data' => CashAdvanceResource::collection($main)
+            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
         ]);
     }
 

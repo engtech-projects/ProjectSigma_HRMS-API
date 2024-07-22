@@ -15,7 +15,7 @@ class CashAdvanceService
 
     public function getAll()
     {
-        return CashAdvance::with(['employee', 'department'])->get();
+        return CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->orderBy("created_at", "DESC")->get();
     }
 
     public function create($attributes)
