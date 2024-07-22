@@ -55,7 +55,7 @@ class LateController extends Controller
                     'profile_photo' => $emp->profile_photo(),
                     'lates' => $val
                 ];
-            })->sortByDesc('lates')->filter->toArray());
+            })->sortByDesc('lates')->toArray());
         }
         Cache::store('database')->put('lates', $attendance, 864000);
         return new JsonResponse([
