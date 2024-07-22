@@ -19,11 +19,11 @@ class CashAdvanceResource extends JsonResource
                     "fullname_first" => $this->employee?->fullname_first,
             ];
         });
-
         return [
             "id" => $this->id,
             "employee" => $user,
             "employee_id" => $this->employee_id,
+            "cash_advance_payments" => $this->cashAdvancePayments,
             "department_id" => $this->department_id,
             "project_id" => $this->project_id,
             "terms_of_payment" => $this->terms_of_payment,
