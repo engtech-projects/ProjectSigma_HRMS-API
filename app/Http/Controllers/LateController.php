@@ -61,7 +61,7 @@ class LateController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => Cache::orderBy('lates', 'desc')->get('lates'),
+            'data' => Cache::orderByRaw("lates::int", "desc")->get('lates'),
         ]);
     }
 
