@@ -32,6 +32,8 @@ class CashAdvanceResource extends JsonResource
             "terms_of_cash_advance" => $this->terms_of_cash_advance,
             "remarks" => $this->remarks,
             "request_status" => $this->request_status,
+            "department" => $this->department,
+            "project" => $this->project,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "created_by" => $this->created_by,
         ];
