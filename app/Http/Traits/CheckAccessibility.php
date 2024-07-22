@@ -13,14 +13,8 @@ trait CheckAccessibility
         if (Auth::user()->type == UserTypes::ADMINISTRATOR->value) {
             return true;
         }
-        $userAllowed = false;
-        collect($allowedAccessibilities)->each(function($element) use($userAccessibilities, $userAllowed) {
-            collect($userAccessibilities)->each(function($useraccess) use($element, $userAllowed) {
-                if (str_starts_with($useraccess, $element)) {
-                    $userAllowed = true;
-                }
-            });
-        });
-        return $userAllowed;
+        return collect($userAccessibilities)->contains(function ($item) use ($allowedAccessibilities) {
+            return in_array($item, $allowedAccessibilities);
+        } );
     }
 }
