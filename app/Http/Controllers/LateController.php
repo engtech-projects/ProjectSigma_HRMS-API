@@ -23,6 +23,7 @@ class LateController extends Controller
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->lastOfMonth()
             ])->where('log_type', AttendanceLogType::TIME_IN->value)->with(['department.schedule', 'project.project_schedule'])->get();
+
             return array_values($attendance->where(function($attendance) use($lateAllowance) {
                 if ($attendance->department_id != null) {
                     // return true;
@@ -60,7 +61,7 @@ class LateController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => Cache::get('lates'),
+            'data' => Cache::orderBy('lates', 'desc')->get('lates'),
         ]);
     }
 
