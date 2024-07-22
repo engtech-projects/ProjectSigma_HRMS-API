@@ -26,6 +26,7 @@ class CashAdvanceResource extends JsonResource
             "employee_id" => $this->employee_id,
             "department_id" => $this->department_id,
             "project_id" => $this->project_id,
+            "amount" => $this->amount,
             "amount_requested" => $this->amount_requested,
             "amount_approved" => $this->amount_approved,
             "purpose" => $this->purpose,
