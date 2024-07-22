@@ -41,6 +41,7 @@ class CashAdvanceResource extends JsonResource
             "department" => $this->department,
             "project" => $this->project,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
             "created_by" => $this->created_by,
         ];
     }
