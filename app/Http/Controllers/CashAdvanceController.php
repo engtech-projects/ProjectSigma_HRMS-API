@@ -27,12 +27,12 @@ class CashAdvanceController extends Controller
      */
     public function index()
     {
-        $main = CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $main = CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->orderBy("created_at", "DESC")->paginate(15);
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Successfully fetch.',
+            'data' => CashAdvanceResource::collection($main)
+        ]);
     }
 
     /**
@@ -175,8 +175,8 @@ class CashAdvanceController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => $myRequest
+            'message' => 'Cash Advance Request fetched.',
+            'data' => CashAdvanceResource::collection($myRequest)
         ]);
     }
 
@@ -194,8 +194,8 @@ class CashAdvanceController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => $myApproval,
+            'message' => 'Cash Advance Approvals fetched.',
+            'data' => CashAdvanceResource::collection($myApproval)
         ]);
     }
 }
