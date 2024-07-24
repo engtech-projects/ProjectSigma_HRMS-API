@@ -799,8 +799,22 @@ class AccessibilitiesSeeder extends Seeder
         DB::table('accessibilities')->upsert(
             [
                 [
-                    'id' => 2006,
+                    'id' => 2010,
                     'accessibilities_name' => AccessibilityInventory::INVENTORY_DASHBOARD->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2020,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_SETUP_APPROVALS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2030,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_NEW_ITEM_PROFILE->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

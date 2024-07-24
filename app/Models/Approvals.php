@@ -20,6 +20,7 @@ class Approvals extends Model
     protected $fillable = [
         'id',
         'form',
+        'module',
         'approvals',
     ];
 

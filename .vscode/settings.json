@@ -1,3 +1,4 @@
 {
-    "phpcs.standard": "PSR12"
+    "phpcs.standard": "PSR12",
+    "nuxt.isNuxtApp": false
 }
