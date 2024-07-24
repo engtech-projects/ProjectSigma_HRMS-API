@@ -22,6 +22,8 @@ use App\Http\Requests\UpdateEmployeePanRequestRequest;
 use App\Models\CompanyEmployee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PersonnelActionNoticeRequestController extends Controller
 {
@@ -34,9 +36,16 @@ class PersonnelActionNoticeRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $panRequest = $this->panRequestService->getAll();
+        $panRequest = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $panRequest = $request->whenHas("employee", function($name) use($panRequest) {
+            return collect($panRequest)->filter(function($data) use($name) {
+                return str_contains(strtolower($data->full_name), $name);
+            });
+        });
         $paginated = EmployeePanRequestResource::collection($panRequest);
         return new JsonResponse([
             "success" => true,
