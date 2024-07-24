@@ -17,6 +17,8 @@ use App\Http\Services\EmployeeAllowanceService;
 use App\Models\AllowanceRequest;
 use App\Models\Department;
 use App\Models\Project;
+use App\Models\Users;
+use App\Notifications\AllowanceRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -153,6 +155,9 @@ class EmployeeAllowancesController extends Controller
                     'message' => implode("\n", $errorList),
                 ], 400);
             }
+            if ($allowanceReq->getNextPendingApproval()) {
+                Users::find($allowanceReq->getNextPendingApproval()['user_id'])->notify(new AllowanceRequestForApproval($allowanceReq));
+            }
             DB::commit();
         } catch (\Throwable $th) {
             return new JsonResponse([
@@ -172,7 +177,7 @@ class EmployeeAllowancesController extends Controller
      */
     public function show($id)
     {
-        $main = EmployeeAllowances::find($id);
+        $main = AllowanceRequest::find($id);
         if (!is_null($main)) {
             return new JsonResponse([
                 'success' => true,
