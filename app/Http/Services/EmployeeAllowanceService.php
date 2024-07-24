@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Enums\RequestApprovalStatus;
+use App\Models\AllowanceRequest;
 use App\Models\EmployeeAllowances;
 
 class EmployeeAllowanceService
@@ -15,13 +16,20 @@ class EmployeeAllowanceService
 
     public function getAll()
     {
-        return EmployeeAllowances::with('charge_assignment')->get();
+        return AllowanceRequest::with(['employee_allowances','charge_assignment'])->get();
+    }
+
+    public function getMyRequests()
+    {
+        return AllowanceRequest::with(['employee_allowances','charge_assignment'])
+        ->where("created_by", auth()->user()->id)
+        ->get();
     }
 
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = EmployeeAllowances::with("charge_assignment")
+        $result = AllowanceRequest::with(['employee_allowances', 'charge_assignment'])
             ->requestStatusPending()
             ->authUserPending()
             ->get();

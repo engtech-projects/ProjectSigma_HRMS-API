@@ -4,22 +4,18 @@ namespace App\Models;
 
 use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AllowanceRequest extends Model
 {
     use HasFactory, SoftDeletes, HasApproval;
-
-    protected $appends = ['total_amount'];
-
-    public function getTotalAmountAttribute()
-    {
-        return $this->allowance_amount * $this->total_days;
-    }
 
     protected $table = 'allowance_request';
 
@@ -48,6 +44,11 @@ class AllowanceRequest extends Model
         return $this->morphTo();
     }
 
+    public function employee_allowances(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, EmployeeAllowances::class, "allowance_request_id", "employee_id")->withPivot(["allowance_amount", "allowance_rate", "allowance_days"]);
+    }
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
@@ -56,5 +57,25 @@ class AllowanceRequest extends Model
     public function scopeRequestStatusApproved(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
+    }
+
+    public function created_by_user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function getCutoffStartHumanAttribute()
+    {
+        return Carbon::parse($this->cutoff_start)->format("F j, Y");
+    }
+
+    public function getCutoffEndHumanAttribute()
+    {
+        return Carbon::parse($this->cutoff_end)->format("F j, Y");
+    }
+
+    public function getAllowanceDateHumanAttribute()
+    {
+        return Carbon::parse($this->cutoff_end)->format("F j, Y");
     }
 }

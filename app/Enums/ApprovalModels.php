@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Models\AllowanceRequest;
 use App\Models\CashAdvance;
 use App\Models\EmployeeAllowances;
 use App\Models\EmployeeLeaves;
@@ -21,7 +22,7 @@ enum ApprovalModels: string
     case TravelOrder = TravelOrder::class;
     case CashAdvance = CashAdvance::class;
     case Overtime = Overtime::class;
-    case GenerateAllowance = EmployeeAllowances::class;
+    case GenerateAllowance = AllowanceRequest::class;
     case Payroll = PayrollRecord::class;
 
     public static function toArray(): array

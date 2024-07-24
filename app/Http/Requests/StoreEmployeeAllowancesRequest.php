@@ -20,6 +20,9 @@ class StoreEmployeeAllowancesRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        $this->merge([
+            "allowance_days" => $this->total_days,
+        ]);
         if (gettype($this->employees) == "string") {
             $this->merge([
                 "employees" => json_decode($this->employees, true),
@@ -79,7 +82,9 @@ class StoreEmployeeAllowancesRequest extends FormRequest
             ],
             'total_days' => [
                 "required",
-                "integer",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
             ],
             'allowance_days' => [
                 "required",
