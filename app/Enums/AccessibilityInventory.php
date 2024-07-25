@@ -6,7 +6,7 @@ enum AccessibilityInventory: string
 {
     case INVENTORY_DASHBOARD = "inventory:dashboard";
     case INVENTORY_SETUP_APPROVALS = "inventory:setup_approvals";
-    case INVENTORY_NEW_ITEM_PROFILE = "inventory:new-item-profile";
+    case INVENTORY_ITEMPROFILE_NEWPROFILE = "inventory:item profile_new profile";
 
     public static function toArray(): array
     {

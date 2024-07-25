@@ -9,6 +9,7 @@ use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\ApprovalResource;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ApprovalsController extends Controller
@@ -16,12 +17,12 @@ class ApprovalsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $approvals = Approvals::get();
+        $approvals = Approvals::where('module', '=', $request->input("module"))->get();
         $collection = collect(ApprovalResource::collection($approvals));
 
-        return new JsonResponse([
+         return new JsonResponse([
             'success' => 'true',
             'message' => 'Successfully fetched.',
             'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
