@@ -17,6 +17,7 @@ class AllowanceRequestResource extends JsonResource
         return [
             "id" => $this->id,
             "charge_assignment" => $this->charge_assignment,
+            "charge_name" => $this->charge_assignment->project_code ?? $this->charge_assignment->department_name,
             "allowance_date" => $this->allowance_date,
             "cutoff_start" => $this->cutoff_start,
             "cutoff_end" => $this->cutoff_end,

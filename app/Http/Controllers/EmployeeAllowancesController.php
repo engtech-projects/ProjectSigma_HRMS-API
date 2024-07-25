@@ -94,6 +94,7 @@ class EmployeeAllowancesController extends Controller
                     'message' => 'Successfully fetch.',
                     'data' => [
                         "charging_assignment" => $assignData,
+                        "charge_name" => $assignData->project_code ?? $assignData->department_name ,
                         "allowance_date" => Carbon::parse($allowance_date)->format("F j, Y"),
                         "employee_allowances" => AllowanceRecordsResource::collection($data)
                     ],
