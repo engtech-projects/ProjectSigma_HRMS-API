@@ -23,6 +23,7 @@ class LateController extends Controller
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->lastOfMonth()
             ])->where('log_type', AttendanceLogType::TIME_IN->value)->with(['department.schedule', 'project.project_schedule'])->get();
+
             return array_values($attendance->where(function($attendance) use($lateAllowance) {
                 if ($attendance->department_id != null) {
                     // return true;
@@ -54,7 +55,7 @@ class LateController extends Controller
                     'profile_photo' => $emp->profile_photo(),
                     'lates' => $val
                 ];
-            })->toArray());
+            })->sortByDesc('lates')->toArray());
         }
         Cache::store('database')->put('lates', $attendance, 864000);
         return new JsonResponse([

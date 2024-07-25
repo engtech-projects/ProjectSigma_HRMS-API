@@ -14,6 +14,7 @@ use App\Models\Users;
 use App\Notifications\CashAdvanceForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Utils\PaginateResourceCollection;
 
 class CashAdvanceController extends Controller
 {
@@ -27,12 +28,13 @@ class CashAdvanceController extends Controller
      */
     public function index()
     {
-        $main = CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $main = $this->RequestService->getAll();
+        $paginated = CashAdvanceResource::collection($main);
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Successfully fetch.',
+            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+        ]);
     }
 
     /**
@@ -175,8 +177,8 @@ class CashAdvanceController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => $myRequest
+            'message' => 'Cash Advance Request fetched.',
+            'data' => CashAdvanceResource::collection($myRequest)
         ]);
     }
 
@@ -194,8 +196,8 @@ class CashAdvanceController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => $myApproval,
+            'message' => 'Cash Advance Approvals fetched.',
+            'data' => CashAdvanceResource::collection($myApproval)
         ]);
     }
 }

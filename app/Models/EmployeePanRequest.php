@@ -91,9 +91,9 @@ class EmployeePanRequest extends Model
     public function getFullNameAttribute()
     {
         if ($this->type == "New Hire") {
-            return $this->jobapplicant?->lastname . ", " . $this->jobapplicant?->firstname . " " . $this->jobapplicant?->middlename;
+            return $this->jobapplicant?->fullname_last;
         } else {
-            return $this->employee?->family_name . ", " . $this->employee?->first_name . " " . $this->employee?->middle_name;
+            return $this->employee?->fullname_last;
         }
     }
     public function requestCreatedAt(): Attribute

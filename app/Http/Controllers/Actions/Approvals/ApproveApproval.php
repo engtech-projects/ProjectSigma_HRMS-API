@@ -21,8 +21,11 @@ use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Users;
+use App\Notifications\AllowanceRequestApproved;
+use App\Notifications\AllowanceRequestForApproval;
 use App\Notifications\LeaveRequestApproved;
 use App\Notifications\LeaveRequestForApproval;
+use Carbon\Carbon;
 
 class ApproveApproval extends Controller
 {
@@ -31,7 +34,7 @@ class ApproveApproval extends Controller
      */
     public function __invoke($modelType, $model)
     {
-        $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED]);
+        $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED, "date_approved" => Carbon::now()]);
         $nextApproval = $model->getNextPendingApproval();
         if ($nextApproval) {
             $nextApprovalUser = $nextApproval["user_id"];
@@ -57,6 +60,9 @@ class ApproveApproval extends Controller
                 case ApprovalModels::EmployeePanRequest->name:
                     Users::find($nextApprovalUser)->notify(new PanRequestForApproval($model)); // Notify the next Approval
                     break;
+                case ApprovalModels::GenerateAllowance->name:
+                    Users::find($nextApprovalUser)->notify(new AllowanceRequestForApproval($model)); // Notify the next Approval
+                    break;
             }
         } else {
             switch ($modelType) {
@@ -80,6 +86,9 @@ class ApproveApproval extends Controller
                     break;
                 case ApprovalModels::EmployeePanRequest->name:
                     Users::find($model->created_by)->notify(new PanRequestApproved($model)); // Notify the requestor
+                    break;
+                case ApprovalModels::GenerateAllowance->name:
+                    Users::find($model->created_by)->notify(new AllowanceRequestApproved($model)); // Notify the requestor
                     break;
             }
         }

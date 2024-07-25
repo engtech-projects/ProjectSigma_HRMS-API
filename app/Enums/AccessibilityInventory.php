@@ -4,7 +4,9 @@ namespace App\Enums;
 
 enum AccessibilityInventory: string
 {
-    case INVENTORY_DASHBOARD = "accounting:dashboard";
+    case INVENTORY_DASHBOARD = "inventory:dashboard";
+    case INVENTORY_SETUP_APPROVALS = "inventory:setup_approvals";
+    case INVENTORY_ITEMPROFILE_NEWPROFILE = "inventory:item profile_new profile";
 
     public static function toArray(): array
     {

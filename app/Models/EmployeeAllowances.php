@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\HasApproval;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeeAllowances extends Model
 {
-    use HasFactory, SoftDeletes, HasApproval;
+    use HasFactory, SoftDeletes;
 
     protected $appends = ['total_amount'];
+
+    public $timestamps = true;
 
     public function getTotalAmountAttribute()
     {
@@ -27,4 +30,14 @@ class EmployeeAllowances extends Model
         'allowance_days',
         'created_by',
     ];
+
+    public function allowance_request(): BelongsTo
+    {
+        return $this->belongsTo(AllowanceRequest::class, "allowance_request_id");
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, "employee_id");
+    }
 }

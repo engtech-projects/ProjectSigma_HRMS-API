@@ -18,6 +18,7 @@ class ApprovalResource extends JsonResource
         return [
             'id' => $this->id,
             'form' => $this->form,
+            'module' => $this->module,
             'approvals' => ApprovalAttributeResource::collection($this->approvals)
         ];
     }

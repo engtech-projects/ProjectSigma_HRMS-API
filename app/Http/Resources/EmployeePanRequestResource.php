@@ -32,6 +32,7 @@ class EmployeePanRequestResource extends JsonResource
                     "fullname_last" => $this->employee->fullname_last,
                 ];
             }),
+            "applicant_employee" => $this->full_name,
             "hire_source" => $this->work_location,
             "employment_status" => $this->employment_status,
             "designation_position" => $this->designation_position, // position_id

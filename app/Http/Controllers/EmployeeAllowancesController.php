@@ -8,11 +8,19 @@ use App\Http\Requests\FilterEmployeeAllowancesRequest;
 use App\Models\EmployeeAllowances;
 use App\Http\Requests\StoreEmployeeAllowancesRequest;
 use App\Http\Requests\UpdateEmployeeAllowancesRequest;
+use App\Http\Resources\AllowanceRecordsResource;
+use App\Http\Resources\AllowanceRequestResource;
 use App\Models\Employee;
 use App\Models\InternalWorkExperience;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\EmployeeAllowanceService;
 use App\Models\AllowanceRequest;
+use App\Models\Department;
+use App\Models\Project;
+use App\Models\Users;
+use App\Notifications\AllowanceRequestForApproval;
+use App\Utils\PaginateResourceCollection;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeAllowancesController extends Controller
@@ -34,12 +42,12 @@ class EmployeeAllowancesController extends Controller
      */
     public function index()
     {
-        $main = EmployeeAllowances::with('charge_assignment')->get();
+        $main = $this->employeeAllowanceService->getAll();
         if (!is_null($main)) {
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Successfully fetch.',
-                'data' => $main,
+                'message' => 'Successfully fetch all Allowance Requests.',
+                'data' => PaginateResourceCollection::paginate(collect(AllowanceRequestResource::collection($main))),
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
@@ -58,27 +66,38 @@ class EmployeeAllowancesController extends Controller
             if ($valData) {
                 $id = null;
                 $group_type = $request["group_type"];
+                $assignData = null;
                 switch ($group_type) {
                     case AssignTypes::DEPARTMENT->value:
                         $id = $request["department_id"];
                         $group_type = EmployeeAllowancesController::DEPARTMENT;
+                        $assignData = Department::find($id);
                         break;
                     case AssignTypes::PROJECT->value:
                         $id = $request["project_id"];
                         $group_type = EmployeeAllowancesController::PROJECT;
+                        $assignData = Project::find($id);
                         break;
                 }
                 $allowance_date = $request["allowance_date"];
-                $data = EmployeeAllowances::with('charge_assignment')->where([
-                    ['charge_assignment_id', $id],
-                    ["charge_assignment_type", $group_type],
-                    ["allowance_date", $allowance_date],
-                ])->get();
-
+                $data = EmployeeAllowances::whereHas("allowance_request", function($query) use($id, $group_type, $allowance_date){
+                    return $query->where([
+                        'charge_assignment_id' => $id,
+                        "charge_assignment_type" => $group_type,
+                        "allowance_date"=> $allowance_date,
+                    ])
+                    ->requestStatusApproved();
+                })
+                ->get();
                 return new JsonResponse([
                     'success' => true,
                     'message' => 'Successfully fetch.',
-                    'data' => $data,
+                    'data' => [
+                        "charging_assignment" => $assignData,
+                        "charge_name" => $assignData->project_code ?? $assignData->department_name ,
+                        "allowance_date" => Carbon::parse($allowance_date)->format("F j, Y"),
+                        "employee_allowances" => AllowanceRecordsResource::collection($data)
+                    ],
                 ], JsonResponse::HTTP_OK);
             }
         } catch (\Throwable $th) {
@@ -97,76 +116,50 @@ class EmployeeAllowancesController extends Controller
     {
         $valData = $request->validated();
         try {
-            if ($valData) {
-                DB::beginTransaction();
-                foreach ($valData["employees"] as $key) {
-                    $data = Employee::with('current_employment.position.allowances')->find($key);
-
-                    if (!$data->current_employment) {
-                        return new JsonResponse([
-                            'success' => false,
-                            'message' => 'User ' . $data->fullname_first . " not found as not a current employee",
-                        ], 400);
-                    }
-
-                    if (!$data->current_employment) {
-                        return new JsonResponse([
-                            'success' => false,
-                            'message' => 'Employee ' . $data->fullname_first . " doesn't have a position",
-                        ], 400);
-                    }
-
-                    if ($data->current_employment) {
-                        if ($data->current_employment->position_id) {
-
-                            if ($data->current_employment->position->allowances == null) {
-                                return new JsonResponse([
-                                    'success' => false,
-                                    'message' => 'No allowance amount found',
-                                ], 400);
-                            }
-
-                            $data_amt = $data->current_employment->position->allowances->amount;
-                            $employee_allowance = new EmployeeAllowances();
-                            $allowance_request = new AllowanceRequest();
-                            $type = $valData["group_type"];
-                            switch ($type) {
-                                case AssignTypes::DEPARTMENT->value:
-                                    $allowance_request->charge_assignment_type = EmployeeAllowancesController::DEPARTMENT;
-                                    $allowance_request->charge_assignment_id = $valData["department_id"];
-                                    break;
-                                case AssignTypes::PROJECT->value:
-                                    $allowance_request->charge_assignment_type = EmployeeAllowancesController::PROJECT;
-                                    $allowance_request->charge_assignment_id = $valData["project_id"];
-                                    break;
-                            }
-                            $allowance_request->allowance_date = $valData["allowance_date"];
-                            $allowance_request->allowance_amount = $data_amt;
-                            $allowance_request->cutoff_start = $valData["cutoff_start"];
-                            $allowance_request->cutoff_end = $valData["cutoff_end"];
-                            $allowance_request->total_days = $valData["total_days"];
-                            $allowance_request->request_status = RequestStatusType::PENDING;
-                            $allowance_request->approvals = $valData["approvals"];
-                            $allowance_request->save();
-                            $total_amt = $data_amt * $valData["allowance_days"];
-                            $employee_allowance->allowance_amount = $total_amt;
-                            $employee_allowance->allowance_request_id = $allowance_request->id;
-                            $employee_allowance->employee_id = $key;
-                            $employee_allowance->allowance_rate = $data_amt;
-                            $employee_allowance->allowance_days = $valData["allowance_days"];
-                            $employee_allowance->created_by = auth()->user()->id;;
-                            $employee_allowance->save();
-                        }
-                    }
-                }
-                DB::commit();
-
-                return new JsonResponse([
-                    'success' => true,
-                    'message' => 'Successfully save.',
-                ], JsonResponse::HTTP_OK);
-
+            DB::beginTransaction();
+            $allowanceReq = new AllowanceRequest;
+            $allowanceReq->fill($valData);
+            $allowanceReq->request_status = RequestStatusType::PENDING;
+            $allowanceReq->created_by = auth()->user()->id;
+            if ($valData["group_type"] == AssignTypes::DEPARTMENT->value) {
+                $allowanceReq->charge_assignment_id = $valData["department_id"];
+                $allowanceReq->charge_assignment_type = Department::class;
+            } else {
+                $allowanceReq->charge_assignment_id = $valData["project_id"];
+                $allowanceReq->charge_assignment_type = Project::class;
             }
+            $allowanceReq->save();
+            $errorList = [];
+            foreach ($valData["employees"] as $key) {
+                $employee = Employee::with('current_employment.position.allowances')->find($key);
+                if (!$employee->current_employment) {
+                    $errorList[] = $employee->fullname_last . " is currently NOT EMPLOYED.";
+                    continue;
+                }
+                if (!$employee->current_employment->position->allowances) {
+                    $errorList[] = $employee->current_employment->position->name . " has no allowance setup.";
+                    continue;
+                }
+                $allowanceRate = $employee->current_employment->position->allowances->amount;
+                $allowanceReq->employee_allowances()->attach(
+                    $key,
+                    [
+                    "allowance_amount" => $allowanceRate * $valData['allowance_days'],
+                    "allowance_rate" => $allowanceRate,
+                    "allowance_days" => $valData['allowance_days'],
+                ]);
+            }
+            if (sizeof($errorList) > 0) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => "Failed to Generate Allowance",
+                    'message' => implode("\n", $errorList),
+                ], 400);
+            }
+            if ($allowanceReq->getNextPendingApproval()) {
+                Users::find($allowanceReq->getNextPendingApproval()['user_id'])->notify(new AllowanceRequestForApproval($allowanceReq));
+            }
+            DB::commit();
         } catch (\Throwable $th) {
             return new JsonResponse([
                 'success' => false,
@@ -174,6 +167,10 @@ class EmployeeAllowancesController extends Controller
                 'message' => 'Failed save.',
             ], 400);
         }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Successfully save.',
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -181,12 +178,12 @@ class EmployeeAllowancesController extends Controller
      */
     public function show($id)
     {
-        $main = EmployeeAllowances::with('charge_assignment')->find($id);
+        $main = AllowanceRequest::find($id);
         if (!is_null($main)) {
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Successfully fetch.',
-                'data' => $main,
+                'data' => new AllowanceRequestResource($main),
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
@@ -239,7 +236,7 @@ class EmployeeAllowancesController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => $myRequest
+            'data' => PaginateResourceCollection::paginate(collect(AllowanceRequestResource::collection($myRequest)))
         ]);
     }
 
@@ -258,7 +255,7 @@ class EmployeeAllowancesController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => $myApproval
+            'data' => AllowanceRequestResource::collection($myApproval)
         ]);
     }
 }
