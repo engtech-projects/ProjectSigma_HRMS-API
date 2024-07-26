@@ -25,6 +25,15 @@ class PositionController extends Controller
         $main = Position::select(["positions.*", 'departments.department_name'])
             ->join('departments', 'positions.department_id', '=', 'departments.id')
             ->get();
+        $main->map(function($data){
+            $a = explode(",", $data->name);
+            if(count($a) >= 2){
+                if(preg_replace('/\s+/', '', $a[1]) == preg_replace('/\s+/', '', $data->department_name)){
+                    $data->name = $a[0];
+                }
+            }
+            return $data->name = $data->name." - ".$data->department_name;
+        });
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
