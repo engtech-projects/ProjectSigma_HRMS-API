@@ -5,15 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Position;
 use App\Http\Requests\StorepositionRequest;
 use App\Http\Requests\UpdatepositionRequest;
+use Illuminate\Http\Request;
 
 class PositionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $main = Position::with('departments')->paginate(15);
+        $main = Position::with('departments')->where("name", "like", "%".$request->input("name")."%")->paginate(10);
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
