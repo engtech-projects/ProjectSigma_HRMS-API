@@ -113,7 +113,9 @@ class ApprovalsSeeder extends Seeder
                 'id'
             ],
             [
-                'form'
+                'form',
+                'module',
+                'deleted_at',
             ]
         );
         //INVENTORY
@@ -133,7 +135,9 @@ class ApprovalsSeeder extends Seeder
                 'id'
             ],
             [
-                'form'
+                'form',
+                'module',
+                'deleted_at',
             ]
         );
         //ACCOUNTING
@@ -154,6 +158,8 @@ class ApprovalsSeeder extends Seeder
         //     ],
         //     [
         //         'form'
+        //         'module'
+        //         'deleted_at'
         //     ]
         // );
         //PROJECTS
@@ -174,6 +180,8 @@ class ApprovalsSeeder extends Seeder
         //     ],
         //     [
         //         'form'
+        //         'module'
+        //         'deleted_at'
         //     ]
         // );
     }
