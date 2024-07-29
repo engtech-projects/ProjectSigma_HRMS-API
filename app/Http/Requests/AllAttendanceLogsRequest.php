@@ -24,6 +24,8 @@ class AllAttendanceLogsRequest extends FormRequest
         return [
             'employee_id' => 'nullable|numeric',
             'date' => 'nullable|date',
+            'project_id' => 'nullable|numeric|exists:projects,id',
+            'department_id' => 'nullable|numeric|exists:departments,id',
         ];
     }
 }
