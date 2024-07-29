@@ -106,7 +106,7 @@ class CashAdvanceController extends Controller
         if (!is_null($main)) {
             $data->message = "Successfully fetch.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new CashAdvanceResource($main);
             return response()->json($data);
         }
 
