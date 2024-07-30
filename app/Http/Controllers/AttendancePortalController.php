@@ -24,7 +24,7 @@ class AttendancePortalController extends Controller
      */
     public function index()
     {
-        $main = AttendancePortal::with('assignment')->paginate(15);
+        $main = AttendancePortal::with('assignment')->get();
         if (!is_null($main)) {
             $collection = collect(AttendancePortalResource::collection($main));
             return new JsonResponse([

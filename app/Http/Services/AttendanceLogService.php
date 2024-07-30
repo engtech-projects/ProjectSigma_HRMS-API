@@ -35,6 +35,14 @@ class AttendanceLogService
         {
             $query->where('employee_id', $request->employee_id);
         }
+        if ($request->department_id)
+        {
+            $query->where('department_id', $request->department_id);
+        }
+        if ($request->project_id)
+        {
+            $query->where('project_id', $request->project_id);
+        }
         return $query->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->get();
     }
 
