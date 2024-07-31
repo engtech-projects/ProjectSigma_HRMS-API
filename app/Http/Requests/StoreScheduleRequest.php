@@ -20,7 +20,7 @@ class StoreScheduleRequest extends FormRequest
     {
         if (gettype($this->daysOfWeek) == "string") {
             $this->merge([
-                "daysOfWeek" => json_decode($this->daysOfWeek, false)
+                "daysOfWeek" => json_decode($this->daysOfWeek)
             ]);
         }
     }

@@ -116,7 +116,7 @@ class Schedule extends Model
         ];
         return array_map(function ($day) use ($days) {
             return $days[$day];
-        }, $this->daysOfWeek);
+        }, $this->daysOfWeek ?? []);
     }
 
     public function getDayOfWeekNamesShortAttribute()
@@ -132,7 +132,7 @@ class Schedule extends Model
         ];
         return array_map(function ($day) use ($days) {
             return $days[$day];
-        }, $this->daysOfWeek);
+        }, $this->daysOfWeek ?? []);
     }
 
     public function getStartTimeHumanAttribute()
