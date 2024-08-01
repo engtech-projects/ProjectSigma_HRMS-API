@@ -10,6 +10,7 @@ return new class () extends Migration {
      */
     public function up(): void
     {
+        Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('employee_personnel_action_notice_requests', function (Blueprint $table) {
             $table->unsignedBigInteger('salary_grades')->nullable()->change();
             $table->string('section_department')->nullable()->change();
@@ -25,6 +26,7 @@ return new class () extends Migration {
             $table->string('eligible_for_rehire')->nullable()->change();
             $table->string('last_day_worked')->nullable()->change();
         });
+        Schema::useNativeSchemaOperationsIfPossible(false);
     }
 
     /**
@@ -32,6 +34,7 @@ return new class () extends Migration {
      */
     public function down(): void
     {
+        Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('employee_personnel_action_notice_requests', function (Blueprint $table) {
             $table->unsignedBigInteger('salary_grades')->change();
             $table->string('section_department')->change();
@@ -47,5 +50,6 @@ return new class () extends Migration {
             $table->string('eligible_for_rehire')->change();
             $table->string('last_day_worked')->change();
         });
+        Schema::useNativeSchemaOperationsIfPossible(false);
     }
 };

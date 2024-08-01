@@ -10,9 +10,11 @@ return new class () extends Migration {
      */
     public function up(): void
     {
+        Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('job_applicants', function (Blueprint $table) {
             $table->enum('status', ['Contact Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
         });
+        Schema::useNativeSchemaOperationsIfPossible(false);
     }
 
     /**
@@ -20,8 +22,10 @@ return new class () extends Migration {
      */
     public function down(): void
     {
+        Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('job_applicants', function (Blueprint $table) {
             $table->enum('status', ['Contact Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
         });
+        Schema::useNativeSchemaOperationsIfPossible(false);
     }
 };
