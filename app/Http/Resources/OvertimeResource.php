@@ -29,6 +29,7 @@ class OvertimeResource extends JsonResource
             "overtime_end_time" => $this->overtime_end_time,
             "start_time_human" => $this->start_time_human,
             "end_time_human" => $this->end_time_human,
+            "meal_deduction" => $this->meal_deduction,
             "reason" => $this->reason,
             "charging_name" => $this->charging_name,
             "project" => $this->project,
