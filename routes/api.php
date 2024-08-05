@@ -312,6 +312,7 @@ Route::middleware('portal_in')->group(function () {
     Route::prefix('attendance')->group(function () {
         Route::get('current-date', [AttendanceLogController::class, 'getCurrentDate']);
         Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
+        Route::post('qr', [AttendanceLogController::class, 'qrAttendance']);
         Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
         Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
         Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
