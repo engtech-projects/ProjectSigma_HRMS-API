@@ -29,12 +29,24 @@ trait EmployeePayroll
     {
         $salaryGrade = $this->current_employment?->employee_salarygrade;
         $dailyRate = $salaryGrade?->dailyRate ?: 0;
-        $result = [];
-        foreach ($dtr as $key => $value) {
-            $result[$key]["reg_hrs"] = round($value["reg_hrs"] / 8 * $dailyRate, 2);
-            $result[$key]["overtime"] = round($value["overtime"] / 8 * 1.25 * $dailyRate, 2);
-        }
-        return $result;
+        return [
+            "regular" => [
+                "reg_hrs" =>  round($dtr["regular"]["reg_hrs"] / 8 * $dailyRate, 2),
+                "overtime" => round($dtr["regular"]["overtime"] / 8 * $dailyRate * 1.25, 2),
+            ],
+            "rest" => [
+                "reg_hrs" => round($dtr["rest"]["reg_hrs"] / 8 * $dailyRate * 1.3, 2),
+                "overtime" => round($dtr["rest"]["overtime"] / 8 * $dailyRate * 1.6, 2),
+            ],
+            "regular_holidays" => [
+                "reg_hrs" => round($dtr["regular_holidays"]["reg_hrs"] / 8 * $dailyRate, 2),
+                "overtime" => round($dtr["regular_holidays"]["overtime"] / 8 * $dailyRate * 1.6, 2),
+            ],
+            "special_holidays" => [
+                "reg_hrs" => round($dtr["special_holidays"]["reg_hrs"] / 8 * $dailyRate * 1.3, 2),
+                "overtime" => round($dtr["special_holidays"]["overtime"] / 8 * $dailyRate, 2),
+            ],
+        ];
     }
 
     public function salary_charge_pay($dtr, $getId)

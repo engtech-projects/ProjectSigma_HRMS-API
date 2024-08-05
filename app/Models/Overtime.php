@@ -69,6 +69,15 @@ class Overtime extends Model
     {
         return $this->hasOne(Project::class, "id", "project_id");
     }
+    public function charging()
+    {
+        if ($this->department_id) {
+            return $this->department;
+        }
+        if ($this->project_id) {
+            return $this->project;
+        }
+    }
 
     public function user(): BelongsTo
     {
@@ -78,6 +87,11 @@ class Overtime extends Model
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
+
+    public function scopeRequestStatusApproved(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 
     public function scopePayrollOvertime(Builder $query, array $filters = [])

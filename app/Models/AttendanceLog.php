@@ -44,11 +44,6 @@ class AttendanceLog extends Model
         'charging_designation',
     ];
 
-    public function project(): BelongsTo
-    {
-        return $this->belongsTo(Project::class);
-    }
-
     public function getFilterLate($query, $employee_id, $starttime, $start_date, $end_date)
     {
         return $query->where([
@@ -113,6 +108,20 @@ class AttendanceLog extends Model
     {
         return $this->belongsTo(Department::class);
     }
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+    public function charging()
+    {
+        if ($this->department_id) {
+            return $this->department;
+        }
+        if ($this->project_id) {
+            return $this->project;
+        }
+    }
+
     public function getTimeHumanAttribute()
     {
         return Carbon::parse($this->time)->format("h:i A");

@@ -419,7 +419,10 @@ class Employee extends Model
 
     public function applied_overtime_with_attendance($date)
     {
-        $otSchedWithLogs =  $this->employee_overtime()->whereDate('overtime_date', "=", $date)->get();
+        $otSchedWithLogs =  $this->employee_overtime()
+            ->whereDate('overtime_date', "=", $date)
+            ->requestStatusApproved()
+            ->get();
         return $otSchedWithLogs->map(function ($sched) use ($date) {
             return [
                 ...$sched->toArray(),

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -45,6 +46,8 @@ class TravelOrder extends Model
         'requested_by',
         'approvals',
         'request_status',
+        'charge_type',
+        'charge_id',
     ];
 
     public function scopeRequestStatusPending(Builder $query): void
@@ -67,6 +70,11 @@ class TravelOrder extends Model
         return $this->hasOne(Department::class, "id", "requesting_office");
     }
 
+    public function charge(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     public function travelOrders(): HasMany
     {
         return $this->hasMany(TravelOrderMembers::class, "id", "travel_order_id");
@@ -84,5 +92,22 @@ class TravelOrder extends Model
     public function getDateOfTravelHumanAttribute()
     {
         return Carbon::parse($this->date_of_travel)->format("F j, Y");
+    }
+    public function getDateTimeStartAttribute()
+    {
+        return Carbon::parse($this->date_of_travel)
+            ->setTimeFromTimeString($this->time_of_travel);
+            // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
+            // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
+            // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
+    }
+    public function getDateTimeEndAttribute()
+    {
+        return Carbon::parse($this->date_of_travel)
+            ->setTimeFromTimeString($this->time_of_travel)
+            ->addHour($this->duration_of_travel * 24);
+            // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
+            // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
+            // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
     }
 }

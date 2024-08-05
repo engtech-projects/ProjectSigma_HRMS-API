@@ -66,19 +66,28 @@ class EmployeeLeaves extends Model
         return $query->where("request_status", "=", "Pending");
     }
 
-    public function department(): HasOne
-    {
-        return $this->hasOne(Department::class, "id", "department_id");
-    }
-
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
     }
 
+    public function department(): HasOne
+    {
+        return $this->hasOne(Department::class, "id", "department_id");
+    }
+
     public function project(): HasOne
     {
         return $this->hasOne(Project::class, "id", "project_id");
+    }
+    public function charging()
+    {
+        if ($this->department_id) {
+            return $this->department;
+        }
+        if ($this->project_id) {
+            return $this->project;
+        }
     }
 
     public function leave(): BelongsTo
@@ -99,5 +108,12 @@ class EmployeeLeaves extends Model
                 }
                 return $query->where('project_id', $filters['project_id']);
             });
+    }
+    public function durationForDate($date)
+    {
+        if ($this->number_of_days < 1 || $this->date_of_absence_to == $date) {
+            return $this->number_of_days % 1 != 0 ? 0.5 : 1;
+        }
+        return 1;
     }
 }

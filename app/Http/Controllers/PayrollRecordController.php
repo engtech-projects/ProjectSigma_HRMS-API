@@ -46,6 +46,7 @@ class PayrollRecordController extends Controller
 
     public function generate(GeneratePayrollRequest $request)
     {
+        ini_set('max_execution_time', '999999');
         $filters = $request->validated();
 
         $periodDates = Helpers::dateRange([
@@ -77,6 +78,7 @@ class PayrollRecordController extends Controller
     {
         $attribute = $request->validated();
         $attribute['request_status'] = RequestStatusType::PENDING->value;
+        $attribute['created_by'] = auth()->user()->id;
         try {
             DB::transaction(function () use ($attribute) {
                 $payroll = PayrollRecord::create($attribute);
