@@ -715,7 +715,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 101,
-                    'accessibilities_name' => "",
+                    'accessibilities_name' => AccessibilityHrms::HRMS_ATTENDANCE_ATTENDANCE_QR->value,
                     'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
