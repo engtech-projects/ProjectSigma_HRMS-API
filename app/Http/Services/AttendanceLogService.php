@@ -43,6 +43,10 @@ class AttendanceLogService
         {
             $query->where('project_id', $request->project_id);
         }
+        if ($request->attendance_type && $request->attendance_type != 'all')
+        {
+            $query->where('attendance_type', $request->attendance_type);
+        }
         return $query->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->get();
     }
 
