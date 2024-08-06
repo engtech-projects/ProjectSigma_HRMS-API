@@ -199,12 +199,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
         Route::get("generate-company-id-num", [PersonnelActionNoticeRequestController::class, "generateIdNum"]);
     });
-
     Route::prefix('attendance')->group(function () {
         Route::post('bulk-upload', [AttendanceBulkUpload::class, 'bulkUpload']);
         Route::post('bulk-save', [AttendanceBulkUpload::class, 'bulkSave']);
         Route::resource('log', AttendanceLogController::class);
-        Route::resource('failed-log', FailureToLogController::class);
+        Route::post('qr', [AttendanceLogController::class, 'qrAttendance']);
+        Route::resource('failed-log', FailureToLogController::class);Route::prefix('attendanceQR')->group(function () {
+    Route::post('qr', [AttendanceLogController::class, 'qrAttendance']);
+});
         Route::get('all-attendance-logs', [AttendanceLogController::class, 'allAttendanceLogs']);
         Route::prefix('failure-to-log')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);
@@ -312,13 +314,11 @@ Route::middleware('portal_in')->group(function () {
     Route::prefix('attendance')->group(function () {
         Route::get('current-date', [AttendanceLogController::class, 'getCurrentDate']);
         Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
-        Route::post('qr', [AttendanceLogController::class, 'qrAttendance']);
         Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
         Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
         Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
     });
 });
-
 
 //public
 
