@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AttendanceType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class AllAttendanceLogsRequest extends FormRequest
 {
@@ -13,7 +15,6 @@ class AllAttendanceLogsRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,7 +27,11 @@ class AllAttendanceLogsRequest extends FormRequest
             'date' => 'nullable|date',
             'project_id' => 'nullable|numeric|exists:projects,id',
             'department_id' => 'nullable|numeric|exists:departments,id',
-            'attendance_type' => 'nullable|string',
+            'attendance_type' => [
+                'nullable',
+                'string',
+                new Enum(AttendanceType::class)
+            ],
         ];
     }
 }
