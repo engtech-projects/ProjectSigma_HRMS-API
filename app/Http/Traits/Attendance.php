@@ -45,7 +45,7 @@ trait Attendance
         $charge = null;
         $leaveUsedToday = 0;
         foreach ($attendanceSchedules as $schedule) {
-            $hasLeaveToday = sizeof($leave) > 1;
+            $hasLeaveToday = sizeof($leave) > 0;
             $leaveToday = $hasLeaveToday ? $leave[0] : null;
             $leaveUsed = false;
             $timeIn = $schedule["applied_ins"];
@@ -68,7 +68,7 @@ trait Attendance
                     $timeIn = (object)["time" => $schedule["startTime"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 1;
+                $onTravelOrder = sizeof($travelOrder) > 0; // To Change if Time is applicable
                 if (!$timeIn && $onTravelOrder) {
                     // $charge =  TravelOrder::find($travelOrder["id"]);
                     $timeIn = (object)["time" => $schedule["startTime"]];
@@ -100,7 +100,7 @@ trait Attendance
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 1;
+                $onTravelOrder = sizeof($travelOrder) > 0; // To Change if Time is applicable
                 if (!$timeOut && $onTravelOrder) {
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
@@ -167,7 +167,7 @@ trait Attendance
                     $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 1;
+                $onTravelOrder = sizeof($travelOrder) > 0;// To Change if Time is applicable
                 if (!$appliedIn && $onTravelOrder) {
                     $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
                 }
@@ -183,7 +183,7 @@ trait Attendance
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 1;
+                $onTravelOrder = sizeof($travelOrder) > 0;// To Change if Time is applicable
                 if (!$appliedOut && $onTravelOrder) {
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
