@@ -276,10 +276,10 @@ trait Attendance
             $type = "regular_holidays";
         } else if (sizeof(collect($data["events"])->where("with_work", '=', 1)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
             $type = "special_holidays";
-        } else if (sizeof($data["schedules_attendances"]) > 0) { // Regular Work Day
-            $type = "regular";
-        } else { // Rest Day
+        } else if (sizeof($data["schedules_attendances"]) > 0 && $date->dayOfWeek == Carbon::SUNDAY) { // Rest Day
             $type = "rest";
+        } else { // Regular Work Day
+            $type = "regular";
         }
         $metaResult[$type]["reg_hrs"] += $workRendered["rendered"];
         $metaResult[$type]["overtime"] += $overtimeRendered["rendered"];
