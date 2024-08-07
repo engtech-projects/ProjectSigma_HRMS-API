@@ -6,9 +6,9 @@ enum AccessibilityInventory: string
 {
     case INVENTORY_DASHBOARD = "inventory:dashboard";
     case INVENTORY_SETUP_APPROVALS = "inventory:setup_approvals";
-    // case INVENTORY_SETUP_UNITOFMEASUREMENT = "inventory:setup_unit of measurements";
     case INVENTORY_SETUP_ITEMGROUP = "inventory:setup_item group";
     case INVENTORY_ITEMPROFILE_NEWPROFILE = "inventory:item profile_new profile";
+    case INVENTORY_SETUP_UNITOFMEASUREMENT = "inventory:setup_unit of measurements";
 
     public static function toArray(): array
     {
