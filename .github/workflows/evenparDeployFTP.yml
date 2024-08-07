@@ -1,7 +1,11 @@
 # Deploying to staging server
-name: EVENPAR - Deploy ProjectSigma_HRMS-API to evenpar SERVER
+name: EVENPAR - Deploy ProjectSigma_HRMS-API
 
 on:
+  workflow_run:
+    workflows: EVENPAR - ProjectSigma_HRMS-API Build and Push to Pipeline Branch
+    types:
+      - completed
   workflow_dispatch:
 env:
   APP_NAME: "ProjectSigma_HRMS-API"
