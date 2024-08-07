@@ -55,6 +55,11 @@ class TravelOrder extends Model
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
     }
 
+    public function scopeRequestStatusApproved(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
+    }
+
     public function scopeApproval($query)
     {
         return $query->where("request_status", "=", "Pending");
