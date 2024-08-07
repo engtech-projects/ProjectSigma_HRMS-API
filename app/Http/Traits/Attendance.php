@@ -34,7 +34,7 @@ trait Attendance
     {
         $attendanceSchedules = $data["schedules_attendances"];
         $overtime = $data["overtime"];
-        $leave = $data["leave"]->filter("with_pay", 1);
+        $leave = $data["leave"]->where("with_pay", 1);
         $travelOrder = $data["travel_orders"];
         $duration = 0;
         $totalLate = 0;
@@ -154,7 +154,6 @@ trait Attendance
         $chargings = [];
         $overtime = $data["overtime"];
         $regSchedule = $data["schedules_attendances"];
-        $leave = $data["leave"]->filter("with_pay", 1);
         $travelOrder = $data["travel_orders"];
         foreach ($overtime as $otVal) {
             $appliedIn = $otVal["applied_in"];
