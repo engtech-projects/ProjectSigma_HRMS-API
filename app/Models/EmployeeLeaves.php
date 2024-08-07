@@ -114,6 +114,9 @@ class EmployeeLeaves extends Model
         if ($this->number_of_days < 1 || $this->date_of_absence_to == $date) {
             return $this->number_of_days % 1 != 0 ? 0.5 : 1;
         }
+        if ($date < $this->date_of_absence_from || $date > $this->date_of_absence_to) {
+            return 0;
+        }
         return 1;
     }
 }

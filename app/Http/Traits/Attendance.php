@@ -30,7 +30,7 @@ trait Attendance
         $date = Carbon::parse($date);
         return $this->calculateAttendance($data, $date);
     }
-    public function calculateWorkRendered($data)
+    public function calculateWorkRendered($data, $date)
     {
         $attendanceSchedules = $data["schedules_attendances"];
         $overtime = $data["overtime"];
@@ -61,7 +61,7 @@ trait Attendance
                     $timeIn = (object)["time" => $schedule["startTime"]];
                 }
                 // Is On Leave
-                if (!$timeIn && $hasLeaveToday && $leaveUsedToday < $leaveToday->durationForDate) {
+                if (!$timeIn && $hasLeaveToday && $leaveUsedToday < $leaveToday->durationForDate($date)) {
                     $leaveUsedToday =+ 0.5;
                     $leaveUsed = true;
                     $charge = $leaveToday->charging();
@@ -90,7 +90,7 @@ trait Attendance
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
                 // Is On Leave
-                if (!$timeOut && $hasLeaveToday && !$leaveUsed && $leaveUsedToday < $leaveToday->durationForDate) {
+                if (!$timeOut && $hasLeaveToday && !$leaveUsed && $leaveUsedToday < $leaveToday->durationForDate($date)) {
                     $charge = $leaveToday->charging();
                     $leaveUsedToday =+ 0.5;
                     $timeOut = (object)["time" => $schedule["endTime"]];
@@ -268,7 +268,7 @@ trait Attendance
                 "undertime" => 0,
             ],
         ];
-        $workRendered = $this->calculateWorkRendered($data);
+        $workRendered = $this->calculateWorkRendered($data, $date);
         $overtimeRendered = $this->getOvertimeRendered($data);
         $type = "rest";
         if (sizeof(collect($data["events"])->where("with_work", '=', 1)->where("event_type", '=', EventTypes::REGULARHOLIDAY)) > 0) { // Regular Holiday
