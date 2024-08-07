@@ -1,5 +1,5 @@
 # Deploying to staging server
-name: Deploy ProjectSigma_HRMS-API to evenpar SERVER
+name: EVENPAR - Deploy ProjectSigma_HRMS-API to evenpar SERVER
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ env:
   APP_NAME: "ProjectSigma_HRMS-API"
 
 concurrency:
-  group: "evenpar deployftp ProjectSigma_HRMS-API"
+  group: "EVENPAR - deployftp ProjectSigma_HRMS-API"
   cancel-in-progress: true
 
 jobs:

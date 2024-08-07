@@ -1,5 +1,5 @@
 # BUILDING FOR CI CD - LARAVEL with Vue
-name: ProjectSigma_HRMS-API Build and Push to evenpar-Pipeline Branch
+name: EVENPAR - ProjectSigma_HRMS-API Build and Push to Pipeline Branch
 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -18,7 +18,7 @@ permissions:
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: "build ProjectSigma_HRMS-API evenpar"
+  group: "EVENPAR - build ProjectSigma_HRMS-API"
   cancel-in-progress: true
 
 jobs:
