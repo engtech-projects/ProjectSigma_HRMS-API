@@ -12,15 +12,17 @@ class AbsentController extends Controller
     {
         $getemployeeschedule = $req->scheduleEmployeeThisMonth($req);
         $absenceEmployeeData = [];
-        foreach ($getemployeeschedule as $key => $value) {
-            $from = $value->startRecur;
-            $to = $value->endRecur;
-            $maxDays = $to->diffInWeekdays($from);
-            $EmployeeAbsence = $log->getAttendance($log, $value->employee_id, $value->startRecur, $value->endRecur);
-            $absenceEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
-            $absenceEmployeeData[$key]["absences"] = $maxDays - $EmployeeAbsence;
-            if ($EmployeeAbsence >= $maxDays) {
-                $absenceEmployeeData[$key]["absences"] = $maxDays;
+        if($getemployeeschedule) {
+            foreach ($getemployeeschedule as $key => $value) {
+                $from = $value->startRecur;
+                $to = $value->endRecur;
+                $maxDays = $to->diffInWeekdays($from);
+                $EmployeeAbsence = $log->getAttendance($log, $value->employee_id, $value->startRecur, $value->endRecur);
+                $absenceEmployeeData[$key]["employee_name"] = $value->employee->fullname_last;
+                $absenceEmployeeData[$key]["absences"] = $maxDays - $EmployeeAbsence;
+                if ($EmployeeAbsence >= $maxDays) {
+                    $absenceEmployeeData[$key]["absences"] = $maxDays;
+                }
             }
         }
         $dataval = collect($absenceEmployeeData)->unique();
