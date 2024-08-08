@@ -271,11 +271,11 @@ trait Attendance
         $workRendered = $this->calculateWorkRendered($data, $date);
         $overtimeRendered = $this->getOvertimeRendered($data);
         $type = "rest";
-        if (sizeof(collect($data["events"])->where("with_work", '=', 1)->where("event_type", '=', EventTypes::REGULARHOLIDAY)) > 0) { // Regular Holiday
+        if (sizeof(collect($data["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::REGULARHOLIDAY)) > 0) { // Regular Holiday
             $type = "regular_holidays";
-        } else if (sizeof(collect($data["events"])->where("with_work", '=', 1)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
+        } else if (sizeof(collect($data["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
             $type = "special_holidays";
-        } else if ($date->dayOfWeek == Carbon::SUNDAY) { // Rest Day
+        } else if ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
             $type = "rest";
         } else { // Regular Work Day
             $type = "regular";
@@ -286,7 +286,10 @@ trait Attendance
         $metaResult[$type]["undertime"] += $workRendered["undertime"];
         array_push($metaResult["charging"][$type]["reg_hrs"], ...$workRendered["charging"]);
         array_push($metaResult["charging"][$type]["overtime"], ...$overtimeRendered["charging"]);
-
+        $metaResult["total"]["reg_hrs"] = $workRendered["rendered"];
+        $metaResult["total"]["overtime"] = $overtimeRendered["rendered"];
+        $metaResult["total"]["late"] = $workRendered["late"];
+        $metaResult["total"]["undertime"] = $workRendered["undertime"];
         return $metaResult;
     }
     function travelCoversTime($travelOrder, $time) {
