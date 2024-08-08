@@ -54,7 +54,7 @@ class EmployeeService
                 $payrollChargingId = $filters["project_id"];
                 break;
             default:
-                $payrollChargingId = 8; // Temp HR Department
+                $payrollChargingId = 8; // Default HR Department (temporary static data, need to be variable/env)
                 break;
         }
         $dtr = collect($period)->groupBy(function ($period) use ($filters) {
@@ -66,9 +66,9 @@ class EmployeeService
             $dtr["grosspay"] = $grossPay;
             return $dtr;
         });
+        $dtrs = $dtr->values();
 
         $adjustments = [];
-
         if(isset($filters["adjustments"])){
             $adjustments = collect($filters["adjustments"])->where("employee_id",$employee->id)->groupBy("employee_id")->map(function($data, $index){
                 return[
@@ -78,10 +78,6 @@ class EmployeeService
                 ];
             });
         }
-
-        $dtrs = $dtr->values();
-
-
         $collectAdjustments = collect();
         foreach($adjustments as $key){
             $collectAdjustments->push((object)[
@@ -94,7 +90,7 @@ class EmployeeService
 
         $grossPays = collect([
             ...$this->aggregateTotalGrossPays($dtrs),
-            // ...["adjustments" => $collectAdjustments],
+            ...["adjustments" => $collectAdjustments],
         ]);
 
         $result = [
@@ -103,7 +99,7 @@ class EmployeeService
         ];
         $totalAdjustment =  $adjustments->sum('adjustment_amount');
         if($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
-            $totalGrossPay = $employee->current_employment->employee_salarygrade()->monthly_salary_amount;
+            $totalGrossPay = PayrollService::getPayrollTypeValue($filters["payroll_type"], $employee->current_employment->employee_salarygrade()->monthly_salary_amount);
         } else {
             $totalGrossPay = round($grossPays->values()->sum("regular")  + $grossPays->values()->sum("overtime"), 2);
         }
@@ -129,72 +125,6 @@ class EmployeeService
             ]);
         }
         return $maincollection;
-    }
-
-    function getBenefitsCharge($charge, $id, $type, $employee) {
-        switch ($type) {
-            case EmployeeService::DEPARTMENT:
-                $designation = $employee->get_designation(null, $id);
-                break;
-            case EmployeeService::PROJECT:
-                $designation = $employee->get_designation($id, null);
-                break;
-        }
-        return [
-            "id" => $id,
-            "designation" => $designation,
-            "type" =>$type,
-            "employer_maximum_contribution" => $charge["employer_maximum_contribution"] ? $charge["employer_maximum_contribution"] : $charge["employer_contribution"],
-            "employer_compensation" => $charge["employer_compensation"] ? $charge["employer_compensation"] : $charge["employer_share"],
-        ];
-    }
-
-    function getTotalChargeAmount($charge){
-        return $charge->groupBy("id")->map(function($data, $index) {
-            if($index){
-                return [
-                    "id" => $index,
-                    "designation" => $data[0]["designation"],
-                    "amt" => round($data->sum('amount'), 2),
-                    "reg_hrs" => round($data->sum('reg_hrs'), 2),
-                ];
-            }
-        })->filter(function($data){
-            return $data!=null;
-        });
-    }
-
-    function getChargeAmount($charge, $data, $type, $employee){
-        if(count($charge) > 0){
-            return $charge->map(function($item) use($data, $type, $employee) {
-                if($item["id"]){
-                    $getCharge = $data->where("id", $item["id"])->sum('amount');
-                    $getChargeOvertime = $data->where("id", $item["id"])->sum('amount_overtime');
-                    switch ($type) {
-                        case EmployeeService::DEPARTMENT:
-                            $designation = $employee->get_designation(null, $item["id"]);
-                            break;
-
-                        case EmployeeService::PROJECT:
-                            $designation = $employee->get_designation($item["id"], null);
-                            break;
-                    }
-                    return [
-                        "id" => $item["id"],
-                        "designation" => $designation ? $designation : "" ,
-                        "amount" => $getCharge,
-                        "amount_overtime" => $getCharge,
-                        "amount_regular_holidays_hrs" => $getCharge,
-                        "regular_holidays_ot_hrs" => $getCharge,
-                        "reg_hrs" => $item['reg_hrs'],
-                        "overtime" => $getChargeOvertime,
-                        "late" => $item['late'],
-                        "undertime" => $item['undertime'],
-                    ];
-                }
-            })[0];
-        }
-        return;
     }
 
     public function getSalaryDeduction($employee, $filters)
@@ -293,5 +223,10 @@ class EmployeeService
                 "overtime" => round($dtrs->sum("grosspay.special_holidays.overtime"), 2),
             ],
         ];
+    }
+
+    public function aggregateDTRCharging($dtrs)
+    {
+
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models\Traits;
 
 use App\Enums\RequestStatusType;
+use App\Http\Services\Payroll\PayrollService;
 use App\Models\CashAdvance;
 use App\Models\OtherDeduction;
 use App\Models\PagibigContribution;
@@ -154,40 +155,17 @@ trait EmployeePayroll
         ];
 
         if ($sss) {
-            $contribution = $this->getTotal([
-                "employer" => $sss->employer_contribution,
-                "employee" => $sss->employee_contribution
-            ], $type);
-            $compensation = $this->getTotal([
-                "employer" => $sss->employer_share,
-                "employee" => $sss->employee_share
-            ], $type);
-
             $result = [
-                "employer_contribution" => $contribution["employer"],
-                "employee_contribution" =>  $contribution["employee"],
-                "employer_compensation" => $compensation["employer"],
-                "employee_compensation" => $compensation["employee"],
-                "total_contribution" => $contribution["employer"] + $contribution["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_contribution" => $sss->employer_contribution,
+                "employee_contribution" =>  $sss->employee_contribution,
+                "employer_compensation" => $sss->employer_share,
+                "employee_compensation" => $sss->employee_share,
+                "total_contribution" => $sss->employer_contribution + $sss->employee_contribution,
+                "total_compensation" => $sss->employer_share + $sss->employee_share
             ];
         }
 
         return $result;
-    }
-
-    private function getTotal($compensation, $payrollType)
-    {
-        if ($compensation) {
-            if ($payrollType == "weekly") {
-                $compensation["employee"] =  round($compensation["employee"] / 4, 2);
-                $compensation["employer"] =  round($compensation["employer"] / 4, 2);
-            } else {
-                $compensation["employee"] =  round($compensation["employee"] / 2, 2);
-                $compensation["employer"] =  round($compensation["employer"] / 2, 2);
-            }
-        }
-        return $compensation;
     }
     public function philhealth_deduction($salary, $payrollType)
     {
@@ -202,20 +180,16 @@ trait EmployeePayroll
         if ($philhealth) {
             if ($philhealth->share_type == 'Amount') {
                 $employeeCompensation = $philhealth->employee_share;
-                $employeerCompensation = $philhealth->employer_share;
+                $employerCompensation = $philhealth->employer_share;
             } else {
                 $employeeCompensation = round(($philhealth->employee_share / 100) * $salary, 2);
-                $employeerCompensation = round(($philhealth->employer_share / 100) * $salary, 2);
+                $employerCompensation = round(($philhealth->employer_share / 100) * $salary, 2);
             }
-            $compensation = $this->getTotal([
-                "employer" => $employeerCompensation,
-                "employee" => $employeeCompensation
-            ], $payrollType);
             $result = [
                 "share_type" => $philhealth->share_type,
-                "employer_compensation" => $compensation["employer"],
-                "employee_compensation" => $compensation["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_compensation" => $employerCompensation,
+                "employee_compensation" => $employeeCompensation,
+                "total_compensation" => $employeeCompensation + $employerCompensation,
             ];
         }
         return $result;
@@ -232,18 +206,14 @@ trait EmployeePayroll
         ];
         if ($pagibig) {
             $employeeCompensation = round(($pagibig->employee_share_percent / 100) * $salary, 2);
-            $employeerCompensation = round(($pagibig->employer_share_percent / 100) * $salary, 2);
+            $employerCompensation = round(($pagibig->employer_share_percent / 100) * $salary, 2);
 
-            $compensation = $this->getTotal([
-                "employer" => $employeerCompensation,
-                "employee" => $employeeCompensation
-            ], $payrollType);
             $result = [
-                "employer_compensation" => $compensation["employer"] > $pagibig->employer_maximum_contribution ?
-                    $pagibig->employer_maximum_contribution : $compensation["employer"],
-                "employee_compensation" => $compensation["employee"] > $pagibig->employee_maximum_contribution ?
-                    $pagibig->employee_maximum_contribution : $compensation["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_compensation" => $employerCompensation > $pagibig->employer_maximum_contribution ?
+                    $pagibig->employer_maximum_contribution : $employerCompensation,
+                "employee_compensation" => $employeeCompensation > $pagibig->employee_maximum_contribution ?
+                    $pagibig->employee_maximum_contribution : $employeeCompensation,
+                "total_compensation" => $employerCompensation + $employeeCompensation
             ];
         }
         return $result;

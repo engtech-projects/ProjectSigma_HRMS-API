@@ -2,6 +2,7 @@
 
 namespace App\Http\Services\Payroll;
 
+use App\Enums\PayrollType;
 use App\Http\Services\Payroll\PayrollDeduction;
 use App\Http\Services\EmployeeService;
 use App\Http\Traits\Attendance;
@@ -31,6 +32,17 @@ class PayrollService
             $nextPendingApproval = $item->getNextPendingApproval();
             return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
         });
+    }
+
+    public static function getPayrollTypeValue($type, $amount)
+    {
+        if ($type == PayrollType::WEEKLY->value) {
+            return round($amount / 4, 2);
+        } elseif ($type == PayrollType::BI_MONTHLY) {
+            return round($amount / 2, 2);
+        }
+        // Monthly
+        return $amount;
     }
 
 }
