@@ -36,6 +36,7 @@ class EmployeeLeaveResource extends JsonResource
                 ];
             }),
             "employee" => $this->employee,
+            "employeePositionName" => $this->employee->current_position_name,
             "department" => $this->department,
             "project" => $this->project,
             "request_status" => $this->request_status,
