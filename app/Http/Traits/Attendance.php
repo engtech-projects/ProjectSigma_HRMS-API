@@ -39,6 +39,7 @@ trait Attendance
             $hasLeaveToday = sizeof($leave) > 0;
             $leaveToday = $hasLeaveToday ? $leave[0] : null;
             $leaveUsed = false;
+            $dateTimeInSchedule = $date->setTimeFromTimeString($schedule["startTime"]);
             $timeIn = $schedule["applied_ins"];
             if (!$timeIn) {
                 // Connected to Overtime
@@ -59,7 +60,9 @@ trait Attendance
                     $timeIn = (object)["time" => $schedule["startTime"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 0; // To Change if Time is applicable
+                $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeInSchedule) {
+                    return $trOrd->datetimeIsApplicable($dateTimeInSchedule);
+                })) > 0;
                 if (!$timeIn && $onTravelOrder) {
                     // $charge =  TravelOrder::find($travelOrder["id"]);
                     $timeIn = (object)["time" => $schedule["startTime"]];
@@ -68,6 +71,7 @@ trait Attendance
                 // Charge for Attendance Log Time In
                 $charge = AttendanceLog::find($timeIn["id"])->charging();
             }
+            $dateTimeOutSchedule = $date->setTimeFromTimeString($schedule["endTime"]);
             $timeOut = $schedule["applied_outs"];
             if (!$timeOut) {
                 // Connected to Overtime
@@ -91,7 +95,9 @@ trait Attendance
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 0; // To Change if Time is applicable
+                $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeOutSchedule) {
+                    return $trOrd->datetimeIsApplicable($dateTimeOutSchedule);
+                })) > 0;
                 if (!$timeOut && $onTravelOrder) {
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
@@ -147,6 +153,7 @@ trait Attendance
         $regSchedule = $data["schedules_attendances"];
         $travelOrder = $data["travel_orders"];
         foreach ($overtime as $otVal) {
+            $dateTimeInSchedule = Carbon::parse($otVal["overtime_date"])->setTimeFromTimeString($otVal["overtime_start_time"]);
             $appliedIn = $otVal["applied_in"];
             if (!$appliedIn) {
                 $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
@@ -158,11 +165,14 @@ trait Attendance
                     $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 0;// To Change if Time is applicable
+                $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeInSchedule) {
+                    return $trOrd->datetimeIsApplicable($dateTimeInSchedule);
+                })) > 0;
                 if (!$appliedIn && $onTravelOrder) {
                     $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
                 }
             }
+            $dateTimeOutSchedule = Carbon::parse($otVal["overtime_date"])->setTimeFromTimeString($otVal["overtime_end_time"]);
             $appliedOut = $otVal["applied_out"];
             if ($appliedOut) {
                 $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
@@ -174,7 +184,9 @@ trait Attendance
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder) > 0;// To Change if Time is applicable
+                $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeInSchedule) {
+                    return $trOrd->datetimeIsApplicable($dateTimeInSchedule);
+                })) > 0;
                 if (!$appliedOut && $onTravelOrder) {
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }

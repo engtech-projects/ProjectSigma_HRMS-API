@@ -34,7 +34,7 @@ class EmployeeService
 
         return [
             "schedules_attendances" => $schedules_attendances,
-            "travel_order" => $travelOrders,
+            "travel_order" => array_values($travelOrders->toArray()),
             "overtime" => $overtime,
             "leave" => $leave,
             "events" => $events,

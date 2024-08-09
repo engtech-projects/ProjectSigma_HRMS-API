@@ -100,19 +100,18 @@ class TravelOrder extends Model
     }
     public function getDateTimeStartAttribute()
     {
-        return Carbon::parse($this->date_of_travel)
-            ->setTimeFromTimeString($this->time_of_travel);
-        // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
-        // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
-        // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
+        return $this->date_of_travel
+            ->setHour($this->time_of_travel->get("hour"))
+            ->setMinute($this->time_of_travel->get("minute"))->format("Y-m-d H:i:s");
     }
     public function getDateTimeEndAttribute()
     {
-        return Carbon::parse($this->date_of_travel)
-            ->setTimeFromTimeString($this->time_of_travel)
-            ->addHour($this->duration_of_travel * 24);
-        // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
-        // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
-        // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
+        return Carbon::parse($this->date_time_start)
+            ->addHour($this->duration_of_travel * 24)->format("Y-m-d H:i:s");
+    }
+    public function datetimeIsApplicable($datetime)
+    {
+        $dt = Carbon::parse($datetime);
+        return $dt->gte($this->date_time_start) && $dt->lte($this->date_time_end);
     }
 }
