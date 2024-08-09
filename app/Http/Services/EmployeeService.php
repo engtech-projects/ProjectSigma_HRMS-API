@@ -5,6 +5,8 @@ namespace App\Http\Services;
 use App\Enums\AssignTypes;
 use App\Enums\SalaryRequestType;
 use App\Http\Services\Payroll\PayrollService;
+use App\Models\Department;
+use App\Models\Project;
 
 class EmployeeService
 {
@@ -42,15 +44,18 @@ class EmployeeService
 
     public function generatePayroll(array $period, array $filters, $employee)
     {
+        $payrollCharging = [
+            "id" => 8,  // Default HR Department (temporary static data, need to be variable/env)
+            "type" => Department::class,
+        ];
         switch (strtolower($filters["group_type"])) {
             case strtolower(AssignTypes::DEPARTMENT->value):
-                $payrollChargingId = $filters["department_id"];
+                $payrollCharging["id"] = $filters["department_id"];
+                $payrollCharging["type"] = Department::class;
                 break;
             case strtolower(AssignTypes::PROJECT->value):
-                $payrollChargingId = $filters["project_id"];
-                break;
-            default:
-                $payrollChargingId = 8; // Default HR Department (temporary static data, need to be variable/env)
+                $payrollCharging["id"] = $filters["project_id"];
+                $payrollCharging["type"] = Project::class;
                 break;
         }
         $dtr = collect($period)->groupBy(function ($period) use ($filters) {
@@ -62,31 +67,24 @@ class EmployeeService
             $dtr["grosspay"] = $grossPay;
             return $dtr;
         });
-        $dtrs = $dtr->values();
+        $dtrValues = $dtr->values();
 
         $adjustments = [];
         if(isset($filters["adjustments"])) {
-            $adjustments = collect($filters["adjustments"])->where("employee_id", $employee->id)->groupBy("employee_id")->map(function ($data, $index) {
-                return[
-                    "employee_id" => $index,
-                    "adjustment_name" => $data[0]["adjustment_name"],
-                    "adjustment_amount" => round($data->sum('adjustment_amount'), 2),
-                ];
-            });
+            $adjustments = $this->collectEmployeeAdjustments($filters["adjustments"], $employee->id);
         }
-        $collectAdjustments = collect();
-        foreach($adjustments as $key) {
-            $collectAdjustments->push((object)[
-                "employee_id" => $key["employee_id"],
-                "adjustment_name" => $key["adjustment_name"],
-                "adjustment_amount" => $key["adjustment_amount"],
-            ]);
-        }
-        $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrs);
+
+        $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrValues);
+        $chargings = [
+            ...$this->aggregateDTRCharging($dtrValues),
+            ...$this->aggregateAdjustmentCharging($adjustments, $payrollCharging),
+            ...$this->aggregatePayrollRequestCharging($payrollCharging, $payrollCharging),
+        ];
 
         $grossPays = collect([
-            ...$this->aggregateTotalGrossPays($dtrs),
-            ...["adjustments" => $collectAdjustments],
+            ...$this->aggregateTotalGrossPays($dtrValues),
+            ...["adjustments" => $adjustments],
+            ...["chargings" => $chargings],
         ]);
 
         $result = [
@@ -170,6 +168,21 @@ class EmployeeService
         return $cashAdvance + $sss + $phic + $hmdf + $ewtc + $loan;
     }
 
+    public function collectEmployeeAdjustments($adjustments, $employeeId)
+    {
+        return collect($adjustments)
+        ->where("employee_id", $employeeId)
+        // ->groupBy("employee_id")
+        ->map(function ($data, $index) {
+            return[
+                "employee_id" => $index,
+                "adjustment_name" => $data["adjustment_name"],
+                "adjustment_amount" => $data['adjustment_amount'],
+            ];
+        });
+
+    }
+
     public function aggregateTotalHoursWorked($dtrs)
     {
         return [
@@ -224,6 +237,16 @@ class EmployeeService
 
     public function aggregateDTRCharging($dtrs)
     {
+        return [];
+    }
 
+    public function aggregateAdjustmentCharging($adjustments, $charging)
+    {
+        return [];
+    }
+
+    public function aggregatePayrollRequestCharging($payrollRequest, $charging)
+    {
+        return [];
     }
 }
