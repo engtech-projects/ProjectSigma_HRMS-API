@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
-use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
 use App\Http\Requests\AllAttendanceLogsRequest;
 use App\Http\Requests\StoreQrAttendanceLog;
@@ -19,9 +18,7 @@ use App\Http\Requests\UpdateAttendanceLogRequest;
 use App\Models\AttendancePortal;
 use App\Models\Employee;
 use App\Models\EmployeePattern;
-use App\Models\Schedule;
 use Carbon\Carbon;
-use GuzzleHttp\Psr7\Request;
 
 class AttendanceLogController extends Controller
 {
@@ -107,7 +104,7 @@ class AttendanceLogController extends Controller
             $mainsave->attendance_type = AttendanceType::FACIAL->value;
             $mainsave->fill($val);
             if ($mainsave->save()) {
-                $employee = Employee::with('employee_schedule', 'profile_photo',)->find($val["employee_id"]);
+                $employee = Employee::with('employee_schedule', 'profile_photo', )->find($val["employee_id"]);
                 $return = [];
                 $return['log_saved'] = $mainsave;
                 $return['schedule'] = $employee->applied_schedule_with_attendance($dateNow);
@@ -143,7 +140,7 @@ class AttendanceLogController extends Controller
             $mainSave->employee_id = $employeeCompany->employee_id;
             if ($val['department_id']) {
                 $mainSave->department_id = $val['department_id'];
-            }else if ($val['project_id']) {
+            } elseif ($val['project_id']) {
                 $mainSave->project_id = $val['project_id'];
             }
             if ($mainSave->save()) {

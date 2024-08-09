@@ -3,9 +3,7 @@
 namespace App\Models\Traits;
 
 use App\Enums\RequestStatusType;
-use App\Http\Services\Payroll\PayrollService;
 use App\Models\CashAdvance;
-use App\Models\OtherDeduction;
 use App\Models\PagibigContribution;
 use App\Models\PhilhealthContribution;
 use App\Models\SalaryGradeStep;
@@ -60,7 +58,7 @@ trait EmployeePayroll
         $projects = collect();
         $departments = collect();
         foreach ($dtr["departments"] as $key => $value) {
-            if(count($dtr["departments"])>0){
+            if(count($dtr["departments"]) > 0) {
                 $departments->push([
                     "id" => $value["id"],
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -72,7 +70,7 @@ trait EmployeePayroll
         }
 
         foreach ($dtr["special_holiday"] as $key => $value) {
-            if(count($dtr["special_holiday"])>0){
+            if(count($dtr["special_holiday"]) > 0) {
                 $special_holidaycharge->push([
                     "id" => $getId,
                     "amount" => round($value["reg_hrs"] / 8 * 1.3 * $dailyRate, 2),
@@ -80,7 +78,7 @@ trait EmployeePayroll
             }
         }
         foreach ($dtr["travels"] as $key => $value) {
-            if(count($dtr["travels"])>0){
+            if(count($dtr["travels"]) > 0) {
                 $travelcharge->push([
                     "id" => $getId,
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -88,7 +86,7 @@ trait EmployeePayroll
             }
         }
         foreach ($dtr["leaves"] as $key => $value) {
-            if(count($dtr["leaves"])>0){
+            if(count($dtr["leaves"]) > 0) {
                 $leavecharge->push([
                     "id" => $getId,
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -96,7 +94,7 @@ trait EmployeePayroll
             }
         }
         foreach ($dtr["projects"] as $key => $value) {
-            if(count($dtr["projects"])>0){
+            if(count($dtr["projects"]) > 0) {
                 $projects->push([
                     "id" => $value["id"],
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -237,10 +235,10 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $loans = $this->employee_loan()->get();
-        $loans = $loans->filter(function($loan) use($date){
+        $loans = $loans->filter(function ($loan) use ($date) {
             return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
         });
-        $loans = $loans->map(function($loan){
+        $loans = $loans->map(function ($loan) {
             return [
                 ...collect($loan),
                 "max_payroll_payment" => $loan->max_payroll_payment,
@@ -257,10 +255,10 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
-        $cashAdvance->filter(function($loan) use($date){
+        $cashAdvance->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $cashAdvance->map(function($loan){
+        $cashAdvance->map(function ($loan) {
             return [
                 ...collect($loan),
                 "max_payable" => $loan->max_payroll_payment,
@@ -277,10 +275,10 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $otherDeduction = $this->other_deduction()->get();
-        $otherDeduction->filter(function($loan) use($date){
+        $otherDeduction->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $otherDeduction->map(function($loan){
+        $otherDeduction->map(function ($loan) {
             return [
                 ...collect($loan),
                 "max_payable" => $loan->max_payroll_payment,

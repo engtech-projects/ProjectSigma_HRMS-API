@@ -36,7 +36,7 @@ class UploadImageRequest extends FormRequest
         return [
             'image_file' => [
                 'required',
-                Rule::when(is_string($this->image_file), new Base64FileValidation, 'mimes:png,jpg')
+                Rule::when(is_string($this->image_file), new Base64FileValidation(), 'mimes:png,jpg')
             ],
             'image_type' => 'string'
         ];

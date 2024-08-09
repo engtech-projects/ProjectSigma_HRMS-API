@@ -9,7 +9,6 @@ use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,7 +23,8 @@ class Overtime extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasApproval, StatusScope;
+    use HasApproval;
+    use StatusScope;
 
 
     protected $table = 'overtime';
@@ -115,11 +115,12 @@ class Overtime extends Model
         return Carbon::parse($this->overtime_end_time)->format("h:i A");
     }
 
-    function getChargingNameAttribute() {
-        if($this->project_id){
+    public function getChargingNameAttribute()
+    {
+        if($this->project_id) {
             return $this->project->project_code;
         }
-        if($this->department_id){
+        if($this->department_id) {
             return $this->department->department_name;
         }
         return 'No charging found.';

@@ -4,17 +4,14 @@ namespace App\Http\Controllers\Actions\Attendance;
 
 use App\Helpers;
 use App\Models\Employee;
-use Illuminate\Support\Carbon;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 
 use App\Http\Services\EmployeeService;
 use App\Http\Requests\GenerateDtrRequest;
 
-
 class EmployeeDtrController extends Controller
 {
-
     /**
      * Handle the incoming request.
      */

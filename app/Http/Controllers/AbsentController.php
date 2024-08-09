@@ -7,7 +7,6 @@ use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
 use Carbon\CarbonPeriod;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
 class AbsentController extends Controller
@@ -26,7 +25,7 @@ class AbsentController extends Controller
         $daysThisMonth = $endOfMonth->format('d');
         $workDaysCount = $daysThisMonth - $sundaysThisMonth;
 
-        $attendance = Employee::with(['attendance_log' => function($query) use ($sundayDays) {
+        $attendance = Employee::with(['attendance_log' => function ($query) use ($sundayDays) {
             $query->whereBetween('date', [
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->endOfMonth()
@@ -36,7 +35,7 @@ class AbsentController extends Controller
         }, 'attendance_log.department.schedule', 'attendance_log.project.project_schedule'])
         ->get();
 
-        return $attendance->map(function($employee) use ($workDaysCount) {
+        return $attendance->map(function ($employee) use ($workDaysCount) {
             $attendedDays = $employee->attendance_log->count();
             return [
                 'fullname_first' => $employee->fullname_first,

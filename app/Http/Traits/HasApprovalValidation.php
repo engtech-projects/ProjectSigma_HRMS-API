@@ -49,7 +49,7 @@ trait HasApprovalValidation
         return $data;
     }
 
-    function updateApprovals()
+    public function updateApprovals()
     {
         $data = [
             'approvals' => [

@@ -19,9 +19,9 @@ class AccessibilitiesController extends Controller
     {
         $showSetupSalary = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.salary_grade_setter'));
         $showEdit201 = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.201_editor'));
-        $access = Accessibilities::when(!$showSetupSalary , function (Builder $builder) {
+        $access = Accessibilities::when(!$showSetupSalary, function (Builder $builder) {
             $builder->where("accessibilities_name", "!=", AccessibilityHrms::HRMS_SETUP_SALARY_GRADE->value);
-        })->when(!$showEdit201 , function (Builder $builder) {
+        })->when(!$showEdit201, function (Builder $builder) {
             $builder->where("accessibilities_name", "!=", AccessibilityHrms::HRMS_EMPLOYEE_201_EDIT->value);
         })->orderBy("accessibilities_name")->get();
         return response()->json([

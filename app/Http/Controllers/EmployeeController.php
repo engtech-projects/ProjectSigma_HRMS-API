@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EmploymentType;
-use App\Enums\InternalWorkExpEmployeeStatus;
-use App\Enums\InternalWorkExpStatus;
-use App\Enums\LeaveRequestType;
 use App\Models\Employee;
 use App\Enums\SearchTypes;
 use App\Http\Requests\FilterDateRequest;
@@ -15,15 +11,10 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
-use App\Http\Resources\ProjectResource;
 use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
 use App\Models\Schedule;
-use Carbon\Carbon;
-use Database\Factories\InternalWorkExperienceFactory;
-use Illuminate\Http\Request;
-use Ramsey\Uuid\Type\Integer;
 
 class EmployeeController extends Controller
 {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RequestStatusType;
 use App\Enums\StringRequestApprovalStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;

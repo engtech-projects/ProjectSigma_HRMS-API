@@ -3,7 +3,6 @@
 namespace App\Models\Traits;
 
 use App\Models\Events;
-use Carbon\Carbon;
 
 trait EmployeeDTR
 {
@@ -13,7 +12,7 @@ trait EmployeeDTR
         return $this->employee_travel_order()
             ->whereDate('date_of_travel', "<=", $date)
             ->get()
-            ->filter(function($travel) use($date){
+            ->filter(function ($travel) use ($date) {
                 return $travel->date_time_end->gte($date);
             });
     }

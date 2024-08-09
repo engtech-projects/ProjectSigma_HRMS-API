@@ -24,10 +24,10 @@ class LateController extends Controller
                 Carbon::now()->lastOfMonth()
             ])->where('log_type', AttendanceLogType::TIME_IN->value)->with(['department.schedule', 'project.project_schedule'])->get();
 
-            return array_values($attendance->where(function($attendance) use($lateAllowance) {
+            return array_values($attendance->where(function ($attendance) use ($lateAllowance) {
                 if ($attendance->department_id != null) {
                     // return true;
-                    return sizeof($attendance->department->schedule->where(function($sched) use($attendance, $lateAllowance) {
+                    return sizeof($attendance->department->schedule->where(function ($sched) use ($attendance, $lateAllowance) {
                         // return true;
                         $schedTimeIn = Carbon::parse($sched->startTime);
                         $schedTimeOut = Carbon::parse($sched->endTime);
@@ -37,7 +37,7 @@ class LateController extends Controller
                             && in_array(Carbon::parse($attendance->date)->dayOfWeek, $sched->daysOfWeek);
                     })) > 0;
                 } else {
-                    return sizeof($attendance->project->project_schedule->where(function($sched) use($attendance, $lateAllowance) {
+                    return sizeof($attendance->project->project_schedule->where(function ($sched) use ($attendance, $lateAllowance) {
                         $schedTimeIn = Carbon::parse($sched->startTime);
                         $schedTimeOut = Carbon::parse($sched->endTime);
                         $attendanceTimeIn = Carbon::parse($attendance->time);
@@ -46,7 +46,7 @@ class LateController extends Controller
                         && in_array(Carbon::parse($attendance->date)->dayOfWeek, $sched->daysOfWeek);
                     })) > 0;
                 }
-            })->countBy("employee_id")->map(function($val, $key) {
+            })->countBy("employee_id")->map(function ($val, $key) {
                 $emp = Employee::find($key);
                 return[
                     'employee_id' => $key,

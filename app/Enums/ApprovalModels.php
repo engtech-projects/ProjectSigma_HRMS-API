@@ -4,7 +4,6 @@ namespace App\Enums;
 
 use App\Models\AllowanceRequest;
 use App\Models\CashAdvance;
-use App\Models\EmployeeAllowances;
 use App\Models\EmployeeLeaves;
 use App\Models\EmployeePanRequest;
 use App\Models\FailureToLog;

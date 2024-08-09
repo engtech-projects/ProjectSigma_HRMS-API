@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeeAllowances extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $appends = ['total_amount'];
 

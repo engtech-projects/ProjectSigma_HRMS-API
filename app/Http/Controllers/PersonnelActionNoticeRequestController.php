@@ -3,18 +3,10 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Models\Employee;
-use App\Models\Termination;
-use App\Models\JobApplicants;
 use Illuminate\Http\JsonResponse;
-use App\Enums\EmployeeAddressType;
-use App\Models\InternalWorkExperience;
-use App\Enums\EmployeeRelatedPersonType;
 use App\Utils\PaginateResourceCollection;
 use App\Exceptions\TransactionFailedException;
-use App\Enums\EmployeeCompanyEmploymentsStatus;
 use App\Http\Services\EmployeePanRequestService;
-use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Models\EmployeePanRequest;
 use App\Http\Resources\EmployeePanRequestResource;
 use App\Http\Requests\StoreEmployeePanRequestRequest;
@@ -23,7 +15,6 @@ use App\Models\CompanyEmployee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class PersonnelActionNoticeRequestController extends Controller
 {
@@ -41,8 +32,8 @@ class PersonnelActionNoticeRequestController extends Controller
         $panRequest = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->orderBy('created_at', 'desc')
             ->get();
-        $panRequest = $request->whenHas("employee", function($name) use($panRequest) {
-            return collect($panRequest)->filter(function($data) use($name) {
+        $panRequest = $request->whenHas("employee", function ($name) use ($panRequest) {
+            return collect($panRequest)->filter(function ($data) use ($name) {
                 return str_contains(strtolower($data->full_name), $name);
             });
         });
@@ -61,7 +52,7 @@ class PersonnelActionNoticeRequestController extends Controller
     {
         try {
             $valid = $request->validated();
-            if(!$valid){
+            if(!$valid) {
                 return new JsonResponse([
                     "success" => false,
                     "message" => "Create transaction failed."

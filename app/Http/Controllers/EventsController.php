@@ -29,7 +29,7 @@ class EventsController extends Controller
         $main = new Events();
         $valid = $request->validated();
         $data = json_decode('{}');
-        if($valid){
+        if($valid) {
             $main->fill($valid);
             if (!$main->save()) {
                 $data->message = "Save failed.";

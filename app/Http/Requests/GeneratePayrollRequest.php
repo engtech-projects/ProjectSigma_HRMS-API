@@ -5,8 +5,6 @@ namespace App\Http\Requests;
 use App\Enums\AssignTypes;
 use App\Enums\PayrollType;
 use App\Enums\ReleaseType;
-use App\Enums\RequestApprovalStatus;
-use App\Enums\StringRequestApprovalStatus;
 use App\Http\Traits\HasApprovalValidation;
 use App\Enums\PayrollDetailsDeductionType;
 use Illuminate\Foundation\Http\FormRequest;

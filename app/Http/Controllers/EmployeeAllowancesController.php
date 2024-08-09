@@ -11,7 +11,6 @@ use App\Http\Requests\UpdateEmployeeAllowancesRequest;
 use App\Http\Resources\AllowanceRecordsResource;
 use App\Http\Resources\AllowanceRequestResource;
 use App\Models\Employee;
-use App\Models\InternalWorkExperience;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\EmployeeAllowanceService;
 use App\Models\AllowanceRequest;
@@ -80,11 +79,11 @@ class EmployeeAllowancesController extends Controller
                         break;
                 }
                 $allowance_date = $request["allowance_date"];
-                $data = EmployeeAllowances::whereHas("allowance_request", function($query) use($id, $group_type, $allowance_date){
+                $data = EmployeeAllowances::whereHas("allowance_request", function ($query) use ($id, $group_type, $allowance_date) {
                     return $query->where([
                         'charge_assignment_id' => $id,
                         "charge_assignment_type" => $group_type,
-                        "allowance_date"=> $allowance_date,
+                        "allowance_date" => $allowance_date,
                     ])
                     ->requestStatusApproved();
                 })
@@ -117,7 +116,7 @@ class EmployeeAllowancesController extends Controller
         $valData = $request->validated();
         try {
             DB::beginTransaction();
-            $allowanceReq = new AllowanceRequest;
+            $allowanceReq = new AllowanceRequest();
             $allowanceReq->fill($valData);
             $allowanceReq->request_status = RequestStatusType::PENDING;
             $allowanceReq->created_by = auth()->user()->id;
@@ -147,7 +146,8 @@ class EmployeeAllowancesController extends Controller
                     "allowance_amount" => $allowanceRate * $valData['allowance_days'],
                     "allowance_rate" => $allowanceRate,
                     "allowance_days" => $valData['allowance_days'],
-                ]);
+                ]
+                );
             }
             if (sizeof($errorList) > 0) {
                 return new JsonResponse([
