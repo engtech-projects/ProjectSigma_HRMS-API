@@ -7,11 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PayrollDetailsAdjustment extends Model
 {
-
     use HasFactory;
     use Notifiable;
     use SoftDeletes;

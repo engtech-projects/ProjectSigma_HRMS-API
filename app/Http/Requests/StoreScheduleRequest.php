@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\ScheduleGroupType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreScheduleRequest extends FormRequest
@@ -67,13 +68,12 @@ class StoreScheduleRequest extends FormRequest
                 "nullable",
                 "array",
                 "required_if:scheduleType,==,Regular",
-                "exclude_if:scheduleType,!=,Regular"
+                "exclude_if:scheduleType,==,Irregular"
             ],
             'daysOfWeek.*' => [
                 "required",
-                "integer",
-                "min:0",
-                "max:6",
+                "string",
+                Rule::in(['1', '2', '3', '4', '5', '6', '0']),
             ],
             'startTime' => [
                 "required",

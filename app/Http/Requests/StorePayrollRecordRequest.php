@@ -68,6 +68,14 @@ class StorePayrollRecordRequest extends FormRequest
             'payroll_date' => 'required|date_format:Y-m-d',
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',
+            ...$this->payrollDetails(),
+            ...$this->storeApprovals(),
+        ];
+    }
+
+    public function payrollDetails(): array
+    {
+        return [
             //payroll details
             'payroll_details' => 'required|array',
             'payroll_details.*' => 'required|array',
@@ -261,7 +269,7 @@ class StorePayrollRecordRequest extends FormRequest
                 'decimal:0,2',
             ],
             'payroll_details.*.deductions' => 'required|array',
-            'payroll_details.*.deductions.*.charge_id' =>[
+            'payroll_details.*.deductions.*.charge_id' => [
                 "nullable",
                 "integer",
             ],
@@ -294,7 +302,7 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
-            'payroll_details.*.chargings.*.charge_id' =>[
+            'payroll_details.*.chargings.*.charge_id' => [
                 "nullable",
                 "integer",
             ],
@@ -303,7 +311,7 @@ class StorePayrollRecordRequest extends FormRequest
                 "string",
                 new Enum(PayrollDetailsDeductionType::class)
             ],
-            ...$this->storeApprovals(),
         ];
     }
+
 }

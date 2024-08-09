@@ -11,7 +11,8 @@ enum AccessibilityHrms: string
     case HRMS_ATTENDANCE_FAILURETOLOG = "hrms:attendance_failure to log";
     case HRMS_ATTENDANCE_FACERECOGNITION = "hrms:attendance_face recognition";
     case HRMS_ATTENDANCE_ATTENDANCELOGIN = "hrms:attendance_attendance login";
-    case HRMS_ATTENDANCE_QR = "hrms:attendance_qr";
+    case HRMS_ATTENDANCE_QR = "hrms:attendance_generate QR";
+    case HRMS_ATTENDANCE_ATTENDANCE_QR = "hrms:attendance_attendance QR";
     case HRMS_EVENTCALENDAR = "hrms:event calendar";
     case HRMS_EMPLOYEE_201_EDIT = "hrms:employee_201_edit";
     // case HRMS_ = "";

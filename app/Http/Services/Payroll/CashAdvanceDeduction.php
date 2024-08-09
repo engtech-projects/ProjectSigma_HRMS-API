@@ -2,13 +2,11 @@
 
 namespace App\Http\Services\Payroll;
 
-use App\Http\Services\Payroll\PayrollDeduction;
 use App\Models\Employee;
 use Carbon\Carbon;
 
 class CashAdvanceDeduction extends PayrollDeduction
 {
-
     protected $filter;
     public $employee;
     public $salary;
@@ -27,10 +25,11 @@ class CashAdvanceDeduction extends PayrollDeduction
         $cashAdvance = $this->employee->cash_advance()->requestStatusApproved()->first();
 
         if ($cashAdvance) {
-            if (!$cashAdvance->cashPaid())
+            if (!$cashAdvance->cashPaid()) {
                 if ($cashAdvance->deduction_date_start->lt($payrollDate)) {
                     $deduction = $cashAdvance->installment_deduction;
                 }
+            }
             if ($filters["payroll_type"] === "weekly") {
                 $deduction = $deduction / 4;
             } else {

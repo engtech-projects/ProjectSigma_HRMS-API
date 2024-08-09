@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Approvals;
 use App\Http\Requests\StoreApprovalsRequest;
 use App\Http\Requests\UpdateApprovalsRequest;
-use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\ApprovalResource;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
@@ -22,10 +21,10 @@ class ApprovalsController extends Controller
         $approvals = Approvals::where('module', '=', $request->input("module"))->get();
         $collection = collect(ApprovalResource::collection($approvals));
 
-         return new JsonResponse([
-            'success' => 'true',
-            'message' => 'Successfully fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
+        return new JsonResponse([
+           'success' => 'true',
+           'message' => 'Successfully fetched.',
+           'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
         ]);
     }
 

@@ -35,10 +35,17 @@ class SalaryGradeStep extends Model
         );
     }
 
+    protected function latePerHourDeduction(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->dailyRate / 8,
+        );
+    }
+
     protected function latePerMinDeduction(): Attribute
     {
         return Attribute::make(
-            get: fn () => ($this->dailyRate / 8) / 60,
+            get: fn () => $this->latePerHourDeduction / 60,
         );
     }
 }

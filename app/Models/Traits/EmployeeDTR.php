@@ -9,7 +9,12 @@ trait EmployeeDTR
     public function travel_order_dtr($date)
     {
 
-        return $this->employee_travel_order()->whereDate('date_of_travel', $date)->get();
+        return $this->employee_travel_order()
+            ->whereDate('date_of_travel', "<=", $date)
+            ->get()
+            ->filter(function ($travel) use ($date) {
+                return $travel->date_time_end->gte($date);
+            });
     }
     public function schedule_dtr($date)
     {

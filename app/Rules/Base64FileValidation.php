@@ -2,9 +2,7 @@
 
 namespace App\Rules;
 
-use Closure;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\File;
 
 class Base64FileValidation implements Rule
 {

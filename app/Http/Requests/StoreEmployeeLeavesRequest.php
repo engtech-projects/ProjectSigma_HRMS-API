@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\LeaveRequestStatusType;
-use App\Enums\LeaveRequestType;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Traits\HasApprovalValidation;
 

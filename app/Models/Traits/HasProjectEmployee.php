@@ -5,8 +5,6 @@ namespace App\Models\Traits;
 use App\Models\Employee;
 use App\Models\Pivot\ProjectMemberPivot;
 use App\Models\Project;
-use App\Models\Schedule;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait HasProjectEmployee

@@ -19,7 +19,7 @@ class EmployeePanRequestResource extends JsonResource
             "date_of_effictivity" => $this->date_of_effictivity->format('F j, Y'),
             "type" => $this->type,
             "pan_job_applicant_id" => $this->pan_job_applicant_id,
-            "jobapplicant" => $this->whenLoaded('jobapplicantonly', function() {
+            "jobapplicant" => $this->whenLoaded('jobapplicantonly', function () {
                 return [
                     "fullname_first" => $this->jobapplicantonly->fullname_first,
                     "fullname_last" => $this->jobapplicantonly->fullname_last,

@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Enums\AccessibilityHrms;
 use App\Enums\SalaryRequestType;
 use App\Http\Traits\CheckAccessibility;
-use App\Models\Accessibilities;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 

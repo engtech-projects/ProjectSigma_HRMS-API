@@ -353,12 +353,12 @@ class Employee extends Model
 
     public function employee_travel_order(): BelongsToMany
     {
-        return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id');
+        return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id')->requestStatusApproved();
     }
 
     public function employee_overtime(): BelongsToMany
     {
-        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id');
+        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id')->requestStatusApproved();
     }
 
     public function employee_has_overtime(): BelongsToMany
@@ -408,7 +408,8 @@ class Employee extends Model
         });
     }
 
-    public function get_designation($project_id, $department_id){
+    public function get_designation($project_id, $department_id)
+    {
         if ($department_id != null) {
             return Department::find($department_id)->department_name;
         }
@@ -419,7 +420,10 @@ class Employee extends Model
 
     public function applied_overtime_with_attendance($date)
     {
-        $otSchedWithLogs =  $this->employee_overtime()->whereDate('overtime_date', "=", $date)->get();
+        $otSchedWithLogs =  $this->employee_overtime()
+            ->whereDate('overtime_date', "=", $date)
+            ->requestStatusApproved()
+            ->get();
         return $otSchedWithLogs->map(function ($sched) use ($date) {
             return [
                 ...$sched->toArray(),

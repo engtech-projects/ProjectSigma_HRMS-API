@@ -3,12 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Enums\EmploymentType;
-use App\Enums\PersonelAccessForm;
 use App\Enums\SalaryRequestType;
 use App\Http\Traits\CheckAccessibility;
-use App\Models\Accessibilities;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreInternalWorkExperienceRequest extends FormRequest

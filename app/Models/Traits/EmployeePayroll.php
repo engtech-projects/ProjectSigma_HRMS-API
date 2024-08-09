@@ -4,7 +4,6 @@ namespace App\Models\Traits;
 
 use App\Enums\RequestStatusType;
 use App\Models\CashAdvance;
-use App\Models\OtherDeduction;
 use App\Models\PagibigContribution;
 use App\Models\PhilhealthContribution;
 use App\Models\SalaryGradeStep;
@@ -29,12 +28,24 @@ trait EmployeePayroll
     {
         $salaryGrade = $this->current_employment?->employee_salarygrade;
         $dailyRate = $salaryGrade?->dailyRate ?: 0;
-        $result = [];
-        foreach ($dtr as $key => $value) {
-            $result[$key]["reg_hrs"] = round($value["reg_hrs"] / 8 * $dailyRate, 2);
-            $result[$key]["overtime"] = round($value["overtime"] / 8 * 1.25 * $dailyRate, 2);
-        }
-        return $result;
+        return [
+            "regular" => [
+                "reg_hrs" =>  round($dtr["regular"]["reg_hrs"] / 8 * $dailyRate, 2),
+                "overtime" => round($dtr["regular"]["overtime"] / 8 * $dailyRate * 1.25, 2),
+            ],
+            "rest" => [
+                "reg_hrs" => round($dtr["rest"]["reg_hrs"] / 8 * $dailyRate * 1.3, 2),
+                "overtime" => round($dtr["rest"]["overtime"] / 8 * $dailyRate * 1.6, 2),
+            ],
+            "regular_holidays" => [
+                "reg_hrs" => round($dtr["regular_holidays"]["reg_hrs"] / 8 * $dailyRate, 2),
+                "overtime" => round($dtr["regular_holidays"]["overtime"] / 8 * $dailyRate * 1.6, 2),
+            ],
+            "special_holidays" => [
+                "reg_hrs" => round($dtr["special_holidays"]["reg_hrs"] / 8 * $dailyRate * 1.3, 2),
+                "overtime" => round($dtr["special_holidays"]["overtime"] / 8 * $dailyRate, 2),
+            ],
+        ];
     }
 
     public function salary_charge_pay($dtr, $getId)
@@ -47,7 +58,7 @@ trait EmployeePayroll
         $projects = collect();
         $departments = collect();
         foreach ($dtr["departments"] as $key => $value) {
-            if(count($dtr["departments"])>0){
+            if(count($dtr["departments"]) > 0) {
                 $departments->push([
                     "id" => $value["id"],
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -59,7 +70,7 @@ trait EmployeePayroll
         }
 
         foreach ($dtr["special_holiday"] as $key => $value) {
-            if(count($dtr["special_holiday"])>0){
+            if(count($dtr["special_holiday"]) > 0) {
                 $special_holidaycharge->push([
                     "id" => $getId,
                     "amount" => round($value["reg_hrs"] / 8 * 1.3 * $dailyRate, 2),
@@ -67,7 +78,7 @@ trait EmployeePayroll
             }
         }
         foreach ($dtr["travels"] as $key => $value) {
-            if(count($dtr["travels"])>0){
+            if(count($dtr["travels"]) > 0) {
                 $travelcharge->push([
                     "id" => $getId,
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -75,7 +86,7 @@ trait EmployeePayroll
             }
         }
         foreach ($dtr["leaves"] as $key => $value) {
-            if(count($dtr["leaves"])>0){
+            if(count($dtr["leaves"]) > 0) {
                 $leavecharge->push([
                     "id" => $getId,
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -83,7 +94,7 @@ trait EmployeePayroll
             }
         }
         foreach ($dtr["projects"] as $key => $value) {
-            if(count($dtr["projects"])>0){
+            if(count($dtr["projects"]) > 0) {
                 $projects->push([
                     "id" => $value["id"],
                     "amount" => round($value["reg_hrs"] / 8 * $dailyRate, 2),
@@ -142,40 +153,17 @@ trait EmployeePayroll
         ];
 
         if ($sss) {
-            $contribution = $this->getTotal([
-                "employer" => $sss->employer_contribution,
-                "employee" => $sss->employee_contribution
-            ], $type);
-            $compensation = $this->getTotal([
-                "employer" => $sss->employer_share,
-                "employee" => $sss->employee_share
-            ], $type);
-
             $result = [
-                "employer_contribution" => $contribution["employer"],
-                "employee_contribution" =>  $contribution["employee"],
-                "employer_compensation" => $compensation["employer"],
-                "employee_compensation" => $compensation["employee"],
-                "total_contribution" => $contribution["employer"] + $contribution["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_contribution" => $sss->employer_contribution,
+                "employee_contribution" =>  $sss->employee_contribution,
+                "employer_compensation" => $sss->employer_share,
+                "employee_compensation" => $sss->employee_share,
+                "total_contribution" => $sss->employer_contribution + $sss->employee_contribution,
+                "total_compensation" => $sss->employer_share + $sss->employee_share
             ];
         }
 
         return $result;
-    }
-
-    private function getTotal($compensation, $payrollType)
-    {
-        if ($compensation) {
-            if ($payrollType == "weekly") {
-                $compensation["employee"] =  round($compensation["employee"] / 4, 2);
-                $compensation["employer"] =  round($compensation["employer"] / 4, 2);
-            } else {
-                $compensation["employee"] =  round($compensation["employee"] / 2, 2);
-                $compensation["employer"] =  round($compensation["employer"] / 2, 2);
-            }
-        }
-        return $compensation;
     }
     public function philhealth_deduction($salary, $payrollType)
     {
@@ -190,20 +178,16 @@ trait EmployeePayroll
         if ($philhealth) {
             if ($philhealth->share_type == 'Amount') {
                 $employeeCompensation = $philhealth->employee_share;
-                $employeerCompensation = $philhealth->employer_share;
+                $employerCompensation = $philhealth->employer_share;
             } else {
                 $employeeCompensation = round(($philhealth->employee_share / 100) * $salary, 2);
-                $employeerCompensation = round(($philhealth->employer_share / 100) * $salary, 2);
+                $employerCompensation = round(($philhealth->employer_share / 100) * $salary, 2);
             }
-            $compensation = $this->getTotal([
-                "employer" => $employeerCompensation,
-                "employee" => $employeeCompensation
-            ], $payrollType);
             $result = [
                 "share_type" => $philhealth->share_type,
-                "employer_compensation" => $compensation["employer"],
-                "employee_compensation" => $compensation["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_compensation" => $employerCompensation,
+                "employee_compensation" => $employeeCompensation,
+                "total_compensation" => $employeeCompensation + $employerCompensation,
             ];
         }
         return $result;
@@ -220,18 +204,14 @@ trait EmployeePayroll
         ];
         if ($pagibig) {
             $employeeCompensation = round(($pagibig->employee_share_percent / 100) * $salary, 2);
-            $employeerCompensation = round(($pagibig->employer_share_percent / 100) * $salary, 2);
+            $employerCompensation = round(($pagibig->employer_share_percent / 100) * $salary, 2);
 
-            $compensation = $this->getTotal([
-                "employer" => $employeerCompensation,
-                "employee" => $employeeCompensation
-            ], $payrollType);
             $result = [
-                "employer_compensation" => $compensation["employer"] > $pagibig->employer_maximum_contribution ?
-                    $pagibig->employer_maximum_contribution : $compensation["employer"],
-                "employee_compensation" => $compensation["employee"] > $pagibig->employee_maximum_contribution ?
-                    $pagibig->employee_maximum_contribution : $compensation["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_compensation" => $employerCompensation > $pagibig->employer_maximum_contribution ?
+                    $pagibig->employer_maximum_contribution : $employerCompensation,
+                "employee_compensation" => $employeeCompensation > $pagibig->employee_maximum_contribution ?
+                    $pagibig->employee_maximum_contribution : $employeeCompensation,
+                "total_compensation" => $employerCompensation + $employeeCompensation
             ];
         }
         return $result;
@@ -255,10 +235,10 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $loans = $this->employee_loan()->get();
-        $loans = $loans->filter(function($loan) use($date){
+        $loans = $loans->filter(function ($loan) use ($date) {
             return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
         });
-        $loans = $loans->map(function($loan){
+        $loans = $loans->map(function ($loan) {
             return [
                 ...collect($loan),
                 "max_payroll_payment" => $loan->max_payroll_payment,
@@ -275,10 +255,10 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
-        $cashAdvance->filter(function($loan) use($date){
+        $cashAdvance->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $cashAdvance->map(function($loan){
+        $cashAdvance->map(function ($loan) {
             return [
                 ...collect($loan),
                 "max_payable" => $loan->max_payroll_payment,
@@ -295,10 +275,10 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $otherDeduction = $this->other_deduction()->get();
-        $otherDeduction->filter(function($loan) use($date){
+        $otherDeduction->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $otherDeduction->map(function($loan){
+        $otherDeduction->map(function ($loan) {
             return [
                 ...collect($loan),
                 "max_payable" => $loan->max_payroll_payment,

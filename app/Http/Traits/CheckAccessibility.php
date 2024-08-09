@@ -15,6 +15,6 @@ trait CheckAccessibility
         }
         return collect($userAccessibilities)->contains(function ($item) use ($allowedAccessibilities) {
             return in_array($item, $allowedAccessibilities);
-        } );
+        });
     }
 }

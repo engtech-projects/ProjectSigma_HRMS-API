@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Actions\ProjectMember;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectEmployeeResource;
-use App\Models\Employee;
-use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 
 class ProjectMemberList extends Controller

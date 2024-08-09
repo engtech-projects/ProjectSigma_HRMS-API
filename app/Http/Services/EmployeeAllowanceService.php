@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\RequestApprovalStatus;
 use App\Models\AllowanceRequest;
 use App\Models\EmployeeAllowances;
 

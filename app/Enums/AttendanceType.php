@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum AttendanceType: string
 {
+    case ALL = 'All';
     case MANUAL = "Manual";
     case FINGERPRINT = "Fingerprint";
     case FACIAL = "Facial";

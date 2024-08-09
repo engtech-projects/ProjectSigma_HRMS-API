@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AttendanceLog extends Model
@@ -43,11 +42,6 @@ class AttendanceLog extends Model
         'time_human',
         'charging_designation',
     ];
-
-    public function project(): BelongsTo
-    {
-        return $this->belongsTo(Project::class);
-    }
 
     public function getFilterLate($query, $employee_id, $starttime, $start_date, $end_date)
     {
@@ -113,6 +107,20 @@ class AttendanceLog extends Model
     {
         return $this->belongsTo(Department::class);
     }
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+    public function charging()
+    {
+        if ($this->department_id) {
+            return $this->department;
+        }
+        if ($this->project_id) {
+            return $this->project;
+        }
+    }
+
     public function getTimeHumanAttribute()
     {
         return Carbon::parse($this->time)->format("h:i A");

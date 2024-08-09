@@ -16,7 +16,6 @@ use App\Http\Requests\DisapproveApprovalRequest;
 use App\Models\Users;
 use App\Notifications\AllowanceRequestDenied;
 use App\Notifications\LeaveRequestDenied;
-use App\Notifications\LeaveRequestForApproval;
 use Carbon\Carbon;
 
 class DisapproveApproval extends Controller
@@ -30,28 +29,28 @@ class DisapproveApproval extends Controller
         $result = collect($model->updateApproval(['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks'], "date_denied" => Carbon::now()]));
         switch ($modelType) {
             case ApprovalModels::LeaveEmployeeRequest->name:
-                Users::find(1)->notify(new LeaveRequestDenied($model)); // Notify Request Creator Request DENIED (leave & cashadvance)
+                Users::find($model->created_by)->notify(new LeaveRequestDenied($model)); // Notify Request Creator Request DENIED (leave & cashadvance)
                 break;
             case ApprovalModels::TravelOrder->name:
-                    Users::find($model->requested_by)->notify(new TravelRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->requested_by)->notify(new TravelRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::CashAdvance->name:
-                    Users::find($model->created_by)->notify(new CashAdvanceDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->created_by)->notify(new CashAdvanceDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::FailureToLog->name:
-                    Users::find(1)->notify(new FailureToLogRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->created_by)->notify(new FailureToLogRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::ManpowerRequest->name:
-                    Users::find($model->requested_by)->notify(new ManpowerRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->requested_by)->notify(new ManpowerRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::Overtime->name:
-                    Users::find($model->prepared_by)->notify(new OvertimeRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->prepared_by)->notify(new OvertimeRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::EmployeePanRequest->name:
-                    Users::find($model->created_by)->notify(new PanRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->created_by)->notify(new PanRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::GenerateAllowance->name:
-                    Users::find($model->created_by)->notify(new AllowanceRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->created_by)->notify(new AllowanceRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             default:
                 break;

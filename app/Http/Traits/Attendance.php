@@ -2,83 +2,118 @@
 
 namespace App\Http\Traits;
 
-use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceSettings;
-use App\Helpers;
 use App\Models\AttendanceLog;
-use App\Models\Employee;
-use App\Models\Events;
 use App\Models\Leave;
 use App\Models\Settings;
-use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use App\Enums\AssignTypes;
 use App\Enums\EventTypes;
+use App\Models\Department;
+use App\Models\Overtime;
+use App\Models\Project;
+use App\Models\TravelOrder;
+use Illuminate\Support\Facades\Log;
 
 trait Attendance
 {
-
     public function getMetaData($data, $date)
     {
         $date = Carbon::parse($date);
         return $this->calculateAttendance($data, $date);
     }
-
-    public function getCharging($data, $date)
+    public function calculateWorkRendered($data, $date)
     {
-        $date = Carbon::parse($date);
-        return $this->calculateCharging($data, $date);
-    }
-
-    public function calculateWorkRendered($data)
-    {
-        $attendances = $data["schedules_attendances"];
+        $attendanceSchedules = $data["schedules_attendances"];
+        $overtime = $data["overtime"];
+        $leave = $data["leave"]->where("with_pay", 1);
+        $travelOrder = $data["travel_orders"];
         $duration = 0;
         $totalLate = 0;
         $undertime = 0;
         $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
         $lateAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value;
-        $projects = collect();
-        $departments = collect();
-
-        foreach ($attendances as $attendance) {
-            $timeIn = $attendance["applied_ins"];
-            $hasOTStart = collect($data['overtime'])->contains(function ($otData) use($attendance) {
-                $otSchedOut = $otData['overtime_end_time'];
-                $schedIn = Carbon::parse($attendance["startTime"]);
-                return $schedIn->equalTo($otSchedOut);
-            });
-            if(!$timeIn && $hasOTStart) {
-                $timeIn = (object)["time" => $attendance["startTime"]];
+        $chargings = [];
+        $charge = null;
+        $leaveUsedToday = 0;
+        foreach ($attendanceSchedules as $schedule) {
+            $hasLeaveToday = sizeof($leave) > 0;
+            $leaveToday = $hasLeaveToday ? $leave[0] : null;
+            $leaveUsed = false;
+            $timeIn = $schedule["applied_ins"];
+            if (!$timeIn) {
+                // Connected to Overtime
+                $oTStart = collect($overtime)->filter(function ($otData) use ($schedule) {
+                    $otSchedOut = $otData['overtime_end_time'];
+                    $schedIn = Carbon::parse($schedule["startTime"]);
+                    return $schedIn->equalTo($otSchedOut);
+                })->first();
+                if (!$timeIn && $oTStart) {
+                    $charge = AttendanceLog::find($oTStart["applied_in"]?->id)?->charging() ?? $charge ?? Overtime::find($oTStart["id"])?->charging();
+                    $timeIn = (object)["time" => $schedule["startTime"]];
+                }
+                // Is On Leave
+                if (!$timeIn && $hasLeaveToday && $leaveUsedToday < $leaveToday->durationForDate($date)) {
+                    $leaveUsedToday = + 0.5;
+                    $leaveUsed = true;
+                    $charge = $leaveToday->charging();
+                    $timeIn = (object)["time" => $schedule["startTime"]];
+                }
+                // is On Travel Order
+                $onTravelOrder = sizeof($travelOrder) > 0; // To Change if Time is applicable
+                if (!$timeIn && $onTravelOrder) {
+                    // $charge =  TravelOrder::find($travelOrder["id"]);
+                    $timeIn = (object)["time" => $schedule["startTime"]];
+                }
+            } else {
+                // Charge for Attendance Log Time In
+                $charge = AttendanceLog::find($timeIn["id"])->charging();
             }
-            $timeOut = $attendance["applied_outs"];
-            $hasOTContinuation = collect($data['overtime'])->contains(function ($otData) use($attendance) {
-                $otSchedIn = $otData['overtime_start_time'];
-                $schedOut = Carbon::parse($attendance["endTime"]);
-                return $schedOut->equalTo($otSchedIn);
-            });
-            if(!$timeOut && $hasOTContinuation) {
-                $timeOut = (object)["time" => $attendance["endTime"]];
+            $timeOut = $schedule["applied_outs"];
+            if (!$timeOut) {
+                // Connected to Overtime
+                $oTContinuation = collect($overtime)->filter(function ($otData) use ($schedule) {
+                    $otSchedIn = $otData['overtime_start_time'];
+                    $schedOut = Carbon::parse($schedule["endTime"]);
+                    return $schedOut->equalTo($otSchedIn);
+                })->first();
+                if(!$timeOut && $oTContinuation) {
+                    $charge = AttendanceLog::find($oTContinuation["applied_out"]?->id)?->charging() ?? $charge ?? Overtime::find($oTContinuation["id"])?->charging();
+                    $timeOut = (object)["time" => $schedule["endTime"]];
+                }
+                // Is On Leave
+                if (!$timeOut && $hasLeaveToday && !$leaveUsed && $leaveUsedToday < $leaveToday->durationForDate($date)) {
+                    $charge = $leaveToday->charging();
+                    $leaveUsedToday = + 0.5;
+                    $timeOut = (object)["time" => $schedule["endTime"]];
+                }
+                if ($leaveUsed) {
+                    $charge = $leaveToday->charging();
+                    $timeOut = (object)["time" => $schedule["endTime"]];
+                }
+                // is On Travel Order
+                $onTravelOrder = sizeof($travelOrder) > 0; // To Change if Time is applicable
+                if (!$timeOut && $onTravelOrder) {
+                    $timeOut = (object)["time" => $schedule["endTime"]];
+                }
             }
-            if(!$timeIn || !$timeOut){
+            if(!$timeIn || !$timeOut) {
                 continue;
             }
             $in = Carbon::parse($timeIn?->time);
             $out = Carbon::parse($timeOut?->time);
-            $startTime = Carbon::parse($attendance["startTime"]);
-            $endTime = Carbon::parse($attendance["endTime"]);
+            $startTime = Carbon::parse($schedule["startTime"]);
+            $endTime = Carbon::parse($schedule["endTime"]);
             $dtrIn = $in->gt($startTime) ? $in : $startTime;
             $dtrOut = $out->gt($endTime) ? $endTime : $out;
 
-            if ($in->gt($attendance["startTime"])) {
+            if ($in->gt($schedule["startTime"])) {
                 $lateMinutes = $startTime->diffInMinutes($in);
                 if ($lateMinutes <= $lateAllowance) {
-                    $dtrIn= $startTime;
+                    $dtrIn = $startTime;
                     $lateMinutes = 0;
                 }
                 if ($lateMinutes >= $lateAbsent) {
-                    $dtrIn= $dtrOut;
+                    $dtrIn = $dtrOut;
                 }
                 $totalLate += $lateMinutes;
             }
@@ -86,116 +121,51 @@ trait Attendance
                 $undertimeMinutes = $out->diffInMinutes($endTime);
                 $undertime += $undertimeMinutes;
             }
-
-            $duration += round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
-
-            switch (strtolower($attendance["groupType"])) {
-                case strtolower(AssignTypes::DEPARTMENT->value):
-                    if($departments->where('id', $attendance["department_id"])->count() === 0){
-                        $departments->push([
-                            'id' => $attendance["department_id"],
-                            "rendered" => $duration,
-                            "late" => $totalLate,
-                            "undertime" => $undertime,
-                        ]);
-                    }else{
-                        $departments = $departments->filter(function ($data) use ($attendance) {
-                            return $data["id"] === $attendance["department_id"];
-                        })->map(function ($data) use($duration, $totalLate, $undertime) {
-                            $data['rendered'] = $duration;
-                            $data['late'] = $totalLate;
-                            $data['undertime'] = $undertime;
-                            return $data;
-                        });
-                    }
-                    break;
-                case strtolower(AssignTypes::PROJECT->value):
-                    if($projects->where('id', $attendance["project_id"])->count() === 0){
-                        $projects->push([
-                            'id' => $attendance["project_id"],
-                            "rendered" => $duration,
-                            "late" => $totalLate,
-                            "undertime" => $undertime,
-                        ]);
-                    }else{
-                        $projects = $projects->filter(function ($data) use ($attendance) {
-                            return $data["id"] === $attendance["project_id"];
-                        })->map(function ($data) use($duration, $totalLate, $undertime) {
-                            $data['rendered'] = $duration;
-                            $data['late'] = $totalLate;
-                            $data['undertime'] = $undertime;
-                            return $data;
-                        });
-                    }
-                    break;
-                default:
-                    $projects->push([
-                        "rendered" => $duration,
-                        "late" => $totalLate,
-                        "undertime" => $undertime,
-                    ]);
-                    $departments->push([
-                        "rendered" => $duration,
-                        "late" => $totalLate,
-                        "undertime" => $undertime,
-                    ]);
-                break;
+            $currentDuration = round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
+            $duration += $currentDuration;
+            if ($charge) {
+                array_push($chargings, [
+                    "model" => get_class($charge),
+                    "id" => $charge->id,
+                    "hrs_worked" => $currentDuration,
+                ]);
             }
         }
 
         return [
-            "projects" => $projects,
-            "departments" => $departments,
             "rendered" => $duration,
             "late" => $totalLate,
             "undertime" => $undertime,
+            "charging" => $chargings,
         ];
     }
-
-    public function getTotalRendered($data, $date)
-    {
-        $totalHrs = 0;
-        if (!empty($data)) {
-            foreach ($data as $value) {
-                $duration =  0;
-                $to = $value->date_of_absence_to;
-                if ($value["number_of_days"] && $value["date_of_absence_to"]) {
-                    $duration = $value["number_of_days"];
-                    $to = $value["date_of_abasence_to"];
-                } else {
-                    $duration = $value["duration_of_travel"];
-                    $to = $value["date_and_time_of_travel"];
-                }
-                if ($date->lt($to)) {
-                    $totalHrs += 8;
-                } else if ($date->eq($to)) {
-                    if (is_float($duration)) {
-                        $decimal = explode(".", (string)$duration);
-                        $totalHrs += $decimal[1];
-                    } else {
-                        $totalHrs += 8;
-                    }
-                }
-            }
-        }
-        return $totalHrs;
-    }
-    public function getOvertimeRendered($overtime, $regSchedule = [])
+    public function getOvertimeRendered($data)
     {
         $total = 0;
-        if ($overtime) {
-            foreach ($overtime as $otVal) {
-                $appliedIn = $otVal["applied_in"];
-                $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use($otVal) {
+        $chargings = [];
+        $overtime = $data["overtime"];
+        $regSchedule = $data["schedules_attendances"];
+        $travelOrder = $data["travel_orders"];
+        foreach ($overtime as $otVal) {
+            $appliedIn = $otVal["applied_in"];
+            if (!$appliedIn) {
+                $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
                     $schedOut = $schedData['endTime'];
                     $otIn = Carbon::parse($otVal["overtime_start_time"]);
                     return $otIn->equalTo($schedOut);
                 });
-                if($hasSchedStart) {
+                if ($hasSchedStart) {
                     $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
                 }
-                $appliedOut = $otVal["applied_out"];
-                $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use($otVal) {
+                // is On Travel Order
+                $onTravelOrder = sizeof($travelOrder) > 0;// To Change if Time is applicable
+                if (!$appliedIn && $onTravelOrder) {
+                    $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
+                }
+            }
+            $appliedOut = $otVal["applied_out"];
+            if ($appliedOut) {
+                $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
                     $schedIn = $schedData['startTime'];
                     $otOut = Carbon::parse($otVal["overtime_end_time"]);
                     return $otOut->equalTo($schedIn);
@@ -203,74 +173,84 @@ trait Attendance
                 if($hasSchedContinuation) {
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
-                if(!$appliedIn || !$appliedOut){
-                    continue;
+                // is On Travel Order
+                $onTravelOrder = sizeof($travelOrder) > 0;// To Change if Time is applicable
+                if (!$appliedOut && $onTravelOrder) {
+                    $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
-                $timeIn = Carbon::parse($appliedIn->time);
-                $timeOut = Carbon::parse($appliedOut->time);
-                $schedIn = Carbon::parse($otVal['overtime_start_time']);
-                $schedOut = Carbon::parse($otVal['overtime_end_time']);
-                $renderIn = $timeIn->lt($schedIn) ? $schedIn : $timeIn;
-                $renderOut = $timeOut->gt($schedOut) ? $schedOut : $timeOut;
-                $currentOtHrs = floor($renderIn->diffInMinutes($renderOut, false) / 60); // Changed due to OVERTIME IS ONLY COUNTED BY HOUR
-                $schedTotalHrs = floor($schedIn->diffInHours($schedOut, false));
-                $currentOtHrs -= $otVal["meal_deduction"] && $schedTotalHrs === $currentOtHrs ? 1 : 0;
-                $total += $currentOtHrs;
+            }
+            if(!$appliedIn || !$appliedOut) {
+                continue;
+            }
+            $timeIn = Carbon::parse($appliedIn->time);
+            $timeOut = Carbon::parse($appliedOut->time);
+            $schedIn = Carbon::parse($otVal['overtime_start_time']);
+            $schedOut = Carbon::parse($otVal['overtime_end_time']);
+            $renderIn = $timeIn->lt($schedIn) ? $schedIn : $timeIn;
+            $renderOut = $timeOut->gt($schedOut) ? $schedOut : $timeOut;
+            $currentOtHrs = floor($renderIn->diffInMinutes($renderOut, false) / 60); // Changed due to OVERTIME IS ONLY COUNTED BY HOUR
+            $schedTotalHrs = floor($schedIn->diffInHours($schedOut, false));
+            // $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs === $schedTotalHrs ? 1 : 0;
+            $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs >= 3 ? 1 : 0;
+            $total += $currentOtHrs;
+            $charge = Overtime::find($otVal["id"])->charging();
+            if ($charge) {
+                array_push($chargings, [
+                    "model" => get_class($charge),
+                    "id" => $charge->id,
+                    "hrs_worked" => $currentOtHrs,
+                ]);
             }
         }
-        return $total;
+        return [
+            "rendered" => $total,
+            "charging" => $chargings,
+        ];
     }
     public function calculateAttendance($data, $date)
     {
-        $leave = 0;
-        $travel = 0;
-        $reg = 0;
-        $regOvertime = 0;
-        $regUndertime = 0;
-        $late = 0;
-        $rest = 0;
-        $restOvertime = 0;
-        $restUndertime = 0;
-        $regHoliday = 0;
-        $regHolidayOvertime = 0;
-        $regHolidayUndertime = 0;
-        $leave += $this->getTotalRendered($data["leave"], $date);
-        $travel += $this->getTotalRendered($data["travel_orders"], $date);
-        if (count(collect($data["events"])->where("with_work", '=', 0)) > 0) {
-            $result = $this->calculateWorkRendered($data);
-            $regHoliday += $result["rendered"] + $leave + $travel;;
-            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
-            $regHolidayUndertime += $result["undertime"];
-        } else if ($data["schedules_attendances"]) {
-            $result = $this->calculateWorkRendered($data);
-            $reg += $result["rendered"] + $leave + $travel;
-            $regOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
-            $late += $result["late"];
-            $regUndertime += $result["undertime"];
-        } else {
-            $result = $this->calculateWorkRendered($data);
-            $rest += $result["rendered"] + $leave + $travel;
-            $restUndertime += $result["undertime"];
-        }
-
-        return [
+        $metaResult = [
+            "charging" => [
+                // Charging Structure for reg_hrs and overtime
+                // [
+                //     "model" = "" // Department Model or Project Model
+                //     "id" = "" // Id for the Model
+                //     "hrs_worked" = "" // Hrs Worked
+                // ],
+                "regular" => [
+                    "reg_hrs" => [],
+                    "overtime" => [],
+                ],
+                "rest" => [
+                    "reg_hrs" => [],
+                    "overtime" => [],
+                ],
+                "regular_holidays" => [
+                    "reg_hrs" => [],
+                    "overtime" => [],
+                ],
+                "special_holidays" => [
+                    "reg_hrs" => [],
+                    "overtime" => [],
+                ],
+            ],
             "regular" => [
-                "reg_hrs" => round($reg, 2),
-                "overtime" => round($regOvertime, 2),
-                "late" => round($late, 2),
-                "undertime" => round($regUndertime, 2),
+                "reg_hrs" => 0,
+                "overtime" => 0,
+                "late" => 0,
+                "undertime" => 0,
             ],
             "rest" => [
-                "reg_hrs" => round($rest, 2),
-                "overtime" => round($restOvertime, 2),
+                "reg_hrs" => 0,
+                "overtime" => 0,
                 "late" => 0,
-                "undertime" => round($restUndertime, 2),
+                "undertime" => 0,
             ],
             "regular_holidays" => [
-                "reg_hrs" => round($regHoliday, 2),
-                "overtime" => round($regHolidayOvertime, 2),
+                "reg_hrs" => 0,
+                "overtime" => 0,
                 "late" => 0,
-                "undertime" => round($regHolidayUndertime, 2),
+                "undertime" => 0,
             ],
             "special_holidays" => [
                 "reg_hrs" => 0,
@@ -279,151 +259,36 @@ trait Attendance
                 "undertime" => 0,
             ],
         ];
+        $workRendered = $this->calculateWorkRendered($data, $date);
+        $overtimeRendered = $this->getOvertimeRendered($data);
+        $type = "rest";
+        if (sizeof(collect($data["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::REGULARHOLIDAY)) > 0) { // Regular Holiday
+            $type = "regular_holidays";
+        } elseif (sizeof(collect($data["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
+            $type = "special_holidays";
+        } elseif ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
+            $type = "rest";
+        } else { // Regular Work Day
+            $type = "regular";
+        }
+        $metaResult[$type]["reg_hrs"] += $workRendered["rendered"];
+        $metaResult[$type]["overtime"] += $overtimeRendered["rendered"];
+        $metaResult[$type]["late"] += $workRendered["late"];
+        $metaResult[$type]["undertime"] += $workRendered["undertime"];
+        array_push($metaResult["charging"][$type]["reg_hrs"], ...$workRendered["charging"]);
+        array_push($metaResult["charging"][$type]["overtime"], ...$overtimeRendered["charging"]);
+        $metaResult["total"]["reg_hrs"] = $workRendered["rendered"];
+        $metaResult["total"]["overtime"] = $overtimeRendered["rendered"];
+        $metaResult["total"]["late"] = $workRendered["late"];
+        $metaResult["total"]["undertime"] = $workRendered["undertime"];
+        return $metaResult;
     }
+    public function travelCoversTime($travelOrder, $time)
+    {
 
-    function calculateCharging($data, $date){
+    }
+    public function leaveCoversTime($leave, $time)
+    {
 
-        $leave = 0;
-        $travel = 0;
-        $reg = 0;
-        $regOvertime = 0;
-        $regUndertime = 0;
-        $late = 0;
-        $rest = 0;
-        $restOvertime = 0;
-        $restUndertime = 0;
-
-        $regHoliday = 0;
-        $specHoliday = 0;
-        $regHolidayOvertime = 0;
-        $regHolidayUndertime = 0;
-
-        $specialholidaycharge = collect();
-        $leavecharge = collect();
-        $travelcharge = collect();
-        $projects = collect();
-        $departments = collect();
-        $leave += $this->getTotalRendered($data["leave"], $date);
-        $travel += $this->getTotalRendered($data["travel_orders"], $date);
-        if(count(collect($data["events"])->where("event_type", EventTypes::SPECIALHOLIDAY->value)) > 0){
-            $result = $this->calculateWorkRendered($data);
-            $specHoliday += $result["rendered"];
-            $specialholidaycharge->push([
-                "reg_hrs" => $specHoliday,
-            ]);
-        }
-        if (count(collect($data["events"])->where("with_work", '=', 0)) > 0) {
-            $result = $this->calculateWorkRendered($data);
-            $regHoliday += $result["rendered"] + $leave + $travel;
-            $regHolidayOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
-            $regHolidayUndertime += $result["undertime"];
-            if(count($result["departments"]) > 0){
-                $departments->push([
-                    'id' => $result["departments"][0]["id"],
-                    "reg_hrs" => 0,
-                    "regular_holidays_hrs" => $regHoliday,
-                    "regular_holidays_ot_hrs" => $regHolidayOvertime,
-                    "overtime" => 0,
-                    "late" => 0,
-                    "undertime" => 0,
-                ]);
-            }
-            if(count($result["projects"]) > 0){
-                $projects->push([
-                    'id' => $result["projects"][0]["id"],
-                    "reg_hrs" => 0,
-                    "regular_holidays_hrs" => $regHoliday,
-                    "regular_holidays_ot_hrs" => $regHolidayOvertime,
-                    "overtime" => 0,
-                    "late" => 0,
-                    "undertime" => 0,
-                ]);
-            }
-        } else if ($data["schedules_attendances"]) {
-            $result = $this->calculateWorkRendered($data);
-            $reg += $result["rendered"] + $leave + $travel;
-            $regOvertime += $this->getOvertimeRendered($data["overtime"], $data["schedules_attendances"]);
-            $late += $result["late"];
-            $regUndertime += $result["undertime"];
-
-            if(count($result["projects"]) > 0){
-                foreach ($result["projects"] as $key) {
-                    $projects->push([
-                        'id' => $key["id"],
-                        "reg_hrs" => $reg,
-                        "regular_holidays_hrs" => 0,
-                        "regular_holidays_ot_hrs" => 0,
-                        "overtime" => $regOvertime,
-                        "late" => $late,
-                        "undertime" => $regUndertime,
-                    ]);
-                }
-            }
-
-            if(count($result["departments"]) > 0){
-                foreach ($result["departments"] as $key) {
-                    $departments->push([
-                        'id' => $key["id"],
-                        "reg_hrs" => $reg,
-                        "regular_holidays_hrs" => 0,
-                        "regular_holidays_ot_hrs" => 0,
-                        "overtime" => $regOvertime,
-                        "late" => $late,
-                        "undertime" => $regUndertime,
-                    ]);
-                }
-            }
-
-            if(count($result["departments"])==0 && count($result["projects"])==0){
-                if($leave > 0 ){
-                    $leavecharge->push([
-                        "reg_hrs" => $leave,
-                    ]);
-                }
-
-                if($travel > 0 ){
-                    $travelcharge->push([
-                        "reg_hrs" => $travel,
-                    ]);
-                }
-            }
-
-        } else {
-            $result = $this->calculateWorkRendered($data);
-            $rest += $result["rendered"] + $leave + $travel;
-            $restUndertime += $result["undertime"];
-        }
-
-        return [
-            "special_holiday" => $specialholidaycharge,
-            "leaves" => $leavecharge,
-            "travels" => $travelcharge,
-            "projects" => $projects,
-            "departments" => $departments,
-            "regular" => [
-                "reg_hrs" => $reg,
-                "overtime" => $regOvertime,
-                "late" => $late,
-                "undertime" => $regUndertime,
-            ],
-            "rest" => [
-                "reg_hrs" => $rest,
-                "overtime" => $restOvertime,
-                "late" => 0,
-                "undertime" => $restUndertime,
-            ],
-            "regular_holidays" => [
-                "reg_hrs" => $regHoliday,
-                "overtime" => $regHolidayOvertime,
-                "late" => 0,
-                "undertime" => $regHolidayUndertime,
-            ],
-            "special_holidays" => [
-                "reg_hrs" => 0,
-                "overtime" => 0,
-                "late" => 0,
-                "undertime" => 0,
-            ],
-        ];
     }
 }

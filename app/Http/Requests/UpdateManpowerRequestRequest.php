@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Rules\JsonStringValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateManpowerRequestRequest extends FormRequest

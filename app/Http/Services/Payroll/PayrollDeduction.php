@@ -7,8 +7,6 @@ use App\Models\SSSContribution;
 use App\Models\PagibigContribution;
 use App\Models\PhilhealthContribution;
 use App\Models\WitholdingTaxContribution;
-use App\Http\Services\Payroll\CashAdvanceDeduction;
-use Exception;
 
 class PayrollDeduction
 {

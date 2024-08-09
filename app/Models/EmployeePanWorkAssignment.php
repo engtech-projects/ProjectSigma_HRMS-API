@@ -12,7 +12,7 @@ class EmployeePanWorkAssignment extends Model
     use HasFactory;
     use SoftDeletes;
 
-    const PAN_WORK_ASSIGNMENT = 'App\Model\EmployeePanRequest';
+    public const PAN_WORK_ASSIGNMENT = 'App\Model\EmployeePanRequest';
     protected $fillable = [
         'id',
         'employee_pan_request_id',
@@ -20,7 +20,8 @@ class EmployeePanWorkAssignment extends Model
         'work_assignment_id',
     ];
 
-    public function pan_work_assignment() {
+    public function pan_work_assignment()
+    {
         return $this->morphedByMany(EmployeePanWorkAssignment::PAN_WORK_ASSIGNMENT, 'work_assignment');
     }
 

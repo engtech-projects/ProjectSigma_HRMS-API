@@ -10,10 +10,8 @@ use App\Http\Resources\AttendancePortalResource;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
 
 class AttendancePortalController extends Controller
 {

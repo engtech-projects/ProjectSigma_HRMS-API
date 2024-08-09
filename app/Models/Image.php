@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class Image extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
-    const PROFILE_IMAGE_TYPE = "profile-picture";
-    const DIGITAL_SIGNATURE_TYPE = "signature";
+    public const PROFILE_IMAGE_TYPE = "profile-picture";
+    public const DIGITAL_SIGNATURE_TYPE = "signature";
     protected $fillable = [
         'url',
         'image_type',

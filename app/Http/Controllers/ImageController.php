@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Image;
 use App\Models\Employee;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use App\Http\Traits\UploadImageTrait;
 use App\Http\Requests\UploadImageRequest;
 

@@ -24,7 +24,7 @@ class TravelOrderResource extends JsonResource
         $employees = $this->whenLoaded('employees', function () {
             $arr = array();
             foreach ($this->employees as $key) {
-                array_push($arr, array("id"=>$key->fullname_last, "name" => $key?->fullname_last));
+                array_push($arr, array("id" => $key->fullname_last, "name" => $key?->fullname_last));
             }
             return $arr;
         });
