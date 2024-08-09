@@ -91,6 +91,5 @@ class ApproveApproval extends Controller
             }
         }
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
-        ;
     }
 }
