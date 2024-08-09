@@ -8,6 +8,7 @@ use App\Models\AttendanceLog;
 use Illuminate\Support\Carbon;
 use App\Http\Traits\Attendance;
 use App\Http\Services\Payroll\PayrollDeduction;
+use App\Http\Services\Payroll\PayrollService;
 use App\Models\SSSContribution;
 
 class EmployeeService
