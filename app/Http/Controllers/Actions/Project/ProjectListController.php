@@ -18,7 +18,7 @@ class ProjectListController extends Controller
     public function __invoke(Request $request)
     {
         $token = $request->bearerToken();
-        $url = config()->get('services.url.projects_api_url');
+        $url = config()->get('services.url.projects_api');
         $response = Http::acceptJson()->withToken($token)->get($url . 'api/projects?completion_status=ongoing');
         $projectsApiProjects = $response->json('data');
         if ($response->successful()) {

@@ -217,7 +217,7 @@ class EmployeeBulkUploadController extends Controller
     {
         set_time_limit(99999);
         $errorList = [];
-        $url = config()->get('services.url.projects_api_url');
+        $url = config()->get('services.url.projects_api');
         $validatedData = $request->validated();
         if ($validatedData['employees_data']) {
             foreach (json_decode($validatedData['employees_data'], true) as $data) {
