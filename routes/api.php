@@ -102,7 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/session', [AuthController::class, 'session']);
     Route::put('update-user', [UsersController::class, 'updateUserCredential']);
     Route::resource('users', UsersController::class);
-    Route::get('user-account-by-employee-id/{id}',[UsersController::class, 'getUserAccountByEmployeeId']);
+    Route::get('user-account-by-employee-id/{id}', [UsersController::class, 'getUserAccountByEmployeeId']);
     Route::resource('accessibilities', AccessibilitiesController::class);
     Route::resource('sss', SSSContributionController::class);
     Route::resource('philhealth', PhilhealthContributionController::class);
@@ -204,9 +204,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('bulk-save', [AttendanceBulkUpload::class, 'bulkSave']);
         Route::resource('log', AttendanceLogController::class);
         Route::post('qr', [AttendanceLogController::class, 'qrAttendance']);
-        Route::resource('failed-log', FailureToLogController::class);Route::prefix('attendanceQR')->group(function () {
-    Route::post('qr', [AttendanceLogController::class, 'qrAttendance']);
-});
+        Route::resource('failed-log', FailureToLogController::class);
+        Route::prefix('attendanceQR')->group(function () {
+            Route::post('qr', [AttendanceLogController::class, 'qrAttendance']);
+        });
         Route::get('all-attendance-logs', [AttendanceLogController::class, 'allAttendanceLogs']);
         Route::prefix('failure-to-log')->group(function () {
             Route::get('my-requests', [FailureToLogController::class, 'myRequests']);

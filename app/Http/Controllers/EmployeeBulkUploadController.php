@@ -377,7 +377,7 @@ class EmployeeBulkUploadController extends Controller
                         'honors_received' => $data['honor_of_school_college'] ?? 'N/A',
                         'degree_earned_of_school' => $data['college_degree_earned_of_school'] ?? 'N/A',
                         'period_attendance_from' => $education['college_period_attendance_from'] ?? "N/A",
-                        'period_attendance_to'=> $education['college_period_attendance_to'] ?? "N/A",
+                        'period_attendance_to' => $education['college_period_attendance_to'] ?? "N/A",
                         'year_graduated' => $education['college_year_graduated'] ?? "N/A",
                         'education' => $data['college_education'] ?? 'N/A',
                         'type' => EmployeeEducationType::COLLEGE,

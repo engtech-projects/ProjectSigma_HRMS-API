@@ -20,7 +20,7 @@ class UsersSeeder extends Seeder
                     'name' => "admin",
                     'email' => 'admin@gmail.com',
                     'password' => Hash::make('!onetimepassword'),
-                    'accessibilities' => json_encode(range(1,36)),
+                    'accessibilities' => json_encode(range(1, 36)),
                     'type' => 'Administrator',
                 ]
             ],

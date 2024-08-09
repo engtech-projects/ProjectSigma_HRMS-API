@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\AssignTypes;
-use App\Enums\RequestApprovalStatus;
 use App\Enums\StringRequestApprovalStatus;
 use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
@@ -11,7 +9,6 @@ use Illuminate\Validation\Rules\Enum;
 
 class StoreOvertimeRequest extends FormRequest
 {
-
     use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.

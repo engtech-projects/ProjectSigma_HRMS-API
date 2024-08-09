@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\JobApplicationStatusEnums;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
 
 class StoreJobApplicantsRequest extends FormRequest
 {

@@ -8,7 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AttendancePortalResource extends JsonResource
 {
-
     public const DEPARTMENT = "App\Models\Department";
     public const PROJECT = "App\Models\Project";
 

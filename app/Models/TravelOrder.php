@@ -102,17 +102,17 @@ class TravelOrder extends Model
     {
         return Carbon::parse($this->date_of_travel)
             ->setTimeFromTimeString($this->time_of_travel);
-            // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
-            // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
-            // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
+        // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
+        // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
+        // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
     }
     public function getDateTimeEndAttribute()
     {
         return Carbon::parse($this->date_of_travel)
             ->setTimeFromTimeString($this->time_of_travel)
             ->addHour($this->duration_of_travel * 24);
-            // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
-            // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
-            // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
+        // ->setHour(Carbon::parse($this->time_of_travel)->get("hour"))
+        // ->setMinute(Carbon::parse($this->time_of_travel)->get("minute"))
+        // ->setSecond(Carbon::parse($this->time_of_travel)->get("second"));
     }
 }

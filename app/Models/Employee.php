@@ -408,7 +408,8 @@ class Employee extends Model
         });
     }
 
-    public function get_designation($project_id, $department_id){
+    public function get_designation($project_id, $department_id)
+    {
         if ($department_id != null) {
             return Department::find($department_id)->department_name;
         }

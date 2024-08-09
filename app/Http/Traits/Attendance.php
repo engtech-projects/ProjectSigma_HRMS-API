@@ -2,21 +2,13 @@
 
 namespace App\Http\Traits;
 
-use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceSettings;
-use App\Helpers;
 use App\Models\AttendanceLog;
-use App\Models\Employee;
-use App\Models\Events;
 use App\Models\Leave;
 use App\Models\Settings;
-use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use App\Enums\AssignTypes;
 use App\Enums\EventTypes;
 use App\Models\Department;
-use App\Models\EmployeeLeaves;
 use App\Models\Overtime;
 use App\Models\Project;
 use App\Models\TravelOrder;
@@ -24,7 +16,6 @@ use Illuminate\Support\Facades\Log;
 
 trait Attendance
 {
-
     public function getMetaData($data, $date)
     {
         $date = Carbon::parse($date);
@@ -51,7 +42,7 @@ trait Attendance
             $timeIn = $schedule["applied_ins"];
             if (!$timeIn) {
                 // Connected to Overtime
-                $oTStart = collect($overtime)->filter(function ($otData) use($schedule) {
+                $oTStart = collect($overtime)->filter(function ($otData) use ($schedule) {
                     $otSchedOut = $otData['overtime_end_time'];
                     $schedIn = Carbon::parse($schedule["startTime"]);
                     return $schedIn->equalTo($otSchedOut);
@@ -62,7 +53,7 @@ trait Attendance
                 }
                 // Is On Leave
                 if (!$timeIn && $hasLeaveToday && $leaveUsedToday < $leaveToday->durationForDate($date)) {
-                    $leaveUsedToday =+ 0.5;
+                    $leaveUsedToday = + 0.5;
                     $leaveUsed = true;
                     $charge = $leaveToday->charging();
                     $timeIn = (object)["time" => $schedule["startTime"]];
@@ -80,7 +71,7 @@ trait Attendance
             $timeOut = $schedule["applied_outs"];
             if (!$timeOut) {
                 // Connected to Overtime
-                $oTContinuation = collect($overtime)->filter(function ($otData) use($schedule) {
+                $oTContinuation = collect($overtime)->filter(function ($otData) use ($schedule) {
                     $otSchedIn = $otData['overtime_start_time'];
                     $schedOut = Carbon::parse($schedule["endTime"]);
                     return $schedOut->equalTo($otSchedIn);
@@ -92,7 +83,7 @@ trait Attendance
                 // Is On Leave
                 if (!$timeOut && $hasLeaveToday && !$leaveUsed && $leaveUsedToday < $leaveToday->durationForDate($date)) {
                     $charge = $leaveToday->charging();
-                    $leaveUsedToday =+ 0.5;
+                    $leaveUsedToday = + 0.5;
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
                 if ($leaveUsed) {
@@ -105,7 +96,7 @@ trait Attendance
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
             }
-            if(!$timeIn || !$timeOut){
+            if(!$timeIn || !$timeOut) {
                 continue;
             }
             $in = Carbon::parse($timeIn?->time);
@@ -118,11 +109,11 @@ trait Attendance
             if ($in->gt($schedule["startTime"])) {
                 $lateMinutes = $startTime->diffInMinutes($in);
                 if ($lateMinutes <= $lateAllowance) {
-                    $dtrIn= $startTime;
+                    $dtrIn = $startTime;
                     $lateMinutes = 0;
                 }
                 if ($lateMinutes >= $lateAbsent) {
-                    $dtrIn= $dtrOut;
+                    $dtrIn = $dtrOut;
                 }
                 $totalLate += $lateMinutes;
             }
@@ -158,7 +149,7 @@ trait Attendance
         foreach ($overtime as $otVal) {
             $appliedIn = $otVal["applied_in"];
             if (!$appliedIn) {
-                $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use($otVal) {
+                $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
                     $schedOut = $schedData['endTime'];
                     $otIn = Carbon::parse($otVal["overtime_start_time"]);
                     return $otIn->equalTo($schedOut);
@@ -174,7 +165,7 @@ trait Attendance
             }
             $appliedOut = $otVal["applied_out"];
             if ($appliedOut) {
-                $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use($otVal) {
+                $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
                     $schedIn = $schedData['startTime'];
                     $otOut = Carbon::parse($otVal["overtime_end_time"]);
                     return $otOut->equalTo($schedIn);
@@ -188,7 +179,7 @@ trait Attendance
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
             }
-            if(!$appliedIn || !$appliedOut){
+            if(!$appliedIn || !$appliedOut) {
                 continue;
             }
             $timeIn = Carbon::parse($appliedIn->time);
@@ -273,9 +264,9 @@ trait Attendance
         $type = "rest";
         if (sizeof(collect($data["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::REGULARHOLIDAY)) > 0) { // Regular Holiday
             $type = "regular_holidays";
-        } else if (sizeof(collect($data["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
+        } elseif (sizeof(collect($data["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
             $type = "special_holidays";
-        } else if ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
+        } elseif ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
             $type = "rest";
         } else { // Regular Work Day
             $type = "regular";
@@ -292,10 +283,12 @@ trait Attendance
         $metaResult["total"]["undertime"] = $workRendered["undertime"];
         return $metaResult;
     }
-    function travelCoversTime($travelOrder, $time) {
+    public function travelCoversTime($travelOrder, $time)
+    {
 
     }
-    function leaveCoversTime($leave, $time) {
+    public function leaveCoversTime($leave, $time)
+    {
 
     }
 }

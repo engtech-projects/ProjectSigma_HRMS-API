@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Services;
+
 use App\Models\EmployeePattern;
 
 class EmployeePatternService
@@ -24,17 +25,15 @@ class EmployeePatternService
 
     public function insert($validatedData)
     {
-        $ifExist = $this->patternRequest->where('employee_id',$validatedData['employee_id'])->first();
-        if ($ifExist)
-        {
-            $this->patternRequest->where('employee_id',$validatedData['employee_id'])->update($validatedData);
+        $ifExist = $this->patternRequest->where('employee_id', $validatedData['employee_id'])->first();
+        if ($ifExist) {
+            $this->patternRequest->where('employee_id', $validatedData['employee_id'])->update($validatedData);
             return true;
-        }else {
+        } else {
             $this->patternRequest->fill($validatedData);
-            if ($this->patternRequest->save())
-            {
+            if ($this->patternRequest->save()) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }

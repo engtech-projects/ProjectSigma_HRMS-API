@@ -25,24 +25,19 @@ class AttendanceLogService
     public function getFilterDateAndEmployee($request)
     {
         $query = $this->log->query();
-        if ($request->date)
-        {
+        if ($request->date) {
             $query->where('date', $request->date);
         }
-        if ($request->employee_id)
-        {
+        if ($request->employee_id) {
             $query->where('employee_id', $request->employee_id);
         }
-        if ($request->department_id)
-        {
+        if ($request->department_id) {
             $query->where('department_id', $request->department_id);
         }
-        if ($request->project_id)
-        {
+        if ($request->project_id) {
             $query->where('project_id', $request->project_id);
         }
-        if ($request->attendance_type && $request->attendance_type != AttendanceType::ALL->value)
-        {
+        if ($request->attendance_type && $request->attendance_type != AttendanceType::ALL->value) {
             $query->where('attendance_type', $request->attendance_type);
         }
         return $query->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->get();

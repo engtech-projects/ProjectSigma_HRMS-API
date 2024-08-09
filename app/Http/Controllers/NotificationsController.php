@@ -3,22 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\NotificationResource;
-use App\Models\EmployeeLeaves;
 use App\Models\Users;
-use App\Notifications\LeaveRequestForApproval;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Utils\PaginateResourceCollection;
 
 class NotificationsController extends Controller
 {
-
     public function getUnreadNotifications()
     {
-        return new JsonResponse
-        ([
+        return new JsonResponse([
             'success' => false,
             'message' => 'Fetched unread notifications.',
             'data' => NotificationResource::collection(Auth::user()->unreadNotifications),
@@ -28,8 +23,7 @@ class NotificationsController extends Controller
     public function getNotifications()
     {
         $collection = collect(NotificationResource::collection(Auth::user()->notifications));
-        return new JsonResponse
-        ([
+        return new JsonResponse([
             'success' => false,
             'message' => 'Fetched all notifications.',
             'data' => PaginateResourceCollection::paginate($collection, 15)
@@ -39,7 +33,7 @@ class NotificationsController extends Controller
     public function getUnreadNotificationsStream()
     {
         ini_set('max_execution_time', '999999');
-        return response()->stream(function() {
+        return response()->stream(function () {
             $lastLength = 0;
             $lastRequestSent = null;
             $broadcastCount = 0;
@@ -66,7 +60,7 @@ class NotificationsController extends Controller
                     $lastRequestSent = Carbon::now();
                 }
                 // usleep(500000); // usleep 1 sec = 1000000
-                if(connection_aborted()){
+                if(connection_aborted()) {
                     break;
                 }
                 sleep(1); // Will check for updates every second

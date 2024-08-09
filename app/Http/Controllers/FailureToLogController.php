@@ -42,7 +42,7 @@ class FailureToLogController extends Controller
     {
         try {
             $valid = $request->validated();
-            if($valid){
+            if($valid) {
                 $main = FailureToLog::create($request->validated());
                 $main->refresh();
                 if ($main->getNextPendingApproval()) {

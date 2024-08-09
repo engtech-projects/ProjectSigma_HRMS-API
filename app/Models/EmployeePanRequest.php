@@ -34,7 +34,7 @@ class EmployeePanRequest extends Model
     public const PROMOTION = "Promotion";
     public const TERMINATION = "Termination";
 
-    const EMPLOYEE_WORK_ASSIGNMENT = 'App\Model\EmployeeWorkAssignment';
+    public const EMPLOYEE_WORK_ASSIGNMENT = 'App\Model\EmployeeWorkAssignment';
     protected $appends = [
         "fullname",
         "request_created_at"
@@ -420,7 +420,8 @@ class EmployeePanRequest extends Model
     {
         // JUST A PLACEHOLDER WILL PROBABLY BE USED SOON
     }
-    public function work_assignment() {
+    public function work_assignment()
+    {
         return $this->morphedToMany(EmployeePanRequest::EMPLOYEE_WORK_ASSIGNMENT, 'work_assignment');
     }
 }

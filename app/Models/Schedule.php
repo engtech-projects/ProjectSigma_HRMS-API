@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -75,7 +74,7 @@ class Schedule extends Model
     {
         if ($this->deparment_id) {
             return $this->department->employees();
-        } else if ($this->project_id) {
+        } elseif ($this->project_id) {
             return $this->project->project_has_employees();
         } else {
             return $this->hasMany(Employee::class, "id", "employee_id");

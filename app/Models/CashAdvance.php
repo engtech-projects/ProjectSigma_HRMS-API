@@ -25,7 +25,8 @@ class CashAdvance extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasApproval, StatusScope;
+    use HasApproval;
+    use StatusScope;
 
     protected $casts = [
         'approvals' => 'array',

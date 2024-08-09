@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\AssignTypes;
 use App\Enums\AttendanceLogType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;

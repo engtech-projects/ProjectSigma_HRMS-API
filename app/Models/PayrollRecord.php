@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use App\Enums\RequestStatusType;
-use App\Models\PayrollDetail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -52,11 +50,12 @@ class PayrollRecord extends Model
     }
 
 
-    function getChargingNameAttribute() {
-        if($this->project_id){
+    public function getChargingNameAttribute()
+    {
+        if($this->project_id) {
             return $this->project->project_code;
         }
-        if($this->department_id){
+        if($this->department_id) {
             return $this->department->department_name;
         }
         return 'No charging found.';

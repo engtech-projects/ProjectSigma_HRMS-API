@@ -34,7 +34,7 @@ class InternalWorkExperience extends Model
         'date_from',
         'date_to'
     ];
-    const EMPLOYEE_WORK_ASSIGNMENT = 'App\Model\EmployeeWorkAssignment';
+    public const EMPLOYEE_WORK_ASSIGNMENT = 'App\Model\EmployeeWorkAssignment';
     public static function boot()
     {
         parent::boot();
@@ -108,7 +108,8 @@ class InternalWorkExperience extends Model
                 ->orWhereNull('date_to');
         })->where('date_to', '<', $date); */
     }
-    public function work_assignment() {
+    public function work_assignment()
+    {
         return $this->morphedToMany(InternalWorkExperience::EMPLOYEE_WORK_ASSIGNMENT, 'work_assignment');
     }
 

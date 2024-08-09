@@ -4,19 +4,14 @@ namespace App\Http\Services;
 
 use App\Enums\AssignTypes;
 use App\Enums\SalaryRequestType;
-use App\Models\AttendanceLog;
-use Illuminate\Support\Carbon;
-use App\Http\Traits\Attendance;
-use App\Http\Services\Payroll\PayrollDeduction;
 use App\Http\Services\Payroll\PayrollService;
-use App\Models\SSSContribution;
 
 class EmployeeService
 {
-    CONST OVERTIME = "Overtime";
-    CONST DEPARTMENT = "Department";
-    CONST PROJECT = "Project";
-    CONST SPECIALHOLIDAY = "Special Holiday";
+    public const OVERTIME = "Overtime";
+    public const DEPARTMENT = "Department";
+    public const PROJECT = "Project";
+    public const SPECIALHOLIDAY = "Special Holiday";
 
     public function employeeDTR($employee, $date)
     {
@@ -70,8 +65,8 @@ class EmployeeService
         $dtrs = $dtr->values();
 
         $adjustments = [];
-        if(isset($filters["adjustments"])){
-            $adjustments = collect($filters["adjustments"])->where("employee_id",$employee->id)->groupBy("employee_id")->map(function($data, $index){
+        if(isset($filters["adjustments"])) {
+            $adjustments = collect($filters["adjustments"])->where("employee_id", $employee->id)->groupBy("employee_id")->map(function ($data, $index) {
                 return[
                     "employee_id" => $index,
                     "adjustment_name" => $data[0]["adjustment_name"],
@@ -80,7 +75,7 @@ class EmployeeService
             });
         }
         $collectAdjustments = collect();
-        foreach($adjustments as $key){
+        foreach($adjustments as $key) {
             $collectAdjustments->push((object)[
                 "employee_id" => $key["employee_id"],
                 "adjustment_name" => $key["adjustment_name"],
@@ -115,8 +110,9 @@ class EmployeeService
         return $result;
     }
 
-    public function appendCollection($collection, $maincollection, $type){
-        foreach($collection as $key){
+    public function appendCollection($collection, $maincollection, $type)
+    {
+        foreach($collection as $key) {
             $maincollection->push((object)[
                 "id" => $key["id"],
                 "name" => $type,

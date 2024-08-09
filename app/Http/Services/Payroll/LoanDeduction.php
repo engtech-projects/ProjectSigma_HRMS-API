@@ -7,7 +7,6 @@ use Carbon\Carbon;
 
 class LoanDeduction extends PayrollDeduction
 {
-
     protected $filter;
     public $employee;
     public $salary;

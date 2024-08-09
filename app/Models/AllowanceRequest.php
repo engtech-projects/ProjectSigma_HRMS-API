@@ -15,7 +15,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AllowanceRequest extends Model
 {
-    use HasFactory, SoftDeletes, HasApproval;
+    use HasFactory;
+    use SoftDeletes;
+    use HasApproval;
 
     protected $table = 'allowance_request';
 

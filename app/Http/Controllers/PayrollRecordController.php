@@ -9,7 +9,6 @@ use App\Enums\LoanPaymentsType;
 use Exception;
 use App\Helpers;
 use App\Models\Employee;
-use Illuminate\Http\Request;
 use App\Models\PayrollRecord;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -23,8 +22,6 @@ use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
 use App\Models\LoanPayments;
 use App\Models\OtherDeduction;
-use App\Models\PayrollDetail;
-use App\Models\PayrollDetailsAdjustment;
 use App\Models\PayrollDetailsCharging;
 use App\Models\Project;
 use Carbon\Carbon;
@@ -82,7 +79,7 @@ class PayrollRecordController extends Controller
         try {
             DB::transaction(function () use ($attribute) {
                 $payroll = PayrollRecord::create($attribute);
-                foreach($attribute["payroll_details"] as $payrollData){
+                foreach($attribute["payroll_details"] as $payrollData) {
                     $empPayrollDetail = $payroll->payroll_details()->create($payrollData);
                     $empPayrollDetail->adjustments()->createMany($payrollData["adjustment"]);
                     PayrollDetailDeduction::create($this->setPayrollDetails($payrollData["deductions"], $empPayrollDetail));
@@ -99,7 +96,8 @@ class PayrollRecordController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
-    public function setPayrollDetails($deductions, $empPayrollDetail){
+    public function setPayrollDetails($deductions, $empPayrollDetail)
+    {
         foreach ($deductions as $data) {
             $paymentStore = [
                 "posting_status" => PostingStatusType::NOTPOSTED->value,
@@ -117,17 +115,18 @@ class PayrollRecordController extends Controller
                     $paymentStore["loans_id"] = $data["charge_id"];
                     $thisPayment = LoanPayments::create($paymentStore);
                     return $this->adjustChargingData($data, $thisPayment, $empPayrollDetail);
-                break;
+                    break;
                 case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
                     $paymentStore["otherdeduction_id"] = $data["charge_id"];
                     $thisPayment = OtherDeduction::create($paymentStore);
                     return $this->adjustChargingData($data, $thisPayment, $empPayrollDetail);
-                break;
+                    break;
             }
         }
     }
 
-    public function adjustChargingData($data, $thisPayment, $empPayrollDetail){
+    public function adjustChargingData($data, $thisPayment, $empPayrollDetail)
+    {
         $data["deduction_type"] = $this->getChargingModel($data["type"]);
         $data["deduction_id"] = $thisPayment->id;
         $data["charge_type"] = $this->getChargingModel($data["type"]);
@@ -141,13 +140,13 @@ class PayrollRecordController extends Controller
         switch ($type) {
             case PayrollDetailsDeductionType::CASHADVANCE->value:
                 return PayrollRecordController::CASHADVANCE;
-            break;
+                break;
             case PayrollDetailsDeductionType::LOAN->value:
                 return PayrollRecordController::LOANS;
-            break;
+                break;
             case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
                 return PayrollRecordController::OTHERDEDUCTION;
-            break;
+                break;
         }
     }
 
@@ -156,7 +155,7 @@ class PayrollRecordController extends Controller
      */
     public function show($id)
     {
-        $myRequest = PayrollRecord::with('payroll_details')->where('id',$id)->get()->append(['charging_name']);
+        $myRequest = PayrollRecord::with('payroll_details')->where('id', $id)->get()->append(['charging_name']);
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord request fetched.',

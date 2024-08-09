@@ -2,10 +2,8 @@
 
 namespace App\Http\Traits;
 
-use App\Http\Requests\UploadImageRequest;
 use App\Models\Image;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 trait UploadImageTrait
@@ -18,7 +16,7 @@ trait UploadImageTrait
             $this->deleteExistingDirectory($employee, $request->image_type);
             $fileUploaded = Storage::disk('public')->put($url, $file);
             return $fileUploaded;
-        } else if (gettype($request->input('image_file')) == "string") {
+        } elseif (gettype($request->input('image_file')) == "string") {
             $img_64 = $request->input('image_file');
             $extension = explode('/', explode(':', substr($img_64, 0, strpos($img_64, ';')))[1])[1];
             $replace = substr($img_64, 0, strpos($img_64, ',') + 1);

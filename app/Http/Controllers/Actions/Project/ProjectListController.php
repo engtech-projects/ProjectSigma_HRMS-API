@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class ProjectListController extends Controller
 {
@@ -42,7 +40,7 @@ class ProjectListController extends Controller
         $result = collect(Project::all())->map(function ($project) use ($projectsApiProjects) {
             $project["projects"] = collect($projectsApiProjects)->firstWhere("id", $project["project_monitoring_id"]);
             return $project;
-        })->reject(function($project) {
+        })->reject(function ($project) {
             return $project["projects"] == null;
         });
 

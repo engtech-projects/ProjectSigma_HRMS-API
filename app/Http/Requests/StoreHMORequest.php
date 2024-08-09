@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\HMOMembers;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreHMORequest extends FormRequest

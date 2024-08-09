@@ -269,7 +269,7 @@ class StorePayrollRecordRequest extends FormRequest
                 'decimal:0,2',
             ],
             'payroll_details.*.deductions' => 'required|array',
-            'payroll_details.*.deductions.*.charge_id' =>[
+            'payroll_details.*.deductions.*.charge_id' => [
                 "nullable",
                 "integer",
             ],
@@ -302,7 +302,7 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
-            'payroll_details.*.chargings.*.charge_id' =>[
+            'payroll_details.*.chargings.*.charge_id' => [
                 "nullable",
                 "integer",
             ],

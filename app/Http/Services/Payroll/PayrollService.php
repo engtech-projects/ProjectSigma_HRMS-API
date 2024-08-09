@@ -3,14 +3,10 @@
 namespace App\Http\Services\Payroll;
 
 use App\Enums\PayrollType;
-use App\Http\Services\Payroll\PayrollDeduction;
-use App\Http\Services\EmployeeService;
-use App\Http\Traits\Attendance;
 use App\Models\PayrollRecord;
 
 class PayrollService
 {
-
     protected $payrollRequest;
     public function __construct(PayrollRecord $payrollRequest)
     {

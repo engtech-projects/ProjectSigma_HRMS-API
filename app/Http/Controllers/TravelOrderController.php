@@ -8,7 +8,6 @@ use App\Http\Requests\StoreTravelOrderRequest;
 use App\Http\Requests\UpdateTravelOrderRequest;
 use App\Http\Resources\TravelOrderResource;
 use App\Http\Services\TravelOrderService;
-use App\Models\TravelOrderMembers;
 use App\Models\Users;
 use App\Notifications\TravelRequestForApproval;
 use App\Utils\PaginateResourceCollection;

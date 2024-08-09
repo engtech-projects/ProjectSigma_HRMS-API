@@ -13,8 +13,6 @@ use App\Notifications\OvertimeRequestApproved;
 use App\Notifications\OvertimeRequestForApproval;
 use App\Notifications\PanRequestApproved;
 use App\Notifications\PanRequestForApproval;
-use App\Notifications\PayrollRequestApproved;
-use App\Notifications\TravelRequestApproval;
 use App\Notifications\TravelRequestApproved;
 use App\Notifications\TravelRequestForApproval;
 use Illuminate\Http\JsonResponse;
@@ -92,6 +90,7 @@ class ApproveApproval extends Controller
                     break;
             }
         }
-        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);;
+        return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);
+        ;
     }
 }

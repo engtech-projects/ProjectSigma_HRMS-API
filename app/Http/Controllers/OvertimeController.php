@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\RequestStatusType;
 use App\Enums\StringRequestApprovalStatus;
 use App\Models\Overtime;
 use App\Http\Requests\StoreOvertimeRequest;
 use App\Http\Requests\UpdateOvertimeRequest;
 use App\Http\Resources\OvertimeResource;
 use App\Http\Services\OvertimeService;
-use App\Models\OvertimeEmployees;
 use App\Models\Users;
 use App\Notifications\OvertimeRequestForApproval;
 use App\Utils\PaginateResourceCollection;

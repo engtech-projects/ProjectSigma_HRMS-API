@@ -2,7 +2,6 @@
 
 namespace App\Http\Traits;
 
-use App\Helpers;
 use App\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;

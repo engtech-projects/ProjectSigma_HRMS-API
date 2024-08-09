@@ -6,7 +6,6 @@ use App\Enums\RequestApprovalStatus;
 use App\Models\ManpowerRequest;
 use App\Models\Users;
 use App\Notifications\ManpowerRequestForApproval;
-use Illuminate\Http\JsonResponse;
 
 class ManpowerServices
 {
