@@ -133,7 +133,7 @@ trait Attendance
         }
 
         return [
-            "rendered" => $duration,
+            "rendered" => round($duration, 2),
             "late" => $totalLate,
             "undertime" => $undertime,
             "charging" => $chargings,
