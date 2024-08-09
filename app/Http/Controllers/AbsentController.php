@@ -14,7 +14,7 @@ class AbsentController extends Controller
     public function getAbsenceThisMonth(Schedule $req, AttendanceLog $log)
     {
         $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $endOfMonth = Carbon::now();
         $period = CarbonPeriod::create($startOfMonth, $endOfMonth);
         // Filter the period to include only Sundays
         $sundayDays = $period->filter(function (Carbon $date) {
