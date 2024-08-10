@@ -36,7 +36,7 @@ class AbsentController extends Controller
         ->get();
 
         return $attendance->map(function ($employee) use ($workDaysCount) {
-            $attendedDays = $employee->attendance_log->count();
+            $attendedDays = $employee->attendance_log->groupBy("date")->count();
             return [
                 'fullname_first' => $employee->fullname_first,
                 'fullname_last' => $employee->fullname_last,
@@ -45,6 +45,6 @@ class AbsentController extends Controller
                 'workDaysCount' => $workDaysCount,
                 'attendDays' => $attendedDays,
             ];
-        });
+        })->sortByDesc("absent");
     }
 }
