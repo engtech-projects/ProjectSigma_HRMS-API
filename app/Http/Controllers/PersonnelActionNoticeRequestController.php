@@ -113,7 +113,8 @@ class PersonnelActionNoticeRequestController extends Controller
      */
     public function show($id)
     {
-        $main = EmployeePanRequest::find($id);
+        $main = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
+        ->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetched.";
