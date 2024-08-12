@@ -69,10 +69,6 @@ class PersonnelActionNoticeRequestController extends Controller
         } catch (\Exception $e) {
             throw new TransactionFailedException("Create transaction failed.", 500, $e);
         }
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully created.",
-        ], JsonResponse::HTTP_CREATED);
     }
 
     // can view all pan request made by logged in user
