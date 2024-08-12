@@ -174,7 +174,7 @@ trait Attendance
             }
             $dateTimeOutSchedule = Carbon::parse($otVal["overtime_date"])->setTimeFromTimeString($otVal["overtime_end_time"]);
             $appliedOut = $otVal["applied_out"];
-            if ($appliedOut) {
+            if (!$appliedOut) {
                 $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
                     $schedIn = $schedData['startTime'];
                     $otOut = Carbon::parse($otVal["overtime_end_time"]);
@@ -184,8 +184,8 @@ trait Attendance
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeInSchedule) {
-                    return $trOrd->datetimeIsApplicable($dateTimeInSchedule);
+                $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeOutSchedule) {
+                    return $trOrd->datetimeIsApplicable($dateTimeOutSchedule);
                 })) > 0;
                 if (!$appliedOut && $onTravelOrder) {
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
@@ -201,7 +201,7 @@ trait Attendance
             $renderIn = $timeIn->lt($schedIn) ? $schedIn : $timeIn;
             $renderOut = $timeOut->gt($schedOut) ? $schedOut : $timeOut;
             $currentOtHrs = floor($renderIn->diffInMinutes($renderOut, false) / 60); // Changed due to OVERTIME IS ONLY COUNTED BY HOUR
-            $schedTotalHrs = floor($schedIn->diffInHours($schedOut, false));
+            // $schedTotalHrs = floor($schedIn->diffInHours($schedOut, false));
             // $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs === $schedTotalHrs ? 1 : 0;
             $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs >= 3 ? 1 : 0;
             $total += $currentOtHrs;
