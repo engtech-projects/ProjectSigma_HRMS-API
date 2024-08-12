@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AttendanceLogType;
+use App\Enums\SalaryRequestType;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
@@ -25,7 +26,12 @@ class AbsentController extends Controller
         $daysThisMonth = $endOfMonth->format('d');
         $workDaysCount = $daysThisMonth - $sundaysThisMonth;
 
-        $attendance = Employee::with(['attendance_log' => function ($query) use ($sundayDays) {
+        $attendance = Employee::whereHas("current_employment", function($employment) {
+            return $employment->where("salary_type", SalaryRequestType::SALARY_TYPE_NON_FIXED->value)
+                ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_MONTHLY->value)
+                ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_WEEKLY->value);
+        })
+        ->with(['attendance_log' => function ($query) use ($sundayDays) {
             $query->whereBetween('date', [
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->endOfMonth()
@@ -34,6 +40,7 @@ class AbsentController extends Controller
             ->where('log_type', AttendanceLogType::TIME_IN->value);
         }, 'attendance_log.department.schedule', 'attendance_log.project.project_schedule'])
         ->get();
+
         return $attendance->map(function ($employee) use ($workDaysCount) {
             $attendedDays = $employee->attendance_log->groupBy("date")->count();
             return [
@@ -44,8 +51,12 @@ class AbsentController extends Controller
                 'workDaysCount' => $workDaysCount,
                 'attendDays' => $attendedDays,
             ];
-        })->sortByDesc("absent")->filter(function($employee ) {
+        })
+        ->filter(function ($employee) {
             return $employee['absent'] > 0;
-        });
+        })
+        ->sortByDesc("absent")
+        ->values()
+        ->all();
     }
 }
