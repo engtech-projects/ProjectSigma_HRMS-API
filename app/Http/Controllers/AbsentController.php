@@ -34,7 +34,6 @@ class AbsentController extends Controller
             ->where('log_type', AttendanceLogType::TIME_IN->value);
         }, 'attendance_log.department.schedule', 'attendance_log.project.project_schedule'])
         ->get();
-
         return $attendance->map(function ($employee) use ($workDaysCount) {
             $attendedDays = $employee->attendance_log->groupBy("date")->count();
             return [
@@ -45,6 +44,8 @@ class AbsentController extends Controller
                 'workDaysCount' => $workDaysCount,
                 'attendDays' => $attendedDays,
             ];
-        })->sortByDesc("absent");
+        })->sortByDesc("absent")->filter(function($employee ) {
+            return $employee['absent'] > 0;
+        });
     }
 }
