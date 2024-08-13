@@ -26,7 +26,7 @@ class AbsentController extends Controller
         $daysThisMonth = $endOfMonth->format('d');
         $workDaysCount = $daysThisMonth - $sundaysThisMonth;
 
-        $attendance = Employee::whereHas("current_employment", function($employment) {
+        $attendance = Employee::whereHas("current_employment", function ($employment) {
             return $employment->where("salary_type", SalaryRequestType::SALARY_TYPE_NON_FIXED->value)
                 ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_MONTHLY->value)
                 ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_WEEKLY->value);

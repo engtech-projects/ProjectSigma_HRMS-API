@@ -307,7 +307,7 @@ class EmployeePanRequest extends Model
         }
         if ($this->jobapplicantonly->children) {
             //children
-            $children = collect($this->jobapplicantonly->children)->map(function($child) {
+            $children = collect($this->jobapplicantonly->children)->map(function ($child) {
                 return [
                     'relationship' => EmployeeRelatedPersonType::CHILD,
                     'type' => EmployeeRelatedPersonType::CHILD,
