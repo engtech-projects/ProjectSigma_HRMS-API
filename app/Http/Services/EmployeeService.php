@@ -47,6 +47,7 @@ class EmployeeService
         $payrollCharging = [
             "id" => 8,  // Default HR Department (temporary static data, need to be variable/env)
             "type" => Department::class,
+            "charging_name" => Department::find(8)->department_name,
         ];
         $salary = 0;
         // Setting Payroll Request Project/Department Charging
@@ -54,10 +55,12 @@ class EmployeeService
             case strtolower(AssignTypes::DEPARTMENT->value):
                 $payrollCharging["id"] = $filters["department_id"];
                 $payrollCharging["type"] = Department::class;
+                $payrollCharging["charging_name"] = Department::find($filters["department_id"])->department_name;
                 break;
             case strtolower(AssignTypes::PROJECT->value):
                 $payrollCharging["id"] = $filters["project_id"];
                 $payrollCharging["type"] = Project::class;
+                $payrollCharging["charging_name"] = Project::find($filters["project_id"])->project_code;
                 break;
         }
         // Getting Employee DTR and Gross Income
@@ -102,6 +105,7 @@ class EmployeeService
                 ...$chargings,
                 [
                     "name" => "Salary Regular Regular",
+                    "charging_name" => $payrollCharging["charging_name"],
                     "charge_type" => $payrollCharging["type"],
                     "charge_id" => $payrollCharging["id"],
                     "amount" => $fixedSalary
@@ -334,6 +338,7 @@ class EmployeeService
                         "name" => $name,
                         "charge_type" => $type,
                         "charge_id" => $id,
+                        "charging_name" => $type === "App\\Models\\Department" ? Department::find($id)->department_name : Project::find($id)->project_code,
                         "amount" => $chargings->sum("amount"),
                     ];
                 });
@@ -343,14 +348,19 @@ class EmployeeService
 
     public function aggregateAdjustmentCharging($adjustments, $charging)
     {
-        return [
-            [
-                "name" => "Salary Adjustment", // Adjustment
-                "charge_type" => $charging["type"],
-                "charge_id" => $charging["id"],
-                "amount" => collect($adjustments)->sum("adjustment_amount"),
-            ],
-        ];
+        $total = collect($adjustments)->sum("adjustment_amount");
+        if ($total > 0) {
+            return [
+                [
+                    "name" => "Salary Adjustment", // Adjustment
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => collect($adjustments)->sum("adjustment_amount"),
+                ],
+            ];
+        }
+        return [];
     }
 
     public function aggregateSalaryDeductionEmployersCharging($salaryDeductions, $charging)
@@ -360,18 +370,21 @@ class EmployeeService
                 "name" => "SSS Employer",
                 "charge_type" => $charging["type"],
                 "charge_id" => $charging["id"],
+                "charging_name" => $charging["charging_name"],
                 "amount" => $salaryDeductions["sss"]["employer_compensation"],
             ],
             [
                 "name" => "Philhealth Employer",
                 "charge_type" => $charging["type"],
                 "charge_id" => $charging["id"],
+                "charging_name" => $charging["charging_name"],
                 "amount" => $salaryDeductions["phic"]["employer_compensation"],
             ],
             [
                 "name" => "Pagibig Employer",
                 "charge_type" => $charging["type"],
                 "charge_id" => $charging["id"],
+                "charging_name" => $charging["charging_name"],
                 "amount" => $salaryDeductions["hmdf"]["employer_compensation"],
             ],
         ];

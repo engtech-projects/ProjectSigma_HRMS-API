@@ -24,6 +24,8 @@ use App\Models\LoanPayments;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetailsCharging;
 use App\Models\Project;
+use App\Models\Users;
+use App\Notifications\PayrollRequestForApproval;
 use Carbon\Carbon;
 
 class PayrollRecordController extends Controller
@@ -63,7 +65,7 @@ class PayrollRecordController extends Controller
                 ...$filters,
                 "project" => Project::find($filters['project_id'] ?? null),
                 "department" => Department::find($filters['department_id'] ?? null),
-                "payroll" => $result
+                "payroll_details" => $result
             ]
         ]);
     }
@@ -85,6 +87,11 @@ class PayrollRecordController extends Controller
                     PayrollDetailDeduction::create($this->setPayrollDetails($payrollData["deductions"], $empPayrollDetail));
                     PayrollDetailsCharging::create($this->setPayrollDetails($payrollData["charging"], $empPayrollDetail));
                 }
+                $payroll->refresh();
+                if ($payroll->getNextPendingApproval()) {
+                    Users::find($payroll->getNextPendingApproval()['user_id'])->notify(new PayrollRequestForApproval($payroll));
+                }
+
             });
         } catch (Exception $e) {
             throw new TransactionFailedException("Transaction failed.", 500, $e);

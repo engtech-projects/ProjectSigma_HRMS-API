@@ -16,6 +16,7 @@ use App\Http\Requests\DisapproveApprovalRequest;
 use App\Models\Users;
 use App\Notifications\AllowanceRequestDenied;
 use App\Notifications\LeaveRequestDenied;
+use App\Notifications\PayrollRequestDenied;
 use Carbon\Carbon;
 
 class DisapproveApproval extends Controller
@@ -51,6 +52,9 @@ class DisapproveApproval extends Controller
                 break;
             case ApprovalModels::GenerateAllowance->name:
                 Users::find($model->created_by)->notify(new AllowanceRequestDenied($model)); // Notify Request Creator Request DENIED
+                break;
+            case ApprovalModels::GeneratePayroll->name:
+                Users::find($model->created_by)->notify(new PayrollRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             default:
                 break;

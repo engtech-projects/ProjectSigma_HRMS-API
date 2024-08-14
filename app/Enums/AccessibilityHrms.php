@@ -29,10 +29,12 @@ enum AccessibilityHrms: string
     case HRMS_SETUP_LEAVES = "hrms:setup_leaves";
     // case HRMS_ = "";
     // case HRMS_ = "";
-    case HRMS_PAYROLL_SALARY_GENERATEPAYROLL = "hrms:payroll_generate payroll";
+    case HRMS_PAYROLL_SALARY_GENERATEPAYROLL = "hrms:payroll_salary_generate payroll_form and my requests";
+    case HRMS_PAYROLL_SALARY_GENERATEPAYROLL_ALLREQUESTS = "hrms:payroll_salary_payroll_salary_generate payroll_all requests";
+    case HRMS_PAYROLL_SALARY_GENERATEPAYROLL_MYAPPROVALS = "hrms:payroll_salary_payroll_salary_generate payroll_my approvals";
+    case HRMS_PAYROLL_SALARY_PAYROLLRECORD = "hrms:payroll_salary_payroll records";
     case HRMS_PAYROLL_13THMONTH = "hrms:payroll_13th month";
     case HRMS_PAYROLL_ALLOWANCE = "hrms:payroll_allowance";
-    case HRMS_PAYROLL_SALARY_PAYROLLRECORD = "hrms:payroll_payroll record";
     case HRMS_REPORTS = "hrms:reports";
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
