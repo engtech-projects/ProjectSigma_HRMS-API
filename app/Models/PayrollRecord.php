@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ class PayrollRecord extends Model
         'cutoff_end',
         'request_status',
         'approvals',
+        'created_by',
     ];
     protected $casts = [
         "approvals" => 'array'
@@ -36,7 +38,7 @@ class PayrollRecord extends Model
      */
     public function payroll_details(): HasMany
     {
-        return $this->hasMany(PayrollDetail::class)->with('deductions', 'adjustments', 'charges');
+        return $this->hasMany(PayrollDetail::class);
     }
 
     public function department(): HasOne
@@ -48,7 +50,6 @@ class PayrollRecord extends Model
     {
         return $this->hasOne(Project::class, "id", "project_id");
     }
-
 
     public function getChargingNameAttribute()
     {
@@ -71,5 +72,11 @@ class PayrollRecord extends Model
         $query->where('request_status', RequestStatusType::APPROVED);
     }
 
+    public function completeRequestStatus()
+    {
+        $this->request_status = RequestApprovalStatus::APPROVED;
+        $this->save();
+        $this->refresh();
+    }
 
 }

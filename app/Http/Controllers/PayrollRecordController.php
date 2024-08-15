@@ -27,6 +27,7 @@ use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PayrollRecordController extends Controller
 {
@@ -78,14 +79,16 @@ class PayrollRecordController extends Controller
         $attribute = $request->validated();
         $attribute['request_status'] = RequestStatusType::PENDING->value;
         $attribute['created_by'] = auth()->user()->id;
-        try {
+        // try {
             DB::transaction(function () use ($attribute) {
                 $payroll = PayrollRecord::create($attribute);
                 foreach($attribute["payroll_details"] as $payrollData) {
                     $empPayrollDetail = $payroll->payroll_details()->create($payrollData);
-                    $empPayrollDetail->adjustments()->createMany($payrollData["adjustment"]);
-                    PayrollDetailDeduction::create($this->setPayrollDetails($payrollData["deductions"], $empPayrollDetail));
-                    PayrollDetailsCharging::create($this->setPayrollDetails($payrollData["charging"], $empPayrollDetail));
+                    $empPayrollDetail->adjustments()->createMany($payrollData["adjustments"]);
+                    $empPayrollDetail->charges()->createMany($payrollData["chargings"]);
+                    if(sizeof($payrollData["deductions"]) > 0){
+                        PayrollDetailDeduction::create($this->setPayrollDetails($payrollData["deductions"], $empPayrollDetail));
+                    }
                 }
                 $payroll->refresh();
                 if ($payroll->getNextPendingApproval()) {
@@ -93,14 +96,19 @@ class PayrollRecordController extends Controller
                 }
 
             });
-        } catch (Exception $e) {
-            throw new TransactionFailedException("Transaction failed.", 500, $e);
-        }
-
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully saved.',
+            ], JsonResponse::HTTP_OK);
+        // } catch (Exception $e) {
+        //     Log::error($e);
+        // }
         return new JsonResponse([
-            'success' => true,
-            'message' => 'Successfully saved.',
-        ], JsonResponse::HTTP_OK);
+            'success' => false,
+            'error' => $e,
+            'message' => 'Failed to save payroll request.',
+        ], 500);
+
     }
 
     public function setPayrollDetails($deductions, $empPayrollDetail)
@@ -116,29 +124,29 @@ class PayrollRecordController extends Controller
                 case PayrollDetailsDeductionType::CASHADVANCE->value:
                     $paymentStore["cashadvance_id"] = $data["charge_id"];
                     $thisPayment = CashAdvancePayments::create($paymentStore);
-                    return $this->adjustChargingData($data, $thisPayment, $empPayrollDetail);
+                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
                 case PayrollDetailsDeductionType::LOAN->value:
                     $paymentStore["loans_id"] = $data["charge_id"];
                     $thisPayment = LoanPayments::create($paymentStore);
-                    return $this->adjustChargingData($data, $thisPayment, $empPayrollDetail);
+                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
                 case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
                     $paymentStore["otherdeduction_id"] = $data["charge_id"];
                     $thisPayment = OtherDeduction::create($paymentStore);
-                    return $this->adjustChargingData($data, $thisPayment, $empPayrollDetail);
+                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
             }
         }
     }
 
-    public function adjustChargingData($data, $thisPayment, $empPayrollDetail)
+    public function preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail)
     {
+        $data["payroll_details_id"] = $empPayrollDetail->id;
         $data["deduction_type"] = $this->getChargingModel($data["type"]);
         $data["deduction_id"] = $thisPayment->id;
         $data["charge_type"] = $this->getChargingModel($data["type"]);
         $data["charge_id"] = $thisPayment->id;
-        $data["payroll_details_id"] = $empPayrollDetail->id;
         return $data;
     }
 

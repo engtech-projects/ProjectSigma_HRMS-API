@@ -31,7 +31,6 @@ class PayrollDetail extends Model
         "regular_holiday_ot_pay",
         "special_holiday_ot_pay",
         "gross_pay",
-        "late_hours",
         "sss_employee_contribution",
         "sss_employer_contribution",
         "sss_employee_compensation",
@@ -54,7 +53,7 @@ class PayrollDetail extends Model
 
     public function deductions(): HasMany
     {
-        return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id')->with('deduction');
+        return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id');
     }
 
     public function adjustments(): HasMany
@@ -64,6 +63,6 @@ class PayrollDetail extends Model
 
     public function charges(): HasMany
     {
-        return $this->hasMany(PayrollDetailsCharging::class, 'payroll_details_id')->with('charge');
+        return $this->hasMany(PayrollDetailsCharging::class, 'payroll_details_id');
     }
 }
