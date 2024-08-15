@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasApproval;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PayrollRecord extends Model
@@ -51,6 +53,21 @@ class PayrollRecord extends Model
         return $this->hasOne(Project::class, "id", "project_id");
     }
 
+    public function created_by_user(): BelongsTo
+    {
+        return $this->belongsTo(Users::class, "created_by", "id");
+    }
+
+    public function charging()
+    {
+        if ($this->department_id) {
+            return $this->department;
+        }
+        if ($this->project_id) {
+            return $this->project;
+        }
+    }
+
     public function getChargingNameAttribute()
     {
         if($this->project_id) {
@@ -60,6 +77,21 @@ class PayrollRecord extends Model
             return $this->department->department_name;
         }
         return 'No charging found.';
+    }
+
+    public function getPayrollDateHumanAttribute()
+    {
+        return Carbon::parse($this->payroll_date)->format("F j, Y");
+    }
+
+    public function getCutoffStartHumanAttribute()
+    {
+        return Carbon::parse($this->cutoff_start)->format("F j, Y");
+    }
+
+    public function getCutoffEndHumanAttribute()
+    {
+        return Carbon::parse($this->cutoff_end)->format("F j, Y");
     }
 
     public function scopeRequestStatusPending(Builder $query): void

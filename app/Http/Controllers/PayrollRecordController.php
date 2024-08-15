@@ -17,6 +17,7 @@ use App\Http\Requests\GeneratePayrollRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Exceptions\TransactionFailedException;
 use App\Http\Requests\StorePayrollRecordRequest;
+use App\Http\Resources\PayrollRequestResource;
 use App\Models\Department;
 use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
@@ -26,6 +27,7 @@ use App\Models\PayrollDetailsCharging;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
+use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -82,12 +84,12 @@ class PayrollRecordController extends Controller
         // try {
             DB::transaction(function () use ($attribute) {
                 $payroll = PayrollRecord::create($attribute);
-                foreach($attribute["payroll_details"] as $payrollData) {
-                    $empPayrollDetail = $payroll->payroll_details()->create($payrollData);
-                    $empPayrollDetail->adjustments()->createMany($payrollData["adjustments"]);
-                    $empPayrollDetail->charges()->createMany($payrollData["chargings"]);
-                    if(sizeof($payrollData["deductions"]) > 0){
-                        PayrollDetailDeduction::create($this->setPayrollDetails($payrollData["deductions"], $empPayrollDetail));
+                foreach($attribute["payroll_details"] as $employeePayrollData) {
+                    $empPayrollDetail = $payroll->payroll_details()->create($employeePayrollData);
+                    $empPayrollDetail->adjustments()->createMany($employeePayrollData["adjustments"]);
+                    $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
+                    if(sizeof($employeePayrollData["deductions"]) > 0){
+                        PayrollDetailDeduction::create($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
                     }
                 }
                 $payroll->refresh();
@@ -170,22 +172,34 @@ class PayrollRecordController extends Controller
      */
     public function show($id)
     {
-        $myRequest = PayrollRecord::with('payroll_details')->where('id', $id)->get()->append(['charging_name']);
+        $request = PayrollRecord::find($id);
+        if (!is_null($request)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Payrollrecord request fetched.',
+                'data' => new PayrollRequestResource($request),
+            ], JsonResponse::HTTP_OK);
+        }
         return new JsonResponse([
-            'success' => true,
-            'message' => 'Payrollrecord request fetched.',
-            'data' => $myRequest
-        ]);
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 
     public function index()
     {
-        $myRequest = $this->payrollService->getAll();
+        $allRequests = $this->payrollService->getAll();
+        if (!is_null($allRequests)) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Payrollrecord request fetched.',
+                'data' => PaginateResourceCollection::paginate(collect(PayrollRequestResource::collection($allRequests))),
+            ], JsonResponse::HTTP_OK);
+        }
         return new JsonResponse([
-            'success' => true,
-            'message' => 'Payrollrecord request fetched.',
-            'data' => $myRequest
-        ]);
+            'success' => false,
+            'message' => 'No data found.',
+        ], 404);
     }
 
     public function myRequest()
@@ -200,7 +214,7 @@ class PayrollRecordController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
-            'data' => $myRequest
+            'data' => PaginateResourceCollection::paginate(collect(PayrollRequestResource::collection($myRequest))),
         ]);
     }
 
@@ -219,7 +233,7 @@ class PayrollRecordController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
-            'data' => $myApproval
+            'data' => PayrollRequestResource::collection($myApproval)
         ]);
     }
 }

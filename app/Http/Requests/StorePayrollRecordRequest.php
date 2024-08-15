@@ -280,7 +280,6 @@ class StorePayrollRecordRequest extends FormRequest
                 new Enum(PayrollDetailsDeductionType::class)
             ],
             'payroll_details.*.adjustments' => 'present|nullable|array',
-            'payroll_details.*.adjustments.*.employee_id' => 'required|integer|exists:employees,id',
             'payroll_details.*.adjustments.*.name' => 'required|string',
             'payroll_details.*.adjustments.*.amount' => [
                 "required",

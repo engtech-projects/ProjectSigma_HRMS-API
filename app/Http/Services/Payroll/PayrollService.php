@@ -15,7 +15,13 @@ class PayrollService
 
     public function getAll()
     {
-        return PayrollRecord::with('payroll_details')->get()->append(['charging_name']);
+        return PayrollRecord::all();
+    }
+
+    public function getMyRequests()
+    {
+        return PayrollRecord::where("created_by", auth()->user()->id)
+        ->get();
     }
 
     public function getMyApprovals()
