@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Enums\ApprovalModels;
+use App\Models\PayrollRecord;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -9,13 +11,13 @@ use Illuminate\Notifications\Notification;
 class PayrollRequestDenied extends Notification
 {
     use Queueable;
-
+    private $payrollRequest;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(PayrollRecord $payroll)
     {
-        //
+        $this->payrollRequest = $payroll;
     }
 
     /**
@@ -25,7 +27,10 @@ class PayrollRequestDenied extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return [
+            'database',
+            // 'mail'
+        ];
     }
 
     /**
@@ -47,7 +52,12 @@ class PayrollRequestDenied extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            "message" => "A Payroll Request is for your approval",
+            "type" => ApprovalModels::GeneratePayroll->name,
+            "action_type" => "View",
+            "metadata" => [
+                "id" => $this->payrollRequest->id,
+            ],
         ];
     }
 }
