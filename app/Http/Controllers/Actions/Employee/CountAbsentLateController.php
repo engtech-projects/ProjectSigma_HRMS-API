@@ -10,6 +10,7 @@ use App\Models\Settings;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CompressedImageResource;
 use Illuminate\Support\Facades\Cache;
 
 class CountAbsentLateController extends Controller
@@ -51,7 +52,7 @@ class CountAbsentLateController extends Controller
                     'employee_id' => $key,
                     'fullname_first' => $emp->fullname_first,
                     'fullname_last' => $emp->fullname_last,
-                    'profile_photo' => $emp->profile_photo(),
+                    'profile_photo' => $emp->profile_photo ? new CompressedImageResource($emp->profile_photo) : null,
                     'lates' => $val
                 ];
             })->toArray());

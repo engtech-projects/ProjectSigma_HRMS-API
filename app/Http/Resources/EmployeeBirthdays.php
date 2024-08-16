@@ -17,7 +17,7 @@ class EmployeeBirthdays extends JsonResource
         return [
             "fullname_first" => $this->fullname_first,
             "fullname_last" => $this->fullname_last,
-            "profile_photo" => $this->profile_photo,
+            "profile_photo" => new CompressedImageResource($this->profile_photo),
             "date_of_birth" => $this->date_of_birth,
             "id" => $this->id,
         ];
