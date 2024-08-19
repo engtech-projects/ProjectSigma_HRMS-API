@@ -71,7 +71,6 @@ class Image extends Model
             return Attribute::make(
                 get: fn () => "data:" . $mimeType . ";base64," . base64_encode($imageData)
                 // get: fn () => "data:" . $mimeType . ";base64," . base64_encode(file_get_contents("storage/" . $this->url)) // Original File Size
-
             );
         } else {
             return Attribute::make(

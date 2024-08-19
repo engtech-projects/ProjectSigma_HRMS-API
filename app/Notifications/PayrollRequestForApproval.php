@@ -52,7 +52,7 @@ class PayrollRequestForApproval extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A Payroll Request is for your approval",
+            "message" => "A Payroll Request is for your approval.",
             "type" => ApprovalModels::GeneratePayroll->name,
             "action_type" => "Approve",
             "metadata" => [

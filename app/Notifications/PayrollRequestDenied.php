@@ -52,7 +52,7 @@ class PayrollRequestDenied extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            "message" => "A Payroll Request is for your approval",
+            "message" => "Your Payroll Request has been DENIED.",
             "type" => ApprovalModels::GeneratePayroll->name,
             "action_type" => "View",
             "metadata" => [
