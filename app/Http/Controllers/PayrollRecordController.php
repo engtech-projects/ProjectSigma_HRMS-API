@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Services\EmployeeService;
 use App\Http\Requests\GeneratePayrollRequest;
 use App\Http\Services\Payroll\PayrollService;
-use App\Exceptions\TransactionFailedException;
 use App\Http\Requests\StorePayrollRecordRequest;
 use App\Http\Resources\PayrollRequestResource;
 use App\Models\Department;
@@ -23,7 +22,6 @@ use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
 use App\Models\LoanPayments;
 use App\Models\OtherDeduction;
-use App\Models\PayrollDetailsCharging;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
@@ -82,26 +80,26 @@ class PayrollRecordController extends Controller
         $attribute['request_status'] = RequestStatusType::PENDING->value;
         $attribute['created_by'] = auth()->user()->id;
         // try {
-            DB::transaction(function () use ($attribute) {
-                $payroll = PayrollRecord::create($attribute);
-                foreach($attribute["payroll_details"] as $employeePayrollData) {
-                    $empPayrollDetail = $payroll->payroll_details()->create($employeePayrollData);
-                    $empPayrollDetail->adjustments()->createMany($employeePayrollData["adjustments"]);
-                    $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
-                    if(sizeof($employeePayrollData["deductions"]) > 0){
-                        PayrollDetailDeduction::create($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
-                    }
+        DB::transaction(function () use ($attribute) {
+            $payroll = PayrollRecord::create($attribute);
+            foreach($attribute["payroll_details"] as $employeePayrollData) {
+                $empPayrollDetail = $payroll->payroll_details()->create($employeePayrollData);
+                $empPayrollDetail->adjustments()->createMany($employeePayrollData["adjustments"]);
+                $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
+                if(sizeof($employeePayrollData["deductions"]) > 0) {
+                    PayrollDetailDeduction::create($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
                 }
-                $payroll->refresh();
-                if ($payroll->getNextPendingApproval()) {
-                    Users::find($payroll->getNextPendingApproval()['user_id'])->notify(new PayrollRequestForApproval($payroll));
-                }
+            }
+            $payroll->refresh();
+            if ($payroll->getNextPendingApproval()) {
+                Users::find($payroll->getNextPendingApproval()['user_id'])->notify(new PayrollRequestForApproval($payroll));
+            }
 
-            });
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Successfully saved.',
-            ], JsonResponse::HTTP_OK);
+        });
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Successfully saved.',
+        ], JsonResponse::HTTP_OK);
         // } catch (Exception $e) {
         //     Log::error($e);
         // }

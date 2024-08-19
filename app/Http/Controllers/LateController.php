@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceSettings;
 use App\Http\Resources\CompressedImageResource;
-use App\Http\Resources\LatesThisMonthResource;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
