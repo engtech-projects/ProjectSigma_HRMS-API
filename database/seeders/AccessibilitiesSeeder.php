@@ -722,8 +722,8 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 102,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_LNOTNTO_LEAVE_MYREQUEST->value,
-                    'deleted_at' => null,
+                    'accessibilities_name' => null,
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
