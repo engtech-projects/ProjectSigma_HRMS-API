@@ -722,7 +722,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 102,
-                    'accessibilities_name' => null,
+                    'accessibilities_name' => "",
                     'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
