@@ -15,7 +15,13 @@ class PayrollService
 
     public function getAll()
     {
-        return PayrollRecord::with('payroll_details')->get()->append(['charging_name']);
+        return PayrollRecord::all();
+    }
+
+    public function getMyRequests()
+    {
+        return PayrollRecord::where("created_by", auth()->user()->id)
+        ->get();
     }
 
     public function getMyApprovals()
@@ -39,6 +45,38 @@ class PayrollService
         }
         // Monthly
         return $amount;
+    }
+
+    public static function getSalaryByRateHour($dayType = "regular", $salaryType = "reg_hrs", $dailyRate, $hoursWorked)
+    {
+        $daysWorked = $hoursWorked / 8;
+        $salary = 0;
+        if ($dayType == "rest") {
+            if ($salaryType == "reg_hrs") {
+                $salary = $daysWorked * $dailyRate * 1.3;
+            } else { // overtime
+                $salary = $daysWorked * $dailyRate * 1.6;
+            }
+        } elseif ($dayType == "regular_holidays") {
+            if ($salaryType == "reg_hrs") {
+                $salary = $daysWorked * $dailyRate * 1;
+            } else { // overtime
+                $salary = $daysWorked * $dailyRate * 1.6;
+            }
+        } elseif ($dayType == "special_holidays") {
+            if ($salaryType == "reg_hrs") {
+                $salary = $daysWorked * $dailyRate * 1.3;
+            } else { // overtime
+                $salary = $daysWorked * $dailyRate; // Not in Sample Payroll
+            }
+        } else { // ($dayType == "regular")
+            if ($salaryType == "reg_hrs") {
+                $salary = $daysWorked * $dailyRate;
+            } else { // overtime
+                $salary = $daysWorked * $dailyRate * 1.25;
+            }
+        }
+        return round($salary, 2);
     }
 
 }

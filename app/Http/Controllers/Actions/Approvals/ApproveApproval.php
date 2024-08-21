@@ -23,6 +23,8 @@ use App\Notifications\AllowanceRequestApproved;
 use App\Notifications\AllowanceRequestForApproval;
 use App\Notifications\LeaveRequestApproved;
 use App\Notifications\LeaveRequestForApproval;
+use App\Notifications\PayrollRequestApproved;
+use App\Notifications\PayrollRequestForApproval;
 use Carbon\Carbon;
 
 class ApproveApproval extends Controller
@@ -61,6 +63,9 @@ class ApproveApproval extends Controller
                 case ApprovalModels::GenerateAllowance->name:
                     Users::find($nextApprovalUser)->notify(new AllowanceRequestForApproval($model)); // Notify the next Approval
                     break;
+                case ApprovalModels::GeneratePayroll->name:
+                    Users::find($nextApprovalUser)->notify(new PayrollRequestForApproval($model)); // Notify the next Approval
+                    break;
             }
         } else {
             switch ($modelType) {
@@ -87,6 +92,9 @@ class ApproveApproval extends Controller
                     break;
                 case ApprovalModels::GenerateAllowance->name:
                     Users::find($model->created_by)->notify(new AllowanceRequestApproved($model)); // Notify the requestor
+                    break;
+                case ApprovalModels::GeneratePayroll->name:
+                    Users::find($model->created_by)->notify(new PayrollRequestApproved($model)); // Notify the requestor
                     break;
             }
         }

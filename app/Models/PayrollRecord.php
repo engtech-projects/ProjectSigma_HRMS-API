@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasApproval;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PayrollRecord extends Model
@@ -25,6 +28,7 @@ class PayrollRecord extends Model
         'cutoff_end',
         'request_status',
         'approvals',
+        'created_by',
     ];
     protected $casts = [
         "approvals" => 'array'
@@ -36,7 +40,7 @@ class PayrollRecord extends Model
      */
     public function payroll_details(): HasMany
     {
-        return $this->hasMany(PayrollDetail::class)->with('deductions', 'adjustments', 'charges');
+        return $this->hasMany(PayrollDetail::class);
     }
 
     public function department(): HasOne
@@ -49,6 +53,20 @@ class PayrollRecord extends Model
         return $this->hasOne(Project::class, "id", "project_id");
     }
 
+    public function created_by_user(): BelongsTo
+    {
+        return $this->belongsTo(Users::class, "created_by", "id");
+    }
+
+    public function charging()
+    {
+        if ($this->department_id) {
+            return $this->department;
+        }
+        if ($this->project_id) {
+            return $this->project;
+        }
+    }
 
     public function getChargingNameAttribute()
     {
@@ -61,6 +79,21 @@ class PayrollRecord extends Model
         return 'No charging found.';
     }
 
+    public function getPayrollDateHumanAttribute()
+    {
+        return Carbon::parse($this->payroll_date)->format("F j, Y");
+    }
+
+    public function getCutoffStartHumanAttribute()
+    {
+        return Carbon::parse($this->cutoff_start)->format("F j, Y");
+    }
+
+    public function getCutoffEndHumanAttribute()
+    {
+        return Carbon::parse($this->cutoff_end)->format("F j, Y");
+    }
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', RequestStatusType::PENDING);
@@ -71,5 +104,11 @@ class PayrollRecord extends Model
         $query->where('request_status', RequestStatusType::APPROVED);
     }
 
+    public function completeRequestStatus()
+    {
+        $this->request_status = RequestApprovalStatus::APPROVED;
+        $this->save();
+        $this->refresh();
+    }
 
 }

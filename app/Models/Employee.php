@@ -450,4 +450,9 @@ class Employee extends Model
             }
         ])->addSelect(DB::raw('startTime as late'))->get();
     }
+
+    public function getCurrentPositionNameAttribute()
+    {
+        return $this->current_employment?->position?->name ?? "No Position Found";
+    }
 }

@@ -226,7 +226,7 @@ class EmployeeAllowancesController extends Controller
 
     public function myRequest()
     {
-        $myRequest = $this->employeeAllowanceService->getAll();
+        $myRequest = $this->employeeAllowanceService->getMyRequests();
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
                 'success' => false,

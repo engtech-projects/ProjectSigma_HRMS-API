@@ -69,10 +69,6 @@ class PersonnelActionNoticeRequestController extends Controller
         } catch (\Exception $e) {
             throw new TransactionFailedException("Create transaction failed.", 500, $e);
         }
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully created.",
-        ], JsonResponse::HTTP_CREATED);
     }
 
     // can view all pan request made by logged in user
@@ -117,7 +113,8 @@ class PersonnelActionNoticeRequestController extends Controller
      */
     public function show($id)
     {
-        $main = EmployeePanRequest::find($id);
+        $main = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
+        ->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $data->message = "Successfully fetched.";

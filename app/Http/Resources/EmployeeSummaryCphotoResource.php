@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EmployeeBirthdays extends JsonResource
+class EmployeeSummaryCphotoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,17 @@ class EmployeeBirthdays extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "id" => $this->id,
+            "first_name" => $this->first_name,
+            "middle_name" => $this->middle_name,
+            "family_name" => $this->family_name,
+            "name_suffix" => $this->name_suffix,
+            "nick_name" => $this->nick_name,
             "fullname_first" => $this->fullname_first,
             "fullname_last" => $this->fullname_last,
+            "current_position" => $this->current_position_name,
             "profile_photo" => new CompressedImageResource($this->profile_photo),
-            "date_of_birth" => $this->date_of_birth,
-            "id" => $this->id,
         ];
+        // return parent::toArray($request);
     }
 }

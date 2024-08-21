@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceSettings;
+use App\Http\Resources\CompressedImageResource;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
@@ -52,7 +53,7 @@ class LateController extends Controller
                     'employee_id' => $key,
                     'fullname_first' => $emp->fullname_first,
                     'fullname_last' => $emp->fullname_last,
-                    'profile_photo' => $emp->profile_photo(),
+                    'profile_photo' => $emp->profile_photo ? new CompressedImageResource($emp->profile_photo) : null,
                     'lates' => $val
                 ];
             })->sortByDesc('lates')->toArray());

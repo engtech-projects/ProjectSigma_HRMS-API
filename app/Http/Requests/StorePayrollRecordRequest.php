@@ -186,12 +186,6 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
-            'payroll_details.*.late_hours' => [
-                "required",
-                "numeric",
-                "min:0",
-                'decimal:0,2',
-            ],
             'payroll_details.*.sss_employee_contribution' => [
                 'nullable',
                 "numeric",
@@ -268,7 +262,7 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
-            'payroll_details.*.deductions' => 'required|array',
+            'payroll_details.*.deductions' => 'present|nullable|array',
             'payroll_details.*.deductions.*.charge_id' => [
                 "nullable",
                 "integer",
@@ -285,8 +279,7 @@ class StorePayrollRecordRequest extends FormRequest
                 "string",
                 new Enum(PayrollDetailsDeductionType::class)
             ],
-            'payroll_details.*.adjustments' => 'required|array',
-            'payroll_details.*.adjustments.*.employee_id' => 'required|integer|exists:employees,id',
+            'payroll_details.*.adjustments' => 'present|nullable|array',
             'payroll_details.*.adjustments.*.name' => 'required|string',
             'payroll_details.*.adjustments.*.amount' => [
                 "required",
@@ -306,10 +299,9 @@ class StorePayrollRecordRequest extends FormRequest
                 "nullable",
                 "integer",
             ],
-            'payroll_details.*.chargings.*.type' => [
+            'payroll_details.*.chargings.*.charge_type' => [
                 "required",
                 "string",
-                new Enum(PayrollDetailsDeductionType::class)
             ],
         ];
     }

@@ -22,7 +22,7 @@ enum ApprovalModels: string
     case CashAdvance = CashAdvance::class;
     case Overtime = Overtime::class;
     case GenerateAllowance = AllowanceRequest::class;
-    case Payroll = PayrollRecord::class;
+    case GeneratePayroll = PayrollRecord::class;
 
     public static function toArray(): array
     {

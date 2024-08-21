@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserAccountResource extends JsonResource
+class PayrollRequestResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,11 +14,13 @@ class UserAccountResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // Used to Display User Accoutn Details With Accessibility names
-        // If Need Employee Details Please Use UserEmployee Resource
         return [
             ...parent::toArray($request),
-            "accessibility_names" => $this->accessibility_names,
+            "id" => $this->id,
+            "payroll_date_human" => $this->payroll_date_human,
+            "charging_name" => $this->charging_name,
+            "cutoff_start_human" => $this->cutoff_start_human,
+            "cutoff_end_human" => $this->cutoff_end_human,
         ];
     }
 }

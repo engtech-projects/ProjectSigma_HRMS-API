@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Enums\RequestApprovalStatus;
+use App\Http\Resources\EmployeeLeaveResource;
 use App\Models\EmployeeLeaves;
 
 class EmployeeLeaveService
@@ -52,8 +53,8 @@ class EmployeeLeaveService
 
     public function getMyRequest()
     {
-        $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('requested_by', auth()->user()->id)->load('user.employee');
+        $leaveRequest = EmployeeLeaves::where('created_by', auth()->user()->id)->with('employee');
+        return EmployeeLeaveResource::collection($leaveRequest->orderBy('created_by', 'DESC')->paginate(15));
     }
 
     public function getMyApprovals()

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeAddressType;
 use App\Traits\HasUser;
 use App\Traits\HasApproval;
 use App\Enums\PersonelAccessForm;
@@ -233,7 +234,6 @@ class EmployeePanRequest extends Model
         $jobApplicant["first_name"] = $jobApplicant->firstname;
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $employee = Employee::create($jobApplicant->toArray());
-
         // pan request details to internal work experience
         $employeeInternal = $this->toArray();
         unset($employeeInternal["id"]);
@@ -243,8 +243,7 @@ class EmployeePanRequest extends Model
         $employeeInternal["employment_status"] = $this->employment_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employee->employee_internal()->create($employeeInternal);
-
-        /*         dd($jobApplicant); */
+        //company employements
         $employee->company_employments()->create([
             "employeedisplay_id" => $this->company_id_num,
             "date_hired" => $this->date_of_effictivity,
@@ -254,11 +253,27 @@ class EmployeePanRequest extends Model
             "pagibig_number" => $jobApplicant->pagibig ?: "N/A",
             "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
         ]);
-
+        // employee present address
+        $employee->present_address()->create([
+            "street" => $jobApplicant->pre_address_street ?: "N/A",
+            "brgy" => $jobApplicant->pre_address_brgy ?: "N/A",
+            "city" => $jobApplicant->pre_address_city ?: "N/A",
+            "zip" => $jobApplicant->pre_address_zip ?: "N/A",
+            "province" => $jobApplicant->pre_address_province ?: "N/A",
+            "type" => EmployeeAddressType::PRESENT,
+        ]);
+        // employee permanent address
+        $employee->permanent_address()->create([
+            "street" => $jobApplicant->per_address_street ?: "N/A",
+            "brgy" => $jobApplicant->per_address_brgy ?: "N/A",
+            "city" => $jobApplicant->per_address_city ?: "N/A",
+            "zip" => $jobApplicant->per_address_zip ?: "N/A",
+            "province" => $jobApplicant->per_address_province ?: "N/A",
+            "type" => EmployeeAddressType::PERMANENT,
+        ]);
         // employee related person details
         $employeeRelatedPerson = $this->employeeRelatedPersonDetails($employee);
         $employee->employee_related_person()->createMany($employeeRelatedPerson);
-
         if ($this->jobapplicantonly->workexperience) {
             $externalWorkExp = collect($this->jobapplicantonly->workexperience)->map(function ($workExp) {
                 $dateFrom = Carbon::parse($workExp["inclusive_dates_from"])->format('Y-m-d');
@@ -274,6 +289,11 @@ class EmployeePanRequest extends Model
             });
             $employee->employee_externalwork()->createMany($externalWorkExp);
         }
+        //education
+        if ($this->jobapplicantonly->education) {
+            $employee->employee_education()->createMany(collect($this->jobapplicantonly->education)->toArray());
+        }
+        // children
         if ($this->jobapplicantonly->children) {
             $children = collect($this->jobapplicantonly->children)->map(function ($child) {
                 $child["type"] = EmployeeRelatedPersonType::CHILD->value;
@@ -285,10 +305,25 @@ class EmployeePanRequest extends Model
             })->toArray();
             $employee->employee_related_person()->createMany($children);
         }
-        // NOT WORKING FIELDS ADDRESSES
-        // NOT WORKING FIELDS EMPLOYEE RELATED PEOPLE, Mother, Father, Children, Spouse, Contact Person
-        // NOT WORKING FIELDS External Work Experience
-
+        if ($this->jobapplicantonly->children) {
+            //children
+            $children = collect($this->jobapplicantonly->children)->map(function ($child) {
+                return [
+                    'relationship' => EmployeeRelatedPersonType::CHILD,
+                    'type' => EmployeeRelatedPersonType::CHILD,
+                    'name' => $child->name ?: "N/A",
+                    'date_of_birth' => $child->birth_date ?: "N/A",
+                    'street' => "N/A",
+                    'brgy' => "N/A",
+                    'city' => "N/A",
+                    'zip' => "N/A",
+                    'province' => "N/A",
+                    'occupation' => "N/A",
+                    'contact_no' => "N/A",
+                ];
+            })->toArray();
+            $employee->employee_related_person()->createMany($children);
+        }
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
         $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);

@@ -17,8 +17,7 @@ class MonthlyBirthdaysController extends Controller
     public function __invoke()
     {
         $month = Carbon::now()->format('m');
-        $employees = Employee::with("profile_photo")
-        ->whereMonth('date_of_birth', $month)
+        $employees = Employee::whereMonth('date_of_birth', $month)
         ->orderByRaw('DAY(date_of_birth)')
         ->get();
 

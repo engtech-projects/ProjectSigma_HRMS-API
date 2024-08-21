@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AttendanceLogType;
 use App\Enums\SalaryRequestType;
+use App\Http\Resources\CompressedImageResource;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
@@ -26,7 +27,7 @@ class AbsentController extends Controller
         $daysThisMonth = $endOfMonth->format('d');
         $workDaysCount = $daysThisMonth - $sundaysThisMonth;
 
-        $attendance = Employee::whereHas("current_employment", function($employment) {
+        $attendance = Employee::whereHas("current_employment", function ($employment) {
             return $employment->where("salary_type", SalaryRequestType::SALARY_TYPE_NON_FIXED->value)
                 ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_MONTHLY->value)
                 ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_WEEKLY->value);
@@ -46,7 +47,7 @@ class AbsentController extends Controller
             return [
                 'fullname_first' => $employee->fullname_first,
                 'fullname_last' => $employee->fullname_last,
-                'profile_photo' => $employee->profile_photo(),
+                'profile_photo' => $employee->profile_photo ? new CompressedImageResource($employee->profile_photo) : null,
                 'absent' => $workDaysCount - $attendedDays,
                 'workDaysCount' => $workDaysCount,
                 'attendDays' => $attendedDays,
@@ -58,5 +59,6 @@ class AbsentController extends Controller
         ->sortByDesc("absent")
         ->values()
         ->all();
+
     }
 }
