@@ -8,6 +8,7 @@ use App\Models\Users;
 use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUserCredentialRequest;
 use App\Http\Requests\UpdateUsersRequest;
+use App\Http\Resources\UserEmployeeResource;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -31,11 +32,17 @@ class UsersController extends Controller
      */
     public function get()
     {
-        $users = Users::where('type', UserTypes::EMPLOYEE)->with("employee")->get();
+        $users = Users::where('type', UserTypes::EMPLOYEE)
+        ->with("employee")
+        ->get();
+        $usersCollection = UserEmployeeResource::collection($users)
+        ->sortBy("employee.fullname_first", SORT_NATURAL)
+        ->values()
+        ->all();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $users;
+        $data->data = $usersCollection;
         return response()->json($data);
     }
     public function getUserAccountByEmployeeId($id)

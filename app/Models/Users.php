@@ -17,9 +17,7 @@ class Users extends Model
     use SoftDeletes;
 
     protected $primaryKey = 'id';
-    protected $with = [
-        "employee.profile_photo"
-    ];
+
     protected $appends = [
         "accessibility_names"
     ];

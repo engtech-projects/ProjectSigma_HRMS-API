@@ -89,7 +89,6 @@ enum AccessibilityHrms: string
     case HRMS_LNOTNTO_LEAVE_FORM = "hrms:leaves and overtime_leave_form";
     case HRMS_LNOTNTO_LEAVE_ALLREQUESTS = "hrms:leaves and overtime_leave_list";
     case HRMS_LNOTNTO_LEAVE_MYAPPROVALS = "hrms:leaves and overtime_leave_my approvals";
-    case HRMS_LNOTNTO_LEAVE_MYREQUEST = "hrms:leaves and overtime_leave_my request";
     case HRMS_LNOTNTO_OVERTIME_FORM = "hrms:leaves and overtime_overtime_form";
     case HRMS_LNOTNTO_OVERTIME_ALLREQUESTS = "hrms:leaves and overtime_overtime_list";
     case HRMS_LNOTNTO_OVERTIME_MYREQUESTS = "hrms:leaves and overtime_overtime_my request";

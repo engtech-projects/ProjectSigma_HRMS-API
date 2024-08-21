@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeEducationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -104,4 +105,75 @@ class JobApplicants extends Model
     {
         return $this->firstname . " " . $this->middlename . " " . $this->lastname;
     }
+
+    public function getEducationElementaryAttribute()
+    {
+        return collect($this->education)->where("type", EmployeeEducationType::ELEMENTARY->value)->first() ?? [
+            "type" => EmployeeEducationType::ELEMENTARY->value,
+            "name" => "",
+            "education" => "",
+            "year_graduated" => "",
+            "honors_received" => "",
+            "period_attendance_to" => "",
+            "period_attendance_from" => "",
+            "degree_earned_of_school" => "",
+        ];
+    }
+
+    public function getEducationSecondaryAttribute()
+    {
+        return collect($this->education)->where("type", EmployeeEducationType::SECONDARY->value)->first() ?? [
+            "type" => EmployeeEducationType::SECONDARY->value,
+            "name" => "",
+            "education" => "",
+            "year_graduated" => "",
+            "honors_received" => "",
+            "period_attendance_to" => "",
+            "period_attendance_from" => "",
+            "degree_earned_of_school" => "",
+        ];
+    }
+
+    public function getEducationVocationalAttribute()
+    {
+        return collect($this->education)->where("type", EmployeeEducationType::VOCATIONAL->value)->first() ?? [
+            "type" => EmployeeEducationType::VOCATIONAL->value,
+            "name" => "",
+            "education" => "",
+            "year_graduated" => "",
+            "honors_received" => "",
+            "period_attendance_to" => "",
+            "period_attendance_from" => "",
+            "degree_earned_of_school" => "",
+        ];
+    }
+
+    public function getEducationCollegeAttribute()
+    {
+        return collect($this->education)->where("type", EmployeeEducationType::COLLEGE->value)->first() ?? [
+            "type" => EmployeeEducationType::COLLEGE->value,
+            "name" => "",
+            "education" => "",
+            "year_graduated" => "",
+            "honors_received" => "",
+            "period_attendance_to" => "",
+            "period_attendance_from" => "",
+            "degree_earned_of_school" => "",
+        ];
+    }
+
+    public function getEducationGraduateAttribute()
+    {
+        return collect($this->education)->where("type", EmployeeEducationType::GRADUATE_STUDIES->value)->first() ?? [
+            "type" => EmployeeEducationType::GRADUATE_STUDIES->value,
+            "name" => "",
+            "education" => "",
+            "year_graduated" => "",
+            "honors_received" => "",
+            "period_attendance_to" => "",
+            "period_attendance_from" => "",
+            "degree_earned_of_school" => "",
+        ];
+    }
+
 }
