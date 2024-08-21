@@ -16,6 +16,12 @@ class StoreJobApplicantsRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        $this->merge(
+            array_map(function($value){
+                return $value === 'n/a' || $value === 'N/A' ? null : $value;
+            }, $this->all())
+        );
+
         $this->merge([
             "workexperience" => json_decode($this->workexperience, true),
             "education" => json_decode($this->education, true),
