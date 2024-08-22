@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,6 +24,7 @@ class ManpowerRequestResource extends JsonResource
         return [
             "id" => $this->id,
             "requesting_department" => $this->requesting_department,
+            "requesting_department_name" => $this->department->department_name ?? 'NO DEPARTMENT',
             "date_requested" => $this->date_requested,
             "date_required" => $this->date_required,
             "position" => $this->position,

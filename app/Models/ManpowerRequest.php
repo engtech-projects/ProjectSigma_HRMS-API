@@ -90,6 +90,12 @@ class ManpowerRequest extends Model
         return $this->belongsTo(Position::class, "position_id", "id");
     }
 
+    public function department()
+    {
+        return $this->belongsTo(Department::class, "requesting_department", "id");
+    }
+
+
     /**
      * MODEL
      * LOCAL SCOPES
