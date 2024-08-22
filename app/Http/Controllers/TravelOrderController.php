@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StringRequestApprovalStatus;
+use App\Http\Requests\AllTravelRequest;
+use App\Http\Requests\TravelApprovalRequest;
+use App\Http\Requests\TravelRequest;
 use App\Models\TravelOrder;
 use App\Http\Requests\StoreTravelOrderRequest;
 use App\Http\Requests\UpdateTravelOrderRequest;
@@ -12,6 +15,7 @@ use App\Models\Users;
 use App\Notifications\TravelRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TravelOrderController extends Controller
@@ -24,22 +28,24 @@ class TravelOrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(AllTravelRequest $request)
     {
-        $main = $this->RequestService->getAll();
-        $paginated = TravelOrderResource::collection($main);
+        $validatedData = $request->validated();
+        $data = TravelOrder::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employees', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with("employees")
+        ->orderBy("created_at", "DESC");
+
+        return response()->json(dd($data->getBindings()));
+
         return new JsonResponse([
             'success' => true,
-            'message' => 'TravelOrder Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+            'message' => 'Travel Order Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
         ]);
-
-        $main = TravelOrder::paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
     }
 
     /**
@@ -136,7 +142,7 @@ class TravelOrderController extends Controller
         return response()->json($data, 404);
     }
 
-    public function myRequests()
+    public function myRequests(TravelRequest $request)
     {
         $myRequest = $this->RequestService->getMyRequest();
 
@@ -156,7 +162,7 @@ class TravelOrderController extends Controller
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
-    public function myApprovals()
+    public function myApprovals(TravelApprovalRequest $request)
     {
         $myApproval = $this->RequestService->getMyApprovals();
         if ($myApproval->isEmpty()) {
