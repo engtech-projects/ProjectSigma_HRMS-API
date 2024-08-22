@@ -22,7 +22,7 @@ class TravelApprovalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => 'nullable|numeric|exists::employees,id',
+            'employee_id' => 'nullable|numeric|exists:employees,id',
         ];
     }
 }
