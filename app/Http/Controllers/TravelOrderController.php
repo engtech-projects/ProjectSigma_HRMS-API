@@ -37,9 +37,8 @@ class TravelOrderController extends Controller
             });
         })
         ->with("employees")
-        ->orderBy("created_at", "DESC");
-
-        return response()->json(dd($data->getBindings()));
+        ->orderBy("created_at", "DESC")
+        ->get();
 
         return new JsonResponse([
             'success' => true,
