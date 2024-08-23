@@ -366,27 +366,54 @@ class EmployeeService
     public function aggregateSalaryDeductionEmployersCharging($salaryDeductions, $charging)
     {
         return [
-            [
-                "name" => "SSS Employer",
-                "charge_type" => $charging["type"],
-                "charge_id" => $charging["id"],
-                "charging_name" => $charging["charging_name"],
-                "amount" => $salaryDeductions["sss"]["employer_compensation"],
-            ],
-            [
-                "name" => "Philhealth Employer",
-                "charge_type" => $charging["type"],
-                "charge_id" => $charging["id"],
-                "charging_name" => $charging["charging_name"],
-                "amount" => $salaryDeductions["phic"]["employer_compensation"],
-            ],
-            [
-                "name" => "Pagibig Employer",
-                "charge_type" => $charging["type"],
-                "charge_id" => $charging["id"],
-                "charging_name" => $charging["charging_name"],
-                "amount" => $salaryDeductions["hmdf"]["employer_compensation"],
-            ],
+            ...$this->prepareSssDeductionCharging($salaryDeductions, $charging),
+            ...$this->preparePhilhealthDeductionCharging($salaryDeductions, $charging),
+            ...$this->preparePagibigDeductionCharging($salaryDeductions, $charging),
         ];
+    }
+    public function prepareSssDeductionCharging($salaryDeductions, $charging)
+    {
+        if ($salaryDeductions["sss"]) {
+            return [
+                [
+                    "name" => "SSS Employer",
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => $salaryDeductions["sss"]["employer_compensation"],
+                ],
+            ];
+        }
+        return [];
+    }
+    public function preparePhilhealthDeductionCharging($salaryDeductions, $charging)
+    {
+        if ($salaryDeductions["phic"]) {
+            return [
+                [
+                    "name" => "Philhealth Employer",
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => $salaryDeductions["phic"]["employer_compensation"],
+                ],
+            ];
+        }
+        return [];
+    }
+    public function preparePagibigDeductionCharging($salaryDeductions, $charging)
+    {
+        if ($salaryDeductions["hmdf"]) {
+            return [
+                [
+                    "name" => "Pagibig Employer",
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => $salaryDeductions["hmdf"]["employer_compensation"],
+                ],
+            ];
+        }
+        return [];
     }
 }
