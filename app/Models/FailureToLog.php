@@ -44,7 +44,6 @@ class FailureToLog extends Model
             $model->created_by = auth()->user()->id;
         });
     }
-
     public function completeRequestStatus()
     {
         $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;

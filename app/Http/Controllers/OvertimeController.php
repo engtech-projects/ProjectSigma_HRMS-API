@@ -33,7 +33,7 @@ class OvertimeController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->with("employees")
+        ->with('employees')
         ->orderBy("created_at", "DESC")
         ->get();
 
