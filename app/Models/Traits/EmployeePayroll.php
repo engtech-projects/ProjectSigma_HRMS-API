@@ -164,10 +164,10 @@ trait EmployeePayroll
         $loans = $loans->filter(function ($loan) use ($date) {
             return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
         });
-        $loans = $loans->map(function ($loan) {
+        $loans = $loans->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
-                "max_payroll_payment" => $loan->max_payroll_payment,
+                "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
             ];
         });
         $totalPaid = $loans->sum("max_payroll_payment");
@@ -184,10 +184,10 @@ trait EmployeePayroll
         $cashAdvance->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $cashAdvance->map(function ($loan) {
+        $cashAdvance->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
-                "max_payable" => $loan->max_payroll_payment,
+                "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
             ];
         });
         $totalPaid = $cashAdvance->sum("max_payroll_payment");
@@ -204,10 +204,10 @@ trait EmployeePayroll
         $otherDeduction->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $otherDeduction->map(function ($loan) {
+        $otherDeduction->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
-                "max_payable" => $loan->max_payroll_payment,
+                "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
             ];
         });
         $totalPaid = $otherDeduction->sum("max_payroll_payment");

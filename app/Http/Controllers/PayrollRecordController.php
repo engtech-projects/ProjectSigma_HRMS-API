@@ -151,8 +151,8 @@ class PayrollRecordController extends Controller
         $data["payroll_details_id"] = $empPayrollDetail->id;
         $data["deduction_type"] = $this->getChargingModel($data["type"]);
         $data["deduction_id"] = $thisPayment->id;
-        $data["charge_type"] = $this->getChargingModel($data["type"]);
-        $data["charge_id"] = $thisPayment->id;
+        // $data["charge_type"] = $this->getChargingModel($data["type"]);
+        // $data["charge_id"] = $thisPayment->id;
         return $data;
     }
 
