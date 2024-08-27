@@ -53,12 +53,18 @@ class PayrollRecordController extends Controller
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
-        $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
-            $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
-            $employee->current_employment['position'] = $employee->current_employment->position;
-            return $employee;
-        });
-
+        try {
+            $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
+                $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
+                $employee->current_employment['position'] = $employee->current_employment->position;
+                return $employee;
+            });
+        } catch (\Throwable $th) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 400);
+        }
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',

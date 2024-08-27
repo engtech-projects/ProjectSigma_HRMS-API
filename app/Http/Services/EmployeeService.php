@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\AssignTypes;
 use App\Enums\SalaryRequestType;
+use App\Exceptions\TransactionFailedException;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\Department;
 use App\Models\Project;
@@ -44,6 +45,12 @@ class EmployeeService
 
     public function generatePayroll(array $period, array $filters, $employee)
     {
+        if (!$employee->current_employment) {
+            throw new TransactionFailedException("Employee ".$employee->fullname_first." is not Employed.", 500);
+        }
+        if (!$employee->current_employment->employee_salarygrade) {
+            throw new TransactionFailedException("Employee ".$employee->fullname_first." has no Salary Grade Set.", 500);
+        }
         $payrollCharging = [
             "id" => 8,  // Default HR Department (temporary static data, need to be variable/env)
             "type" => Department::class,
