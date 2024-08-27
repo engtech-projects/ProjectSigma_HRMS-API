@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\LoanPaymentsType;
 use App\Enums\RequestStatusType;
+use App\Http\Requests\CashAdvanceAllRequest;
 use App\Models\CashAdvance;
 use App\Http\Requests\StoreCashAdvanceRequest;
 use App\Http\Requests\UpdateCashAdvanceRequest;
@@ -26,14 +27,22 @@ class CashAdvanceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CashAdvanceAllRequest $request)
     {
-        $main = $this->RequestService->getAll();
-        $paginated = CashAdvanceResource::collection($main);
+        $validatedData = $request->validated();
+        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with('employee')
+        ->orderBy("created_at", "DESC")
+        ->get();
+
         return new JsonResponse([
             'success' => true,
-            'message' => 'Successfully fetch.',
-            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+            'message' => 'Travel Order Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
 
