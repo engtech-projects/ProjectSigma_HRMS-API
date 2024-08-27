@@ -23,6 +23,7 @@ class FailureToLogResource extends JsonResource
             'log_type' => $this->log_type,
             'reason' => $this->reason,
             'approvals' => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
             'employee' => $this->whenLoaded('employee'),
         ];
         //return parent::toArray($request);
