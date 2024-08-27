@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\LoanPaymentsType;
 use App\Http\Requests\CashAdvanceRequest;
+use App\Http\Requests\OtherDeductionAllList;
 use App\Models\OtherDeduction;
 use App\Http\Requests\StoreOtherDeductionRequest;
 use App\Http\Requests\UpdateOtherDeductionRequest;
@@ -15,14 +16,23 @@ class OtherDeductionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(OtherDeductionAllList $request)
     {
-        $main = OtherDeduction::with('employee')->paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $validatedData = $request->validated();
+        $data = OtherDeduction::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with(['employee'])
+        ->orderBy("created_at", "DESC")
+        ->paginate(15);
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Travel Order Request fetched.',
+            'data' => $data
+        ]);
     }
 
     /**
