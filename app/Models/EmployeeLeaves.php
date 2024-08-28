@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class EmployeeLeaves extends Model
@@ -114,7 +115,7 @@ class EmployeeLeaves extends Model
         if ($this->number_of_days < 1 || $this->date_of_absence_to == $date) {
             return $this->number_of_days % 1 != 0 ? 0.5 : 1;
         }
-        if ($date < $this->date_of_absence_from || $date > $this->date_of_absence_to) {
+        if ($date->lt($this->date_of_absence_from) || $date->gt($this->date_of_absence_to)) {
             return 0;
         }
         return 1;
