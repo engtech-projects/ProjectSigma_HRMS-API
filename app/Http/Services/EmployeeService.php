@@ -173,12 +173,13 @@ class EmployeeService
 
     public function getTotalSalaryDeduction($deductions)
     {
-        $cashAdvance = 0;
         $sss = 0;
         $phic = 0;
         $ewtc = 0;
-        $loan = 0;
         $hmdf = 0;
+        $loan = 0;
+        $cashAdvance = 0;
+        $otherDeduction = 0;
         if ($deductions["sss"]) {
             $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_contribution"];
         }
@@ -191,13 +192,16 @@ class EmployeeService
         if ($deductions["ewtc"]) {
             $ewtc = $deductions["ewtc"];
         }
-        // if ($deductions["loan"]) {
-        //     $loan = $deductions["loan"];
-        // }
-        // if ($deductions["cash_advance"]) {
-        //     $cashAdvance = $deductions["cash_advance"];
-        // }
-        return $cashAdvance + $sss + $phic + $hmdf + $ewtc + $loan;
+        if ($deductions["loan"]) {
+            $loan = $deductions["loan"]['total_paid'];
+        }
+        if ($deductions["cash_advance"]) {
+            $cashAdvance = $deductions["cash_advance"]['total_paid'];
+        }
+        if ($deductions["other_deductions"]) {
+            $otherDeduction = $deductions["other_deductions"]['total_paid'];
+        }
+        return $sss + $phic + $hmdf + $ewtc + $loan + $cashAdvance + $otherDeduction;
     }
 
     public function collectEmployeeAdjustments($adjustments, $employeeId)
