@@ -202,9 +202,9 @@ class EmployeeService
         if ($deductions["other_deductions"]) {
             $otherDeduction = $deductions["other_deductions"]['total_paid'];
         }
-        if ($deductions["hmo"]) {
-            $hmo = $deductions["hmo"]['total_paid'];
-        }
+        // if ($deductions["hmo"]) {
+        //     $hmo = $deductions["hmo"]['total_paid'];
+        // }
         return $sss + $phic + $hmdf + $ewtc + $loan + $cashAdvance + $otherDeduction + $hmo;
     }
 
