@@ -119,6 +119,7 @@ class PayrollRecordController extends Controller
 
     public function setPayrollDetails($deductions, $empPayrollDetail)
     {
+        Log::info($deductions);
         foreach ($deductions as $data) {
             $paymentStore = [
                 "posting_status" => PostingStatusType::NOTPOSTED->value,
