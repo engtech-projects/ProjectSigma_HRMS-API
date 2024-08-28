@@ -39,7 +39,7 @@ trait Attendance
             $hasLeaveToday = sizeof($leave) > 0;
             $leaveToday = $hasLeaveToday ? $leave[0] : null;
             $leaveUsed = false;
-            $dateTimeInSchedule = $date->setTimeFromTimeString($schedule["startTime"]);
+            $dateTimeInSchedule = $date->copy()->setTimeFromTimeString($schedule["startTime"]);
             $timeIn = $schedule["applied_ins"];
             if (!$timeIn) {
                 // Connected to Overtime
@@ -71,7 +71,7 @@ trait Attendance
                 // Charge for Attendance Log Time In
                 $charge = AttendanceLog::find($timeIn["id"])->charging();
             }
-            $dateTimeOutSchedule = $date->setTimeFromTimeString($schedule["endTime"]);
+            $dateTimeOutSchedule = $date->copy()->setTimeFromTimeString($schedule["endTime"]);
             $timeOut = $schedule["applied_outs"];
             if (!$timeOut) {
                 // Connected to Overtime
