@@ -40,7 +40,7 @@ class PayrollService
     {
         if ($type == PayrollType::WEEKLY->value) {
             return round($amount / 4, 2);
-        } elseif ($type == PayrollType::BI_MONTHLY) {
+        } elseif ($type == PayrollType::BI_MONTHLY->value) {
             return round($amount / 2, 2);
         }
         // Monthly

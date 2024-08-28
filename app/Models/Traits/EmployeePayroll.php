@@ -181,13 +181,13 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
-        $cashAdvance->filter(function ($loan) use ($date) {
-            return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
+        $cashAdvance->filter(function ($cAdv) use ($date) {
+            return !$cAdv->cashPaid() && $cAdv->deduction_date_start->lt($date);
         });
-        $cashAdvance = $cashAdvance->map(function ($loan) use ($type) {
+        $cashAdvance = $cashAdvance->map(function ($cAdv) use ($type) {
             return [
-                ...collect($loan),
-                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type)),
+                ...collect($cAdv),
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($cAdv->installment_deduction, $type)),
             ];
         });
         $totalPaid = $cashAdvance->sum("max_payroll_payment");
@@ -201,13 +201,13 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $otherDeduction = $this->other_deduction()->get();
-        $otherDeduction->filter(function ($loan) use ($date) {
-            return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
+        $otherDeduction->filter(function ($oDed) use ($date) {
+            return !$oDed->cashPaid() && $oDed->deduction_date_start->lt($date);
         });
-        $otherDeduction = $otherDeduction->map(function ($loan) use ($type) {
+        $otherDeduction = $otherDeduction->map(function ($oDed) use ($type) {
             return [
-                ...collect($loan),
-                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type)),
+                ...collect($oDed),
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($oDed->installment_deduction, $type)),
             ];
         });
         $totalPaid = $otherDeduction->sum("max_payroll_payment");
