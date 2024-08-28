@@ -180,6 +180,7 @@ class EmployeeService
         $loan = 0;
         $cashAdvance = 0;
         $otherDeduction = 0;
+        $hmo = 0;
         if ($deductions["sss"]) {
             $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_contribution"];
         }
@@ -201,7 +202,10 @@ class EmployeeService
         if ($deductions["other_deductions"]) {
             $otherDeduction = $deductions["other_deductions"]['total_paid'];
         }
-        return $sss + $phic + $hmdf + $ewtc + $loan + $cashAdvance + $otherDeduction;
+        if ($deductions["hmo"]) {
+            $hmo = $deductions["hmo"]['total_paid'];
+        }
+        return $sss + $phic + $hmdf + $ewtc + $loan + $cashAdvance + $otherDeduction + $hmo;
     }
 
     public function collectEmployeeAdjustments($adjustments, $employeeId)
