@@ -242,6 +242,8 @@ class EmployeePanRequest extends Model
         $employeeInternal["position_id"] = $this->designation_position;
         $employeeInternal["employment_status"] = $this->employment_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
+        $employeeInternal['department_id'] = $this->section_department_id;
+        $employeeInternal['date_from'] = $this->date_of_effictivity;
         $employee->employee_internal()->create($employeeInternal);
         //company employements
         $employee->company_employments()->create([
