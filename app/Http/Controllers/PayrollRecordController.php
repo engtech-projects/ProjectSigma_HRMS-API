@@ -129,17 +129,17 @@ class PayrollRecordController extends Controller
             ];
             switch ($data["type"]) {
                 case PayrollDetailsDeductionType::CASHADVANCE->value:
-                    $paymentStore["cashadvance_id"] = $data["cashadvance_id"];
+                    $paymentStore["cashadvance_id"] = $data["deduction_id"];
                     $thisPayment = CashAdvancePayments::create($paymentStore);
                     return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
                 case PayrollDetailsDeductionType::LOAN->value:
-                    $paymentStore["loans_id"] = $data["loans_id"];
+                    $paymentStore["loans_id"] = $data["deduction_id"];
                     $thisPayment = LoanPayments::create($paymentStore);
                     return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
                 case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
-                    $paymentStore["otherdeduction_id"] = $data["otherdeduction_id"];
+                    $paymentStore["otherdeduction_id"] = $data["deduction_id"];
                     $thisPayment = OtherDeduction::create($paymentStore);
                     return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
