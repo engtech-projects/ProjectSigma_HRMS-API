@@ -120,7 +120,7 @@ class FailureToLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+            "data" => PaginateResourceCollection::paginate(collect($collection))
         ], JsonResponse::HTTP_OK);
     }
     public function myApprovals()
@@ -131,7 +131,7 @@ class FailureToLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+            "data" => PaginateResourceCollection::paginate(collect($collection))
         ], JsonResponse::HTTP_OK);
     }
 }
