@@ -184,7 +184,7 @@ trait EmployeePayroll
         $cashAdvance->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $cashAdvance->map(function ($loan) use ($type) {
+        $cashAdvance = $cashAdvance->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
                 "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
@@ -204,7 +204,7 @@ trait EmployeePayroll
         $otherDeduction->filter(function ($loan) use ($date) {
             return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
         });
-        $otherDeduction->map(function ($loan) use ($type) {
+        $otherDeduction = $otherDeduction->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
                 "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
