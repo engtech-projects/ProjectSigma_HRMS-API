@@ -305,25 +305,26 @@ class EmployeePanRequest extends Model
             })->toArray();
             $employee->employee_related_person()->createMany($children);
         }
-        if ($this->jobapplicantonly->children) {
-            //children
-            $children = collect($this->jobapplicantonly->children)->map(function ($child) {
-                return [
-                    'relationship' => EmployeeRelatedPersonType::CHILD,
-                    'type' => EmployeeRelatedPersonType::CHILD,
-                    'name' => $child->name ?: "N/A",
-                    'date_of_birth' => $child->birth_date ?: "N/A",
-                    'street' => "N/A",
-                    'brgy' => "N/A",
-                    'city' => "N/A",
-                    'zip' => "N/A",
-                    'province' => "N/A",
-                    'occupation' => "N/A",
-                    'contact_no' => "N/A",
-                ];
-            })->toArray();
-            $employee->employee_related_person()->createMany($children);
-        }
+        // @Rustom Pedales Duplicate
+        // if ($this->jobapplicantonly->children) {
+        //     //children
+        //     $children = collect($this->jobapplicantonly->children)->map(function ($child) {
+        //         return [
+        //             'relationship' => EmployeeRelatedPersonType::CHILD,
+        //             'type' => EmployeeRelatedPersonType::CHILD,
+        //             'name' => $child->name ?: "N/A",
+        //             'date_of_birth' => $child->birth_date ?: "N/A",
+        //             'street' => "N/A",
+        //             'brgy' => "N/A",
+        //             'city' => "N/A",
+        //             'zip' => "N/A",
+        //             'province' => "N/A",
+        //             'occupation' => "N/A",
+        //             'contact_no' => "N/A",
+        //         ];
+        //     })->toArray();
+        //     $employee->employee_related_person()->createMany($children);
+        // }
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
         $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
