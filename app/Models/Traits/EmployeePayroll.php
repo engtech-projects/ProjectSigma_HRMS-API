@@ -167,7 +167,7 @@ trait EmployeePayroll
         $loans = $loans->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
-                "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type)),
             ];
         });
         $totalPaid = $loans->sum("max_payroll_payment");
@@ -187,7 +187,7 @@ trait EmployeePayroll
         $cashAdvance = $cashAdvance->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
-                "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type)),
             ];
         });
         $totalPaid = $cashAdvance->sum("max_payroll_payment");
@@ -207,7 +207,7 @@ trait EmployeePayroll
         $otherDeduction = $otherDeduction->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
-                "max_payroll_payment" => Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type),
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($loan->installment_deduction, $type)),
             ];
         });
         $totalPaid = $otherDeduction->sum("max_payroll_payment");
