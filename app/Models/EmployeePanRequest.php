@@ -285,7 +285,7 @@ class EmployeePanRequest extends Model
                     "date_to" => $dateTo ?? null,
                     "position_title" => $workExp["position_title"] ?? null,
                     "company_name" => $workExp["dpt_agency_office_company"] ?? null,
-                    "salary" => $workExp["monthly_salary"] ?? null,
+                    "salary" => is_numeric($workExp["monthy_salary"]) ? $workExp["monthly_salary"] : null,
                     "status_of_appointment" => $workExp["status_of_appointment"] ?? null,
                 ];
             });
