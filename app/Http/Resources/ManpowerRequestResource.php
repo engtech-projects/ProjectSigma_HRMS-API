@@ -31,7 +31,7 @@ class ManpowerRequestResource extends JsonResource
             "employment_type" => $this->employment_type,
             "brief_description" => $this->brief_description,
             "job_description_attachment" => $this->job_description_attachment,
-            "job_applicants" => $this->whenLoaded('job_applicants'),
+            "job_applicants" => $this->whenLoaded('job_applicants', JobApplicantResource::collection($this->job_applicants)),
             "nature_of_request" => $this->nature_of_request,
             "age_range" => $this->age_range,
             "status" => $this->status,
