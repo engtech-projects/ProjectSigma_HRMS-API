@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PostingStatusType;
 use App\Models\OtherDeductionPayments;
 use App\Http\Requests\StoreOtherDeductionPaymentsRequest;
 use App\Http\Requests\UpdateOtherDeductionPaymentsRequest;
+use App\Http\Resources\OtherDeductionPaymentsResource;
+use App\Utils\PaginateResourceCollection;
 
 class OtherDeductionPaymentsController extends Controller
 {
@@ -13,11 +16,13 @@ class OtherDeductionPaymentsController extends Controller
      */
     public function index()
     {
-        $main = OtherDeductionPayments::paginate(15);
+        $main = OtherDeductionPayments::where("posting_status", PostingStatusType::POSTED)
+        ->with(["otherdeduction", "employee"])
+        ->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;
+        $data->data = PaginateResourceCollection::paginate(OtherDeductionPaymentsResource::collection($main)->collect());
         return response()->json($data);
     }
 

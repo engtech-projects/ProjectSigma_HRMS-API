@@ -108,4 +108,14 @@ class OtherDeduction extends Model
 
         return true;
     }
+
+    public function getCreatedAtHumanAttribute()
+    {
+        return Carbon::parse($this->created_at)->format("F j, Y");
+    }
+
+    public function getDeductionStartHumanAttribute()
+    {
+        return Carbon::parse($this->deduction_date_start)->format("F j, Y");
+    }
 }
