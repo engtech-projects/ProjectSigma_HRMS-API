@@ -20,7 +20,9 @@ class OtherDeductionResource extends JsonResource
             "payments" => OtherDeductionPaymentsResource::collection($this->otherDeductionPayment),
             "date_filed" => $this->created_at_human,
             "deduction_start" => $this->deduction_start_human,
-            "isFullyPaid" => $this->cashPaid(),
+            "is_fully_paid" => $this->cashPaid(),
+            "total_paid" => $this->total_paid,
+            "remaining_balance" => $this->balance,
         ];
     }
 }

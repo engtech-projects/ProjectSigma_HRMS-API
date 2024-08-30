@@ -51,7 +51,7 @@ class OtherDeduction extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->amount - $this->totalPaid;
+        return floatval($this->amount - $this->totalPaid);
     }
 
     public function getTotalPaidAttribute()
