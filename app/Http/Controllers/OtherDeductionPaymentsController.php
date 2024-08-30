@@ -2,22 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PostingStatusType;
+use App\Http\Requests\OtherDeductionAllList;
 use App\Models\OtherDeductionPayments;
 use App\Http\Requests\StoreOtherDeductionPaymentsRequest;
 use App\Http\Requests\UpdateOtherDeductionPaymentsRequest;
+use App\Http\Resources\OtherDeductionPaymentsResource;
+use App\Utils\PaginateResourceCollection;
 
 class OtherDeductionPaymentsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(OtherDeductionAllList $request)
     {
-        $main = OtherDeductionPayments::paginate(15);
+        $validatedData = $request->validated();
+        $main = OtherDeductionPayments::where("posting_status", PostingStatusType::POSTED)
+        ->when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with(["otherdeduction", "employee"])
+        ->orderBy("id", "DESC")
+        ->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;
+        $data->data = PaginateResourceCollection::paginate(OtherDeductionPaymentsResource::collection($main)->collect());
         return response()->json($data);
     }
 

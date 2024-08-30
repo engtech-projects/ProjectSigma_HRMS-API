@@ -77,6 +77,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OtherDeductionController;
+use App\Http\Controllers\OtherDeductionPaymentsController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
@@ -249,6 +250,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::prefix('other-deduction')->group(function () {
         Route::resource('resource', OtherDeductionController::class);
+        Route::get('ongoing', [OtherDeductionController::class, 'ongoing']);
+        Route::get('paid', [OtherDeductionController::class, 'paid']);
+        Route::get('payments', [OtherDeductionPaymentsController::class, 'index']);
         Route::post('manual-payment/{oded}', [OtherDeductionController::class, "cashAdvancePayment"]);
     });
 

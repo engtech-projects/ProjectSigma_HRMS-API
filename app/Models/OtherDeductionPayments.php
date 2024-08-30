@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -25,8 +27,19 @@ class OtherDeductionPayments extends Model
         'payment_type',
     ];
 
-    public function otherdeduction(): HasOne
+    public function otherdeduction(): BelongsTo
     {
-        return $this->hasOne(OtherDeduction::class);
+        return $this->belongsTo(OtherDeduction::class);
     }
+
+    public function employee(): HasOneThrough
+    {
+        return $this->hasOneThrough(Employee::class, OtherDeduction::class, "id", "id", "otherdeduction_id", "employee_id");
+    }
+
+    public function getDatePaidHumanAttribute()
+    {
+        return Carbon::parse($this->date_paid)->format("F j, Y");
+    }
+
 }
