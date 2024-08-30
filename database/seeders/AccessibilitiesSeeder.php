@@ -854,6 +854,13 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 2090,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_ITEMPROFILE_ITEMLIST->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
