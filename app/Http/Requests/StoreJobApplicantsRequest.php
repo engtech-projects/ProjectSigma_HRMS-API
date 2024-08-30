@@ -256,7 +256,7 @@ class StoreJobApplicantsRequest extends FormRequest
             ],
             'workexperience.*.monthly_salary' => [
                 "nullable",
-                "string",
+                "numeric",
             ],
             'workexperience.*.status_of_appointment' => [
                 "nullable",
