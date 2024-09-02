@@ -41,7 +41,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
+            'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
         ]);
     }
     /**
@@ -60,7 +60,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))
+            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
         ]);
     }
 
@@ -77,7 +77,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => ManpowerRequestResource::collection($myRequest)
+            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
         ]);
     }
 

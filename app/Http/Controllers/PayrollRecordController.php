@@ -53,12 +53,18 @@ class PayrollRecordController extends Controller
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
-        $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
-            $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
-            $employee->current_employment['position'] = $employee->current_employment->position;
-            return $employee;
-        });
-
+        try {
+            $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
+                $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
+                $employee->current_employment['position'] = $employee->current_employment->position;
+                return $employee;
+            });
+        } catch (\Throwable $th) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 400);
+        }
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
@@ -122,17 +128,17 @@ class PayrollRecordController extends Controller
             ];
             switch ($data["type"]) {
                 case PayrollDetailsDeductionType::CASHADVANCE->value:
-                    $paymentStore["cashadvance_id"] = $data["charge_id"];
+                    $paymentStore["cashadvance_id"] = $data["deduction_id"];
                     $thisPayment = CashAdvancePayments::create($paymentStore);
                     return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
                 case PayrollDetailsDeductionType::LOAN->value:
-                    $paymentStore["loans_id"] = $data["charge_id"];
+                    $paymentStore["loans_id"] = $data["deduction_id"];
                     $thisPayment = LoanPayments::create($paymentStore);
                     return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
                 case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
-                    $paymentStore["otherdeduction_id"] = $data["charge_id"];
+                    $paymentStore["otherdeduction_id"] = $data["deduction_id"];
                     $thisPayment = OtherDeduction::create($paymentStore);
                     return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
@@ -145,8 +151,8 @@ class PayrollRecordController extends Controller
         $data["payroll_details_id"] = $empPayrollDetail->id;
         $data["deduction_type"] = $this->getChargingModel($data["type"]);
         $data["deduction_id"] = $thisPayment->id;
-        $data["charge_type"] = $this->getChargingModel($data["type"]);
-        $data["charge_id"] = $thisPayment->id;
+        // $data["charge_type"] = $this->getChargingModel($data["type"]);
+        // $data["charge_id"] = $thisPayment->id;
         return $data;
     }
 

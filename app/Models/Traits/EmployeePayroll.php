@@ -162,12 +162,12 @@ trait EmployeePayroll
         $date = Carbon::parse($date);
         $loans = $this->employee_loan()->get();
         $loans = $loans->filter(function ($loan) use ($date) {
-            return !$loan->loanPaid() && $loan->deduction_date_start->lt($date);
+            return !$loan->loanPaid() && $loan->deduction_date_start->lte($date);
         });
-        $loans = $loans->map(function ($loan) {
+        $loans = $loans->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
-                "max_payroll_payment" => $loan->max_payroll_payment,
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($type, $loan->installment_deduction)),
             ];
         });
         $totalPaid = $loans->sum("max_payroll_payment");
@@ -181,13 +181,13 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
-        $cashAdvance->filter(function ($loan) use ($date) {
-            return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
+        $cashAdvance->filter(function ($cAdv) use ($date) {
+            return !$cAdv->cashPaid() && $cAdv->deduction_date_start->lte($date);
         });
-        $cashAdvance->map(function ($loan) {
+        $cashAdvance = $cashAdvance->map(function ($cAdv) use ($type) {
             return [
-                ...collect($loan),
-                "max_payable" => $loan->max_payroll_payment,
+                ...collect($cAdv),
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($type, $cAdv->installment_deduction)),
             ];
         });
         $totalPaid = $cashAdvance->sum("max_payroll_payment");
@@ -201,13 +201,13 @@ trait EmployeePayroll
     {
         $date = Carbon::parse($date);
         $otherDeduction = $this->other_deduction()->get();
-        $otherDeduction->filter(function ($loan) use ($date) {
-            return !$loan->cashPaid() && $loan->deduction_date_start->lt($date);
+        $otherDeduction->filter(function ($oDed) use ($date) {
+            return !$oDed->cashPaid() && $oDed->deduction_date_start->lte($date);
         });
-        $otherDeduction->map(function ($loan) {
+        $otherDeduction = $otherDeduction->map(function ($oDed) use ($type) {
             return [
-                ...collect($loan),
-                "max_payable" => $loan->max_payroll_payment,
+                ...collect($oDed),
+                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($type, $oDed->installment_deduction)),
             ];
         });
         $totalPaid = $otherDeduction->sum("max_payroll_payment");

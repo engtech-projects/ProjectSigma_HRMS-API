@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StringRequestApprovalStatus;
+use App\Http\Requests\OvertimeRequest;
 use App\Models\Overtime;
 use App\Http\Requests\StoreOvertimeRequest;
 use App\Http\Requests\UpdateOvertimeRequest;
@@ -24,14 +25,22 @@ class OvertimeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(OvertimeRequest $request)
     {
-        $main = $this->RequestService->getAll();
-        $paginated = OvertimeResource::collection($main);
+        $validatedData = $request->validated();
+        $data = Overtime::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employees', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with('employees')
+        ->orderBy("created_at", "DESC")
+        ->get();
+
         return new JsonResponse([
             'success' => true,
-            'message' => 'Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect($paginated), 15)
+            'message' => 'All Overtime Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
         ]);
     }
 

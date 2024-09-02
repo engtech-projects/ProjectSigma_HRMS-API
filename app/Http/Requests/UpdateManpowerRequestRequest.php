@@ -81,6 +81,7 @@ class UpdateManpowerRequestRequest extends FormRequest
             'educational_requirement' => [
                 "nullable",
                 "string",
+                "max:250"
             ],
             'preferred_qualifications' => [
                 "nullable",

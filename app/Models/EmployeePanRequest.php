@@ -242,6 +242,8 @@ class EmployeePanRequest extends Model
         $employeeInternal["position_id"] = $this->designation_position;
         $employeeInternal["employment_status"] = $this->employment_status;
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
+        $employeeInternal['department_id'] = $this->section_department_id;
+        $employeeInternal['date_from'] = $this->date_of_effictivity;
         $employee->employee_internal()->create($employeeInternal);
         //company employements
         $employee->company_employments()->create([
@@ -283,7 +285,7 @@ class EmployeePanRequest extends Model
                     "date_to" => $dateTo ?? null,
                     "position_title" => $workExp["position_title"] ?? null,
                     "company_name" => $workExp["dpt_agency_office_company"] ?? null,
-                    "salary" => $workExp["monthly_salary"] ?? null,
+                    "salary" => is_numeric($workExp["monthly_salary"]) ? $workExp["monthly_salary"] : null,
                     "status_of_appointment" => $workExp["status_of_appointment"] ?? null,
                 ];
             });
@@ -305,25 +307,26 @@ class EmployeePanRequest extends Model
             })->toArray();
             $employee->employee_related_person()->createMany($children);
         }
-        if ($this->jobapplicantonly->children) {
-            //children
-            $children = collect($this->jobapplicantonly->children)->map(function ($child) {
-                return [
-                    'relationship' => EmployeeRelatedPersonType::CHILD,
-                    'type' => EmployeeRelatedPersonType::CHILD,
-                    'name' => $child->name ?: "N/A",
-                    'date_of_birth' => $child->birth_date ?: "N/A",
-                    'street' => "N/A",
-                    'brgy' => "N/A",
-                    'city' => "N/A",
-                    'zip' => "N/A",
-                    'province' => "N/A",
-                    'occupation' => "N/A",
-                    'contact_no' => "N/A",
-                ];
-            })->toArray();
-            $employee->employee_related_person()->createMany($children);
-        }
+        // @Rustom Pedales Duplicate
+        // if ($this->jobapplicantonly->children) {
+        //     //children
+        //     $children = collect($this->jobapplicantonly->children)->map(function ($child) {
+        //         return [
+        //             'relationship' => EmployeeRelatedPersonType::CHILD,
+        //             'type' => EmployeeRelatedPersonType::CHILD,
+        //             'name' => $child->name ?: "N/A",
+        //             'date_of_birth' => $child->birth_date ?: "N/A",
+        //             'street' => "N/A",
+        //             'brgy' => "N/A",
+        //             'city' => "N/A",
+        //             'zip' => "N/A",
+        //             'province' => "N/A",
+        //             'occupation' => "N/A",
+        //             'contact_no' => "N/A",
+        //         ];
+        //     })->toArray();
+        //     $employee->employee_related_person()->createMany($children);
+        // }
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
         $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);

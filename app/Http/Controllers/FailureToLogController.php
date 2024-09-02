@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FailToLogRequest;
 use App\Models\FailureToLog;
 use Illuminate\Http\JsonResponse;
 use App\Utils\PaginateResourceCollection;
@@ -24,15 +25,23 @@ class FailureToLogController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FailToLogRequest $request)
     {
-        $failedLog = FailureToLog::with(['employee'])->get();
-        $collection = collect(FailureToLogResource::collection($failedLog));
+        $validatedData = $request->validated();
+        $data = FailureToLog::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with("employee")
+        ->orderBy("created_at", "DESC")
+        ->get();
+
         return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate($collection, 15)
-        ], JsonResponse::HTTP_OK);
+            'success' => true,
+            'message' => 'Failure to Log Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(FailureToLogResource::collection($data)))
+        ]);
     }
 
     /**
@@ -111,7 +120,7 @@ class FailureToLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+            "data" => PaginateResourceCollection::paginate(collect($collection))
         ], JsonResponse::HTTP_OK);
     }
     public function myApprovals()
@@ -122,7 +131,7 @@ class FailureToLogController extends Controller
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
+            "data" => PaginateResourceCollection::paginate(collect($collection))
         ], JsonResponse::HTTP_OK);
     }
 }

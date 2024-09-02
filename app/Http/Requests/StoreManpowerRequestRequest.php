@@ -83,6 +83,7 @@ class StoreManpowerRequestRequest extends FormRequest
             'educational_requirement' => [
                 "required",
                 "string",
+                "max:250"
             ],
             'preferred_qualifications' => [
                 "required",

@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\AssignTypes;
 use App\Enums\SalaryRequestType;
+use App\Exceptions\TransactionFailedException;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\Department;
 use App\Models\Project;
@@ -44,6 +45,12 @@ class EmployeeService
 
     public function generatePayroll(array $period, array $filters, $employee)
     {
+        if (!$employee->current_employment) {
+            throw new TransactionFailedException("Employee ".$employee->fullname_first." is not Employed.", 500);
+        }
+        if (!$employee->current_employment->employee_salarygrade) {
+            throw new TransactionFailedException("Employee ".$employee->fullname_first." has no Salary Grade Set.", 500);
+        }
         $payrollCharging = [
             "id" => 8,  // Default HR Department (temporary static data, need to be variable/env)
             "type" => Department::class,
@@ -166,12 +173,14 @@ class EmployeeService
 
     public function getTotalSalaryDeduction($deductions)
     {
-        $cashAdvance = 0;
         $sss = 0;
         $phic = 0;
         $ewtc = 0;
-        $loan = 0;
         $hmdf = 0;
+        $loan = 0;
+        $cashAdvance = 0;
+        $otherDeduction = 0;
+        $hmo = 0;
         if ($deductions["sss"]) {
             $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_contribution"];
         }
@@ -184,13 +193,19 @@ class EmployeeService
         if ($deductions["ewtc"]) {
             $ewtc = $deductions["ewtc"];
         }
-        // if ($deductions["loan"]) {
-        //     $loan = $deductions["loan"];
+        if ($deductions["loan"]) {
+            $loan = $deductions["loan"]['total_paid'];
+        }
+        if ($deductions["cash_advance"]) {
+            $cashAdvance = $deductions["cash_advance"]['total_paid'];
+        }
+        if ($deductions["other_deductions"]) {
+            $otherDeduction = $deductions["other_deductions"]['total_paid'];
+        }
+        // if ($deductions["hmo"]) {
+        //     $hmo = $deductions["hmo"]['total_paid'];
         // }
-        // if ($deductions["cash_advance"]) {
-        //     $cashAdvance = $deductions["cash_advance"];
-        // }
-        return $cashAdvance + $sss + $phic + $hmdf + $ewtc + $loan;
+        return $sss + $phic + $hmdf + $ewtc + $loan + $cashAdvance + $otherDeduction + $hmo;
     }
 
     public function collectEmployeeAdjustments($adjustments, $employeeId)

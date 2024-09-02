@@ -263,7 +263,7 @@ class StorePayrollRecordRequest extends FormRequest
                 'decimal:0,2',
             ],
             'payroll_details.*.deductions' => 'present|nullable|array',
-            'payroll_details.*.deductions.*.charge_id' => [
+            'payroll_details.*.deductions.*.deduction_id' => [
                 "nullable",
                 "integer",
             ],
