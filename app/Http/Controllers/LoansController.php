@@ -30,7 +30,7 @@ class LoansController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Loans fetched.',
             'data' => $data
         ]);
     }

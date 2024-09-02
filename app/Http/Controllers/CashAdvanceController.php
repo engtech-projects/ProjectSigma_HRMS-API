@@ -41,7 +41,7 @@ class CashAdvanceController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Cash Advance Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
