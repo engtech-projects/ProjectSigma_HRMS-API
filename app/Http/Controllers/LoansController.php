@@ -30,8 +30,54 @@ class LoansController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Loan Request fetched.',
             'data' => $data
+        ]);
+    }
+
+    public function ongoing(LoansAllRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = Loans::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with(['employee', 'loan_payments_employee'])
+        ->orderBy("created_at", "DESC")
+        ->get();
+        $data = collect($data->filter(function ($loan) {
+            return !$loan->loanPaid();
+        })
+        ->values()
+        ->all());
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Loan Request fetched.',
+            'data' => PaginateResourceCollection::paginate($data)
+        ]);
+    }
+
+    public function paid(LoansAllRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = Loans::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with(['employee', 'loan_payments_employee'])
+        ->orderBy("created_at", "DESC")
+        ->get();
+        $data = collect($data->filter(function ($loan) {
+            return $loan->loanPaid();
+        })
+        ->values()
+        ->all());
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Loan Request fetched.',
+            'data' => PaginateResourceCollection::paginate($data)
         ]);
     }
 

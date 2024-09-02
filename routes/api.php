@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsentController;
 use App\Http\Controllers\Actions\Employee\CountAbsentLateController;
 use App\Http\Controllers\EmployeeFacePattern;
 use App\Http\Controllers\LateController;
+use App\Http\Controllers\LoanPaymentsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HMOController;
 use App\Http\Controllers\AuthController;
@@ -240,6 +241,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('loans')->group(function () {
         Route::resource('resource', LoansController::class);
+        Route::get('ongoing', [LoansController::class, 'ongoing']);
+        Route::get('paid', [LoansController::class, 'paid']);
+        Route::get('payments', [LoanPaymentsController::class, 'index']);
         Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
     });
     Route::prefix('cash-advance')->group(function () {
