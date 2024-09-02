@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\LoanPaymentsType;
 use App\Enums\RequestStatusType;
 use App\Http\Requests\CashAdvanceAllRequest;
+use App\Http\Requests\OngoingCashAdvanceRequest;
+use App\Http\Requests\PaidCashAdvanceRequest;
 use App\Models\CashAdvance;
 use App\Http\Requests\StoreCashAdvanceRequest;
 use App\Http\Requests\UpdateCashAdvanceRequest;
@@ -41,7 +43,7 @@ class CashAdvanceController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Cash Advance Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
@@ -207,6 +209,53 @@ class CashAdvanceController extends Controller
             'success' => true,
             'message' => 'Cash Advance Approvals fetched.',
             'data' => CashAdvanceResource::collection($myApproval)
+        ]);
+    }
+    public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with('employee')
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->filter(function ($cashAdv) {
+            return !$cashAdv->cashPaid();
+        })
+        ->values()
+        ->all();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
+        ]);
+    }
+
+    public function getPaidCashAdvance(PaidCashAdvanceRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with('employee')
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->filter(function ($cashAdv) {
+            return $cashAdv->cashPaid();
+        })
+        ->values()
+        ->all();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
 }

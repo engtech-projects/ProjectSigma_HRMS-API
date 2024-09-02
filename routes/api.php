@@ -251,6 +251,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
         Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
         Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
+        Route::get('get-ongoing', [CashAdvanceController::class, 'getOngoingCashAdvance']);
+        Route::get('get-paid', [CashAdvanceController::class, 'getPaidCashAdvance']);
     });
     Route::prefix('other-deduction')->group(function () {
         Route::resource('resource', OtherDeductionController::class);
