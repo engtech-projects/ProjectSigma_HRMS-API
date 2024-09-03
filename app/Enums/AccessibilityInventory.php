@@ -9,7 +9,7 @@ enum AccessibilityInventory: string
     case INVENTORY_SETUP_ITEMGROUP = "inventory:setup_item group";
     case INVENTORY_SETUP_UNITOFMEASUREMENT = "inventory:setup_unit of measurements";
     case INVENTORY_ITEMPROFILE_NEW_PROFILE = "inventory:item profile_new profile";
-    case INVENTORY_ITEMPROFILE_ITEMLIST = "inventory:item profile_list profile";
+    case INVENTORY_ITEMPROFILE_ITEMLIST = "inventory:item profile_item list";
     case INVENTORY_ITEMPROFILE_NEW_ALLREQUESTS = "inventory:item profile_new profile_all request";
     case INVENTORY_ITEMPROFILE_NEW_MYAPPROVALS = "inventory:item profile_new profile_my approvals";
     case INVENTORY_ITEMPROFILE_NEW_FORM = "inventory:item profile_new profile_forms and my requests";
