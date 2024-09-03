@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\LoanPaymentsType;
 use App\Http\Requests\LoanPaymentRequest;
 use App\Http\Requests\LoansAllRequest;
+use App\Http\Resources\LoanResource;
 use App\Models\Loans;
 use App\Http\Requests\StoreLoansRequest;
 use App\Http\Requests\UpdateLoansRequest;
@@ -24,14 +25,16 @@ class LoansController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->with(['employee', 'loan_payments_employee'])
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->get()
+        ->values()
+        ->all();
+
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Loans fetched.',
-            'data' => $data
+            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
         ]);
     }
 
@@ -43,7 +46,6 @@ class LoansController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->with(['employee', 'loan_payments_employee'])
         ->orderBy("created_at", "DESC")
         ->get();
         $data = collect($data->filter(function ($loan) {
@@ -53,8 +55,8 @@ class LoansController extends Controller
         ->all());
         return new JsonResponse([
             'success' => true,
-            'message' => 'Loan Request fetched.',
-            'data' => PaginateResourceCollection::paginate($data)
+            'message' => 'Loans fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
         ]);
     }
 
@@ -66,7 +68,6 @@ class LoansController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->with(['employee', 'loan_payments_employee'])
         ->orderBy("created_at", "DESC")
         ->get();
         $data = collect($data->filter(function ($loan) {
@@ -74,10 +75,11 @@ class LoansController extends Controller
         })
         ->values()
         ->all());
+
         return new JsonResponse([
             'success' => true,
-            'message' => 'Loan Request fetched.',
-            'data' => PaginateResourceCollection::paginate($data)
+            'message' => 'Loans fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
         ]);
     }
 
