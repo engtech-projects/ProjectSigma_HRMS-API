@@ -31,7 +31,7 @@ class OtherDeductionController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'All Other Deductions fetched.',
             'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
         ]);
     }
@@ -54,7 +54,7 @@ class OtherDeductionController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Ongoing Other Deductions fetched.',
             'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
         ]);
     }
@@ -77,7 +77,7 @@ class OtherDeductionController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Paid Other Deductions fetched.',
             'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
         ]);
     }

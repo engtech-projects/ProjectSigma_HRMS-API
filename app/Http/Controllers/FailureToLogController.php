@@ -39,7 +39,7 @@ class FailureToLogController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Failure to Log Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect(FailureToLogResource::collection($data)))
         ]);
     }
