@@ -12,6 +12,9 @@ enum AccessibilityAccounting: string
     // case ACCOUNTING_ = "accounting:posting period";
     // case ACCOUNTING_ = "accounting:account groups";
     // case ACCOUNTING_ = "accounting:stake holder";
+    case ACCOUNTING_JOURNALENTRY_VIEWALL = "accounting:journal entry_view all entries";
+    case ACCOUNTING_JOURNALENTRY_CREATE = "accounting:journal entry_create";
+    case ACCOUNTING_JOURNALENTRY_MODIFY = "accounting:journal entry_modify entry";
 
     public static function toArray(): array
     {
