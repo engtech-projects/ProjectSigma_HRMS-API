@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ApiNotificationRequest;
 use App\Http\Resources\NotificationResource;
+use App\Models\User;
 use App\Models\Users;
+use App\Notifications\CustomApiRequestStatusUpdate;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -86,5 +89,15 @@ class NotificationsController extends Controller
     public function unreadNotification($notif)
     {
         Auth::user()->notifications->find($notif)->markAsUnread();
+    }
+
+    public function addNotification(ApiNotificationRequest $request, Users $user)
+    {
+        $validData = $request->validate();
+        $user->notify(new CustomApiRequestStatusUpdate($validData["module"], $validData["action"], $validData["message"], $validData["request_id"], $validData["request_type"] ));
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Successfully notified user.',
+        ], JsonResponse::HTTP_OK);
     }
 }
