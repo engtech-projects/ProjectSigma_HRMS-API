@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AbsentController;
 use App\Http\Controllers\Actions\Employee\CountAbsentLateController;
+use App\Http\Controllers\CashAdvancePaymentsController;
 use App\Http\Controllers\EmployeeFacePattern;
 use App\Http\Controllers\LateController;
 use App\Http\Controllers\LoanPaymentsController;
@@ -251,8 +252,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
         Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
         Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
-        Route::get('get-ongoing', [CashAdvanceController::class, 'getOngoingCashAdvance']);
-        Route::get('get-paid', [CashAdvanceController::class, 'getPaidCashAdvance']);
+        Route::get('ongoing', [CashAdvanceController::class, 'getOngoingCashAdvance']);
+        Route::get('paid', [CashAdvanceController::class, 'getPaidCashAdvance']);
+        Route::get('payments', [CashAdvancePaymentsController::class, 'index']);
     });
     Route::prefix('other-deduction')->group(function () {
         Route::resource('resource', OtherDeductionController::class)->names("requestOtherdeduction");
