@@ -189,7 +189,7 @@ class CashAdvanceController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($myRequest)
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($myRequest)))
         ]);
     }
 
@@ -207,8 +207,8 @@ class CashAdvanceController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Cash Advance Approvals fetched.',
-            'data' => CashAdvanceResource::collection($myApproval)
+            'message' => 'Cash Advance Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($myApproval)))
         ]);
     }
     public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)
@@ -227,7 +227,6 @@ class CashAdvanceController extends Controller
         })
         ->values()
         ->all();
-
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
