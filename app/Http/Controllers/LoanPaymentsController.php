@@ -2,23 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PostingStatusType;
+use App\Http\Requests\LoansAllRequest;
+use App\Http\Resources\LoanPaymentResource;
 use App\Models\LoanPayments;
 use App\Http\Requests\StoreLoanPaymentsRequest;
 use App\Http\Requests\UpdateLoanPaymentsRequest;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
 
 class LoanPaymentsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(LoansAllRequest $request)
     {
-        $main = LoanPayments::with("loan")->paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $validatedData = $request->validated();
+        $data = LoanPayments::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                return $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with(['employee','loan'])
+        ->orderBy("created_at", "DESC")
+        ->get();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(LoanPaymentResource::collection($data)))
+        ]);
     }
 
     /**
