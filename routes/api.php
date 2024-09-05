@@ -117,7 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('announcement', AnnouncementsController::class);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
-        Route::resource('resource', PositionController::class);
+        Route::resource('resource', PositionController::class)->names("setupPosition");
         Route::get('list', [PositionController::class, 'get']);
     });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
@@ -125,7 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::prefix('department')->group(function () {
-        Route::resource('resource', DepartmentController::class);
+        Route::resource('resource', DepartmentController::class)->names("setupDepartment");
         Route::get('list', [DepartmentController::class, 'get']);
     });
 
@@ -139,7 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
         Route::get('list', [EmployeeController::class, 'get']);
         Route::post('search', [EmployeeController::class, 'search']);
-        Route::resource('resource', EmployeeController::class);
+        Route::resource('resource', EmployeeController::class)->names("employees");
         Route::resource('companyemployment', CompanyEmployeeController::class);
         Route::resource('records', EmployeeRecordController::class);
         Route::resource('uploads', EmployeeUploadsController::class);
@@ -174,7 +174,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::prefix('manpower')->group(function () {
-        Route::resource('resource', ManpowerRequestController::class);
+        Route::resource('resource', ManpowerRequestController::class)->names("requestManpower");
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
@@ -182,12 +182,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::prefix('salary')->group(function () {
-        Route::resource('resource', SalaryGradeLevelController::class);
+        Route::resource('resource', SalaryGradeLevelController::class)->names("setupSalary");
         Route::get('list', SalaryGradeLevelListController::class);
     });
 
     Route::prefix("hmo")->group(function () {
-        Route::resource('resource', HMOController::class);
+        Route::resource('resource', HMOController::class)->names("setupHmo");
         Route::resource('members', HMOMembersController::class);
     });
     Route::resource('schedule', ScheduleController::class);
@@ -196,7 +196,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
 
     Route::prefix('pan')->group(function () {
-        Route::resource('resource', PersonnelActionNoticeRequestController::class);
+        Route::resource('resource', PersonnelActionNoticeRequestController::class)->names("requestPan");
         Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
         Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
         Route::get("generate-company-id-num", [PersonnelActionNoticeRequestController::class, "generateIdNum"]);
@@ -227,27 +227,27 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('leave-request')->group(function () {
-        Route::resource('resource', EmployeeLeavesController::class);
+        Route::resource('resource', EmployeeLeavesController::class)->names("requestLeaves");
         Route::get('get-form-request', [EmployeeLeavesController::class, 'myFormRequest']);
         Route::get('my-request', [EmployeeLeavesController::class, 'myRequests']);
         Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
     });
 
     Route::prefix('travelorder-request')->group(function () {
-        Route::resource('resource', TravelOrderController::class);
+        Route::resource('resource', TravelOrderController::class)->names("requestTravelorder");
         Route::get('my-request', [TravelOrderController::class, 'myRequests']);
         Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
     });
 
     Route::prefix('loans')->group(function () {
-        Route::resource('resource', LoansController::class);
+        Route::resource('resource', LoansController::class)->names("requestLoans");
         Route::get('ongoing', [LoansController::class, 'ongoing']);
         Route::get('paid', [LoansController::class, 'paid']);
         Route::get('payments', [LoanPaymentsController::class, 'index']);
         Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
     });
     Route::prefix('cash-advance')->group(function () {
-        Route::resource('resource', CashAdvanceController::class);
+        Route::resource('resource', CashAdvanceController::class)->names("requestCashadvance");
         Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
         Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
         Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
@@ -255,7 +255,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('get-paid', [CashAdvanceController::class, 'getPaidCashAdvance']);
     });
     Route::prefix('other-deduction')->group(function () {
-        Route::resource('resource', OtherDeductionController::class);
+        Route::resource('resource', OtherDeductionController::class)->names("requestOtherdeduction");
         Route::get('ongoing', [OtherDeductionController::class, 'ongoing']);
         Route::get('paid', [OtherDeductionController::class, 'paid']);
         Route::get('payments', [OtherDeductionPaymentsController::class, 'index']);
@@ -263,7 +263,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('overtime')->group(function () {
-        Route::resource('resource', OvertimeController::class);
+        Route::resource('resource', OvertimeController::class)->names("requestOvertime");
         Route::resource('overtime-employee', OvertimeEmployeesController::class);
         Route::get('my-request', [OvertimeController::class, 'myRequests']);
         Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
@@ -280,7 +280,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
         Route::get('my-requests', [EmployeeAllowancesController::class, 'myRequest']);
         Route::get('my-approvals', [EmployeeAllowancesController::class, 'myApproval']);
-        Route::resource('resource', EmployeeAllowancesController::class);
+        Route::resource('resource', EmployeeAllowancesController::class)->names("requestAllowance");
     });
 
     Route::prefix('payroll')->group(function () {
@@ -288,15 +288,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('create-payroll', [PayrollRecordController::class, 'store']);
         Route::get('my-requests', [PayrollRecordController::class, 'myRequest']);
         Route::get('my-approvals', [PayrollRecordController::class, 'myApproval']);
-        Route::resource('resource', PayrollRecordController::class);
+        Route::resource('resource', PayrollRecordController::class)->names("requestPayroll");
     });
 
     Route::prefix('attendance-portal')->group(function () {
-        Route::resource('resource', AttendancePortalController::class);
+        Route::resource('resource', AttendancePortalController::class)->names("setupAttendancePortals");
     });
 
     Route::prefix('face-pattern')->group(function () {
-        Route::resource('resource', EmployeeFacePattern::class);
+        Route::resource('resource', EmployeeFacePattern::class)->names("employeeFaces");
     });
 
     Route::prefix('notifications')->group(function () {
