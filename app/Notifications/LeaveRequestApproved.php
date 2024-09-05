@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\EmployeeLeaves;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -57,7 +58,10 @@ class LeaveRequestApproved extends Notification
             "message" => "Your LEAVE REQUEST has been APPROVED",
             "type" => ApprovalModels::LeaveEmployeeRequest->name,
             "action_type" => "View",
-            "metadata" => $this->leaveRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->leaveRequest->id,
+            ],
         ];
     }
 }

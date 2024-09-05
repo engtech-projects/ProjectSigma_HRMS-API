@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\TravelOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -55,7 +56,10 @@ class TravelRequestForApproval extends Notification
             "message" => "A TRAVEL ORDER REQUEST is for your approval",
             "type" => ApprovalModels::TravelOrder->name,
             "action_type" => "Approve",
-            "metadata" => $this->travelRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->travelRequest->id,
+            ],
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\ManpowerRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -56,7 +57,10 @@ class ManpowerRequestForApproval extends Notification
             "message" => "A MANPOWER REQUEST is for your approval",
             "type" => ApprovalModels::ManpowerRequest->name,
             "action_type" => "Approve",
-            "metadata" => $this->manpowerRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->manpowerRequest->id,
+            ],
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\PayrollRecord;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -55,6 +56,7 @@ class PayrollRequestApproved extends Notification
             "message" => "Your Payroll Request has been APPROVED.",
             "type" => ApprovalModels::GeneratePayroll->name,
             "action_type" => "Approve",
+            "module" => NotificationModules::HRMS->value,
             "metadata" => [
                 "id" => $this->payrollRequest->id,
             ],
