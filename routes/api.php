@@ -306,7 +306,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('read/{notif}', [NotificationsController::class, "readNotification"]);
         Route::put('read-all', [NotificationsController::class, "readAllNotifications"]);
         Route::put('unread/{notif}', [NotificationsController::class, "unreadNotification"]);
-        Route::post('inventory/{user}', [NotificationsController::class, "addNotification"]);
+        Route::post('services-notify/{user}', [NotificationsController::class, "addNotification"]);
     });
 });
 
