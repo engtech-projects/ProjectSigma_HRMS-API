@@ -51,6 +51,11 @@ class PayrollDetail extends Model
         return $this->belongsTo(PayrollRecord::class);
     }
 
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
     public function deductions(): HasMany
     {
         return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id');

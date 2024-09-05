@@ -24,6 +24,7 @@ class EmployeeSummaryResource extends JsonResource
             "fullname_first" => $this->fullname_first,
             "fullname_last" => $this->fullname_last,
             "current_position" => $this->current_position_name,
+            "current_salarygrade" => $this->current_salarygrade_and_step,
         ];
     }
 }
