@@ -46,12 +46,12 @@ class PayrollDeduction
         ];
         if ($sss) {
             $contribution = $this->getContributionTotal([
-                "employer" => $sss->employer_contribution,
-                "employee" => $sss->employee_contribution
-            ]);
-            $compensation = $this->getCompensationTotal([
                 "employer" => $sss->employer_share,
                 "employee" => $sss->employee_share
+            ]);
+            $compensation = $this->getCompensationTotal([
+                "employer" => $sss->employer_compensation,
+                "employee" => $sss->employee_compensation
             ]);
 
             $result = [

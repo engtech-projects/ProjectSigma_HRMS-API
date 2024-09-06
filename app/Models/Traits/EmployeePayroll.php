@@ -80,12 +80,12 @@ trait EmployeePayroll
 
         if ($sss) {
             $result = [
-                "employer_contribution" => $sss->employer_contribution,
-                "employee_contribution" =>  $sss->employee_contribution,
-                "employer_compensation" => $sss->employer_share,
-                "employee_compensation" => $sss->employee_share,
-                "total_contribution" => $sss->employer_contribution + $sss->employee_contribution,
-                "total_compensation" => $sss->employer_share + $sss->employee_share
+                "employer_contribution" => $sss->employer_share,
+                "employee_contribution" =>  $sss->employee_share,
+                "employer_compensation" => $sss->employer_compensation,
+                "employee_compensation" => $sss->employee_compensation,
+                "total_contribution" => $sss->employer_share + $sss->employee_share,
+                "total_compensation" => $sss->employer_compensation + $sss->employee_compensation,
             ];
         }
 
