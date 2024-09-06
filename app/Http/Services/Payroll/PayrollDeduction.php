@@ -71,27 +71,27 @@ class PayrollDeduction
         $philhealth = PhilhealthContribution::getContribution($this->salary);
         $result = [
             "share_type" => 0,
-            "employer_compensation" => 0,
-            "employee_compensation" => 0,
-            "total_compensation" => 0,
+            "employer_contribution" => 0,
+            "employee_contribution" => 0,
+            "total_contribution" => 0,
         ];
         if ($philhealth) {
             if ($philhealth->share_type == 'Amount') {
-                $employeeCompensation = $philhealth->employee_share;
-                $employeerCompensation = $philhealth->employer_share;
+                $employeeContribution = $philhealth->employee_share;
+                $employeerContribution = $philhealth->employer_share;
             } else {
-                $employeeCompensation = ($philhealth->employee_share / 100) * $this->salary;
-                $employeerCompensation = ($philhealth->employer_share / 100) * $this->salary;
+                $employeeContribution = ($philhealth->employee_share / 100) * $this->salary;
+                $employeerContribution = ($philhealth->employer_share / 100) * $this->salary;
             }
-            $compensation = $this->getCompensationTotal([
-                "employer" => $employeerCompensation,
-                "employee" => $employeeCompensation
+            $contribution = $this->getContributionTotal([
+                "employer" => $employeerContribution,
+                "employee" => $employeeContribution
             ]);
             $result = [
                 "share_type" => $philhealth->share_type,
-                "employer_compensation" => $compensation["employer"],
-                "employee_compensation" => $compensation["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_contribution" => $contribution["employer"],
+                "employee_contribution" => $contribution["employee"],
+                "total_contribution" => $contribution["employer"] + $contribution["employee"]
             ];
         }
 
@@ -103,23 +103,23 @@ class PayrollDeduction
         $result = [];
         $pagibig = PagibigContribution::getContribution($this->salary);
         $result = [
-            "employer_compensation" => 0,
-            "employee_compensation" => 0,
-            "total_compensation" => 0,
+            "employer_contribution" => 0,
+            "employee_contribution" => 0,
+            "total_contribution" => 0,
         ];
         if ($pagibig) {
-            $employeeCompensation = ($pagibig->employee_share_percent / 100) * $this->salary;
-            $employeerCompensation = ($pagibig->employer_share_percent / 100) * $this->salary;
-            $compensation = $this->getCompensationTotal([
-                "employer" => $employeerCompensation,
-                "employee" => $employeeCompensation
+            $employeeContribution = ($pagibig->employee_share_percent / 100) * $this->salary;
+            $employeerContribution = ($pagibig->employer_share_percent / 100) * $this->salary;
+            $contribution = $this->getContributionTotal([
+                "employer" => $employeerContribution,
+                "employee" => $employeeContribution
             ]);
             $result = [
-                "employer_compensation" => $compensation["employer"] > $pagibig->employer_maximum_contribution ?
-                    $pagibig->employer_maximum_contribution : $compensation["employer"],
-                "employee_compensation" => $compensation["employee"] > $pagibig->employee_maximum_contribution ?
-                    $pagibig->employee_maximum_contribution : $compensation["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "employer_contribution" => $contribution["employer"] > $pagibig->employer_maximum_contribution ?
+                    $pagibig->employer_maximum_contribution : $contribution["employer"],
+                "employee_contribution" => $contribution["employee"] > $pagibig->employee_maximum_contribution ?
+                    $pagibig->employee_maximum_contribution : $contribution["employee"],
+                "total_contribution" => $contribution["employer"] + $contribution["employee"]
             ];
         }
         return $result;

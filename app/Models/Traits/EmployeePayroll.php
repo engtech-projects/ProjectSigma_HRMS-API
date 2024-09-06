@@ -97,9 +97,9 @@ trait EmployeePayroll
         $philhealth = $deduction->contribution($salary);
         $result = [
             "share_type" => 0,
-            "employer_compensation" => 0,
-            "employee_compensation" => 0,
-            "total_compensation" => 0,
+            "employer_contribution" => 0,
+            "employee_contribution" => 0,
+            "total_contribution" => 0,
         ];
         if ($philhealth) {
             if ($philhealth->share_type == 'Amount') {
@@ -111,9 +111,9 @@ trait EmployeePayroll
             }
             $result = [
                 "share_type" => $philhealth->share_type,
-                "employer_compensation" => $employerContribution,
-                "employee_compensation" => $employeeContribution,
-                "total_compensation" => $employeeContribution + $employerContribution,
+                "employer_contribution" => $employerContribution,
+                "employee_contribution" => $employeeContribution,
+                "total_contribution" => $employeeContribution + $employerContribution,
             ];
         }
         return $result;

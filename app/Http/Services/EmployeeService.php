@@ -185,10 +185,10 @@ class EmployeeService
             $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_contribution"];
         }
         if ($deductions["phic"]) {
-            $phic = $deductions["phic"]["employee_compensation"];
+            $phic = $deductions["phic"]["employee_contribution"];
         }
         if ($deductions["hmdf"]) {
-            $hmdf = $deductions["hmdf"]["employee_compensation"];
+            $hmdf = $deductions["hmdf"]["employee_contribution"];
         }
         if ($deductions["ewtc"]) {
             $ewtc = $deductions["ewtc"];
@@ -395,7 +395,7 @@ class EmployeeService
                     "charge_type" => $charging["type"],
                     "charge_id" => $charging["id"],
                     "charging_name" => $charging["charging_name"],
-                    "amount" => $salaryDeductions["sss"]["employer_compensation"],
+                    "amount" => $salaryDeductions["sss"]["employer_contribution"] + $salaryDeductions["sss"]["employer_compensation"],
                 ],
             ];
         }
@@ -410,7 +410,7 @@ class EmployeeService
                     "charge_type" => $charging["type"],
                     "charge_id" => $charging["id"],
                     "charging_name" => $charging["charging_name"],
-                    "amount" => $salaryDeductions["phic"]["employer_compensation"],
+                    "amount" => $salaryDeductions["phic"]["employer_contribution"],
                 ],
             ];
         }
@@ -425,7 +425,7 @@ class EmployeeService
                     "charge_type" => $charging["type"],
                     "charge_id" => $charging["id"],
                     "charging_name" => $charging["charging_name"],
-                    "amount" => $salaryDeductions["hmdf"]["employer_compensation"],
+                    "amount" => $salaryDeductions["hmdf"]["employer_contribution"],
                 ],
             ];
         }

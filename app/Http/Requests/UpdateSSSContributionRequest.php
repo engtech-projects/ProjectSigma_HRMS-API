@@ -50,20 +50,6 @@ class UpdateSSSContributionRequest extends FormRequest
                 'decimal:0,2',
                 "numeric",
             ],
-            'employee_compensation' => [
-                "nullable",
-                "min:0",
-                'max:999999',
-                'decimal:0,2',
-                "numeric",
-            ],
-            'employer_compensation' => [
-                "nullable",
-                "min:0",
-                'max:999999',
-                'decimal:0,2',
-                "numeric",
-            ],
         ];
     }
 }
