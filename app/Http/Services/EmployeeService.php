@@ -99,7 +99,7 @@ class EmployeeService
             ...$grossSalaries,
             ...["adjustments" => $adjustments],
         ]);
-        // Get Salary Deductions
+        // Get Salary Deductions (Loans, Cash Advances, Other Deductions, SSS, Philhealth, Pagibig, Wtax)
         $salaryDeductions = $this->getSalaryDeduction($employee, $filters);
         // Get Chargings
         $chargings = [

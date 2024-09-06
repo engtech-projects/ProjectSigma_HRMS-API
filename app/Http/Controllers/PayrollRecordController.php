@@ -60,6 +60,7 @@ class PayrollRecordController extends Controller
                 return $employee;
             });
         } catch (\Throwable $th) {
+            Log::error($th);
             return new JsonResponse([
                 'success' => false,
                 'message' => $th->getMessage(),
