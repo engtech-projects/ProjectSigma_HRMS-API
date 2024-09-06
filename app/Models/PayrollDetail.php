@@ -56,7 +56,7 @@ class PayrollDetail extends Model
 
     public function deductions(): HasMany
     {
-        return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id');
+        return $this->hasMany(PayrollDetailDeduction::class, 'payroll_details_id', 'id');
     }
 
     public function adjustments(): HasMany
