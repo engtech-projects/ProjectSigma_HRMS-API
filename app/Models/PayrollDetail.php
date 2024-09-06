@@ -68,4 +68,16 @@ class PayrollDetail extends Model
     {
         return $this->hasMany(PayrollDetailsCharging::class, 'payroll_details_id');
     }
+    public function getTotalSssContributionAttribute()
+    {
+        return $this->sss_employee_contribution + $this->sss_employer_contribution;
+    }
+    public function getTotalSssCompensationAttribute()
+    {
+        return $this->sss_employee_compensation + $this->sss_employer_compensation;
+    }
+    public function getTotalSssAttribute()
+    {
+        return $this->total_sss_contribution + $this->total_sss_compensation;
+    }
 }

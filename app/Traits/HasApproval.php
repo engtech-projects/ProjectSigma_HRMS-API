@@ -40,6 +40,10 @@ trait HasApproval
         $query->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
     }
+    public function scopeIsApproved(Builder $query): void
+    {
+        $query->where('request_status', RequestStatusType::APPROVED->value);
+    }
 
     public function getUserPendingApproval($userId)
     {

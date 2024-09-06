@@ -6,6 +6,7 @@ use App\Http\Controllers\CashAdvancePaymentsController;
 use App\Http\Controllers\EmployeeFacePattern;
 use App\Http\Controllers\LateController;
 use App\Http\Controllers\LoanPaymentsController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HMOController;
 use App\Http\Controllers\AuthController;
@@ -269,6 +270,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('overtime-employee', OvertimeEmployeesController::class);
         Route::get('my-request', [OvertimeController::class, 'myRequests']);
         Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
+    });
+
+    Route::prefix('reports')->group(function () {
+        Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
     });
 
     Route::prefix('images')->group(function () {
