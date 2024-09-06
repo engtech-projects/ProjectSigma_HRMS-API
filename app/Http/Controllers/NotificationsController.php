@@ -25,7 +25,7 @@ class NotificationsController extends Controller
 
     public function getNotifications()
     {
-        $collection = collect(NotificationResource::collection(Auth::user()->notifications));
+        $collection = NotificationResource::collection(Auth::user()->notifications)->collect()->sortBy("read_at");
         return new JsonResponse([
             'success' => false,
             'message' => 'Fetched all notifications.',
