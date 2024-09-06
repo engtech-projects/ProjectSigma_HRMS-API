@@ -64,20 +64,6 @@ class StorePagibigContributionRequest extends FormRequest
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employee_compensation' => [
-                "required",
-                "numeric",
-                "min:0",
-                'max:999999',
-                'decimal:0,2',
-            ],
-            'employer_compensation' => [
-                "required",
-                "numeric",
-                "min:0",
-                'max:999999',
-                'decimal:0,2',
-            ],
         ];
     }
 }
