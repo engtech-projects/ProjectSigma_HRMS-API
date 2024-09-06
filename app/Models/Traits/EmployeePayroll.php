@@ -163,7 +163,7 @@ trait EmployeePayroll
         $loans = $this->employee_loan()->get();
         $loans = $loans->filter(function ($loan) use ($date) {
             return !$loan->loanPaid() && $loan->deduction_date_start->lte($date);
-        })->values()->all();
+        });
         $loans = $loans->map(function ($loan) use ($type) {
             return [
                 ...collect($loan),
@@ -173,7 +173,7 @@ trait EmployeePayroll
         $totalPaid = $loans->sum("max_payroll_payment");
         return [
             "total_paid" => $totalPaid,
-            "loans" => $loans,
+            "loans" => $loans->values()->all(),
         ];
     }
 
@@ -183,7 +183,7 @@ trait EmployeePayroll
         $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
         $cashAdvance->filter(function ($cAdv) use ($date) {
             return !$cAdv->cashPaid() && $cAdv->deduction_date_start->lte($date);
-        })->values()->all();
+        });
         $cashAdvance = $cashAdvance->map(function ($cAdv) use ($type) {
             return [
                 ...collect($cAdv),
@@ -193,7 +193,7 @@ trait EmployeePayroll
         $totalPaid = $cashAdvance->sum("max_payroll_payment");
         return [
             "total_paid" => $totalPaid,
-            "cash_advance" => $cashAdvance,
+            "cash_advance" => $cashAdvance->values()->all(),
         ];
     }
 
@@ -203,7 +203,7 @@ trait EmployeePayroll
         $otherDeduction = $this->other_deduction()->get();
         $otherDeduction->filter(function ($oDed) use ($date) {
             return !$oDed->cashPaid() && $oDed->deduction_date_start->lte($date);
-        })->values()->all();
+        });
         $otherDeduction = $otherDeduction->map(function ($oDed) use ($type) {
             return [
                 ...collect($oDed),
@@ -213,7 +213,7 @@ trait EmployeePayroll
         $totalPaid = $otherDeduction->sum("max_payroll_payment");
         return [
             "total_paid" => $totalPaid,
-            "other_deduction" => $otherDeduction,
+            "other_deduction" => $otherDeduction->values()->all(),
         ];
     }
 }
