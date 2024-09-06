@@ -35,7 +35,7 @@ enum AccessibilityHrms: string
     case HRMS_PAYROLL_SALARY_PAYROLLRECORD = "hrms:payroll_salary_payroll records";
     case HRMS_PAYROLL_13THMONTH = "hrms:payroll_13th month";
     case HRMS_PAYROLL_ALLOWANCE = "hrms:payroll_allowance";
-    case HRMS_REPORTS = "hrms:reports";
+    case HRMS_REPORTS_SSSEMPLOYEEREMITTANCE = "hrms:reports_sss employee remittance";
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";
