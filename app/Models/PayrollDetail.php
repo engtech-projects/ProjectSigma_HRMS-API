@@ -80,4 +80,21 @@ class PayrollDetail extends Model
     {
         return $this->total_sss_contribution + $this->total_sss_compensation;
     }
+    public function getTotalPagibigContributionAttribute()
+    {
+        return $this->pagibig_employee_contribution + $this->pagibig_employer_contribution;
+    }
+    public function getTotalPagibigCompensationAttribute()
+    {
+        return $this->pagibig_employee_compensation + $this->pagibig_employer_compensation;
+    }
+    public function getTotalPagibigAttribute()
+    {
+        return $this->total_pagibig_contribution + $this->total_pagibig_compensation;
+    }
+
+    public function getTotalPhilhealthContributionAttribute()
+    {
+        return $this->philhealth_employee_contribution + $this->philhealth_employer_contribution;
+    }
 }

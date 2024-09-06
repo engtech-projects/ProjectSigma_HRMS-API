@@ -274,6 +274,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('reports')->group(function () {
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
+        Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
+        Route::get('philhealth-employee-remittance', [ReportController::class, 'philhealthEmployeeRemittanceGenerate']);
     });
 
     Route::prefix('images')->group(function () {
