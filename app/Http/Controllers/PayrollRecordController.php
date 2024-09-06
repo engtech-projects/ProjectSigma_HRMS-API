@@ -34,6 +34,9 @@ class PayrollRecordController extends Controller
     public const CASHADVANCE = "App\Models\CashAdvance";
     public const LOANS = "App\Models\Loans";
     public const OTHERDEDUCTION = "App\Models\OtherDeduction";
+    public const CASHADVANCE_PAYMENT = CashAdvancePayments::class;
+    public const LOANS_PAYMENT = LoanPayments::class;
+    public const OTHERDEDUCTION_PAYMENT = OtherDeductionPayments::class;
 
     protected $employeeService;
     protected $payrollService;
@@ -160,13 +163,13 @@ class PayrollRecordController extends Controller
     {
         switch ($type) {
             case PayrollDetailsDeductionType::CASHADVANCE->value:
-                return PayrollRecordController::CASHADVANCE;
+                return PayrollRecordController::CASHADVANCE_PAYMENT;
                 break;
             case PayrollDetailsDeductionType::LOAN->value:
-                return PayrollRecordController::LOANS;
+                return PayrollRecordController::LOANS_PAYMENT;
                 break;
             case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
-                return PayrollRecordController::OTHERDEDUCTION;
+                return PayrollRecordController::OTHERDEDUCTION_PAYMENT;
                 break;
         }
     }

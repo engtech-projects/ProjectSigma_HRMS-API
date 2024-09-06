@@ -28,6 +28,6 @@ class PayrollDetailDeduction extends Model
 
     public function deduction(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo("deduction");
     }
 }

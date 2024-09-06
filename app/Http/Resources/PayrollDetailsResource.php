@@ -18,8 +18,8 @@ class PayrollDetailsResource extends JsonResource
             ...parent::toArray($request),
             "employee" => new EmployeeSummaryResource($this->employee),
             "adjustments" => $this->adjustments,
-            "deduction" => $this->adjustments,
-            "charges" => $this->adjustments,
+            "deductions" => $this->deductions,
+            "charges" => $this->charges,
         ];
     }
 }
