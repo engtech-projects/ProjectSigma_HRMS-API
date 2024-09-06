@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('accessibilities', AccessibilitiesController::class);
     Route::resource('sss', SSSContributionController::class);
     Route::resource('philhealth', PhilhealthContributionController::class);
+    Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('witholdingtax', WitholdingTaxContributionController::class);
 
     Route::resource('settings', SettingsController::class);
@@ -131,7 +132,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::resource('job-applicants', JobApplicantsController::class);
-    Route::resource('pagibig', PagibigContributionController::class);
 
     Route::prefix("employee")->group(function () {
         Route::get('leave-credits/{employee}', [EmployeeController::class, 'getLeaveCredits']);

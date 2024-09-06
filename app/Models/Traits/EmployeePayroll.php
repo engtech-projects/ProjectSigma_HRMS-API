@@ -103,17 +103,17 @@ trait EmployeePayroll
         ];
         if ($philhealth) {
             if ($philhealth->share_type == 'Amount') {
-                $employeeCompensation = $philhealth->employee_share;
-                $employerCompensation = $philhealth->employer_share;
+                $employeeContribution = $philhealth->employee_share;
+                $employerContribution = $philhealth->employer_share;
             } else {
-                $employeeCompensation = round(($philhealth->employee_share / 100) * $salary, 2);
-                $employerCompensation = round(($philhealth->employer_share / 100) * $salary, 2);
+                $employeeContribution = round(($philhealth->employee_share / 100) * $salary, 2);
+                $employerContribution = round(($philhealth->employer_share / 100) * $salary, 2);
             }
             $result = [
                 "share_type" => $philhealth->share_type,
-                "employer_compensation" => $employerCompensation,
-                "employee_compensation" => $employeeCompensation,
-                "total_compensation" => $employeeCompensation + $employerCompensation,
+                "employer_compensation" => $employerContribution,
+                "employee_compensation" => $employeeContribution,
+                "total_compensation" => $employeeContribution + $employerContribution,
             ];
         }
         return $result;
@@ -124,20 +124,20 @@ trait EmployeePayroll
         $deduction = new PagibigContribution();
         $pagibig = $deduction->contribution($salary);
         $result = [
-            "employer_compensation" => 0,
-            "employee_compensation" => 0,
-            "total_compensation" => 0,
+            "employer_contribution" => 0,
+            "employee_contribution" => 0,
+            "total_contribution" => 0,
         ];
         if ($pagibig) {
-            $employeeCompensation = round(($pagibig->employee_share_percent / 100) * $salary, 2);
-            $employerCompensation = round(($pagibig->employer_share_percent / 100) * $salary, 2);
+            $employeeContribution = round(($pagibig->employee_share_percent / 100) * $salary, 2);
+            $employerContribution = round(($pagibig->employer_share_percent / 100) * $salary, 2);
 
             $result = [
-                "employer_compensation" => $employerCompensation > $pagibig->employer_maximum_contribution ?
-                    $pagibig->employer_maximum_contribution : $employerCompensation,
-                "employee_compensation" => $employeeCompensation > $pagibig->employee_maximum_contribution ?
-                    $pagibig->employee_maximum_contribution : $employeeCompensation,
-                "total_compensation" => $employerCompensation + $employeeCompensation
+                "employer_contribution" => $employerContribution > $pagibig->employer_maximum_contribution ?
+                    $pagibig->employer_maximum_contribution : $employerContribution,
+                "employee_contribution" => $employeeContribution > $pagibig->employee_maximum_contribution ?
+                    $pagibig->employee_maximum_contribution : $employeeContribution,
+                "total_contribution" => $employerContribution + $employeeContribution
             ];
         }
         return $result;
