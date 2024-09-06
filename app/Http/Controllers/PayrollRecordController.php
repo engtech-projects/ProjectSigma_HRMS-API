@@ -21,7 +21,7 @@ use App\Models\Department;
 use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
 use App\Models\LoanPayments;
-use App\Models\OtherDeduction;
+use App\Models\OtherDeductionPayments;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
@@ -140,7 +140,7 @@ class PayrollRecordController extends Controller
                     break;
                 case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
                     $paymentStore["otherdeduction_id"] = $data["deduction_id"];
-                    $thisPayment = OtherDeduction::create($paymentStore);
+                    $thisPayment = OtherDeductionPayments::create($paymentStore);
                     return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
                     break;
             }
