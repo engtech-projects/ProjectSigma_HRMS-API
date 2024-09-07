@@ -25,7 +25,10 @@ class NotificationsController extends Controller
 
     public function getNotifications()
     {
-        $collection = NotificationResource::collection(Auth::user()->notifications)->collect()->sortBy("read_at");
+        $unreadNotifications = Auth::user()->unreadNotifications ?? collect([]);
+        $readNotifications = Auth::user()->readNotifications ?? collect([]);
+        $notifications = $unreadNotifications->merge($readNotifications);
+        $collection = NotificationResource::collection($notifications)->collect();
         return new JsonResponse([
             'success' => false,
             'message' => 'Fetched all notifications.',
@@ -41,7 +44,8 @@ class NotificationsController extends Controller
             $lastRequestSent = null;
             $broadcastCount = 0;
             while (true) {
-                $notifs = Users::find(Auth::user()->id)->unreadNotifications;
+                // Users:find to get UPDATED user data
+                $notifs = NotificationResource::collection(Users::find(Auth::user()->id)->unreadNotifications);
                 $newLength = sizeof($notifs);
                 if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
                     $lastLength = $newLength;
