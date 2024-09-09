@@ -122,6 +122,7 @@ class PayrollRecordController extends Controller
 
     public function setPayrollDetails($deductions, $empPayrollDetail)
     {
+        $createDeductions = [];
         foreach ($deductions as $data) {
             $paymentStore = [
                 "posting_status" => PostingStatusType::NOTPOSTED->value,
@@ -133,20 +134,21 @@ class PayrollRecordController extends Controller
                 case PayrollDetailsDeductionType::CASHADVANCE->value:
                     $paymentStore["cashadvance_id"] = $data["deduction_id"];
                     $thisPayment = CashAdvancePayments::create($paymentStore);
-                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
+                    array_push($createDeductions, $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail));
                     break;
                 case PayrollDetailsDeductionType::LOAN->value:
                     $paymentStore["loans_id"] = $data["deduction_id"];
                     $thisPayment = LoanPayments::create($paymentStore);
-                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
+                    array_push($createDeductions, $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail));
                     break;
                 case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
                     $paymentStore["otherdeduction_id"] = $data["deduction_id"];
                     $thisPayment = OtherDeductionPayments::create($paymentStore);
-                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
+                    array_push($createDeductions, $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail));
                     break;
             }
         }
+        return $createDeductions;
     }
 
     public function preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail)
