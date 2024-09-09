@@ -96,7 +96,7 @@ class PayrollRecordController extends Controller
                 $empPayrollDetail->adjustments()->createMany($employeePayrollData["adjustments"]);
                 $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
                 if(sizeof($employeePayrollData["deductions"]) > 0) {
-                    PayrollDetailDeduction::create($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
+                    PayrollDetailDeduction::createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
                 }
             }
             $payroll->refresh();
@@ -154,14 +154,14 @@ class PayrollRecordController extends Controller
     public function preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail)
     {
         $data["payroll_details_id"] = $empPayrollDetail->id;
-        $data["deduction_type"] = $this->getChargingModel($data["type"]);
+        $data["deduction_type"] = $this->getDeductionPaymentChargingModel($data["type"]);
         $data["deduction_id"] = $thisPayment->id;
-        // $data["charge_type"] = $this->getChargingModel($data["type"]);
+        // $data["charge_type"] = $this->getDeductionPaymentChargingModel($data["type"]);
         // $data["charge_id"] = $thisPayment->id;
         return $data;
     }
 
-    public function getChargingModel($type)
+    public function getDeductionPaymentChargingModel($type)
     {
         switch ($type) {
             case PayrollDetailsDeductionType::CASHADVANCE->value:
