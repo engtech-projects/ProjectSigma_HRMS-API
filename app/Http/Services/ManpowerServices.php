@@ -25,7 +25,7 @@ class ManpowerServices
     }
     public function getAllForHiring()
     {
-        return $this->manpowerRequest->forHiring()->get();
+        return $this->manpowerRequest->forHiring()->orderBy('created_at', 'DESC')->get();
     }
 
     public function getAllManpowerRequest()
