@@ -96,7 +96,7 @@ class PayrollRecordController extends Controller
                 $empPayrollDetail->adjustments()->createMany($employeePayrollData["adjustments"]);
                 $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
                 if(sizeof($employeePayrollData["deductions"]) > 0) {
-                    PayrollDetailDeduction::createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
+                    $empPayrollDetail->deductions()->createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
                 }
             }
             $payroll->refresh();
