@@ -125,7 +125,7 @@ class EmployeeService
             ]);
         }
         $result["dtr"] = $dtr;
-        $result["adjustments"] = $adjustments;
+        $result["adjustments"] = $adjustments->values()->all();
         $result["gross_pays"] = $grossPays;
         $result["salary_deduction"] = $salaryDeductions;
         $result["hours_worked"] = $totalHoursWorked;
