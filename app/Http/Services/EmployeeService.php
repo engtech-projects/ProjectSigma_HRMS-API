@@ -97,7 +97,7 @@ class EmployeeService
         // Group Together Incomes
         $grossPays = collect([
             ...$grossSalaries,
-            ...["adjustments" => $adjustments],
+            ...["adjustments" => $adjustments->values()->all()],
         ]);
         // Get Salary Deductions (Loans, Cash Advances, Other Deductions, SSS, Philhealth, Pagibig, Wtax)
         $salaryDeductions = $this->getSalaryDeduction($employee, $filters);
@@ -219,7 +219,7 @@ class EmployeeService
                 "adjustment_name" => $data["adjustment_name"],
                 "adjustment_amount" => $data['adjustment_amount'],
             ];
-        })->values()->all();
+        });
 
     }
 
