@@ -13,8 +13,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\EmployeeService;
 use App\Http\Requests\GeneratePayrollRequest;
+use App\Http\Requests\PayrollRecordsRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Http\Requests\StorePayrollRecordRequest;
+use App\Http\Resources\PayrollRecordResource;
+use App\Http\Resources\PayrollRecordsResource;
 use App\Http\Resources\PayrollRequestResource;
 use App\Models\Department;
 use App\Models\PayrollDetailDeduction;
@@ -26,6 +29,7 @@ use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
 class PayrollRecordController extends Controller
@@ -243,6 +247,40 @@ class PayrollRecordController extends Controller
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
             'data' => PayrollRequestResource::collection($myApproval)
+        ]);
+    }
+    /**
+     *
+     * Show all Approved Requests
+     */
+    public function payrollRecords(PayrollRecordsRequest $request)
+    {
+        $validatedData = $request->validated();
+        $datas = PayrollRecord::isApproved()
+        ->whereDate("payroll_date", $validatedData["payroll_date"])
+        ->when($request->has("payroll_type"), function (Builder $query) use ($validatedData) {
+            return $query->where("payroll_type", $validatedData["payroll_type"]);
+        })
+        ->when($request->has("release_type"), function (Builder $query) use ($validatedData) {
+            return $query->where("release_type", $validatedData["release_type"]);
+        })
+        ->when($request->has("project_id"), function (Builder $query) use ($validatedData) {
+            return $query->where("project_id", $validatedData["project_id"]);
+        })
+        ->when($request->has("department_id"), function (Builder $query) use ($validatedData) {
+            return $query->where("department_id", $validatedData["department_id"]);
+        })
+        ->get();
+        if ($datas->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Payrollrecord Request fetched.',
+            'data' => PayrollRecordsResource::collection($datas)
         ]);
     }
 }

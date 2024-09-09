@@ -203,6 +203,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-requests', [PayrollRecordController::class, 'myRequest']);
         Route::get('my-approvals', [PayrollRecordController::class, 'myApproval']);
         Route::resource('resource', PayrollRecordController::class)->names("requestPayroll");
+        Route::get('records', [PayrollRecordController::class, 'payrollRecords']);
     });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
