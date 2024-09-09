@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,6 +35,10 @@ class CashAdvancePayments extends Model
     public function employee(): HasOneThrough
     {
         return $this->hasOneThrough(Employee::class, CashAdvance::class, "id", "id", "cashadvance_id", "employee_id");
+    }
+    public function getDatePaidHumanAttribute()
+    {
+        return Carbon::parse($this->date_paid)->format("F j, Y");
     }
 
 }

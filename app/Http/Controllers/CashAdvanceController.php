@@ -177,38 +177,49 @@ class CashAdvanceController extends Controller
         return response()->json($data, 404);
     }
 
-    public function myRequests()
+    public function myRequests(CashAdvanceAllRequest $request)
     {
-        $myRequest = $this->RequestService->getMyRequest();
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $validatedData = $request->validated();
+        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->requestStatusPending()
+        ->authUserPending()
+        ->where('created_by', auth()->user()->id)
+        ->with('employee')
+        ->orderBy("created_at", "DESC")
+        ->get();
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($myRequest)))
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
 
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
-    public function myApprovals()
+    public function myApprovals(CashAdvanceAllRequest $request)
     {
-        $myApproval = $this->RequestService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $validatedData = $request->validated();
+        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->requestStatusPending()
+        ->authUserPending()
+        ->with('employee')
+        ->orderBy("created_at", "DESC")
+        ->get();
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($myApproval)))
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
     public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)
