@@ -219,7 +219,7 @@ class EmployeeService
                 "adjustment_name" => $data["adjustment_name"],
                 "adjustment_amount" => $data['adjustment_amount'],
             ];
-        });
+        })->values()->all();
 
     }
 
