@@ -23,7 +23,6 @@ class CashAdvanceResource extends JsonResource
             "id" => $this->id,
             "employee" => $user,
             "employee_id" => $this->employee_id,
-            "cash_advance_payments" => $this->cashAdvancePayments,
             "department_id" => $this->department_id,
             "project_id" => $this->project_id,
             "terms_of_payment" => $this->terms_of_payment,
@@ -33,7 +32,7 @@ class CashAdvanceResource extends JsonResource
             "installment_deduction" => $this->installment_deduction,
             "deduction_date_start" => $this->deduction_date_start->format('F j, Y'),
             "purpose" => $this->purpose,
-            "balance" => $this->balance,
+            "remaining_balance" => $this->balance,
             "total_paid" => $this->total_paid,
             "terms_of_cash_advance" => $this->terms_of_cash_advance,
             "remarks" => $this->remarks,
@@ -43,6 +42,7 @@ class CashAdvanceResource extends JsonResource
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "next_approval" => $this->getNextPendingApproval(),
             "created_by" => $this->created_by,
+            "payments" => CashAdvancePaymentResource::collection($this->cashAdvancePayments),
         ];
     }
 }
