@@ -264,10 +264,10 @@ class PayrollRecordController extends Controller
         ->when($request->has("release_type") && $validatedData["release_type"], function ($query) use ($validatedData) {
             return $query->where("release_type", $validatedData["release_type"]);
         })
-        ->when($request->has("project_id"), function ($query) use ($validatedData) {
+        ->when($request->has("project_id") && $validatedData["project_id"], function ($query) use ($validatedData) {
             return $query->where("project_id", $validatedData["project_id"]);
         })
-        ->when($request->has("department_id"), function ($query) use ($validatedData) {
+        ->when($request->has("department_id") && $validatedData["department_id"], function ($query) use ($validatedData) {
             return $query->where("department_id", $validatedData["department_id"]);
         })
         ->get();
