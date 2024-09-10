@@ -257,10 +257,10 @@ class PayrollRecordController extends Controller
         $validatedData = $request->validated();
         $datas = PayrollRecord::isApproved()
         ->whereDate("payroll_date", $validatedData["payroll_date"])
-        ->when($request->has("payroll_type") && $validatedData["payroll_type"] != "all", function ($query) use ($validatedData) {
+        ->when($request->has("payroll_type"), function ($query) use ($validatedData) {
             return $query->where("payroll_type", $validatedData["payroll_type"]);
         })
-        ->when($request->has("release_type") && $validatedData["release_type"] != "all", function ($query) use ($validatedData) {
+        ->when($request->has("release_type"), function ($query) use ($validatedData) {
             return $query->where("release_type", $validatedData["release_type"]);
         })
         ->when($request->has("project_id"), function ($query) use ($validatedData) {

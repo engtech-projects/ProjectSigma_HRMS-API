@@ -21,6 +21,16 @@ class PayrollRecordsRequest extends FormRequest
         return $this->checkUserAccess([AccessibilityHrms::HRMS_PAYROLL_SALARY_PAYROLLRECORD->value]);
     }
 
+    protected function prepareForValidation()
+    {
+        $this->merge(
+            array_map(function($value){
+                return $value === 'all' ? null : $value;
+            }, $this->all())
+        );
+
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
