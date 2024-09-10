@@ -23,12 +23,16 @@ class PayrollRecordsRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        $this->merge(
-            array_map(function($value){
-                return $value === 'all' ? null : $value;
-            }, $this->all())
-        );
-
+        if ($this->release_type == "all") {
+            $this->merge([
+                "release_type" => null
+            ]);
+        }
+        if ($this->payroll_type == "all") {
+            $this->merge([
+                "payroll_type" => null
+            ]);
+        }
     }
 
     /**

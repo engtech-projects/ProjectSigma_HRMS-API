@@ -255,6 +255,7 @@ class PayrollRecordController extends Controller
     public function payrollRecords(PayrollRecordsRequest $request)
     {
         $validatedData = $request->validated();
+        Log::info($validatedData);
         $datas = PayrollRecord::isApproved()
         ->whereDate("payroll_date", $validatedData["payroll_date"])
         ->when($request->has("payroll_type") && $validatedData["payroll_type"], function ($query) use ($validatedData) {
