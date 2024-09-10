@@ -29,7 +29,6 @@ use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
 class PayrollRecordController extends Controller
@@ -258,16 +257,16 @@ class PayrollRecordController extends Controller
         $validatedData = $request->validated();
         $datas = PayrollRecord::isApproved()
         ->whereDate("payroll_date", $validatedData["payroll_date"])
-        ->when($request->has("payroll_type") && $validatedData["payroll_type"] != "all", function (Builder $query) use ($validatedData) {
+        ->when($request->has("payroll_type") && $validatedData["payroll_type"] != "all", function ($query) use ($validatedData) {
             return $query->where("payroll_type", $validatedData["payroll_type"]);
         })
-        ->when($request->has("release_type") && $validatedData["release_type"] != "all", function (Builder $query) use ($validatedData) {
+        ->when($request->has("release_type") && $validatedData["release_type"] != "all", function ($query) use ($validatedData) {
             return $query->where("release_type", $validatedData["release_type"]);
         })
-        ->when($request->has("project_id"), function (Builder $query) use ($validatedData) {
+        ->when($request->has("project_id"), function ($query) use ($validatedData) {
             return $query->where("project_id", $validatedData["project_id"]);
         })
-        ->when($request->has("department_id"), function (Builder $query) use ($validatedData) {
+        ->when($request->has("department_id"), function ($query) use ($validatedData) {
             return $query->where("department_id", $validatedData["department_id"]);
         })
         ->get();
