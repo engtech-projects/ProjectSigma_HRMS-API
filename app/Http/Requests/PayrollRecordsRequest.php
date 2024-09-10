@@ -63,8 +63,18 @@ class PayrollRecordsRequest extends FormRequest
                 'nullable',
                 new Enum(AssignTypes::class)
             ],
-            'project_id' => 'required_if:charging_type,project|integer|nullable',
-            'department_id' => 'required_if:charging_type,department|integer|nullable',
+            'project_id' => [
+                'required_if:charging_type,==,' . AssignTypes::PROJECT->value,
+                'nullable',
+                "integer",
+                "exists:projects,id",
+            ],
+            'department_id' => [
+                'required_if:charging_type,==,' . AssignTypes::DEPARTMENT->value,
+                'nullable',
+                "integer",
+                "exists:departments,id",
+            ],
         ];
     }
 }
