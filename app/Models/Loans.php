@@ -44,11 +44,6 @@ class Loans extends Model
         return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
 
-    public function loan_payments_employee(): HasMany
-    {
-        return $this->hasMany(LoanPayments::class);
-    }
-
     public function loanPayments(): HasMany
     {
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::POSTED);
@@ -63,15 +58,12 @@ class Loans extends Model
         switch ($this->terms_of_payment) {
             case TermsOfPaymentType::WEEKLY->value:
                 return round($this->installment_deduction / 4);
-                break;
 
             case TermsOfPaymentType::MONTHLY->value:
                 return round($this->installment_deduction / 2);
-                break;
 
             case TermsOfPaymentType::BIMONTHLY->value:
                 return round($this->installment_deduction / 1);
-                break;
         }
     }
 
@@ -139,5 +131,15 @@ class Loans extends Model
         }
 
         return true;
+    }
+
+    public function getCreatedAtHumanAttribute()
+    {
+        return Carbon::parse($this->created_at)->format("F j, Y");
+    }
+
+    public function getDeductionStartHumanAttribute()
+    {
+        return Carbon::parse($this->deduction_date_start)->format("F j, Y");
     }
 }

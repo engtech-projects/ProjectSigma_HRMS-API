@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\FailureToLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -55,7 +56,10 @@ class FailureToLogRequestApproved extends Notification
             "message" => "Your FAILURE TO LOG REQUEST has been APPROVED",
             "type" => ApprovalModels::FailureToLog->name,
             "action_type" => "View",
-            "metadata" => $this->failureToLogRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->failureToLogRequest->id,
+            ],
         ];
     }
 }

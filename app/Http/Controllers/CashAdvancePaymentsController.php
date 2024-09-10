@@ -2,23 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CashAdvancePaymentRequest;
+use App\Http\Resources\CashAdvancePaymentResource;
 use App\Models\CashAdvancePayments;
 use App\Http\Requests\StoreCashAdvancePaymentsRequest;
 use App\Http\Requests\UpdateCashAdvancePaymentsRequest;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
 
 class CashAdvancePaymentsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CashAdvancePaymentRequest $request): JsonResponse
     {
-        $main = CashAdvancePayments::with("cashadvance")->paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $validatedData = $request->validated();
+        $data = CashAdvancePayments::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employee', function($query2) use ($validatedData) {
+                return $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with(['employee','cashadvance'])
+        ->orderBy("created_at", "DESC")
+        ->get();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(CashAdvancePaymentResource::collection($data)))
+        ]);
     }
 
     /**

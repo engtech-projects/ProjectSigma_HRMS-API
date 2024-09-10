@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -29,8 +32,18 @@ class LoanPayments extends Model
         'posting_status',
     ];
 
-    public function loan(): HasOne
+    public function loan(): BelongsTo
     {
-        return $this->hasOne(Loans::class);
+        return $this->belongsTo(Loans::class, 'loans_id', 'id');
     }
+
+    public function employee(): HasOneThrough
+    {
+        return $this->hasOneThrough(Employee::class, Loans::class, "id", "id", "loans_id", "employee_id");
+    }
+    public function getDatePaidHumanAttribute()
+    {
+        return Carbon::parse($this->date_paid)->format("F j, Y");
+    }
+
 }

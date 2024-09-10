@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\EmployeePanRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -55,7 +56,10 @@ class PanRequestForApproval extends Notification
             "message" => "A PERSONNEL ACTION NOTICE REQUEST is for your approval",
             "type" => ApprovalModels::EmployeePanRequest->name,
             "action_type" => "Approve",
-            "metadata" => $this->panRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->panRequest->id,
+            ],
         ];
     }
 }

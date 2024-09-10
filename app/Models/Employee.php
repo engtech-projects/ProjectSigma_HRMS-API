@@ -455,4 +455,15 @@ class Employee extends Model
     {
         return $this->current_employment?->position?->name ?? "No Position Found";
     }
+
+    public function getCurrentSalarygradeAndStepAttribute()
+    {
+        if (!$this->current_employment) {
+            return "Not currently employed.";
+        }
+        if (!$this->current_employment?->employee_salarygrade) {
+            return "No salary grade set.";
+        }
+        return "SG ". $this->current_employment?->employee_salarygrade?->salary_grade_level?->salary_grade_level . "- STEP ". $this->current_employment?->employee_salarygrade?->step_name;
+    }
 }

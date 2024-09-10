@@ -64,20 +64,6 @@ class UpdatePagibigContributionRequest extends FormRequest
                 'max:999999',
                 'decimal:0,2',
             ],
-            'employee_compensation' => [
-                "nullable",
-                "numeric",
-                "min:0",
-                'max:999999',
-                'decimal:0,2',
-            ],
-            'employer_compensation' => [
-                "nullable",
-                "numeric",
-                "min:0",
-                'max:999999',
-                'decimal:0,2',
-            ],
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\CashAdvance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -56,7 +57,10 @@ class CashAdvanceDenied extends Notification
             "message" => "Your CASH ADVANCE REQUEST has been DENIED",
             "type" => ApprovalModels::CashAdvance->name,
             "action_type" => "View",
-            "metadata" => $this->cashAdvanceRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->cashAdvanceRequest->id,
+            ],
         ];
     }
 }

@@ -80,12 +80,12 @@ trait EmployeePayroll
 
         if ($sss) {
             $result = [
-                "employer_contribution" => $sss->employer_contribution,
-                "employee_contribution" =>  $sss->employee_contribution,
-                "employer_compensation" => $sss->employer_share,
-                "employee_compensation" => $sss->employee_share,
-                "total_contribution" => $sss->employer_contribution + $sss->employee_contribution,
-                "total_compensation" => $sss->employer_share + $sss->employee_share
+                "employer_contribution" => $sss->employer_share,
+                "employee_contribution" =>  $sss->employee_share,
+                "employer_compensation" => $sss->employer_compensation,
+                "employee_compensation" => $sss->employee_compensation,
+                "total_contribution" => $sss->employer_share + $sss->employee_share,
+                "total_compensation" => $sss->employer_compensation + $sss->employee_compensation,
             ];
         }
 
@@ -97,23 +97,23 @@ trait EmployeePayroll
         $philhealth = $deduction->contribution($salary);
         $result = [
             "share_type" => 0,
-            "employer_compensation" => 0,
-            "employee_compensation" => 0,
-            "total_compensation" => 0,
+            "employer_contribution" => 0,
+            "employee_contribution" => 0,
+            "total_contribution" => 0,
         ];
         if ($philhealth) {
             if ($philhealth->share_type == 'Amount') {
-                $employeeCompensation = $philhealth->employee_share;
-                $employerCompensation = $philhealth->employer_share;
+                $employeeContribution = $philhealth->employee_share;
+                $employerContribution = $philhealth->employer_share;
             } else {
-                $employeeCompensation = round(($philhealth->employee_share / 100) * $salary, 2);
-                $employerCompensation = round(($philhealth->employer_share / 100) * $salary, 2);
+                $employeeContribution = round(($philhealth->employee_share / 100) * $salary, 2);
+                $employerContribution = round(($philhealth->employer_share / 100) * $salary, 2);
             }
             $result = [
                 "share_type" => $philhealth->share_type,
-                "employer_compensation" => $employerCompensation,
-                "employee_compensation" => $employeeCompensation,
-                "total_compensation" => $employeeCompensation + $employerCompensation,
+                "employer_contribution" => $employerContribution,
+                "employee_contribution" => $employeeContribution,
+                "total_contribution" => $employeeContribution + $employerContribution,
             ];
         }
         return $result;
@@ -124,20 +124,20 @@ trait EmployeePayroll
         $deduction = new PagibigContribution();
         $pagibig = $deduction->contribution($salary);
         $result = [
-            "employer_compensation" => 0,
-            "employee_compensation" => 0,
-            "total_compensation" => 0,
+            "employer_contribution" => 0,
+            "employee_contribution" => 0,
+            "total_contribution" => 0,
         ];
         if ($pagibig) {
-            $employeeCompensation = round(($pagibig->employee_share_percent / 100) * $salary, 2);
-            $employerCompensation = round(($pagibig->employer_share_percent / 100) * $salary, 2);
+            $employeeContribution = round(($pagibig->employee_share_percent / 100) * $salary, 2);
+            $employerContribution = round(($pagibig->employer_share_percent / 100) * $salary, 2);
 
             $result = [
-                "employer_compensation" => $employerCompensation > $pagibig->employer_maximum_contribution ?
-                    $pagibig->employer_maximum_contribution : $employerCompensation,
-                "employee_compensation" => $employeeCompensation > $pagibig->employee_maximum_contribution ?
-                    $pagibig->employee_maximum_contribution : $employeeCompensation,
-                "total_compensation" => $employerCompensation + $employeeCompensation
+                "employer_contribution" => $employerContribution > $pagibig->employer_maximum_contribution ?
+                    $pagibig->employer_maximum_contribution : $employerContribution,
+                "employee_contribution" => $employeeContribution > $pagibig->employee_maximum_contribution ?
+                    $pagibig->employee_maximum_contribution : $employeeContribution,
+                "total_contribution" => $employerContribution + $employeeContribution
             ];
         }
         return $result;
@@ -173,7 +173,7 @@ trait EmployeePayroll
         $totalPaid = $loans->sum("max_payroll_payment");
         return [
             "total_paid" => $totalPaid,
-            "loans" => $loans,
+            "loans" => $loans->values()->all(),
         ];
     }
 
@@ -193,7 +193,7 @@ trait EmployeePayroll
         $totalPaid = $cashAdvance->sum("max_payroll_payment");
         return [
             "total_paid" => $totalPaid,
-            "cash_advance" => $cashAdvance,
+            "cash_advance" => $cashAdvance->values()->all(),
         ];
     }
 
@@ -213,7 +213,7 @@ trait EmployeePayroll
         $totalPaid = $otherDeduction->sum("max_payroll_payment");
         return [
             "total_paid" => $totalPaid,
-            "other_deduction" => $otherDeduction,
+            "other_deduction" => $otherDeduction->values()->all(),
         ];
     }
 }

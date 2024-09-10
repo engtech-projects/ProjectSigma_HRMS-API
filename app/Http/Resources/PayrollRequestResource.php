@@ -21,6 +21,7 @@ class PayrollRequestResource extends JsonResource
             "charging_name" => $this->charging_name,
             "cutoff_start_human" => $this->cutoff_start_human,
             "cutoff_end_human" => $this->cutoff_end_human,
+            "payroll_details" => PayrollDetailsResource::collection($this->payroll_details),
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "next_approval" => $this->getNextPendingApproval(),
         ];

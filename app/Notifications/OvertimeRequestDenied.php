@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\Overtime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -56,7 +57,10 @@ class OvertimeRequestDenied extends Notification
             "message" => "Your OVERTIME REQUEST has been DENIED",
             "type" => ApprovalModels::Overtime->name,
             "action_type" => "View",
-            "metadata" => $this->overtimeRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->overtimeRequest->id,
+            ],
         ];
     }
 }

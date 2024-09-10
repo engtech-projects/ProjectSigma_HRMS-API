@@ -234,18 +234,6 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
-            'payroll_details.*.pagibig_employee_compensation' => [
-                'nullable',
-                "numeric",
-                "min:0",
-                'decimal:0,2',
-            ],
-            'payroll_details.*.pagibig_employer_compensation' => [
-                'nullable',
-                "numeric",
-                "min:0",
-                'decimal:0,2',
-            ],
             'payroll_details.*.withholdingtax_contribution' => [
                 'nullable',
                 "numeric",

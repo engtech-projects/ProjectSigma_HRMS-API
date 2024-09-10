@@ -23,8 +23,8 @@ class SSSContribution extends Model
         'range_to',
         'employee_share',
         'employer_share',
-        'employee_contribution',
-        'employer_contribution',
+        'employee_compensation',
+        'employer_compensation',
     ];
 
 

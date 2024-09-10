@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PostingStatusType;
 use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +13,7 @@ use App\Traits\HasApproval;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
 
 class PayrollRecord extends Model
 {
@@ -108,6 +110,11 @@ class PayrollRecord extends Model
     {
         $this->request_status = RequestApprovalStatus::APPROVED;
         $this->save();
+        foreach ($this->payroll_details as $employeePayroll) {
+            foreach ($employeePayroll->deductions as $deductions) {
+                $deductions->deduction()->update(["posting_status" => PostingStatusType::POSTED->value]);
+            }
+        }
         $this->refresh();
     }
 

@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\AbsentController;
 use App\Http\Controllers\Actions\Employee\CountAbsentLateController;
+use App\Http\Controllers\CashAdvancePaymentsController;
 use App\Http\Controllers\EmployeeFacePattern;
 use App\Http\Controllers\LateController;
+use App\Http\Controllers\LoanPaymentsController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HMOController;
 use App\Http\Controllers\AuthController;
@@ -105,32 +108,115 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('users', UsersController::class);
     Route::get('user-account-by-employee-id/{id}', [UsersController::class, 'getUserAccountByEmployeeId']);
     Route::resource('accessibilities', AccessibilitiesController::class);
+    // HRMS SETUPS
     Route::resource('sss', SSSContributionController::class);
     Route::resource('philhealth', PhilhealthContributionController::class);
+    Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('witholdingtax', WitholdingTaxContributionController::class);
-
     Route::resource('settings', SettingsController::class);
     Route::resource('allowance', AllowanceController::class);
+    Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::resource('leave', LeaveController::class);
     Route::resource('events', EventsController::class);
-    Route::resource('announcement', AnnouncementsController::class);
-    Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::prefix("position")->group(function () {
-        Route::resource('resource', PositionController::class);
+        Route::resource('resource', PositionController::class)->names("setupPosition");
         Route::get('list', [PositionController::class, 'get']);
     });
     Route::put('update-settings', [SettingsController::class, 'updateSettings']);
-    Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
-
-
     Route::prefix('department')->group(function () {
-        Route::resource('resource', DepartmentController::class);
+        Route::resource('resource', DepartmentController::class)->names("setupDepartment");
         Route::get('list', [DepartmentController::class, 'get']);
     });
-
+    Route::prefix('salary')->group(function () {
+        Route::resource('resource', SalaryGradeLevelController::class)->names("setupSalary");
+        Route::get('list', SalaryGradeLevelListController::class);
+    });
+    // APPROVALS
+    Route::resource('approvals', ApprovalsController::class);
+    Route::prefix('approvals')->group(function () {
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
+    });
+    Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
+    // HRMS REQUESTS/TRANSACTIONS WITH APPROVALS
+    Route::prefix('manpower')->group(function () {
+        Route::resource('resource', ManpowerRequestController::class)->names("requestManpower");
+        Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
+        Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
+        Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
+    });
+    Route::prefix('pan')->group(function () {
+        Route::resource('resource', PersonnelActionNoticeRequestController::class)->names("requestPan");
+        Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
+        Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
+        Route::get("generate-company-id-num", [PersonnelActionNoticeRequestController::class, "generateIdNum"]);
+    });
+    Route::prefix('leave-request')->group(function () {
+        Route::resource('resource', EmployeeLeavesController::class)->names("requestLeaves");
+        Route::get('get-form-request', [EmployeeLeavesController::class, 'myFormRequest']);
+        Route::get('my-request', [EmployeeLeavesController::class, 'myRequests']);
+        Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
+    });
+    Route::prefix('overtime')->group(function () {
+        Route::resource('resource', OvertimeController::class)->names("requestOvertime");
+        Route::resource('overtime-employee', OvertimeEmployeesController::class);
+        Route::get('my-request', [OvertimeController::class, 'myRequests']);
+        Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
+    });
+    Route::prefix('travelorder-request')->group(function () {
+        Route::resource('resource', TravelOrderController::class)->names("requestTravelorder");
+        Route::get('my-request', [TravelOrderController::class, 'myRequests']);
+        Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
+    });
+    Route::prefix('loans')->group(function () {
+        Route::resource('resource', LoansController::class)->names("requestLoans");
+        Route::get('ongoing', [LoansController::class, 'ongoing']);
+        Route::get('paid', [LoansController::class, 'paid']);
+        Route::get('payments', [LoanPaymentsController::class, 'index']);
+        Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
+    });
+    Route::prefix('cash-advance')->group(function () {
+        Route::resource('resource', CashAdvanceController::class)->names("requestCashadvance");
+        Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
+        Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
+        Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
+        Route::get('ongoing', [CashAdvanceController::class, 'getOngoingCashAdvance']);
+        Route::get('paid', [CashAdvanceController::class, 'getPaidCashAdvance']);
+        Route::get('payments', [CashAdvancePaymentsController::class, 'index']);
+    });
+    Route::prefix('other-deduction')->group(function () {
+        Route::resource('resource', OtherDeductionController::class)->names("requestOtherdeduction");
+        Route::get('ongoing', [OtherDeductionController::class, 'ongoing']);
+        Route::get('paid', [OtherDeductionController::class, 'paid']);
+        Route::get('payments', [OtherDeductionPaymentsController::class, 'index']);
+        Route::post('manual-payment/{oded}', [OtherDeductionController::class, "cashAdvancePayment"]);
+    });
+    Route::prefix('employee-allowance')->group(function () {
+        Route::get('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
+        Route::get('my-requests', [EmployeeAllowancesController::class, 'myRequest']);
+        Route::get('my-approvals', [EmployeeAllowancesController::class, 'myApproval']);
+        Route::resource('resource', EmployeeAllowancesController::class)->names("requestAllowance");
+    });
+    Route::prefix('payroll')->group(function () {
+        Route::post('generate-payroll', [PayrollRecordController::class, 'generate']);
+        Route::post('create-payroll', [PayrollRecordController::class, 'store']);
+        Route::get('my-requests', [PayrollRecordController::class, 'myRequest']);
+        Route::get('my-approvals', [PayrollRecordController::class, 'myApproval']);
+        Route::resource('resource', PayrollRecordController::class)->names("requestPayroll");
+        Route::get('records', [PayrollRecordController::class, 'payrollRecords']);
+    });
+    // NON APPROVAL TRANSACTIONS/FUNCTIONS
+    Route::resource('announcement', AnnouncementsController::class);
+    Route::prefix("hmo")->group(function () {
+        Route::resource('resource', HMOController::class)->names("setupHmo");
+        Route::resource('members', HMOMembersController::class);
+    });
+    Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::resource('job-applicants', JobApplicantsController::class);
-    Route::resource('pagibig', PagibigContributionController::class);
-
+    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+    Route::resource('schedule', ScheduleController::class);
+    Route::get('schedules', [ScheduleController::class, 'getGroupType']);
+    // EMPLOYEE DETAILS AND OTHERS
     Route::prefix("employee")->group(function () {
         Route::get('leave-credits/{employee}', [EmployeeController::class, 'getLeaveCredits']);
         Route::get('users-list', [UsersController::class, 'get']);
@@ -138,7 +224,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('bulk-save', [EmployeeBulkUploadController::class, 'bulkSave']);
         Route::get('list', [EmployeeController::class, 'get']);
         Route::post('search', [EmployeeController::class, 'search']);
-        Route::resource('resource', EmployeeController::class);
+        Route::resource('resource', EmployeeController::class)->names("employees");
         Route::resource('companyemployment', CompanyEmployeeController::class);
         Route::resource('records', EmployeeRecordController::class);
         Route::resource('uploads', EmployeeUploadsController::class);
@@ -164,42 +250,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
         });
     });
-
-    Route::resource('approvals', ApprovalsController::class);
-    Route::prefix('approvals')->group(function () {
-        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
-        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
+    Route::prefix('images')->group(function () {
+        Route::prefix('upload')->group(function () {
+            Route::post('digital-signature/{id}', [ImageController::class, "uploadDigitalSignature"]);
+            Route::post('profile-picture/{id}', [ImageController::class, "uploadProfileImage"]);
+        });
     });
-
-
-    Route::prefix('manpower')->group(function () {
-        Route::resource('resource', ManpowerRequestController::class);
-        Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
-        Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
-        Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
-    });
-
-
-    Route::prefix('salary')->group(function () {
-        Route::resource('resource', SalaryGradeLevelController::class);
-        Route::get('list', SalaryGradeLevelListController::class);
-    });
-
-    Route::prefix("hmo")->group(function () {
-        Route::resource('resource', HMOController::class);
-        Route::resource('members', HMOMembersController::class);
-    });
-    Route::resource('schedule', ScheduleController::class);
-    Route::get('schedules', [ScheduleController::class, 'getGroupType']);
-    Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
-    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
-
-    Route::prefix('pan')->group(function () {
-        Route::resource('resource', PersonnelActionNoticeRequestController::class);
-        Route::get('my-request', [PersonnelActionNoticeRequestController::class, 'myRequests']);
-        Route::get('my-approvals', [PersonnelActionNoticeRequestController::class, 'myApprovals']);
-        Route::get("generate-company-id-num", [PersonnelActionNoticeRequestController::class, "generateIdNum"]);
-    });
+    // ATTENDANCE
     Route::prefix('attendance')->group(function () {
         Route::post('bulk-upload', [AttendanceBulkUpload::class, 'bulkUpload']);
         Route::post('bulk-save', [AttendanceBulkUpload::class, 'bulkSave']);
@@ -216,7 +273,19 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::get('dtr', EmployeeDtrController::class);
     });
-
+    Route::prefix('attendance-portal')->group(function () {
+        Route::resource('resource', AttendancePortalController::class)->names("setupAttendancePortals");
+    });
+    Route::prefix('face-pattern')->group(function () {
+        Route::resource('resource', EmployeeFacePattern::class)->names("employeeFaces");
+    });
+    // REPORTS
+    Route::prefix('reports')->group(function () {
+        Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
+        Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
+        Route::get('philhealth-employee-remittance', [ReportController::class, 'philhealthEmployeeRemittanceGenerate']);
+    });
+    // PROJECT
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
         Route::get('list', ProjectListController::class);
@@ -224,75 +293,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
         Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);
     });
-
-    Route::prefix('leave-request')->group(function () {
-        Route::resource('resource', EmployeeLeavesController::class);
-        Route::get('get-form-request', [EmployeeLeavesController::class, 'myFormRequest']);
-        Route::get('my-request', [EmployeeLeavesController::class, 'myRequests']);
-        Route::get('my-approvals', [EmployeeLeavesController::class, 'myApprovals']);
-    });
-
-    Route::prefix('travelorder-request')->group(function () {
-        Route::resource('resource', TravelOrderController::class);
-        Route::get('my-request', [TravelOrderController::class, 'myRequests']);
-        Route::get('my-approvals', [TravelOrderController::class, 'myApprovals']);
-    });
-
-    Route::prefix('loans')->group(function () {
-        Route::resource('resource', LoansController::class);
-        Route::post('manual-payment/{loan}', [LoansController::class, "loanPayment"]);
-    });
-    Route::prefix('cash-advance')->group(function () {
-        Route::resource('resource', CashAdvanceController::class);
-        Route::post('manual-payment/{cash}', [CashAdvanceController::class, "cashAdvancePayment"]);
-        Route::get('my-request', [CashAdvanceController::class, 'myRequests']);
-        Route::get('my-approvals', [CashAdvanceController::class, 'myApprovals']);
-    });
-    Route::prefix('other-deduction')->group(function () {
-        Route::resource('resource', OtherDeductionController::class);
-        Route::get('ongoing', [OtherDeductionController::class, 'ongoing']);
-        Route::get('paid', [OtherDeductionController::class, 'paid']);
-        Route::get('payments', [OtherDeductionPaymentsController::class, 'index']);
-        Route::post('manual-payment/{oded}', [OtherDeductionController::class, "cashAdvancePayment"]);
-    });
-
-    Route::prefix('overtime')->group(function () {
-        Route::resource('resource', OvertimeController::class);
-        Route::resource('overtime-employee', OvertimeEmployeesController::class);
-        Route::get('my-request', [OvertimeController::class, 'myRequests']);
-        Route::get('my-approvals', [OvertimeController::class, 'myApprovals']);
-    });
-
-    Route::prefix('images')->group(function () {
-        Route::prefix('upload')->group(function () {
-            Route::post('digital-signature/{id}', [ImageController::class, "uploadDigitalSignature"]);
-            Route::post('profile-picture/{id}', [ImageController::class, "uploadProfileImage"]);
-        });
-    });
-
-    Route::prefix('employee-allowance')->group(function () {
-        Route::get('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
-        Route::get('my-requests', [EmployeeAllowancesController::class, 'myRequest']);
-        Route::get('my-approvals', [EmployeeAllowancesController::class, 'myApproval']);
-        Route::resource('resource', EmployeeAllowancesController::class);
-    });
-
-    Route::prefix('payroll')->group(function () {
-        Route::get('generate-payroll', [PayrollRecordController::class, 'generate']);
-        Route::post('create-payroll', [PayrollRecordController::class, 'store']);
-        Route::get('my-requests', [PayrollRecordController::class, 'myRequest']);
-        Route::get('my-approvals', [PayrollRecordController::class, 'myApproval']);
-        Route::resource('resource', PayrollRecordController::class);
-    });
-
-    Route::prefix('attendance-portal')->group(function () {
-        Route::resource('resource', AttendancePortalController::class);
-    });
-
-    Route::prefix('face-pattern')->group(function () {
-        Route::resource('resource', EmployeeFacePattern::class);
-    });
-
+    // NOTIFICATIONS
     Route::prefix('notifications')->group(function () {
         Route::get('unread', [NotificationsController::class, "getUnreadNotifications"]);
         Route::get('unread-stream', [NotificationsController::class, "getUnreadNotificationsStream"]);
@@ -300,22 +301,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('read/{notif}', [NotificationsController::class, "readNotification"]);
         Route::put('read-all', [NotificationsController::class, "readAllNotifications"]);
         Route::put('unread/{notif}', [NotificationsController::class, "unreadNotification"]);
+        Route::post('services-notify/{user}', [NotificationsController::class, "addNotification"]);
     });
 });
-
-
-
-if (config()->get('app.artisan') == 'true') {
-    Route::prefix('artisan')->group(function () {
-        Route::get('storage', function () {
-            Artisan::call("storage:link");
-            return "success";
-        });
-    });
-}
-
-// portal token
-
+// ATTENDANCE PORTAL TOKEN AUTH
 Route::middleware('portal_in')->group(function () {
     Route::prefix('attendance')->group(function () {
         Route::get('current-date', [AttendanceLogController::class, 'getCurrentDate']);
@@ -327,15 +316,20 @@ Route::middleware('portal_in')->group(function () {
 });
 
 //public
-
 Route::prefix("department")->group(function () {
-    Route::get('list/v2', [DepartmentController::class, 'get']);
+    Route::get('list/v2', [DepartmentController::class, 'get']); // NEED TO CHECK WHAT FOR
 });
-
-
-Route::resource('employee/resource/v2', EmployeeController::class);
-
+Route::resource('employee/resource/v2', EmployeeController::class); // NEED TO CHECK WHAT FOR
 Route::prefix('project-monitoring')->group(function () {
-    Route::get('lists', ViewProjectListController::class);
+    Route::get('lists', ViewProjectListController::class); // NEED TO CHECK WHAT FOR
 });
 Route::get('current-announcements', [AnnouncementsController::class, 'currentAnnouncements']);
+// SYSTEM SETUP ROUTES
+if (config()->get('app.artisan') == 'true') {
+    Route::prefix('artisan')->group(function () {
+        Route::get('storage', function () {
+            Artisan::call("storage:link");
+            return "success";
+        });
+    });
+}

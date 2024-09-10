@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ApiNotificationRequest;
 use App\Http\Resources\NotificationResource;
+use App\Models\User;
 use App\Models\Users;
+use App\Notifications\CustomApiRequestStatusUpdate;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +25,10 @@ class NotificationsController extends Controller
 
     public function getNotifications()
     {
-        $collection = collect(NotificationResource::collection(Auth::user()->notifications));
+        $unreadNotifications = Auth::user()->unreadNotifications ?? collect([]);
+        $readNotifications = Auth::user()->readNotifications ?? collect([]);
+        $notifications = $unreadNotifications->merge($readNotifications);
+        $collection = NotificationResource::collection($notifications)->collect();
         return new JsonResponse([
             'success' => false,
             'message' => 'Fetched all notifications.',
@@ -38,7 +44,8 @@ class NotificationsController extends Controller
             $lastRequestSent = null;
             $broadcastCount = 0;
             while (true) {
-                $notifs = Users::find(Auth::user()->id)->unreadNotifications;
+                // Users:find to get UPDATED user data
+                $notifs = NotificationResource::collection(Users::find(Auth::user()->id)->unreadNotifications);
                 $newLength = sizeof($notifs);
                 if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
                     $lastLength = $newLength;
@@ -86,5 +93,15 @@ class NotificationsController extends Controller
     public function unreadNotification($notif)
     {
         Auth::user()->notifications->find($notif)->markAsUnread();
+    }
+
+    public function addNotification(ApiNotificationRequest $request, Users $user)
+    {
+        $validData = $request->validate();
+        $user->notify(new CustomApiRequestStatusUpdate($validData["module"], $validData["action"], $validData["message"], $validData["request_id"], $validData["request_type"] ));
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Successfully notified user.',
+        ], JsonResponse::HTTP_OK);
     }
 }

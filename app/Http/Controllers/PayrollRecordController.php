@@ -6,7 +6,6 @@ use App\Enums\PayrollDetailsDeductionType;
 use App\Enums\RequestStatusType;
 use App\Enums\PostingStatusType;
 use App\Enums\LoanPaymentsType;
-use Exception;
 use App\Helpers;
 use App\Models\Employee;
 use App\Models\PayrollRecord;
@@ -14,14 +13,17 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\EmployeeService;
 use App\Http\Requests\GeneratePayrollRequest;
+use App\Http\Requests\PayrollRecordsRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Http\Requests\StorePayrollRecordRequest;
+use App\Http\Resources\PayrollRecordResource;
+use App\Http\Resources\PayrollRecordsResource;
 use App\Http\Resources\PayrollRequestResource;
 use App\Models\Department;
 use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
 use App\Models\LoanPayments;
-use App\Models\OtherDeduction;
+use App\Models\OtherDeductionPayments;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
@@ -35,6 +37,9 @@ class PayrollRecordController extends Controller
     public const CASHADVANCE = "App\Models\CashAdvance";
     public const LOANS = "App\Models\Loans";
     public const OTHERDEDUCTION = "App\Models\OtherDeduction";
+    public const CASHADVANCE_PAYMENT = CashAdvancePayments::class;
+    public const LOANS_PAYMENT = LoanPayments::class;
+    public const OTHERDEDUCTION_PAYMENT = OtherDeductionPayments::class;
 
     protected $employeeService;
     protected $payrollService;
@@ -60,6 +65,7 @@ class PayrollRecordController extends Controller
                 return $employee;
             });
         } catch (\Throwable $th) {
+            Log::error($th);
             return new JsonResponse([
                 'success' => false,
                 'message' => $th->getMessage(),
@@ -93,7 +99,7 @@ class PayrollRecordController extends Controller
                 $empPayrollDetail->adjustments()->createMany($employeePayrollData["adjustments"]);
                 $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
                 if(sizeof($employeePayrollData["deductions"]) > 0) {
-                    PayrollDetailDeduction::create($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
+                    $empPayrollDetail->deductions()->createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
                 }
             }
             $payroll->refresh();
@@ -119,6 +125,7 @@ class PayrollRecordController extends Controller
 
     public function setPayrollDetails($deductions, $empPayrollDetail)
     {
+        $createDeductions = [];
         foreach ($deductions as $data) {
             $paymentStore = [
                 "posting_status" => PostingStatusType::NOTPOSTED->value,
@@ -130,43 +137,44 @@ class PayrollRecordController extends Controller
                 case PayrollDetailsDeductionType::CASHADVANCE->value:
                     $paymentStore["cashadvance_id"] = $data["deduction_id"];
                     $thisPayment = CashAdvancePayments::create($paymentStore);
-                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
+                    array_push($createDeductions, $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail));
                     break;
                 case PayrollDetailsDeductionType::LOAN->value:
                     $paymentStore["loans_id"] = $data["deduction_id"];
                     $thisPayment = LoanPayments::create($paymentStore);
-                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
+                    array_push($createDeductions, $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail));
                     break;
                 case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
                     $paymentStore["otherdeduction_id"] = $data["deduction_id"];
-                    $thisPayment = OtherDeduction::create($paymentStore);
-                    return $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail);
+                    $thisPayment = OtherDeductionPayments::create($paymentStore);
+                    array_push($createDeductions, $this->preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail));
                     break;
             }
         }
+        return $createDeductions;
     }
 
     public function preparePayrollDetailDeduction($data, $thisPayment, $empPayrollDetail)
     {
         $data["payroll_details_id"] = $empPayrollDetail->id;
-        $data["deduction_type"] = $this->getChargingModel($data["type"]);
+        $data["deduction_type"] = $this->getDeductionPaymentChargingModel($data["type"]);
         $data["deduction_id"] = $thisPayment->id;
-        // $data["charge_type"] = $this->getChargingModel($data["type"]);
+        // $data["charge_type"] = $this->getDeductionPaymentChargingModel($data["type"]);
         // $data["charge_id"] = $thisPayment->id;
         return $data;
     }
 
-    public function getChargingModel($type)
+    public function getDeductionPaymentChargingModel($type)
     {
         switch ($type) {
             case PayrollDetailsDeductionType::CASHADVANCE->value:
-                return PayrollRecordController::CASHADVANCE;
+                return PayrollRecordController::CASHADVANCE_PAYMENT;
                 break;
             case PayrollDetailsDeductionType::LOAN->value:
-                return PayrollRecordController::LOANS;
+                return PayrollRecordController::LOANS_PAYMENT;
                 break;
             case PayrollDetailsDeductionType::OTHERDEDUCTION->value:
-                return PayrollRecordController::OTHERDEDUCTION;
+                return PayrollRecordController::OTHERDEDUCTION_PAYMENT;
                 break;
         }
     }
@@ -238,6 +246,41 @@ class PayrollRecordController extends Controller
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
             'data' => PayrollRequestResource::collection($myApproval)
+        ]);
+    }
+    /**
+     *
+     * Show all Approved Requests
+     */
+    public function payrollRecords(PayrollRecordsRequest $request)
+    {
+        $validatedData = $request->validated();
+        Log::info($validatedData);
+        $datas = PayrollRecord::isApproved()
+        ->whereDate("payroll_date", $validatedData["payroll_date"])
+        ->when($request->has("payroll_type") && $validatedData["payroll_type"], function ($query) use ($validatedData) {
+            return $query->where("payroll_type", $validatedData["payroll_type"]);
+        })
+        ->when($request->has("release_type") && $validatedData["release_type"], function ($query) use ($validatedData) {
+            return $query->where("release_type", $validatedData["release_type"]);
+        })
+        ->when($request->has("project_id"), function ($query) use ($validatedData) {
+            return $query->where("project_id", $validatedData["project_id"]);
+        })
+        ->when($request->has("department_id"), function ($query) use ($validatedData) {
+            return $query->where("department_id", $validatedData["department_id"]);
+        })
+        ->get();
+        if ($datas->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Payrollrecord Request fetched.',
+            'data' => PayrollRecordsResource::collection($datas)
         ]);
     }
 }

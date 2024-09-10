@@ -10,16 +10,16 @@ trait SalaryDeduction
     public function SSSDeduction($salary, $payrollType)
     {
         $sss = SSSContribution::getContribution($salary);
-        $totalContribution = $sss->employee_contribution + $sss->employer_contribution;
-        $totalCompensation = $sss->employee_share + $sss->employer_share;
+        $totalContribution = $sss->employee_share + $sss->employer_share;
+        $totalCompensation = $sss->employee_compensation + $sss->employer_compensation;
         $total = $totalCompensation + $totalContribution;
         $total = $payrollType === "weekly" ? $total / 4 : $total / 2;
         return [
-            "employer_contribution" => $sss->employee_contribution,
-            "employee_contribution" =>  $sss->employer_contribution,
-            "employer_compensation" => $sss->employee_share,
-            "employee_compensation" => $sss->employer_share,
-            "total" => $total
+            "employee_contribution" => $sss->employee_share,
+            "employer_contribution" =>  $sss->employer_share,
+            "employee_compensation" => $sss->employee_compensation,
+            "employer_compensation" => $sss->employer_compensation,
+            "total" => $total,
         ];
     }
 
@@ -27,16 +27,5 @@ trait SalaryDeduction
     {
         $philhealth = PhilhealthContribution::getContribution($salary);
         dd($philhealth);
-        /*         $totalContribution = $sss->employee_contribution + $sss->employer_contribution;
-                $totalCompensation = $sss->employee_share + $sss->employer_share;
-                $total = $totalCompensation + $totalContribution;
-                $total = $payrollType === "weekly" ? $total / 4 : $total / 2;
-                return [
-                    "employer_contribution" => $sss->employee_contribution,
-                    "employee_contribution" =>  $sss->employer_contribution,
-                    "employer_compensation" => $sss->employee_share,
-                    "employee_compensation" => $sss->employer_share,
-                    "total" => $total
-                ]; */
     }
 }

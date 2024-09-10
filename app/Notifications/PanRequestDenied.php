@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\EmployeePanRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -56,7 +57,10 @@ class PanRequestDenied extends Notification
             "message" => "Your PERSONNEL ACTION NOTICE REQUEST has been DENIED",
             "type" => ApprovalModels::EmployeePanRequest->name,
             "action_type" => "View",
-            "metadata" => $this->panRequest->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->panRequest->id,
+            ],
         ];
     }
 }

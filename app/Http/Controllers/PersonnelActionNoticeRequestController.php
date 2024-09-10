@@ -50,25 +50,21 @@ class PersonnelActionNoticeRequestController extends Controller
      */
     public function store(StoreEmployeePanRequestRequest $request)
     {
-        try {
-            $valid = $request->validated();
-            if(!$valid) {
-                return new JsonResponse([
-                    "success" => false,
-                    "message" => "Create transaction failed."
-                    ], JsonResponse::HTTP_EXPECTATION_FAILED);
-            }
-            $data = $this->panRequestService->create($valid);
-            $dataResource = new EmployeePanRequestResource($data);
-
+        $valid = $request->validated();
+        if(!$valid) {
             return new JsonResponse([
-                "success" => true,
-                "message" => "Successfully created.",
-                "data" => $dataResource
-            ], JsonResponse::HTTP_CREATED);
-        } catch (\Exception $e) {
-            throw new TransactionFailedException("Create transaction failed.", 500, $e);
+                "success" => false,
+                "message" => "Create transaction failed."
+                ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
+        $data = $this->panRequestService->create($valid);
+        $dataResource = new EmployeePanRequestResource($data);
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully created.",
+            "data" => $dataResource
+        ], JsonResponse::HTTP_CREATED);
     }
 
     // can view all pan request made by logged in user

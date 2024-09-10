@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Enums\ApprovalModels;
+use App\Enums\NotificationModules;
 use App\Models\AllowanceRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -57,7 +58,10 @@ class AllowanceRequestApproved extends Notification
             "message" => "Your ALLOWANCE REQUEST has been APPROVED",
             "type" => ApprovalModels::GenerateAllowance->name,
             "action_type" => "View",
-            "metadata" => $this->model->toArray(),
+            "module" => NotificationModules::HRMS->value,
+            "metadata" => [
+                "id" => $this->model->id,
+            ],
         ];
     }
 }
