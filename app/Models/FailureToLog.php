@@ -41,6 +41,10 @@ class FailureToLog extends Model
         'employee_id' => 'integer',
     ];
 
+    protected $appends = [
+        'charging_designation',
+    ];
+
     public function charging(): MorphTo
     {
         return $this->morphTo();
@@ -130,18 +134,14 @@ class FailureToLog extends Model
     {
         return ($this->charging_type === GroupType::DEPARTMENT->value) ? $this->charging_id : null;
     }
-    protected function project_id(): Attribute
+    public function getChargingDesignationAttribute()
     {
-        if ($this->assignment_type == AttendancePortal::DEPARTMENT) {
-            return Attribute::make(
-                get: fn () => $this->assignment->department_name,
-            );
+        if ($this->charging_type === GroupType::DEPARTMENT->value) {
+            return Department::find($this->charging_id)->department_name;
         }
-        if ($this->assignment_type == AttendancePortal::PROJECT) {
-            return Attribute::make(
-                get: fn () => $this->assignment->project_code,
-            );
+        if ($this->charging_type === GroupType::PROJECT->value) {
+            return Project::find($this->charging_id)->project_code;
         }
+        return "No charging found.";
     }
-
 }
