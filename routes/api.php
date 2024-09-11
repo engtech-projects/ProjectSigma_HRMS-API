@@ -71,6 +71,7 @@ use App\Http\Controllers\Actions\Employee\{
     MonthlyBirthdaysController
 };
 use App\Http\Controllers\Actions\Project\ProjectListController;
+use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\AttendancePortalController;
 use App\Http\Controllers\CashAdvanceController;
@@ -302,6 +303,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('read-all', [NotificationsController::class, "readAllNotifications"]);
         Route::put('unread/{notif}', [NotificationsController::class, "unreadNotification"]);
         Route::post('services-notify/{user}', [NotificationsController::class, "addNotification"]);
+    });
+    // SERVICES ROUTES
+    Route::prefix('services')->group(function () {
+        Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH
