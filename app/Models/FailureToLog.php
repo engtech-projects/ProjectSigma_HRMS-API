@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GroupType;
 use App\Traits\HasApproval;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
@@ -10,6 +11,7 @@ use App\Models\Traits\HasEmployee;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -28,6 +30,8 @@ class FailureToLog extends Model
         'approvals',
         'request_status',
         'employee_id',
+        'charging_type',
+        'charging_id',
     ];
     protected $casts = [
         'date' => 'date:Y-m-d',
@@ -36,6 +40,11 @@ class FailureToLog extends Model
         'approvals' => 'array',
         'employee_id' => 'integer',
     ];
+
+    public function charging(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
     public static function boot()
     {
@@ -52,7 +61,8 @@ class FailureToLog extends Model
             'time' => $this->time,
             'log_type' => $this->log_type,
             'attendance_type' => AttendanceType::MANUAL, // SHOULD BE FAILURE TO LOG
-            'department_id' => 4, // DEFAULT NEED TO ADD Charging Morph in FAILURE TO LOG
+            'department_id' => $this->charging_department_id,
+            'project_id' => $this->charging_project_id,
             'employee_id' => $this->employee_id,
         ]);
         $this->save();
@@ -111,4 +121,27 @@ class FailureToLog extends Model
     {
         return Carbon::parse($this->date)->format("F j, Y");
     }
+
+    public function getChargingProjectIdAttribute()
+    {
+        return ($this->charging_type === GroupType::PROJECT->value) ? $this->charging_id : null;
+    }
+    public function getChargingDepartmentIdAttribute()
+    {
+        return ($this->charging_type === GroupType::DEPARTMENT->value) ? $this->charging_id : null;
+    }
+    protected function project_id(): Attribute
+    {
+        if ($this->assignment_type == AttendancePortal::DEPARTMENT) {
+            return Attribute::make(
+                get: fn () => $this->assignment->department_name,
+            );
+        }
+        if ($this->assignment_type == AttendancePortal::PROJECT) {
+            return Attribute::make(
+                get: fn () => $this->assignment->project_code,
+            );
+        }
+    }
+
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssignTypes;
+use App\Enums\GroupType;
 use App\Http\Requests\FailToLogRequest;
 use App\Models\FailureToLog;
 use Illuminate\Http\JsonResponse;
@@ -50,9 +52,9 @@ class FailureToLogController extends Controller
     public function store(StoreFailureToLogRequest $request)
     {
         try {
-            $valid = $request->validated();
-            if($valid) {
-                $main = FailureToLog::create($request->validated());
+            $validatedData = $request->validated();
+            if($validatedData) {
+                $main = FailureToLog::create($validatedData);
                 $main->refresh();
                 if ($main->getNextPendingApproval()) {
                     Users::find($main->getNextPendingApproval()['user_id'])->notify(new FailureToLogRequestForApproval($main));
