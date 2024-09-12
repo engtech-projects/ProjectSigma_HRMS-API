@@ -162,7 +162,7 @@ trait EmployeePayroll
         $date = Carbon::parse($date);
         $loans = $this->employee_loan()->get();
         $loans = $loans->filter(function ($loan) use ($date) {
-            return !$loan->loanPaid() && $loan->deduction_date_start->lte($date);
+            return $loan->balance > 0 && $loan->deduction_date_start->lte($date);
         });
         $loans = $loans->map(function ($loan) use ($type) {
             $deduction = floatval(Payrollservice::getPayrollTypeValue($type, $loan->installment_deduction));
@@ -186,7 +186,7 @@ trait EmployeePayroll
         $date = Carbon::parse($date);
         $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
         $cashAdvance->filter(function ($cAdv) use ($date) {
-            return !$cAdv->cashPaid() && $cAdv->deduction_date_start->lte($date);
+            return $cAdv->balance > 0 && $cAdv->deduction_date_start->lte($date);
         });
         $cashAdvance = $cashAdvance->map(function ($cAdv) use ($type) {
             $deduction = floatval(Payrollservice::getPayrollTypeValue($type, $cAdv->installment_deduction));
@@ -210,7 +210,7 @@ trait EmployeePayroll
         $date = Carbon::parse($date);
         $otherDeduction = $this->other_deduction()->get();
         $otherDeduction->filter(function ($oDed) use ($date) {
-            return !$oDed->cashPaid() && $oDed->deduction_date_start->lte($date);
+            return $oDed->balance > 0 && $oDed->deduction_date_start->lte($date);
         });
         $otherDeduction = $otherDeduction->map(function ($oDed) use ($type) {
             $deduction = floatval(Payrollservice::getPayrollTypeValue($type, $oDed->installment_deduction));
