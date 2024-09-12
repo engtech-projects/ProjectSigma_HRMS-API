@@ -15,7 +15,11 @@ class SalaryGradeLevelListController extends Controller
      */
     public function __invoke()
     {
-        $salaryGradeLevel = SalaryGradeLevel::select('salary_grade_levels.*', 'salary_grade_steps.*')->join('salary_grade_steps', 'salary_grade_steps.salary_grade_level_id', '=', 'salary_grade_levels.id')->get();
+        $salaryGradeLevel = SalaryGradeLevel::select('salary_grade_levels.*', 'salary_grade_steps.*')
+        ->join('salary_grade_steps', 'salary_grade_steps.salary_grade_level_id', '=', 'salary_grade_levels.id')
+        ->orderByRaw("LENGTH(salary_grade_levels.salary_grade_level)")
+        ->orderBy("salary_grade_levels.salary_grade_level")
+        ->get();
         if ($salaryGradeLevel->isEmpty()) {
             return new JsonResponse([
                 "success" => false,
