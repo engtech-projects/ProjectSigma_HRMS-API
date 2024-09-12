@@ -165,9 +165,13 @@ trait EmployeePayroll
             return !$loan->loanPaid() && $loan->deduction_date_start->lte($date);
         });
         $loans = $loans->map(function ($loan) use ($type) {
+            $deduction = floatval(Payrollservice::getPayrollTypeValue($type, $loan->installment_deduction));
+            if ($deduction > $loan->balance) {
+                $deduction = $loan->balance;
+            }
             return [
                 ...collect($loan),
-                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($type, $loan->installment_deduction)),
+                "max_payroll_payment" => $deduction,
             ];
         });
         $totalPaid = $loans->sum("max_payroll_payment");
@@ -185,9 +189,13 @@ trait EmployeePayroll
             return !$cAdv->cashPaid() && $cAdv->deduction_date_start->lte($date);
         });
         $cashAdvance = $cashAdvance->map(function ($cAdv) use ($type) {
+            $deduction = floatval(Payrollservice::getPayrollTypeValue($type, $cAdv->installment_deduction));
+            if ($deduction > $cAdv->balance) {
+                $deduction = $cAdv->balance;
+            }
             return [
                 ...collect($cAdv),
-                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($type, $cAdv->installment_deduction)),
+                "max_payroll_payment" => $deduction,
             ];
         });
         $totalPaid = $cashAdvance->sum("max_payroll_payment");
@@ -205,9 +213,13 @@ trait EmployeePayroll
             return !$oDed->cashPaid() && $oDed->deduction_date_start->lte($date);
         });
         $otherDeduction = $otherDeduction->map(function ($oDed) use ($type) {
+            $deduction = floatval(Payrollservice::getPayrollTypeValue($type, $oDed->installment_deduction));
+            if ($deduction > $oDed->balance) {
+                $deduction = $oDed->balance;
+            }
             return [
                 ...collect($oDed),
-                "max_payroll_payment" => floatval(Payrollservice::getPayrollTypeValue($type, $oDed->installment_deduction)),
+                "max_payroll_payment" => $deduction,
             ];
         });
         $totalPaid = $otherDeduction->sum("max_payroll_payment");
