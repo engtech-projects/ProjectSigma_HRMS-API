@@ -71,6 +71,7 @@ use App\Http\Controllers\Actions\Employee\{
     MonthlyBirthdaysController
 };
 use App\Http\Controllers\Actions\Project\ProjectListController;
+use App\Http\Controllers\AllowanceRequestController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\AttendancePortalController;
@@ -86,6 +87,7 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
+use App\Models\EmployeeAllowances;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -192,11 +194,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('payments', [OtherDeductionPaymentsController::class, 'index']);
         Route::post('manual-payment/{oded}', [OtherDeductionController::class, "cashAdvancePayment"]);
     });
+    Route::prefix("allowance-request")->group(function () {
+        Route::post("draft", [AllowanceRequestController::class, "generateDraft"]);
+        Route::resource('resource', AllowanceRequestController::class)->names("requestAllowance");
+        Route::get('my-requests', [AllowanceRequestController::class, 'myRequest']);
+        Route::get('my-approvals', [AllowanceRequestController::class, 'myApproval']);
+    });
     Route::prefix('employee-allowance')->group(function () {
         Route::get('view-allowance', [EmployeeAllowancesController::class, "viewAllowanceRecords"]);
-        Route::get('my-requests', [EmployeeAllowancesController::class, 'myRequest']);
-        Route::get('my-approvals', [EmployeeAllowancesController::class, 'myApproval']);
-        Route::resource('resource', EmployeeAllowancesController::class)->names("requestAllowance");
     });
     Route::prefix('payroll')->group(function () {
         Route::post('generate-payroll', [PayrollRecordController::class, 'generate']);

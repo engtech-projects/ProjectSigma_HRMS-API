@@ -9,26 +9,12 @@ use App\Http\Traits\HasApprovalValidation;
 
 class StoreEmployeeAllowancesRequest extends FormRequest
 {
-    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
-    }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            "allowance_days" => $this->total_days,
-        ]);
-        if (gettype($this->employees) == "string") {
-            $this->merge([
-                "employees" => json_decode($this->employees, true),
-            ]);
-        }
-        $this->prepareApprovalValidation();
+        return false;
     }
 
     /**
@@ -39,60 +25,6 @@ class StoreEmployeeAllowancesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_type' => [
-                "required",
-                "string",
-                new Enum(AssignTypes::class)
-            ],
-            'employees' => [
-                "required",
-                "array",
-            ],
-            'employees.*' => [
-                "required",
-                "integer",
-                "exists:employees,id",
-            ],
-            'project_id' => [
-                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
-                'nullable',
-                "integer",
-                "exists:projects,id",
-            ],
-            'department_id' => [
-                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
-                'nullable',
-                "integer",
-                "exists:departments,id",
-            ],
-            'allowance_date' => [
-                "required",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'cutoff_start' => [
-                "required",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'cutoff_end' => [
-                "required",
-                "date",
-                'date_format:Y-m-d'
-            ],
-            'total_days' => [
-                "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
-            ],
-            'allowance_days' => [
-                "required",
-                "numeric",
-                "min:1",
-                'decimal:0,2',
-            ],
-            ...$this->storeApprovals(),
         ];
     }
 }

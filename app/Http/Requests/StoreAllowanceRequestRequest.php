@@ -20,9 +20,9 @@ class StoreAllowanceRequestRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if (gettype($this->employees) == "string") {
+        if (gettype($this->employee_allowances) == "string") {
             $this->merge([
-                "employees" => json_decode($this->employees, true),
+                "employee_allowances" => json_decode($this->employee_allowances, true),
             ]);
         }
         $this->prepareApprovalValidation();
@@ -36,19 +36,10 @@ class StoreAllowanceRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_type' => [
+            'charging_type' => [
                 "required",
                 "string",
                 new Enum(AssignTypes::class)
-            ],
-            'employees' => [
-                "required",
-                "array",
-            ],
-            'employees.*' => [
-                "required",
-                "integer",
-                "exists:employees,id",
             ],
             'project_id' => [
                 'required_if:group_type,==,' . AssignTypes::PROJECT->value,
@@ -79,9 +70,41 @@ class StoreAllowanceRequestRequest extends FormRequest
             ],
             'total_days' => [
                 "required",
-                "integer",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
             ],
             ...$this->storeApprovals(),
+            'employee_allowances' => [
+                "required",
+                "array",
+            ],
+            'employee_allowances.*' => [
+                "required",
+                "array",
+            ],
+            'employee_allowances.*.allowance_amount' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'employee_allowances.*.employee_id' => [
+                "required",
+                "integer",
+                "exists:employees,id",
+            ],
+            'employee_allowances.*.allowance_rate' => [
+                "required",
+                "numeric",
+                "min:1",
+                'decimal:0,2',
+            ],
+            'employee_allowances.*.allowance_days' => [
+                "required",
+                "numeric",
+                "min:1",
+            ],
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
 use App\Enums\RequestStatusType;
+use App\Http\Requests\EmployeeAllowanceGenerateDraftRequest;
 use App\Http\Requests\FilterEmployeeAllowancesRequest;
 use App\Models\EmployeeAllowances;
 use App\Http\Requests\StoreEmployeeAllowancesRequest;
@@ -113,64 +114,6 @@ class EmployeeAllowancesController extends Controller
      */
     public function store(StoreEmployeeAllowancesRequest $request)
     {
-        $valData = $request->validated();
-        try {
-            DB::beginTransaction();
-            $allowanceReq = new AllowanceRequest();
-            $allowanceReq->fill($valData);
-            $allowanceReq->request_status = RequestStatusType::PENDING;
-            $allowanceReq->created_by = auth()->user()->id;
-            if ($valData["group_type"] == AssignTypes::DEPARTMENT->value) {
-                $allowanceReq->charge_assignment_id = $valData["department_id"];
-                $allowanceReq->charge_assignment_type = Department::class;
-            } else {
-                $allowanceReq->charge_assignment_id = $valData["project_id"];
-                $allowanceReq->charge_assignment_type = Project::class;
-            }
-            $allowanceReq->save();
-            $errorList = [];
-            foreach ($valData["employees"] as $key) {
-                $employee = Employee::with('current_employment.position.allowances')->find($key);
-                if (!$employee->current_employment) {
-                    $errorList[] = $employee->fullname_last . " is currently NOT EMPLOYED.";
-                    continue;
-                }
-                if (!$employee->current_employment->position->allowances) {
-                    $errorList[] = $employee->current_employment->position->name . " has no allowance setup.";
-                    continue;
-                }
-                $allowanceRate = $employee->current_employment->position->allowances->amount;
-                $allowanceReq->employee_allowances()->attach(
-                    $key,
-                    [
-                    "allowance_amount" => $allowanceRate * $valData['allowance_days'],
-                    "allowance_rate" => $allowanceRate,
-                    "allowance_days" => $valData['allowance_days'],
-                ]
-                );
-            }
-            if (sizeof($errorList) > 0) {
-                return new JsonResponse([
-                    'success' => false,
-                    'error' => "Failed to Generate Allowance",
-                    'message' => implode("\n", $errorList),
-                ], 400);
-            }
-            if ($allowanceReq->getNextPendingApproval()) {
-                Users::find($allowanceReq->getNextPendingApproval()['user_id'])->notify(new AllowanceRequestForApproval($allowanceReq));
-            }
-            DB::commit();
-        } catch (\Throwable $th) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => $th->getMessage(),
-                'message' => 'Failed save.',
-            ], 400);
-        }
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Successfully save.',
-        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -222,40 +165,5 @@ class EmployeeAllowancesController extends Controller
             'success' => false,
             'message' => 'No data found.',
         ], 404);
-    }
-
-    public function myRequest()
-    {
-        $myRequest = $this->employeeAllowanceService->getMyRequests();
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(AllowanceRequestResource::collection($myRequest)))
-        ]);
-    }
-
-    /**
-     * Show all requests to be approved/reviewed by current user
-     */
-    public function myApproval()
-    {
-        $myApproval = $this->employeeAllowanceService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => AllowanceRequestResource::collection($myApproval)
-        ]);
     }
 }

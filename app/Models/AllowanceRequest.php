@@ -39,6 +39,7 @@ class AllowanceRequest extends Model
         'cutoff_end',
         'total_days',
         'approvals',
+        'created_by',
     ];
 
     public function charge_assignment(): MorphTo
