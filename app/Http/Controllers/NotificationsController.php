@@ -100,7 +100,7 @@ class NotificationsController extends Controller
         $validData = $request->validated();
         $user->notify(new CustomApiRequestStatusUpdate($validData["module"], $validData["action"], $validData["message"], $validData["request_id"], $validData["request_type"] ));
         return new JsonResponse([
-            'success' => false,
+            'success' => true,
             'message' => 'Successfully notified user.',
         ], JsonResponse::HTTP_OK);
     }
