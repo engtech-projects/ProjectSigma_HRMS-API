@@ -25,7 +25,7 @@ trait Attendance
     {
         $attendanceSchedules = $data["schedules_attendances"];
         $overtime = $data["overtime"];
-        $leave = $data["leave"]->where("with_pay", 1);
+        $leave = collect($data["leave"]->where("with_pay", 1)->values()->all());
         $travelOrder = $data["travel_orders"];
         $duration = 0;
         $totalLate = 0;
@@ -37,7 +37,7 @@ trait Attendance
         $leaveUsedToday = 0;
         foreach ($attendanceSchedules as $schedule) {
             $hasLeaveToday = sizeof($leave) > 0;
-            $leaveToday = $hasLeaveToday ? $leave[0] : null;
+            $leaveToday = $hasLeaveToday ? $leave->first() : null;
             $leaveUsed = false;
             $dateTimeInSchedule = $date->copy()->setTimeFromTimeString($schedule["startTime"]);
             $timeIn = $schedule["applied_ins"];
