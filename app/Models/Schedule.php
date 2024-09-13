@@ -84,11 +84,11 @@ class Schedule extends Model
     public function getAttendanceLogInsAttribute()
     {
         $bufferInTimeEarly = Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
-        $bufferInTimeLate = Carbon::parse($this->startTime)->addHour((int)config("app.login_late"));
+        // $bufferInTimeLate = Carbon::parse($this->startTime)->addHour((int)config("app.login_late"));
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_IN)
             ->whereTime('time', ">=", $bufferInTimeEarly)
-            ->whereTime('time', "<=", $bufferInTimeLate)
+            ->whereTime('time', "<=", $this->endTime)
             ->get();
     }
     public function getAttendanceLogOutsAttribute()
@@ -97,7 +97,7 @@ class Schedule extends Model
         $bufferOutTimeLate = $this->endTime->addHour((int)config("app.logout_late"));
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_OUT)
-            ->whereTime('time', ">=", $bufferOutTimeEarly)
+            ->whereTime('time', ">=", $this->startTime)
             ->whereTime('time', "<=", $bufferOutTimeLate)
             ->get();
     }
