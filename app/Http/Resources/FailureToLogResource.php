@@ -22,7 +22,10 @@ class FailureToLogResource extends JsonResource
             'time_human' => $this->time_human,
             'log_type' => $this->log_type,
             'reason' => $this->reason,
+            'charging_type' => $this->charging_type,
+            'charging_id' => $this->charging_id,
             'approvals' => ApprovalAttributeResource::collection($this->approvals),
+            'charging_designation' => $this->charging_designation,
             "next_approval" => $this->getNextPendingApproval(),
             'employee' => $this->whenLoaded('employee'),
         ];

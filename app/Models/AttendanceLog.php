@@ -120,7 +120,6 @@ class AttendanceLog extends Model
             return $this->project;
         }
     }
-
     public function getTimeHumanAttribute()
     {
         return Carbon::parse($this->time)->format("h:i A");
