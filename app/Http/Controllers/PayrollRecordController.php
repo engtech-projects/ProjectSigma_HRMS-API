@@ -57,7 +57,7 @@ class PayrollRecordController extends Controller
         $periodDates = Helpers::dateRange([
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
-        $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
+        $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
         // Employee Employment and Payroll Validity Checking
         foreach ($employeeDtr as $employee) {
             if (!$employee->current_employment) {
