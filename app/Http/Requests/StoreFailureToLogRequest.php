@@ -40,7 +40,7 @@ class StoreFailureToLogRequest extends FormRequest
             'reason' => 'required|string',
             'employee_id' => 'required|integer',
             'charging_type'=> 'required|string',
-            'charging_id' => 'nullable|numeric|exists:projects,id|exists:departments,id',
+            'charging_id' => 'required|numeric|exists:projects,id|exists:departments,id',
             ...$this->storeApprovals(),
         ];
     }

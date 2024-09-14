@@ -137,10 +137,10 @@ class FailureToLog extends Model
     public function getChargingDesignationAttribute()
     {
         if ($this->charging_type === GroupType::DEPARTMENT->value) {
-            return Department::find($this->charging_id)->department_name;
+            return Department::find($this->charging_id)?->department_name;
         }
         if ($this->charging_type === GroupType::PROJECT->value) {
-            return Project::find($this->charging_id)->project_code;
+            return Project::find($this->charging_id)?->project_code;
         }
         return "No charging found.";
     }
