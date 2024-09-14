@@ -58,6 +58,21 @@ class PayrollRecordController extends Controller
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->get();
+        // Employee Employment and Payroll Validity Checking
+        foreach ($employeeDtr as $employee) {
+            if (!$employee->current_employment) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Employee ".$employee->fullname_first." is not Employed.",
+                ], 400);
+            }
+            if (!$employee->current_employment->employee_salarygrade) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Employee ".$employee->fullname_first." has no Salary Grade Set.",
+                ], 400);
+            }
+        }
         try {
             $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
                 $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
