@@ -25,7 +25,7 @@ class SalaryGradeStep extends Model
 
     public function salary_grade_level(): BelongsTo
     {
-        return $this->belongsTo(SalaryGradeLevel::class);
+        return $this->belongsTo(SalaryGradeLevel::class)->withTrashed();
     }
 
     protected function dailyRate(): Attribute
