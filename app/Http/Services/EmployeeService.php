@@ -52,9 +52,9 @@ class EmployeeService
             throw new TransactionFailedException("Employee ".$employee->fullname_first." has no Salary Grade Set.", 500);
         }
         $payrollCharging = [
-            "id" => 8,  // Default HR Department (temporary static data, need to be variable/env)
+            "id" => 4,  // Default HR Department (temporary static data, need to be variable/env)
             "type" => Department::class,
-            "charging_name" => Department::find(8)->department_name,
+            "charging_name" => Department::find(4)->department_name,
         ];
         $salary = 0;
         // Setting Payroll Request Project/Department Charging
