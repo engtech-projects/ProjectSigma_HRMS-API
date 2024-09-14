@@ -44,7 +44,7 @@ trait EmployeePayroll
             ],
             "special_holidays" => [
                 "reg_hrs" =>  PayrollService::getSalaryByRateHour("special_holidays", "reg_hrs", $dailyRate, $dtr["special_holidays"]["reg_hrs"]),
-                "overtime" => PayrollService::getSalaryByRateHour("special_holidays", "overtime", $dailyRate, $dtr["regular"]["overtime"]),
+                "overtime" => PayrollService::getSalaryByRateHour("special_holidays", "overtime", $dailyRate, $dtr["special_holidays"]["overtime"]),
             ],
         ];
     }
