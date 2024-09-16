@@ -157,7 +157,7 @@ trait EmployeePayroll
             Log::info("Tax Amount: " . $taxAmount);
             $excess = $salary - $taxBase ?? 0;
             Log::info("Excess: " . $excess);
-            $excessTaxAmount = $excess * $wht->tax_percent_over_base_decimal;
+            $excessTaxAmount = $excess * $wht->percent_over_base_decimal;
             Log::info("Tax Amount Excess: " . $excessTaxAmount);
             $total = round($taxAmount + $excessTaxAmount, 2);
         }
