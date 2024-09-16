@@ -24,6 +24,8 @@ class SssEmployeeRemittanceRequest extends FormRequest
         return [
             'filter_year' => 'required',
             'filter_month' => 'required',
+            'cutoff_start' => 'required|date',
+            'cutoff_end' => 'required|date',
         ];
     }
 }
