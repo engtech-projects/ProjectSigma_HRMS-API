@@ -152,7 +152,7 @@ trait EmployeePayroll
             $taxBase = $wht->tax_base;
             $taxAmount = $wht->tax_amount;
             $excess = $salary - $taxBase ?? 0;
-            $excessTaxAmount = $excess * ($wht->tax_percent_over_base_decimal / 100);
+            $excessTaxAmount = $excess * ($wht->tax_percent_over_base_decimal);
             $total = round($taxAmount + $excessTaxAmount, 2);
         }
         return PayrollService::getPayrollTypeValue($payrollType, $total);
