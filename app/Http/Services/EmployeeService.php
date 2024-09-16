@@ -162,7 +162,7 @@ class EmployeeService
             "sss" => $filters["deduct_sss"] ? $employee->sss_deduction($salary, $filters["payroll_type"]) : [],
             "phic" => $filters["deduct_philhealth"] ? $employee->philhealth_deduction($salary, $filters["payroll_type"]) : [],
             "hmdf" => $filters["deduct_pagibig"] ? $employee->pagibig_deduction($salary, $filters["payroll_type"]) : [],
-            "ewtc" =>  $employee->with_holding_tax_deduction($salary),
+            "ewtc" => $employee->with_holding_tax_deduction($salary, $filters["payroll_type"]),
             "loan" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
             "other_deductions" => $employee->other_deductions($salary, $filters["payroll_type"], $filters["payroll_date"]),
