@@ -25,7 +25,7 @@ class WitholdingTaxContribution extends Model
         'tax_percent_over_base',
     ];
 
-    public function getPercentOverBaseDecimal()
+    public function getPercentOverBaseDecimalAttribute()
     {
         return $this->tax_percent_over_base / 100;
     }
