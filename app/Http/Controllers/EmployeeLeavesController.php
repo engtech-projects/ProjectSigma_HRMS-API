@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RequestStatusType;
+use App\Http\Requests\AllLeaveRequestRequest;
+use App\Http\Requests\ApprovalLeaveRequest;
+use App\Http\Requests\MyLeaveRequest;
 use App\Models\EmployeeLeaves;
 use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
@@ -11,6 +14,7 @@ use App\Http\Services\EmployeeLeaveService;
 use App\Models\Employee;
 use App\Models\Users;
 use App\Notifications\LeaveRequestForApproval;
+use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,20 +26,27 @@ class EmployeeLeavesController extends Controller
     {
         $this->leaveRequestService = $leaveRequestService;
     }
-
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(AllLeaveRequestRequest $request)
     {
-        $query = EmployeeLeaves::with(['employee', 'department', 'project', 'leave']);
-        if ($request->has("employee_id") && $request->input("employee_id")) {
-            $query->where('employee_id', $request->input("employee_id"));
-        }
-        $data = $query->orderBy("created_at", "DESC")->paginate(15);
-        return EmployeeLeaveResource::collection($data);
+        $validatedData = $request->validated();
+        $data = EmployeeLeaves::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->where('employee_id', $validatedData['employee_id']);
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->where('date_of_absence_from', '<=', $validatedData['date_filter'])
+                ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get();
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Travel Order Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
+        ]);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -70,7 +81,6 @@ class EmployeeLeavesController extends Controller
         $data->success = false;
         return response()->json($data, 400);
     }
-
     /**
      * Display the specified resource.
      */
@@ -88,7 +98,6 @@ class EmployeeLeavesController extends Controller
         $data->success = false;
         return response()->json($data, 404);
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -134,19 +143,25 @@ class EmployeeLeavesController extends Controller
     }
 
 
-    public function myRequests()
+    public function myRequests(MyLeaveRequest $request)
     {
-        $myRequest = $this->leaveRequestService->getMyRequest();
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $validatedData = $request->validated();
+        $data = EmployeeLeaves::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->where('employee_id', $validatedData['employee_id']);
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->where('date_of_absence_from', '<=', $validatedData['date_filter'])
+                ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
+        })
+        ->with(['employee', 'department', 'project'])
+        ->where("created_by", auth()->user()->id)
+        ->orderBy("created_at", "DESC")
+        ->get();
+
         return new JsonResponse([
             'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => EmployeeLeaveResource::collection($myRequest)
+            'message' => 'Travel Order Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
         ]);
     }
 
@@ -172,19 +187,33 @@ class EmployeeLeavesController extends Controller
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
-    public function myApprovals()
+    public function myApprovals(ApprovalLeaveRequest $request)
     {
-        $myApproval = $this->leaveRequestService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $userId = auth()->user()->id;
+        $validatedData = $request->validated();
+        $data = EmployeeLeaves::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->where('employee_id', $validatedData['employee_id']);
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->where('date_of_absence_from', '<=', $validatedData['date_filter'])
+            ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
+        })
+        ->with(['employee', 'department', 'project'])
+        ->where("created_by", auth()->user()->id)
+        ->orderBy("created_at", "DESC")
+        ->requestStatusPending()
+        ->authUserPending()
+        ->get();
+
+        $data->filter(function ($item) use ($userId) {
+            $nextPendingApproval = $item->getNextPendingApproval();
+            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
+        });
+
         return new JsonResponse([
             'success' => true,
-            'message' => 'LeaveForm Request fetched.',
-            'data' => EmployeeLeaveResource::collection($myApproval)
+            'message' => 'Travel Order Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
         ]);
     }
 }
