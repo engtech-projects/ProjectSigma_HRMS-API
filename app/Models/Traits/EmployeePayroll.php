@@ -13,6 +13,7 @@ use App\Models\WitholdingTaxContribution;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 trait EmployeePayroll
 {
@@ -149,10 +150,15 @@ trait EmployeePayroll
         $wht = $deduction->contribution($salary);
         $total = 0;
         if ($wht) {
+            Log::info("Salary: " . $salary);
             $taxBase = $wht->tax_base;
+            Log::info("Tax Base: " . $taxBase);
             $taxAmount = $wht->tax_amount;
+            Log::info("Tax Amount: " . $taxAmount);
             $excess = $salary - $taxBase ?? 0;
-            $excessTaxAmount = $excess * ($wht->tax_percent_over_base_decimal);
+            Log::info("Excess: " . $excess);
+            $excessTaxAmount = $excess * $wht->tax_percent_over_base_decimal;
+            Log::info("Tax Amount Excess: " . $excessTaxAmount);
             $total = round($taxAmount + $excessTaxAmount, 2);
         }
         return PayrollService::getPayrollTypeValue($payrollType, $total);
