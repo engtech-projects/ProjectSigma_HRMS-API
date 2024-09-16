@@ -68,10 +68,11 @@ class AttendanceLogController extends Controller
             "message" => "Successfully created.",
         ], JsonResponse::HTTP_CREATED);
     }
-    public function getCurrentDate()
+    public function getCurrentDateTime()
     {
         return new JsonResponse([
-            "data" => Carbon::now()->format('Y-m-d'),
+            'date' => Carbon::now()->format('Y-m-d'),
+            'time' => Carbon::now()->format('Y-m-d H:i:s'),
             "success" => true,
             "message" => "Successfully current-date fetch.",
         ], JsonResponse::HTTP_OK);

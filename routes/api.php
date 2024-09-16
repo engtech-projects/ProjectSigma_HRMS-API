@@ -317,7 +317,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // ATTENDANCE PORTAL TOKEN AUTH
 Route::middleware('portal_in')->group(function () {
     Route::prefix('attendance')->group(function () {
-        Route::get('current-date', [AttendanceLogController::class, 'getCurrentDate']);
+        Route::get('current-date-time', [AttendanceLogController::class, 'getCurrentDateTime']);
         Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
         Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
         Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);
