@@ -19,6 +19,7 @@ class ReportController extends Controller
         $data = PayrollDetail::whereHas('payroll_record', function($query) use ($validatedData) {
             return $query->whereYear('payroll_date', $validatedData['filter_year'])
                 ->whereMonth('payroll_date', $validatedData['filter_month'])
+                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
         ->orderBy("created_at", "DESC")
@@ -36,6 +37,7 @@ class ReportController extends Controller
         $data = PayrollDetail::whereHas('payroll_record', function($query) use ($validatedData) {
             return $query->whereYear('payroll_date', $validatedData['filter_year'])
                 ->whereMonth('payroll_date', $validatedData['filter_month'])
+                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
         ->orderBy("created_at", "DESC")
@@ -53,6 +55,7 @@ class ReportController extends Controller
         $data = PayrollDetail::whereHas('payroll_record', function($query) use ($validatedData) {
             return $query->whereYear('payroll_date', $validatedData['filter_year'])
                 ->whereMonth('payroll_date', $validatedData['filter_month'])
+                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
         ->orderBy("created_at", "DESC")
