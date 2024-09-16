@@ -143,7 +143,7 @@ trait EmployeePayroll
         return $result;
     }
 
-    public function with_holding_tax_deduction($salary)
+    public function with_holding_tax_deduction($salary, $payrollType)
     {
         $deduction = new WitholdingTaxContribution();
         $wht = $deduction->contribution($salary);
@@ -151,10 +151,11 @@ trait EmployeePayroll
         if ($wht) {
             $taxBase = $wht->tax_base;
             $taxAmount = $wht->tax_amount;
-            $diff = abs($taxBase - $salary);
-            $total = round(($wht->tax_percent_over_base_decimal) * $diff + $taxAmount, 2);
+            $excess = $salary - $taxBase ?? 0;
+            $excessTaxAmount = $excess * ($wht->tax_percent_over_base_decimal / 100);
+            $total = round($taxAmount + $excessTaxAmount, 2);
         }
-        return $total;
+        return PayrollService::getPayrollTypeValue($payrollType, $total);
     }
 
     public function loan_deduction($salary, $type, $date)
