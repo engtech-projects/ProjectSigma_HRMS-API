@@ -41,17 +41,17 @@ trait Attendance
             $leaveUsed = false;
             $dateTimeInSchedule = $date->copy()->setTimeFromTimeString($schedule["startTime"]);
             $timeIn = $schedule["applied_ins"];
+            // Connected to Overtime
+            $oTStart = collect($overtime)->filter(function ($otData) use ($schedule) {
+                $otSchedOut = $otData['overtime_end_time'];
+                $schedIn = Carbon::parse($schedule["startTime"]);
+                return $schedIn->equalTo($otSchedOut);
+            })->first();
+            if ($oTStart) {
+                $charge = AttendanceLog::find($oTStart["applied_in"]?->id)?->charging() ?? $charge ?? Overtime::find($oTStart["id"])?->charging();
+                $timeIn = (object)["time" => $schedule["startTime"]];
+            }
             if (!$timeIn) {
-                // Connected to Overtime
-                $oTStart = collect($overtime)->filter(function ($otData) use ($schedule) {
-                    $otSchedOut = $otData['overtime_end_time'];
-                    $schedIn = Carbon::parse($schedule["startTime"]);
-                    return $schedIn->equalTo($otSchedOut);
-                })->first();
-                if (!$timeIn && $oTStart) {
-                    $charge = AttendanceLog::find($oTStart["applied_in"]?->id)?->charging() ?? $charge ?? Overtime::find($oTStart["id"])?->charging();
-                    $timeIn = (object)["time" => $schedule["startTime"]];
-                }
                 // Is On Leave
                 if (!$timeIn && $hasLeaveToday && $leaveUsedToday < $leaveToday->durationForDate($date)) {
                     $leaveUsedToday = + 0.5;
@@ -79,7 +79,7 @@ trait Attendance
                 $schedOut = Carbon::parse($schedule["endTime"]);
                 return $schedOut->equalTo($otSchedIn);
             })->first();
-            if( $oTContinuation) {
+            if($oTContinuation) {
                 $charge = AttendanceLog::find($oTContinuation["applied_out"]?->id)?->charging() ?? $charge ?? Overtime::find($oTContinuation["id"])?->charging();
                 $timeOut = (object)["time" => $schedule["endTime"]];
             }
@@ -155,15 +155,15 @@ trait Attendance
         foreach ($overtime as $otVal) {
             $dateTimeInSchedule = Carbon::parse($otVal["overtime_date"])->setTimeFromTimeString($otVal["overtime_start_time"]);
             $appliedIn = $otVal["applied_in"];
+            $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
+                $schedOut = $schedData['endTime'];
+                $otIn = Carbon::parse($otVal["overtime_start_time"]);
+                return $otIn->equalTo($schedOut);
+            });
+            if ($hasSchedStart) {
+                $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
+            }
             if (!$appliedIn) {
-                $hasSchedStart = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
-                    $schedOut = $schedData['endTime'];
-                    $otIn = Carbon::parse($otVal["overtime_start_time"]);
-                    return $otIn->equalTo($schedOut);
-                });
-                if ($hasSchedStart) {
-                    $appliedIn = (object)["time" => $otVal["overtime_start_time"]];
-                }
                 // is On Travel Order
                 $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeInSchedule) {
                     return $trOrd->datetimeIsApplicable($dateTimeInSchedule);
@@ -174,15 +174,15 @@ trait Attendance
             }
             $dateTimeOutSchedule = Carbon::parse($otVal["overtime_date"])->setTimeFromTimeString($otVal["overtime_end_time"]);
             $appliedOut = $otVal["applied_out"];
+            $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
+                $schedIn = $schedData['startTime'];
+                $otOut = Carbon::parse($otVal["overtime_end_time"]);
+                return $otOut->equalTo($schedIn);
+            });
+            if($hasSchedContinuation) {
+                $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
+            }
             if (!$appliedOut) {
-                $hasSchedContinuation = collect($regSchedule)->contains(function ($schedData) use ($otVal) {
-                    $schedIn = $schedData['startTime'];
-                    $otOut = Carbon::parse($otVal["overtime_end_time"]);
-                    return $otOut->equalTo($schedIn);
-                });
-                if($hasSchedContinuation) {
-                    $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
-                }
                 // is On Travel Order
                 $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeOutSchedule) {
                     return $trOrd->datetimeIsApplicable($dateTimeOutSchedule);
