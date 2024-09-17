@@ -128,24 +128,26 @@ class Overtime extends Model
 
     public function getAttendanceLogInsAttribute()
     {
+        // login = (STARTTIME - BUFFER) to ENDTIME
         $bufferInTimeEarly = Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
-        $bufferInTimeLate = Carbon::parse($this->overtime_start_time)->addHour((int)config("app.login_late"));
+        // $bufferInTimeLate = Carbon::parse($this->overtime_start_time)->addHour((int)config("app.login_late"));
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_IN)
             ->whereDate("date", "=", $this->overtime_date)
             ->whereTime('time', ">=", $bufferInTimeEarly)
-            ->whereTime('time', "<=", $bufferInTimeLate)
+            ->whereTime('time', "<=", $this->overtime_end_time)
             ->get();
     }
 
     public function getAttendanceLogOutsAttribute()
     {
-        $bufferOutTimeEarly = $this->overtime_start_time;
+        // Logout = STARTTIME to (ENDTIME + BUFFER)
+        // $bufferOutTimeEarly = $this->overtime_start_time;
         $bufferOutTimeLate = $this->overtime_end_time->addUnitNoOverflow("hour", (int)config("app.logout_late"), "day");
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_OUT)
             ->whereDate("date", "=", $this->overtime_date)
-            ->whereTime('time', ">=", $bufferOutTimeEarly)
+            ->whereTime('time', ">=", $this->overtime_start_time)
             ->whereTime('time', "<=", $bufferOutTimeLate)
             ->get();
     }
