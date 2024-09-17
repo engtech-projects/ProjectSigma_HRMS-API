@@ -127,7 +127,8 @@ trait Attendance
                 $undertimeMinutes = $out->diffInMinutes($endTime);
                 $undertime += $undertimeMinutes;
             }
-            $currentDuration = round($dtrIn->diffInMinutes($dtrOut) / 60, 2) ?? 0;
+            $currentDuration = round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
+            $currentDuration = $currentDuration > 0 ? $currentDuration : 0;
             $duration += $currentDuration;
             if ($charge) {
                 array_push($chargings, [
@@ -200,7 +201,8 @@ trait Attendance
             $schedOut = Carbon::parse($otVal['overtime_end_time']);
             $renderIn = $timeIn->lt($schedIn) ? $schedIn : $timeIn;
             $renderOut = $timeOut->gt($schedOut) ? $schedOut : $timeOut;
-            $currentOtHrs = floor($renderIn->diffInMinutes($renderOut, false) / 60) ?? 0; // Changed due to OVERTIME IS ONLY COUNTED BY HOUR
+            $currentOtHrs = floor($renderIn->diffInMinutes($renderOut, false) / 60); // Changed due to OVERTIME IS ONLY COUNTED BY HOUR
+            $currentOtHrs = $currentOtHrs > 0 ? $currentOtHrs : 0;
             // $schedTotalHrs = floor($schedIn->diffInHours($schedOut, false));
             // $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs === $schedTotalHrs ? 1 : 0;
             $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs >= 3 ? 1 : 0;
