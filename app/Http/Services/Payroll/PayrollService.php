@@ -47,6 +47,17 @@ class PayrollService
         return $amount;
     }
 
+    public static function getPayrollTypeMonthlyValue($type, $amount)
+    {
+        if ($type == PayrollType::WEEKLY->value) {
+            return round($amount * 4, 2); // Weekly to Monthly
+        } elseif ($type == PayrollType::BI_MONTHLY->value) {
+            return round($amount * 2, 2); // Bimonthly to Monthly
+        }
+        // Monthly
+        return $amount;
+    }
+
     public static function getSalaryByRateHour($dayType = "regular", $salaryType = "reg_hrs", $dailyRate, $hoursWorked)
     {
         $daysWorked = $hoursWorked / 8;
