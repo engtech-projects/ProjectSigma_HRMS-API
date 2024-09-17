@@ -73,17 +73,17 @@ trait Attendance
             }
             $dateTimeOutSchedule = $date->copy()->setTimeFromTimeString($schedule["endTime"]);
             $timeOut = $schedule["applied_outs"];
+            // Connected to Overtime Still checked even if there is Applied out to fix late time outs intended for previous schedule with few hours gap
+            $oTContinuation = collect($overtime)->filter(function ($otData) use ($schedule) {
+                $otSchedIn = $otData['overtime_start_time'];
+                $schedOut = Carbon::parse($schedule["endTime"]);
+                return $schedOut->equalTo($otSchedIn);
+            })->first();
+            if(!$timeOut && $oTContinuation) {
+                $charge = AttendanceLog::find($oTContinuation["applied_out"]?->id)?->charging() ?? $charge ?? Overtime::find($oTContinuation["id"])?->charging();
+                $timeOut = (object)["time" => $schedule["endTime"]];
+            }
             if (!$timeOut) {
-                // Connected to Overtime
-                $oTContinuation = collect($overtime)->filter(function ($otData) use ($schedule) {
-                    $otSchedIn = $otData['overtime_start_time'];
-                    $schedOut = Carbon::parse($schedule["endTime"]);
-                    return $schedOut->equalTo($otSchedIn);
-                })->first();
-                if(!$timeOut && $oTContinuation) {
-                    $charge = AttendanceLog::find($oTContinuation["applied_out"]?->id)?->charging() ?? $charge ?? Overtime::find($oTContinuation["id"])?->charging();
-                    $timeOut = (object)["time" => $schedule["endTime"]];
-                }
                 // Is On Leave
                 if (!$timeOut && $hasLeaveToday && !$leaveUsed && $leaveUsedToday < $leaveToday->durationForDate($date)) {
                     $charge = $leaveToday->charging();
