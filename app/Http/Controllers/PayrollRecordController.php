@@ -66,6 +66,12 @@ class PayrollRecordController extends Controller
                     'message' => "Employee ".$employee->fullname_first." is not Employed.",
                 ], 400);
             }
+            if (!$employee->current_employment->position_id) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Employee ".$employee->fullname_first." has no Position Set.",
+                ], 400);
+            }
             if (!$employee->current_employment->employee_salarygrade) {
                 return new JsonResponse([
                     'success' => false,
