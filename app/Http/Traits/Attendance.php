@@ -127,7 +127,7 @@ trait Attendance
                 $undertimeMinutes = $out->diffInMinutes($endTime);
                 $undertime += $undertimeMinutes;
             }
-            $currentDuration = round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
+            $currentDuration = round($dtrIn->diffInMinutes($dtrOut) / 60, 2) ?? 0;
             $duration += $currentDuration;
             if ($charge) {
                 array_push($chargings, [
