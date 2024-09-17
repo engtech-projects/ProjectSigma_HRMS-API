@@ -290,6 +290,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
         Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
         Route::get('philhealth-employee-remittance', [ReportController::class, 'philhealthEmployeeRemittanceGenerate']);
+        Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
+        Route::get('pagibig-group-remittance', [ReportController::class, 'pagibigGroupRemittanceGenerate']);
+        Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
+
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
