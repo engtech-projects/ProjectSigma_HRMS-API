@@ -79,7 +79,7 @@ trait Attendance
                 $schedOut = Carbon::parse($schedule["endTime"]);
                 return $schedOut->equalTo($otSchedIn);
             })->first();
-            if(!$timeOut && $oTContinuation) {
+            if( $oTContinuation) {
                 $charge = AttendanceLog::find($oTContinuation["applied_out"]?->id)?->charging() ?? $charge ?? Overtime::find($oTContinuation["id"])?->charging();
                 $timeOut = (object)["time" => $schedule["endTime"]];
             }
