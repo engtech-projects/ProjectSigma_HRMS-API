@@ -41,6 +41,10 @@ trait Attendance
             $leaveUsed = false;
             $dateTimeInSchedule = $date->copy()->setTimeFromTimeString($schedule["startTime"]);
             $timeIn = $schedule["applied_ins"];
+            if ($timeIn) {
+                // Charge for Attendance Log Time In
+                $charge = AttendanceLog::find($timeIn["id"])->charging();
+            }
             // Connected to Overtime
             $oTStart = collect($overtime)->filter(function ($otData) use ($schedule) {
                 $otSchedOut = $otData['overtime_end_time'];
@@ -67,9 +71,6 @@ trait Attendance
                     // $charge =  TravelOrder::find($travelOrder["id"]);
                     $timeIn = (object)["time" => $schedule["startTime"]];
                 }
-            } else {
-                // Charge for Attendance Log Time In
-                $charge = AttendanceLog::find($timeIn["id"])->charging();
             }
             $dateTimeOutSchedule = $date->copy()->setTimeFromTimeString($schedule["endTime"]);
             $timeOut = $schedule["applied_outs"];
