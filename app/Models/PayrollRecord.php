@@ -21,7 +21,7 @@ class PayrollRecord extends Model
     use HasApproval;
 
     protected $fillable = [
-        'group_type',
+        'charging_type',
         'project_id',
         'department_id',
         'payroll_type',
