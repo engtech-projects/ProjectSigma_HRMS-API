@@ -13,6 +13,8 @@ use App\Http\Resources\FailureToLogResource;
 use App\Exceptions\TransactionFailedException;
 use App\Http\Requests\StoreFailureToLogRequest;
 use App\Http\Requests\UpdateFailureToLogRequest;
+use App\Models\Department;
+use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\FailureToLogRequestForApproval;
 
@@ -53,6 +55,14 @@ class FailureToLogController extends Controller
     {
         try {
             $validatedData = $request->validated();
+            $validatedData["charging_id"] = $request->validated();
+            if ($validatedData["charging_type"] == AssignTypes::DEPARTMENT->value) {
+                $validatedData["charge_assignment_id"] = $validatedData["department_id"];
+                $validatedData["charge_assignment_type"] = Department::class;
+            } else {
+                $validatedData["charge_assignment_id"] = $validatedData["project_id"];
+                $validatedData["charge_assignment_type"] = Project::class;
+            }
             if($validatedData) {
                 $main = FailureToLog::create($validatedData);
                 $main->refresh();

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AssignTypes;
 use App\Enums\GroupType;
 use App\Traits\HasApproval;
 use App\Enums\AttendanceLogType;
@@ -128,19 +129,19 @@ class FailureToLog extends Model
 
     public function getChargingProjectIdAttribute()
     {
-        return ($this->charging_type === GroupType::PROJECT->value) ? $this->charging_id : null;
+        return ($this->charging_type === Project::class || $this->charging_type === AssignTypes::PROJECT->value) ? $this->charging_id : null;
     }
     public function getChargingDepartmentIdAttribute()
     {
-        return ($this->charging_type === GroupType::DEPARTMENT->value) ? $this->charging_id : null;
+        return ($this->charging_type === Department::class || $this->charging_type === AssignTypes::DEPARTMENT->value) ? $this->charging_id : null;
     }
     public function getChargingDesignationAttribute()
     {
-        if ($this->charging_type === GroupType::DEPARTMENT->value) {
-            return Department::find($this->charging_id)?->department_name;
+        if ($this->charging_department_id) {
+            return Department::find($this->charging_department_id)?->department_name;
         }
-        if ($this->charging_type === GroupType::PROJECT->value) {
-            return Project::find($this->charging_id)?->project_code;
+        if ($this->charging_project_id) {
+            return Project::find($this->charging_project_id)?->project_code;
         }
         return "No charging found.";
     }

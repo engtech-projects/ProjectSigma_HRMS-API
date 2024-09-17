@@ -106,8 +106,8 @@ class AllowanceRequestController extends Controller
             $valData["charge_assignment_id"] = $valData["department_id"];
             $valData["charge_assignment_type"] = Department::class;
         } else {
-            $valData["request_status"] = $valData["project_id"];
-            $valData["request_status"] = Project::class;
+            $valData["charge_assignment_id"] = $valData["project_id"];
+            $valData["charge_assignment_type"] = Project::class;
         }
         try {
             DB::beginTransaction();

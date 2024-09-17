@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AssignTypes;
 use App\Enums\AttendanceLogType;
 use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
@@ -39,8 +40,22 @@ class StoreFailureToLogRequest extends FormRequest
             ],
             'reason' => 'required|string',
             'employee_id' => 'required|integer',
-            'charging_type'=> 'required|string',
-            'charging_id' => 'required|numeric|exists:projects,id|exists:departments,id',
+            'charging_type' => [
+                'required',
+                new Enum(AssignTypes::class)
+            ],
+            'project_id' => [
+                'required_if:charging_type,==,' . AssignTypes::PROJECT->value,
+                'nullable',
+                "integer",
+                "exists:projects,id",
+            ],
+            'department_id' => [
+                'required_if:charging_type,==,' . AssignTypes::DEPARTMENT->value,
+                'nullable',
+                "integer",
+                "exists:departments,id",
+            ],
             ...$this->storeApprovals(),
         ];
     }
