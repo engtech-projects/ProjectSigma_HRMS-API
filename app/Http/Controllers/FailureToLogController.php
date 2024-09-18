@@ -17,6 +17,7 @@ use App\Models\Department;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\FailureToLogRequestForApproval;
+use Illuminate\Support\Facades\Log;
 
 class FailureToLogController extends Controller
 {
@@ -57,11 +58,11 @@ class FailureToLogController extends Controller
             $validatedData = $request->validated();
             $validatedData["charging_id"] = $request->validated();
             if ($validatedData["charging_type"] == AssignTypes::DEPARTMENT->value) {
-                $validatedData["charge_assignment_id"] = $validatedData["department_id"];
-                $validatedData["charge_assignment_type"] = Department::class;
+                $validatedData["charging_id"] = $validatedData["department_id"];
+                $validatedData["charging_type"] = Department::class;
             } else {
-                $validatedData["charge_assignment_id"] = $validatedData["project_id"];
-                $validatedData["charge_assignment_type"] = Project::class;
+                $validatedData["charging_id"] = $validatedData["project_id"];
+                $validatedData["charging_type"] = Project::class;
             }
             if($validatedData) {
                 $main = FailureToLog::create($validatedData);
@@ -71,7 +72,12 @@ class FailureToLogController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            throw new TransactionFailedException("Transaction failed.", 500, $e);
+            Log::error($e);
+            return new JsonResponse([
+                "success" => true,
+                "message" => "Failed to save.",
+            ], JsonResponse::HTTP_BAD_REQUEST);
+            // throw new TransactionFailedException("Transaction failed.", 500, $e);
         }
 
         return new JsonResponse([
