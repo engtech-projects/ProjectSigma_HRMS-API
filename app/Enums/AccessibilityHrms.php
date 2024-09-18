@@ -41,6 +41,7 @@ enum AccessibilityHrms: string
     case HRMS_REPORTS_SSSGROUPREMITTANCE = "hrms:reports_sss group remittance";
     case HRMS_REPORTS_PAGIBIGGROUPREMITTANCE = "hrms:reports_pagibig group remittance";
     case HRMS_REPORTS_PHILHEALTHGROUPREMITTANCE = "hrms:reports_philhealth group remittance";
+    case HRMS_REPORTS_SSSREMITTANCESUMMARY = "hrms:reports_sss remittance summary";
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";
