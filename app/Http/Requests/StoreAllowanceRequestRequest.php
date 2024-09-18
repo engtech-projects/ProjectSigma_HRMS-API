@@ -42,13 +42,13 @@ class StoreAllowanceRequestRequest extends FormRequest
                 new Enum(AssignTypes::class)
             ],
             'project_id' => [
-                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
+                'required_if:charging_type,==,' . AssignTypes::PROJECT->value,
                 'nullable',
                 "integer",
                 "exists:projects,id",
             ],
             'department_id' => [
-                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
+                'required_if:charging_type,==,' . AssignTypes::DEPARTMENT->value,
                 'nullable',
                 "integer",
                 "exists:departments,id",
