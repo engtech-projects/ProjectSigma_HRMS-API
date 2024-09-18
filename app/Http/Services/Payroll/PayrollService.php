@@ -16,7 +16,7 @@ class PayrollService
     public function getAll()
     {
         return PayrollRecord::orderBy("created_at", "DESC")
-        ->all();
+        ->get();
     }
 
     public function getMyRequests()
