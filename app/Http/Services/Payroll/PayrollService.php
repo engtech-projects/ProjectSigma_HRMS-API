@@ -15,12 +15,14 @@ class PayrollService
 
     public function getAll()
     {
-        return PayrollRecord::all();
+        return PayrollRecord::orderBy("created_at", "DESC")
+        ->all();
     }
 
     public function getMyRequests()
     {
         return PayrollRecord::where("created_by", auth()->user()->id)
+        ->orderBy("created_at", "DESC")
         ->get();
     }
 
@@ -29,6 +31,7 @@ class PayrollService
         $userId = auth()->user()->id;
         $result = PayrollRecord::requestStatusPending()
             ->authUserPending()
+            ->orderBy("created_at", "DESC")
             ->get();
         return $result->filter(function ($item) use ($userId) {
             $nextPendingApproval = $item->getNextPendingApproval();
