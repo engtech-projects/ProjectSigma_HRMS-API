@@ -28,7 +28,7 @@ class ReportController extends Controller
         })
         ->orderBy("created_at", "DESC")
         ->get()
-        ->sortBy('employee.fullname_firstS', SORT_NATURAL)
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values()
         ->all();
 
@@ -47,7 +47,7 @@ class ReportController extends Controller
         })
         ->orderBy("created_at", "DESC")
         ->get()
-        ->sortBy('employee.fullname_firstS', SORT_NATURAL)
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values()
         ->all();
 
@@ -65,7 +65,7 @@ class ReportController extends Controller
                 ->isApproved();
         })
         ->get()
-        ->sortBy('employee.fullname_firstS', SORT_NATURAL)
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values()
         ->all();
         return new JsonResponse([
@@ -90,7 +90,7 @@ class ReportController extends Controller
         ->with(['payroll_record'])
         ->orderBy("created_at", "DESC")
         ->get()
-        ->sortBy('employee.fullname_firstS', SORT_NATURAL)
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values();
 
         $firstRecord = $data->first();
@@ -121,7 +121,7 @@ class ReportController extends Controller
         ->with(['payroll_record'])
         ->orderBy("created_at", "DESC")
         ->get()
-        ->sortBy('employee.fullname_firstS', SORT_NATURAL)
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values();
         $firstRecord = $data->first();
         $dataArray = $data->all();
@@ -151,7 +151,7 @@ class ReportController extends Controller
         ->with(['payroll_record'])
         ->orderBy("created_at", "DESC")
         ->get()
-        ->sortBy('employee.fullname_firstS', SORT_NATURAL)
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values();
         $firstRecord = $data->first();
         $dataArray = $data->all();
