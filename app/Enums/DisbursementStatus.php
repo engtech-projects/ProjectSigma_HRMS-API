@@ -2,10 +2,11 @@
 
 namespace App\Enums;
 
-enum ReleaseType: string
+enum DisbursementStatus: string
 {
-    case ATM = "atm";
-    case CASH = "cash";
+    case PENDING = "pending";
+    case PROCESSING = "processing";
+    case RELEASED = "released";
 
     public static function toArray(): array
     {

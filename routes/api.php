@@ -87,6 +87,7 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
+use App\Http\Controllers\RequestSalaryDisbursementController;
 use App\Models\EmployeeAllowances;
 use Illuminate\Support\Facades\Artisan;
 
@@ -210,6 +211,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-approvals', [PayrollRecordController::class, 'myApproval']);
         Route::resource('resource', PayrollRecordController::class)->names("requestPayroll");
         Route::get('records', [PayrollRecordController::class, 'payrollRecords']);
+    });
+    Route::prefix('salary-disbursement')->group(function () {
+        Route::post('draft', [RequestSalaryDisbursementController::class, 'generateDraft']);
+        Route::resource('resource', RequestSalaryDisbursementController::class)->names("requestSalaryDisbursement");
+        Route::get('my-requests', [RequestSalaryDisbursementController::class, 'myRequest']);
+        Route::get('my-approvals', [RequestSalaryDisbursementController::class, 'myApproval']);
     });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);

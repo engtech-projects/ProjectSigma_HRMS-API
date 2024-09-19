@@ -35,6 +35,10 @@ enum AccessibilityHrms: string
     case HRMS_PAYROLL_SALARY_PAYROLLRECORD = "hrms:payroll_salary_payroll records";
     case HRMS_PAYROLL_13THMONTH = "hrms:payroll_13th month";
     case HRMS_PAYROLL_ALLOWANCE = "hrms:payroll_allowance";
+    case HRMS_PAYROLL_SALARYDISBURSEMENT_FORM = "hrms:payroll_salary disbursement_form and my requests";
+    case HRMS_PAYROLL_SALARYDISBURSEMENT_AllREQUESTS = "hrms:payroll_salary disbursement_all requests";
+    case HRMS_PAYROLL_SALARYDISBURSEMENT_MYAPPROVALS = "hrms:payroll_salary disbursement_my approvals";
+    case HRMS_PAYROLL_SALARYDISBURSEMENT_VIEWPAYSLIPS = "hrms:payroll_salary disbursement_view payslips";
     case HRMS_REPORTS_SSSEMPLOYEEREMITTANCE = "hrms:reports_sss employee remittance";
     case HRMS_REPORTS_PAGIBIGEMPLOYEEREMITTANCE = "hrms:reports_pagibig employee remittance";
     case HRMS_REPORTS_PHILHEALTHEMPLOYEEREMITTANCE = "hrms:reports_philhealth employee remittance";
