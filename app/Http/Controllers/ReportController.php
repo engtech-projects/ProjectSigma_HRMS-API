@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PagibigEmployeeRemittanceRequest;
 use App\Http\Requests\PagibigGroupRemittanceRequest;
+use App\Http\Requests\PagibigRemittanceSummaryRequest;
 use App\Http\Requests\PhilhealthEmployeeRemittanceRequest;
 use App\Http\Requests\PhilhealthGroupRemittanceRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssRemittanceSummaryRequest;
 use App\Http\Resources\PagibigEmployeeRemittanceResource;
 use App\Http\Resources\PagibigGroupRemittanceResource;
+use App\Http\Resources\PagibigRemittanceSummaryResource;
 use App\Http\Resources\PhilhealthEmployeeRemittanceResource;
 use App\Http\Resources\PhilhealthGroupRemittanceResource;
 use App\Http\Resources\SSSEmployeeRemittanceResource;
@@ -185,7 +187,28 @@ class ReportController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Project Remittance Request fetched.',
-            'data' => SssRemittanceSummaryResource::collection($uniqueGroup),
+            'data' => sssRemittanceSummaryResource::collection($uniqueGroup),
+        ]);
+    }
+    public function pagibigRemittanceSummary(PagibigRemittanceSummaryRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = PayrollDetail::whereHas('payroll_record', function($query) use ($validatedData) {
+            return $query
+                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->with(['payroll_record'])
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->append(['total_pagibig_contribution', 'total_pagibig_compensation', 'total_pagibig',])
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
+        ->values();
+        $uniqueGroup =  $data->groupBy('payroll_record.charging_name');
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Project Remittance Request fetched.',
+            'data' => PagibigRemittanceSummaryResource::collection($uniqueGroup),
         ]);
     }
 }
