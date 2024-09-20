@@ -24,7 +24,7 @@ class RequestSalaryDisbursementController extends Controller
     public function generateDraft(GenerateRequestSalaryDisbursementRequest $request)
     {
         $validData = $request->validated();
-        $generatedData = [];
+        $generatedData = $validData;
         $payrollRecords = PayrollRecord::where([
             "payroll_date" => $validData["payroll_date"],
             "payroll_type" => $validData["payroll_type"],
@@ -35,13 +35,18 @@ class RequestSalaryDisbursementController extends Controller
         ->with(['payroll_record'])
         ->orderBy("created_at", "DESC")
         ->get()
-        ->append(['total_sss_contribution', 'total_sss_compensation', 'total_sss',])
+        ->append([
+            'total_basic_pays',
+            'total_overtime_pays',
+            'total_cash_advance_payments',
+            'total_loan_payments',
+            'total_other_deduction_payments',
+        ])
         ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values();
         $uniqueGroup =  $payrollDetails->groupBy('payroll_record.charging_name');
         $resourceFormattedData = PayrollRecordsPayrollSummaryResource::collection($uniqueGroup);
         $generatedData["payroll_records_ids"] = $payrollRecordIds;
-        $generatedData["approvals"] = $validData["approvals"];
         $generatedData["summary"] = $resourceFormattedData;
         return new JsonResponse([
             'success' => true,

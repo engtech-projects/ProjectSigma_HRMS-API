@@ -19,13 +19,22 @@ class PayrollRecordsPayrollSummaryResource extends JsonResource
             "data" => parent::toArray($request),
             "summary" => [
                 "no_of_employee" => $dataCollection->count(),
-                "total_employer_contribution" => $dataCollection->sum("sss_employer_contribution"),
-                "total_employee_contribution" => $dataCollection->sum("sss_employee_contribution"),
-                "total_contribution" => $dataCollection->sum("total_sss_contribution"),
-                "total_employee_compensation" => $dataCollection->sum("sss_employee_compensation"),
-                "total_employer_compensation" => $dataCollection->sum("sss_employer_compensation"),
-                "total_compensation" => $dataCollection->sum("total_sss_compensation"),
-                "total_sss" => $dataCollection->sum("total_sss"),
+                // SALARY
+                "pay_basic" => $dataCollection->sum("total_basic_pays"), // TOTAL OF REGULAR PAYS, ADJUSMENTS
+                "pay_overtime" => $dataCollection->sum("total_overtime_pays"), // TOTAL OF OVERTIME PAYS
+                "pay_gross" => $dataCollection->sum("gross_pay"),
+                // DEDUCTIONS
+                "deduct_sss_employee_contribution" => $dataCollection->sum("sss_employee_contribution"),
+                "deduct_sss_employee_compensation" => $dataCollection->sum("sss_employee_compensation"),
+                "deduct_phihealth_employee_cotribution" => $dataCollection->sum("phihealth_employee_cotribution"),
+                "deduct_pagibig_employee_cotribution" => $dataCollection->sum("pagibig_employee_cotribution"),
+                "deduct_withholdingtax" => $dataCollection->sum("withholdingtax_contribution"),
+                "deduct_cashadvance" => $dataCollection->sum("total_cash_advance_payments"),
+                "deduct_loan" => $dataCollection->sum("total_loan_payments"),
+                "deduct_otherdeduction" => $dataCollection->sum("total_other_deduction_payments"),
+                "deduct_total" => $dataCollection->sum("total_deduct"),
+                // NET
+                "net_pay" => $dataCollection->sum("net_pay"),
             ]
         ];
     }
