@@ -97,4 +97,12 @@ class PayrollDetail extends Model
     {
         return $this->philhealth_employee_contribution + $this->philhealth_employer_contribution;
     }
+    public function getTotalPhilhealthCompensationAttribute()
+    {
+        return $this->philhealth_employee_compensation + $this->philhealth_employer_compensation;
+    }
+    public function getTotalPhilhealthAttribute()
+    {
+        return $this->total_philhealth_contribution + $this->total_philhealth_compensation;
+    }
 }

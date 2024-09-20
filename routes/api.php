@@ -294,7 +294,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('pagibig-group-remittance', [ReportController::class, 'pagibigGroupRemittanceGenerate']);
         Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
-
+        Route::get('philhealth-remittance-summary', [ReportController::class, 'philhealthRemittanceSummary']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
