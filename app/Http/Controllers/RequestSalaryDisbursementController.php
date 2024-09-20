@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GenerateRequestSalaryDisbursementRequest;
 use App\Models\RequestSalaryDisbursement;
 use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
 use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
+use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
+use App\Models\PayrollDetail;
+use App\Models\PayrollRecord;
+use Illuminate\Http\JsonResponse;
 
 class RequestSalaryDisbursementController extends Controller
 {
@@ -16,9 +21,33 @@ class RequestSalaryDisbursementController extends Controller
         //
     }
 
-    public function generateDraft()
+    public function generateDraft(GenerateRequestSalaryDisbursementRequest $request)
     {
-        //
+        $validData = $request->validated();
+        $generatedData = [];
+        $payrollRecords = PayrollRecord::where([
+            "payroll_date" => $validData["payroll_date"],
+            "payroll_type" => $validData["payroll_type"],
+            "release_type" => $validData["release_type"],
+        ])->get();
+        $payrollRecordIds = $payrollRecords->pluck("id");
+        $payrollDetails = PayrollDetail::whereIn("payroll_record_id", $payrollRecordIds)
+        ->with(['payroll_record'])
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->append(['total_sss_contribution', 'total_sss_compensation', 'total_sss',])
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
+        ->values();
+        $uniqueGroup =  $payrollDetails->groupBy('payroll_record.charging_name');
+        $resourceFormattedData = PayrollRecordsPayrollSummaryResource::collection($uniqueGroup);
+        $generatedData["payroll_records_ids"] = $payrollRecordIds;
+        $generatedData["approvals"] = $validData["approvals"];
+        $generatedData["summary"] = $resourceFormattedData;
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => $generatedData,
+        ]);
     }
 
     /**
