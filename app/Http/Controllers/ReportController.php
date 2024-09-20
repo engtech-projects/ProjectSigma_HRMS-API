@@ -9,7 +9,7 @@ use App\Http\Requests\PhilhealthEmployeeRemittanceRequest;
 use App\Http\Requests\PhilhealthGroupRemittanceRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
-use App\Http\Requests\SssRemittanceSummaryRequest;
+use App\Http\Requests\sssRemittanceSummaryRequest;
 use App\Http\Resources\PagibigEmployeeRemittanceResource;
 use App\Http\Resources\PagibigGroupRemittanceResource;
 use App\Http\Resources\PagibigRemittanceSummaryResource;
@@ -169,7 +169,7 @@ class ReportController extends Controller
             ],
         ]);
     }
-    public function sssRemittanceSummary(SssRemittanceSummaryRequest $request)
+    public function sssRemittanceSummary(sssRemittanceSummaryRequest $request)
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::whereHas('payroll_record', function($query) use ($validatedData) {
