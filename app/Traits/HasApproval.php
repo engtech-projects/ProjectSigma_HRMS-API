@@ -35,14 +35,35 @@ trait HasApproval
     {
         return false;
     }
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', RequestStatusType::PENDING);
+    }
     public function scopeAuthUserPending(Builder $query): void
     {
         $query->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
     }
+    public function scopeAuthUserNextApproval(Builder $query): void
+    {
+        $userId = auth()->user()->id;
+        $query->whereRaw("
+            JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')) IS NOT NULL AND
+            JSON_UNQUOTE(JSON_EXTRACT(approvals, JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')))) = 'Pending' AND
+            JSON_UNQUOTE(JSON_EXTRACT(approvals, REPLACE(JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')), '.status', '.user_id'))) = ?
+        ", [$userId]);
+    }
     public function scopeIsApproved(Builder $query): void
     {
         $query->where('request_status', RequestStatusType::APPROVED->value);
+    }
+    public function scopeMyRequests(Builder $query): void
+    {
+        $query->where('created_by', auth()->user()->id);
+    }
+    public function scopeMyApprovals(Builder $query): void
+    {
+        $query->requestStatusPending()->authUserNextApproval();
     }
 
     public function getUserPendingApproval($userId)

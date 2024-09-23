@@ -7,6 +7,7 @@ use App\Models\RequestSalaryDisbursement;
 use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
 use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
 use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
+use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Models\PayrollDetail;
 use App\Models\PayrollRecord;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +19,19 @@ class RequestSalaryDisbursementController extends Controller
      */
     public function index()
     {
-        //
+        $allRequests = RequestSalaryDisbursement::orderBy("created_at", "DESC")
+        ->get();
+        if ($allRequests->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => RequestPayrollSummaryResource::collection($allRequests)
+        ]);
     }
 
     public function generateDraft(GenerateRequestSalaryDisbursementRequest $request)
@@ -85,5 +98,44 @@ class RequestSalaryDisbursementController extends Controller
     public function destroy(RequestSalaryDisbursement $requestSalaryDisbursement)
     {
 
+    }
+
+    public function myRequests()
+    {
+        $myRequests = RequestSalaryDisbursement::myRequests()
+        ->orderBy("created_at", "DESC")
+        ->get();
+        if ($myRequests->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Leave Request fetched.',
+            'data' => RequestPayrollSummaryResource::collection($myRequests)
+        ]);
+    }
+
+    /**
+     * Show can view all pan request to be approved by logged in user (same login in manpower request)
+     */
+    public function myApprovals()
+    {
+        $myApproval = RequestSalaryDisbursement::myApprovals()
+        ->orderBy("created_at", "DESC")
+        ->get();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => RequestPayrollSummaryResource::collection($myApproval)
+        ]);
     }
 }

@@ -215,8 +215,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('salary-disbursement')->group(function () {
         Route::post('draft', [RequestSalaryDisbursementController::class, 'generateDraft']);
         Route::resource('resource', RequestSalaryDisbursementController::class)->names("requestSalaryDisbursement");
-        Route::get('my-requests', [RequestSalaryDisbursementController::class, 'myRequest']);
-        Route::get('my-approvals', [RequestSalaryDisbursementController::class, 'myApproval']);
+        Route::get('my-requests', [RequestSalaryDisbursementController::class, 'myRequests']);
+        Route::get('my-approvals', [RequestSalaryDisbursementController::class, 'myApprovals']);
     });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
