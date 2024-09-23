@@ -89,7 +89,7 @@ class Schedule extends Model
     }
     public function getBufferTimeEndLateAttribute()
     {
-        return $this->endTime->addHour((int)config("app.logout_late"));
+        return Carbon::parse($this->endTime->addHour((int)config("app.logout_late")));
     }
     public function getAttendanceLogInsAttribute()
     {
