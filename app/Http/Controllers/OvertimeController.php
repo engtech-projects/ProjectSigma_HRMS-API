@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StringRequestApprovalStatus;
+use App\Http\Requests\OvertimeMyApprovalRequest;
+use App\Http\Requests\OvertimeMyRequestRequest;
 use App\Http\Requests\OvertimeRequest;
 use App\Models\Overtime;
 use App\Http\Requests\StoreOvertimeRequest;
@@ -32,6 +34,9 @@ class OvertimeController extends Controller
             return $query->whereHas('employees', function($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->whereDate('overtime_date',$validatedData['date_filter']);
         })
         ->with('employees')
         ->orderBy("created_at", "DESC")
@@ -142,38 +147,57 @@ class OvertimeController extends Controller
         return response()->json($data, 404);
     }
 
-    public function myRequests()
+    public function myRequests(OvertimeMyRequestRequest $request)
     {
-        $myRequest = $this->RequestService->getMyRequest();
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $validatedData = $request->validated();
+        $data = Overtime::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employees', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->whereDate('overtime_date',$validatedData['date_filter']);
+        })
+        ->with('employees')
+        ->orderBy("created_at", "DESC")
+        ->get();
+        $data = $data->where('prepared_by', auth()->user()->id)->load('user.employee');
         return new JsonResponse([
             'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => OvertimeResource::collection($myRequest)
+            'message' => 'My Request Overtime Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
         ]);
     }
 
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
-    public function myApprovals()
+    public function myApprovals(OvertimeMyApprovalRequest $request)
     {
-        $myApproval = $this->RequestService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $userId = auth()->user()->id;
+        $validatedData = $request->validated();
+        $data = Overtime::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employees', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->whereDate('overtime_date',$validatedData['date_filter']);
+        })
+        ->requestStatusPending()
+        ->authUserPending()
+        ->with(['employees', 'department', 'project'])
+        ->orderBy("created_at", "DESC")
+        ->get();
+
+        $data = $data->filter(function ($item) use ($userId) {
+            $nextPendingApproval = $item->getNextPendingApproval();
+            return $nextPendingApproval && $userId === $nextPendingApproval['user_id'];
+        });
         return new JsonResponse([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => OvertimeResource::collection($myApproval)
+            'message' => 'My Request Overtime Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
         ]);
     }
 }
