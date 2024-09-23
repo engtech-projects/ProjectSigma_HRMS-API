@@ -53,6 +53,8 @@ class Schedule extends Model
         'day_of_week_names',
         'start_time_human',
         'end_time_human',
+        'buffer_time_start_early',
+        'buffer_time_end_late',
     ];
 
 
@@ -81,6 +83,14 @@ class Schedule extends Model
         }
     }
 
+    public function getBufferTimeStartEarlyAttribute()
+    {
+        return Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
+    }
+    public function getBufferTimeEndLateAttribute()
+    {
+        return $this->endTime->addHour((int)config("app.logout_late"));
+    }
     public function getAttendanceLogInsAttribute()
     {
         // login = (STARTTIME - BUFFER) to ENDTIME
