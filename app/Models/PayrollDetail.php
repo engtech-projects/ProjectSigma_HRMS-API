@@ -92,7 +92,6 @@ class PayrollDetail extends Model
     {
         return $this->total_pagibig_contribution + $this->total_pagibig_compensation;
     }
-
     public function getTotalPhilhealthContributionAttribute()
     {
         return $this->philhealth_employee_contribution + $this->philhealth_employer_contribution;
