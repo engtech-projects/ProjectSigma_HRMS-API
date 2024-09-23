@@ -84,8 +84,8 @@ class EmployeeAllowancesController extends Controller
                     return $query->where([
                         'charge_assignment_id' => $id,
                         "charge_assignment_type" => $group_type,
-                        "allowance_date" => $allowance_date,
                     ])
+                    ->whereDate("allowance_date", $allowance_date)
                     ->requestStatusApproved();
                 })
                 ->get();

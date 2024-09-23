@@ -79,6 +79,6 @@ class AllowanceRequest extends Model
 
     public function getAllowanceDateHumanAttribute()
     {
-        return Carbon::parse($this->cutoff_end)->format("F j, Y");
+        return Carbon::parse($this->allowance_date)->format("F j, Y");
     }
 }
