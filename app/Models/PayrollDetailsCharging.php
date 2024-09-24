@@ -28,6 +28,10 @@ class PayrollDetailsCharging extends Model
         'charge_id',
     ];
 
+    protected $appends = [
+        "charging_name",
+    ];
+
     public function payroll_details(): BelongsTo
     {
         return $this->belongsTo(PayrollDetail::class);
@@ -37,4 +41,16 @@ class PayrollDetailsCharging extends Model
     {
         return $this->morphTo();
     }
+
+    public function getChargingNameAttribute()
+    {
+        if($this->charge_type == AttendancePortal::DEPARTMENT) {
+            return $this->charge->department_name;
+        }
+        if($this->charge_type == AttendancePortal::PROJECT) {
+            return $this->charge->project_code;
+        }
+        return 'No charging found.';
+    }
+
 }

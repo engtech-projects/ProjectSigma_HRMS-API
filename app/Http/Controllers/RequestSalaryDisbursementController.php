@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
 use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Models\PayrollDetail;
+use App\Models\PayrollDetailsCharging;
 use App\Models\PayrollRecord;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
@@ -45,8 +46,11 @@ class RequestSalaryDisbursementController extends Controller
             "payroll_date" => $validData["payroll_date"],
             "payroll_type" => $validData["payroll_type"],
             "release_type" => $validData["release_type"],
-        ])->get();
+        ])
+        ->isApproved()
+        ->get();
         $payrollRecordIds = $payrollRecords->pluck("id");
+        $payrollDetailsIds = PayrollDetail::whereIn("payroll_record_id", $payrollRecordIds)->get()->pluck("id");
         $payrollDetails = PayrollDetail::whereIn("payroll_record_id", $payrollRecordIds)
         ->with(['payroll_record'])
         ->orderBy("created_at", "DESC")
@@ -61,9 +65,25 @@ class RequestSalaryDisbursementController extends Controller
         ->sortBy('employee.fullname_first', SORT_NATURAL)
         ->values();
         $uniqueGroup =  $payrollDetails->groupBy('payroll_record.charging_name');
+        $chargings = PayrollDetailsCharging::whereIn("payroll_details_id", $payrollDetailsIds)->get()->append(["charging_name"]);
+        $uniqueSalaries = $chargings->groupBy(['charging_name']);
+        [
+            "Salary Regular Regular",
+            "Salary Rest Regular",
+            "Salary RegularHoliday Regular",
+            "Salary SpecialHoliday Regular",
+            "Salary Adjustment",
+        ];
+        [
+            "Salary Regular Overtime",
+            "Salary Rest Overtime",
+            "Salary RegularHoliday Overtime",
+            "Salary SpecialHoliday Overtime",
+        ];
         $resourceFormattedData = PayrollRecordsPayrollSummaryResource::collection($uniqueGroup);
         $generatedData["payroll_records_ids"] = $payrollRecordIds;
         $generatedData["summary"] = $resourceFormattedData;
+        $generatedData["salaries"] = $uniqueSalaries;
         return new JsonResponse([
             'success' => true,
             'message' => 'Payroll Summary Created.',
@@ -82,18 +102,15 @@ class RequestSalaryDisbursementController extends Controller
         DB::transaction(function () use ($validatedData) {
             $createdRequest = RequestSalaryDisbursement::create($validatedData);
             $createdRequest->payroll_records()->attach($validatedData["payroll_records_ids"]);
-            if ($createdRequest) {
-                return new JsonResponse([
-                    'success' => true,
-                    'message' => 'Request Success.',
-                    'data' => $createdRequest,
-                ]);
-            }
         });
         return new JsonResponse([
-            'success' => false,
-            'message' => 'Unknown Error Occured.',
-        ], JsonResponse::HTTP_BAD_REQUEST);
+            'success' => true,
+            'message' => 'Request Success.',
+        ]);
+        // return new JsonResponse([
+        //     'success' => false,
+        //     'message' => 'Unknown Error Occured.',
+        // ], JsonResponse::HTTP_BAD_REQUEST);
     }
 
     /**
