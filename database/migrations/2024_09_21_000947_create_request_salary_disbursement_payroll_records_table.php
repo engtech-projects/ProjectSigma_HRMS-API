@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('request_salary_disbursement_payroll_records', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger("request_salary_disbursement_id");
+            $table->unsignedInteger("payroll_record_id");
+            $table->softDeletes();
             $table->timestamps();
         });
     }

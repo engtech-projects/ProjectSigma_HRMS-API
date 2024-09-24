@@ -7,34 +7,38 @@ use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 trait HasApproval
 {
-    public function completeRequestStatus()
+
+    /**
+     * ==================================================
+     * MODEL RELATIONSHIPS
+     * ==================================================
+     */
+    public function created_by_user(): BelongsTo
     {
-        $this->request_status = RequestApprovalStatus::APPROVED;
-        $this->save();
-        $this->refresh();
+        return $this->belongsTo(User::class, 'created_by');
     }
-    public function denyRequestStatus()
+
+    /**
+     * ==================================================
+     * MODEL ATTRIBUTES
+     * ==================================================
+     */
+    public function getCreatedByUserNameAttribute()
     {
-        $this->request_status = RequestApprovalStatus::DENIED;
-        $this->save();
-        $this->refresh();
+        return $this->created_by_user->employee?->fullname_first ?? $this->created_by_user->name;
     }
-    public function setRequestStatus(?string $newStatus)
-    {
-    }
-    public function requestStatusCompleted(): bool
-    {
-        return false;
-    }
-    public function requestStatusEnded(): bool
-    {
-        return false;
-    }
+
+    /**
+     * ==================================================
+     * STATIC SCOPES
+     * ==================================================
+     */
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', RequestStatusType::PENDING);
@@ -66,6 +70,40 @@ trait HasApproval
         $query->requestStatusPending()->authUserNextApproval();
     }
 
+    /**
+     * ==================================================
+     * DYNAMIC SCOPES
+     * ==================================================
+     */
+
+    /**
+     * ==================================================
+     * MODEL FUNCTIONS
+     * ==================================================
+     */
+    public function completeRequestStatus()
+    {
+        $this->request_status = RequestApprovalStatus::APPROVED;
+        $this->save();
+        $this->refresh();
+    }
+    public function denyRequestStatus()
+    {
+        $this->request_status = RequestApprovalStatus::DENIED;
+        $this->save();
+        $this->refresh();
+    }
+    public function setRequestStatus(?string $newStatus)
+    {
+    }
+    public function requestStatusCompleted(): bool
+    {
+        return false;
+    }
+    public function requestStatusEnded(): bool
+    {
+        return false;
+    }
     public function getUserPendingApproval($userId)
     {
         return collect($this->approvals)->where('user_id', $userId)
@@ -78,7 +116,6 @@ trait HasApproval
         }
         return collect($this->approvals)->where('status', RequestApprovalStatus::PENDING)->first();
     }
-
     public function approveCurrentApproval()
     {
         // USE THIS FUNCTION IF SURE TO APPROVE CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
@@ -97,7 +134,6 @@ trait HasApproval
             $this->completeRequestStatus();
         }
     }
-
     public function denyCurrentApproval($remarks)
     {
         // USE THIS FUNCTION IF SURE TO DENY CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
@@ -114,7 +150,6 @@ trait HasApproval
         $this->save();
         $this->denyRequestStatus();
     }
-
     public function updateApproval(?array $data)
     {
         // CHECK IF MANPOWER REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA

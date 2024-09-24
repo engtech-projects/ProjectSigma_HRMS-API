@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Traits\HasApproval;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RequestSalaryDisbursement extends Model
@@ -31,12 +33,19 @@ class RequestSalaryDisbursement extends Model
      * MODEL RELATIONSHIPS
      * ==================================================
      */
-
+    public function payroll_records(): BelongsToMany
+    {
+        return $this->belongsToMany(PayrollRecord::class, "request_salary_disbursement_payroll_records");
+    }
     /**
      * ==================================================
      * MODEL ATTRIBUTES
      * ==================================================
      */
+    public function getPayrollDateHumanAttribute()
+    {
+        return Carbon::parse($this->payroll_date)->format("F j, Y");
+    }
 
     /**
      * ==================================================

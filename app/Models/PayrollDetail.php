@@ -133,7 +133,7 @@ class PayrollDetail extends Model
     {
         $amt = 0;
         foreach ($this->cashAdvancePayments as $deductions) {
-            $amt += $deductions->deduction->amount_paid;
+            $amt += $deductions->deduction?->amount_paid ?? 0;
         }
         return $amt;
     }
@@ -141,7 +141,7 @@ class PayrollDetail extends Model
     {
         $amt = 0;
         foreach ($this->loanPayments as $deductions) {
-            $amt += $deductions->deduction->amount_paid;
+            $amt += $deductions->deduction?->amount_paid ?? 0;
         }
         return $amt;
     }
@@ -149,7 +149,7 @@ class PayrollDetail extends Model
     {
         $amt = 0;
         foreach ($this->otherDeductionPayments as $deductions) {
-            $amt += $deductions->deduction->amount_paid;
+            $amt += $deductions->deduction?->amount_paid ?? 0;
         }
         return $amt;
     }

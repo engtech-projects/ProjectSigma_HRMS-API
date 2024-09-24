@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RequestStatuses;
 use App\Http\Requests\GenerateRequestSalaryDisbursementRequest;
 use App\Models\RequestSalaryDisbursement;
 use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
@@ -10,7 +11,9 @@ use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Models\PayrollDetail;
 use App\Models\PayrollRecord;
+use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class RequestSalaryDisbursementController extends Controller
 {
@@ -30,7 +33,7 @@ class RequestSalaryDisbursementController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($allRequests)
+            'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($allRequests)->collect())
         ]);
     }
 
@@ -63,7 +66,7 @@ class RequestSalaryDisbursementController extends Controller
         $generatedData["summary"] = $resourceFormattedData;
         return new JsonResponse([
             'success' => true,
-            'message' => 'Employee Remittance Request fetched.',
+            'message' => 'Payroll Summary Created.',
             'data' => $generatedData,
         ]);
     }
@@ -73,7 +76,24 @@ class RequestSalaryDisbursementController extends Controller
      */
     public function store(StoreRequestSalaryDisbursementRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+        $validatedData["created_by"] = auth()->user()->id;
+        $validatedData["request_status"] = RequestStatuses::PENDING;
+        DB::transaction(function () use ($validatedData) {
+            $createdRequest = RequestSalaryDisbursement::create($validatedData);
+            $createdRequest->payroll_records()->attach($validatedData["payroll_records_ids"]);
+            if ($createdRequest) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Request Success.',
+                    'data' => $createdRequest,
+                ]);
+            }
+        });
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Unknown Error Occured.',
+        ], JsonResponse::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -81,7 +101,11 @@ class RequestSalaryDisbursementController extends Controller
      */
     public function show(RequestSalaryDisbursement $requestSalaryDisbursement)
     {
-        //
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Resource Fetched.',
+            'data' => new RequestPayrollSummaryResource($requestSalaryDisbursement),
+        ]);
     }
 
     /**
@@ -113,8 +137,8 @@ class RequestSalaryDisbursementController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($myRequests)
+            'message' => 'Request fetched.',
+            'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($myRequests)->collect()),
         ]);
     }
 
@@ -134,8 +158,8 @@ class RequestSalaryDisbursementController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($myApproval)
+            'message' => 'Request fetched.',
+            'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($myApproval)->collect()),
         ]);
     }
 }
