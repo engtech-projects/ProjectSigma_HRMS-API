@@ -81,26 +81,38 @@ class Schedule extends Model
         }
     }
 
+    public function getBufferTimeStartEarlyAttribute()
+    {
+        return Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
+    }
+    public function getBufferTimeEndLateAttribute()
+    {
+        return Carbon::parse($this->endTime)->addHour((int)config("app.logout_late"));
+    }
     public function getAttendanceLogInsAttribute()
     {
         // login = (STARTTIME - BUFFER) to ENDTIME
-        $bufferInTimeEarly = Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
-        // $bufferInTimeLate = Carbon::parse($this->startTime)->addHour((int)config("app.login_late"));
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_IN)
-            ->whereTime('time', ">=", $bufferInTimeEarly)
+            ->where( function($query) {
+                // ADDED ORWHERE FOR NEAR EDGE OF DAYS EXCEEDING WHEN ADDED/SUBTRACTED BUFFER
+                $query->whereTime('time', ">=", $this->buffer_time_start_early)
+                ->orWhereTime('time', ">=", $this->startTime);
+            })
             ->whereTime('time', "<=", $this->endTime)
             ->get();
     }
     public function getAttendanceLogOutsAttribute()
     {
         // Logout = STARTTIME to (ENDTIME + BUFFER)
-        // $bufferOutTimeEarly = $this->endTime->subHour((int)config("app.logout_early"));
-        $bufferOutTimeLate = $this->endTime->addHour((int)config("app.logout_late"));
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_OUT)
             ->whereTime('time', ">=", $this->startTime)
-            ->whereTime('time', "<=", $bufferOutTimeLate)
+            ->where( function($query) {
+                // ADDED ORWHERE FOR NEAR EDGE OF DAYS EXCEEDING WHEN ADDED/SUBTRACTED BUFFER
+                $query->whereTime('time', "<=", $this->buffer_time_end_late)
+                ->orWhereTime('time', "<=", $this->endTime);
+            })
             ->get();
     }
 
