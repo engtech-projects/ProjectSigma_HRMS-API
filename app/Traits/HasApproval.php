@@ -7,11 +7,80 @@ use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 trait HasApproval
 {
+
+    /**
+     * ==================================================
+     * MODEL RELATIONSHIPS
+     * ==================================================
+     */
+    public function created_by_user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * ==================================================
+     * MODEL ATTRIBUTES
+     * ==================================================
+     */
+    public function getCreatedByUserNameAttribute()
+    {
+        return $this->created_by_user->employee?->fullname_first ?? $this->created_by_user->name;
+    }
+
+    /**
+     * ==================================================
+     * STATIC SCOPES
+     * ==================================================
+     */
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', RequestStatusType::PENDING);
+    }
+    public function scopeAuthUserPending(Builder $query): void
+    {
+        $query->whereJsonLength('approvals', '>', 0)
+            ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
+    }
+    public function scopeAuthUserNextApproval(Builder $query): void
+    {
+        $userId = auth()->user()->id;
+        $query->whereRaw("
+            JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')) IS NOT NULL AND
+            JSON_UNQUOTE(JSON_EXTRACT(approvals, JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')))) = 'Pending' AND
+            JSON_UNQUOTE(JSON_EXTRACT(approvals, REPLACE(JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')), '.status', '.user_id'))) = ?
+        ", [$userId]);
+    }
+    public function scopeIsApproved(Builder $query): void
+    {
+        $query->where('request_status', RequestStatusType::APPROVED->value);
+    }
+    public function scopeMyRequests(Builder $query): void
+    {
+        $query->where('created_by', auth()->user()->id);
+    }
+    public function scopeMyApprovals(Builder $query): void
+    {
+        $query->requestStatusPending()->authUserNextApproval();
+    }
+
+    /**
+     * ==================================================
+     * DYNAMIC SCOPES
+     * ==================================================
+     */
+
+    /**
+     * ==================================================
+     * MODEL FUNCTIONS
+     * ==================================================
+     */
     public function completeRequestStatus()
     {
         $this->request_status = RequestApprovalStatus::APPROVED;
@@ -35,16 +104,6 @@ trait HasApproval
     {
         return false;
     }
-    public function scopeAuthUserPending(Builder $query): void
-    {
-        $query->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
-    }
-    public function scopeIsApproved(Builder $query): void
-    {
-        $query->where('request_status', RequestStatusType::APPROVED->value);
-    }
-
     public function getUserPendingApproval($userId)
     {
         return collect($this->approvals)->where('user_id', $userId)
@@ -57,7 +116,6 @@ trait HasApproval
         }
         return collect($this->approvals)->where('status', RequestApprovalStatus::PENDING)->first();
     }
-
     public function approveCurrentApproval()
     {
         // USE THIS FUNCTION IF SURE TO APPROVE CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
@@ -76,7 +134,6 @@ trait HasApproval
             $this->completeRequestStatus();
         }
     }
-
     public function denyCurrentApproval($remarks)
     {
         // USE THIS FUNCTION IF SURE TO DENY CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
@@ -93,7 +150,6 @@ trait HasApproval
         $this->save();
         $this->denyRequestStatus();
     }
-
     public function updateApproval(?array $data)
     {
         // CHECK IF MANPOWER REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA

@@ -107,6 +107,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 11,
+                    'form' => "Salary Disbursement",
+                    'module' => ApprovalModules::HRMS->value,
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
 
             ],
             [
