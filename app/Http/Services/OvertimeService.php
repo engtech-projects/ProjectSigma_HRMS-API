@@ -54,19 +54,13 @@ class OvertimeService
     public function getMyRequest()
     {
         $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('prepared_by', auth()->user()->id)->load('user.employee');
+        return $manpowerRequest->where('created_by', auth()->user()->id)->load('user.employee');
     }
 
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = Overtime::with(['employees', 'department', 'project'])
-            ->requestStatusPending()
-            ->authUserPending()
+        return Overtime::with(['employees', 'department', 'project'])
+            ->myApprovals()
             ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
     }
 }

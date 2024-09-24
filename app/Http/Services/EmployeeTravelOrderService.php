@@ -48,14 +48,8 @@ class EmployeeTravelOrderService
 
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = TravelOrder::with(['employee', 'department'])
-            ->requestStatusPending()
-            ->authUserPending()
+        return TravelOrder::with(['employee', 'department'])
+            ->myApprovals()
             ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
     }
 }

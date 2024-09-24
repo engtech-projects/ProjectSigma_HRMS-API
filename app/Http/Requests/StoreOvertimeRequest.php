@@ -103,7 +103,7 @@ class StoreOvertimeRequest extends FormRequest
     {
         return Overtime::whereHas('employees', function ($query) use ($employeeId) {
             $query->where('employee_id', $employeeId);
-        })->requestStatusPending()->exists();
+        })->myApprovals()->exists();
     }
 
     protected function getEmployeeName($employeeId)

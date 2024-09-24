@@ -85,7 +85,7 @@ class ApproveApproval extends Controller
                     Users::find($model->requested_by)->notify(new ManpowerRequestApproved($model)); // Notify the requestor
                     break;
                 case ApprovalModels::Overtime->name:
-                    Users::find($model->prepared_by)->notify(new OvertimeRequestApproved($model)); // Notify the requestor
+                    Users::find($model->created_by)->notify(new OvertimeRequestApproved($model)); // Notify the requestor
                     break;
                 case ApprovalModels::EmployeePanRequest->name:
                     Users::find($model->created_by)->notify(new PanRequestApproved($model)); // Notify the requestor

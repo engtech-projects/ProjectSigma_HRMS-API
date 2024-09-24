@@ -12,29 +12,18 @@ class EmployeeAllowanceService
     {
         $this->employeeAllowanceRequest = $employeeAllowanceRequest;
     }
-
     public function getAll()
     {
         return AllowanceRequest::with(['employee_allowances','charge_assignment'])->get();
     }
-
     public function getMyRequests()
     {
         return AllowanceRequest::with(['employee_allowances','charge_assignment'])
-        ->where("created_by", auth()->user()->id)
+        ->myRequests()
         ->get();
     }
-
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = AllowanceRequest::with(['employee_allowances', 'charge_assignment'])
-            ->requestStatusPending()
-            ->authUserPending()
-            ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
+        return AllowanceRequest::with(['employee_allowances', 'charge_assignment'])->myApprovals()->get();
     }
 }

@@ -118,7 +118,6 @@ class EmployeeLeavesController extends Controller
             return response()->json($data, 400);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -141,8 +140,6 @@ class EmployeeLeavesController extends Controller
         $data->success = false;
         return response()->json($data, 404);
     }
-
-
     public function myRequests(MyLeaveRequest $request)
     {
         $validatedData = $request->validated();
@@ -154,17 +151,15 @@ class EmployeeLeavesController extends Controller
                 ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
         })
         ->with(['employee', 'department', 'project'])
-        ->where("created_by", auth()->user()->id)
+        ->myRequests()
         ->orderBy("created_at", "DESC")
         ->get();
-
         return new JsonResponse([
             'success' => true,
             'message' => 'Travel Order Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
         ]);
     }
-
     /**
      * Show can view all user approvals
      */
@@ -179,7 +174,7 @@ class EmployeeLeavesController extends Controller
         }
         return new JsonResponse([
             'success' => true,
-            'message' => 'LeaveForm Request fetched.',
+            'message' => 'Leave Form Request fetched.',
             'data' => EmployeeLeaveResource::collection($myApproval)
         ]);
     }
@@ -189,7 +184,6 @@ class EmployeeLeavesController extends Controller
      */
     public function myApprovals(ApprovalLeaveRequest $request)
     {
-        $userId = auth()->user()->id;
         $validatedData = $request->validated();
         $data = EmployeeLeaves::when($request->has('employee_id'), function($query) use ($validatedData) {
             return $query->where('employee_id', $validatedData['employee_id']);
@@ -199,20 +193,13 @@ class EmployeeLeavesController extends Controller
             ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
         })
         ->with(['employee', 'department', 'project'])
-        ->where("created_by", auth()->user()->id)
+        ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->requestStatusPending()
-        ->authUserPending()
         ->get();
-
-        $data->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Leave Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
         ]);
     }

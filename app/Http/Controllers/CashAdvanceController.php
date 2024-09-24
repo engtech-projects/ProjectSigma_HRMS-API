@@ -185,9 +185,7 @@ class CashAdvanceController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->requestStatusPending()
-        ->authUserPending()
-        ->where('created_by', auth()->user()->id)
+        ->myRequests()
         ->with('employee')
         ->orderBy("created_at", "DESC")
         ->get();
@@ -210,8 +208,7 @@ class CashAdvanceController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->requestStatusPending()
-        ->authUserPending()
+        ->myApprovals()
         ->with('employee')
         ->orderBy("created_at", "DESC")
         ->get();

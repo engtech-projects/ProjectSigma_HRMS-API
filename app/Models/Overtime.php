@@ -38,7 +38,7 @@ class Overtime extends Model
         'overtime_end_time',
         'reason',
         'meal_deduction',
-        'prepared_by',
+        'created_by',
         'approvals',
         'request_status',
     ];
@@ -81,7 +81,7 @@ class Overtime extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'prepared_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function scopeRequestStatusPending(Builder $query): void
