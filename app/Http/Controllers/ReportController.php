@@ -7,6 +7,7 @@ use App\Http\Requests\PagibigGroupRemittanceRequest;
 use App\Http\Requests\PagibigRemittanceSummaryRequest;
 use App\Http\Requests\PhilhealthEmployeeRemittanceRequest;
 use App\Http\Requests\PhilhealthGroupRemittanceRequest;
+use App\Http\Requests\PhilhealthRemittanceSummaryRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
@@ -15,6 +16,7 @@ use App\Http\Resources\PagibigGroupRemittanceResource;
 use App\Http\Resources\PagibigRemittanceSummaryResource;
 use App\Http\Resources\PhilhealthEmployeeRemittanceResource;
 use App\Http\Resources\PhilhealthGroupRemittanceResource;
+use App\Http\Resources\philhealthRemittanceSummaryResource;
 use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\sssRemittanceSummaryResource;
@@ -209,6 +211,27 @@ class ReportController extends Controller
             'success' => true,
             'message' => 'Project Remittance Request fetched.',
             'data' => PagibigRemittanceSummaryResource::collection($uniqueGroup),
+        ]);
+    }
+    public function philhealthRemittanceSummary(PhilhealthRemittanceSummaryRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = PayrollDetail::whereHas('payroll_record', function($query) use ($validatedData) {
+            return $query
+                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->with(['employee','payroll_record'])
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->append(['total_sss_contribution', 'total_sss_compensation', 'total_sss',])
+        ->sortBy('employee.fullname_first', SORT_NATURAL)
+        ->values();
+        $uniqueGroup =  $data->groupBy('payroll_record.charging_name');
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Project Remittance Request fetched.',
+            'data' => philhealthRemittanceSummaryResource::collection($uniqueGroup),
         ]);
     }
 }
