@@ -100,7 +100,7 @@ class EmployeeService
             ...["adjustments" => $adjustments->values()->all()],
         ]);
         // Get Salary Deductions (Loans, Cash Advances, Other Deductions, SSS, Philhealth, Pagibig, Wtax)
-        $salaryDeductions = $this->getSalaryDeduction($employee, $filters);
+        $salaryDeductions = $this->getSalaryDeduction($employee, $filters, $salary);
         // Get Chargings
         $chargings = [
             ...$this->aggregateAdjustmentCharging($adjustments, $payrollCharging), // Adjustments
@@ -154,18 +154,25 @@ class EmployeeService
         return $maincollection;
     }
 
-    public function getSalaryDeduction($employee, $filters)
+    public function getSalaryDeduction($employee, $filters, $actualSalary = 0)
     {
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
-        $salary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
+        $monthlySalary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
+        $sss = $filters["deduct_sss"] ? $employee->sss_deduction($monthlySalary, $filters["payroll_type"]) : [];
+        $philhealth = $filters["deduct_philhealth"] ? $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]) : [];
+        $pagibig = $filters["deduct_pagibig"] ? $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]) : [];
+        $monthlyTaxExempt = $sss['employee_compensation'] + $sss['employee_contribution'] + $philhealth['employee_contribution'] + $pagibig['employee_contribution'];
+        $taxableMonthlySalary = $monthlySalary - $monthlyTaxExempt;
+        $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
+        $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
         $result = [
-            "sss" => $filters["deduct_sss"] ? $employee->sss_deduction($salary, $filters["payroll_type"]) : [],
-            "phic" => $filters["deduct_philhealth"] ? $employee->philhealth_deduction($salary, $filters["payroll_type"]) : [],
-            "hmdf" => $filters["deduct_pagibig"] ? $employee->pagibig_deduction($salary, $filters["payroll_type"]) : [],
-            "ewtc" => $employee->with_holding_tax_deduction($salary, $filters["payroll_type"]),
-            "loan" => $employee->loan_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
-            "cash_advance" => $employee->cash_advance_deduction($salary, $filters["payroll_type"], $filters["payroll_date"]),
-            "other_deductions" => $employee->other_deductions($salary, $filters["payroll_type"], $filters["payroll_date"]),
+            "sss" => $sss,
+            "phic" => $philhealth,
+            "hmdf" => $pagibig,
+            "ewtc" => $wtax,
+            "loan" => $employee->loan_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
+            "cash_advance" => $employee->cash_advance_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
+            "other_deductions" => $employee->other_deductions($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
         ];
 
         return $result;

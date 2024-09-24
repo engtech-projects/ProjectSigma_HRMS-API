@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FormatApprovalsRequest;
-use App\Http\Resources\ApprovalResource;
-use Illuminate\Http\Request;
+use App\Http\Resources\HrmsServiceApprovalResource;
 
 class ApiServiceController extends Controller
 {
@@ -12,7 +11,7 @@ class ApiServiceController extends Controller
         $validatedData = $request->validated();
         return response()->json([
             "message" => "Successfully Formatted Approvals.",
-            "data" => new ApprovalResource($validatedData),
+            "data" => new HrmsServiceApprovalResource($validatedData),
             "success" => true,
         ]);
     }

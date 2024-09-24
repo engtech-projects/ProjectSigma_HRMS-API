@@ -290,6 +290,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
         Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
         Route::get('philhealth-employee-remittance', [ReportController::class, 'philhealthEmployeeRemittanceGenerate']);
+        Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
+        Route::get('pagibig-group-remittance', [ReportController::class, 'pagibigGroupRemittanceGenerate']);
+        Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
+        Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
+        Route::get('pagibig-remittance-summary', [ReportController::class, 'pagibigRemittanceSummary']);
+
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
@@ -317,7 +323,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // ATTENDANCE PORTAL TOKEN AUTH
 Route::middleware('portal_in')->group(function () {
     Route::prefix('attendance')->group(function () {
-        Route::get('current-date', [AttendanceLogController::class, 'getCurrentDate']);
+        Route::get('current-date-time', [AttendanceLogController::class, 'getCurrentDateTime']);
         Route::post('facial', [AttendanceLogController::class, 'facialAttendance']);
         Route::get('facial-list', [AttendanceLogController::class, 'facialAttendanceList']);
         Route::get('portal-session', [AttendancePortalController::class, "attendancePortalSession"]);

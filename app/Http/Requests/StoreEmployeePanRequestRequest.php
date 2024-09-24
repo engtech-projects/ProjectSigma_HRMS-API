@@ -92,6 +92,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "nullable",
                 "string",
                 'required_if:type,==,New Hire,Transfer',
+                "max:250",
             ],
             'section_department_id' => [
                 "nullable",
@@ -102,26 +103,31 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'type_of_termination' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination'
+                'required_if:type,==,Termination',
+                "max:250",
             ],
             'reasons_for_termination' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination'
+                'required_if:type,==,Termination',
+                "max:250",
             ],
             'eligible_for_rehire' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination'
+                'required_if:type,==,Termination',
+                "max:250",
             ],
             'last_day_worked' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination'
+                'required_if:type,==,Termination',
+                "max:250",
             ],
             'comments' => [
                 "nullable",
                 "string",
+                "max:250",
             ],
             ...$this->storeApprovals(),
         ];

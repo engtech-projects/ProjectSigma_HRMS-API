@@ -15,12 +15,14 @@ class PayrollService
 
     public function getAll()
     {
-        return PayrollRecord::all();
+        return PayrollRecord::orderBy("created_at", "DESC")
+        ->get();
     }
 
     public function getMyRequests()
     {
         return PayrollRecord::where("created_by", auth()->user()->id)
+        ->orderBy("created_at", "DESC")
         ->get();
     }
 
@@ -29,6 +31,7 @@ class PayrollService
         $userId = auth()->user()->id;
         $result = PayrollRecord::requestStatusPending()
             ->authUserPending()
+            ->orderBy("created_at", "DESC")
             ->get();
         return $result->filter(function ($item) use ($userId) {
             $nextPendingApproval = $item->getNextPendingApproval();
@@ -42,6 +45,17 @@ class PayrollService
             return round($amount / 4, 2);
         } elseif ($type == PayrollType::BI_MONTHLY->value) {
             return round($amount / 2, 2);
+        }
+        // Monthly
+        return $amount;
+    }
+
+    public static function getPayrollTypeMonthlyValue($type, $amount)
+    {
+        if ($type == PayrollType::WEEKLY->value) {
+            return round($amount * 4, 2); // Weekly to Monthly
+        } elseif ($type == PayrollType::BI_MONTHLY->value) {
+            return round($amount * 2, 2); // Bimonthly to Monthly
         }
         // Monthly
         return $amount;

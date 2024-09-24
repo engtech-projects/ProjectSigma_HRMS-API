@@ -28,7 +28,7 @@ class LateController extends Controller
             return array_values($attendance->where(function ($attendance) use ($lateAllowance) {
                 if ($attendance->department_id != null) {
                     // return true;
-                    return sizeof($attendance->department->schedule->where(function ($sched) use ($attendance, $lateAllowance) {
+                    return sizeof($attendance?->department?->schedule->where(function ($sched) use ($attendance, $lateAllowance) {
                         // return true;
                         $schedTimeIn = Carbon::parse($sched->startTime);
                         $schedTimeOut = Carbon::parse($sched->endTime);
@@ -38,7 +38,7 @@ class LateController extends Controller
                             && in_array(Carbon::parse($attendance->date)->dayOfWeek, $sched->daysOfWeek);
                     })) > 0;
                 } else {
-                    return sizeof($attendance->project->project_schedule->where(function ($sched) use ($attendance, $lateAllowance) {
+                    return sizeof($attendance?->project?->project_schedule?->where(function ($sched) use ($attendance, $lateAllowance) {
                         $schedTimeIn = Carbon::parse($sched->startTime);
                         $schedTimeOut = Carbon::parse($sched->endTime);
                         $attendanceTimeIn = Carbon::parse($attendance->time);
