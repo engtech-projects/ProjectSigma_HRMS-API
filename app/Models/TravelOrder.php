@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AssignTypes;
 use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
