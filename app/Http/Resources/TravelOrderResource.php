@@ -48,6 +48,7 @@ class TravelOrderResource extends JsonResource
             "department" => $this->department,
             "requested_by" => $user,
             "request_status" => $this->request_status,
+            'charging_designation' => $this->charging_designation,
         ];
     }
 }

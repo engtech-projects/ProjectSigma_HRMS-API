@@ -50,6 +50,10 @@ class TravelOrder extends Model
         'charge_id',
     ];
 
+    protected $appends = [
+        'charging_designation',
+    ];
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
@@ -113,5 +117,19 @@ class TravelOrder extends Model
     {
         $dt = Carbon::parse($datetime);
         return $dt->gte($this->date_time_start) && $dt->lte($this->date_time_end);
+    }
+    public function getChargingDepartmentIdAttribute()
+    {
+        return ($this->charge_type === Department::class || $this->charge_type === AssignTypes::DEPARTMENT->value) ? $this->charge_id : null;
+    }
+    public function getChargingDesignationAttribute()
+    {
+        if ($this->charging_department_id) {
+            return Department::find($this->charging_department_id)?->department_name;
+        }
+        if ($this->charging_project_id) {
+            return Project::find($this->charging_project_id)?->project_code;
+        }
+        return "No charging found.";
     }
 }

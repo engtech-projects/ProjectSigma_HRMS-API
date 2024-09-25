@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssignTypes;
 use App\Enums\StringRequestApprovalStatus;
 use App\Http\Requests\AllTravelRequest;
 use App\Http\Requests\TravelApprovalRequest;
 use App\Http\Requests\TravelRequest;
+use App\Models\Department;
+use App\Models\Project;
 use App\Models\TravelOrder;
 use App\Http\Requests\StoreTravelOrderRequest;
 use App\Http\Requests\UpdateTravelOrderRequest;
@@ -55,12 +58,19 @@ class TravelOrderController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $main = new TravelOrder();
-                $validdata = $request->validated();
-                $main->fill($validdata);
+                $validatedData = $request->validated();
+                if ($validatedData["charge_type"] == AssignTypes::DEPARTMENT->value) {
+                    $validatedData["charge_id"] = $validatedData["department_id"];
+                    $validatedData["charge_type"] = Department::class;
+                } else {
+                    $validatedData["charge_id"] = $validatedData["project_id"];
+                    $validatedData["charge_type"] = Project::class;
+                }
+                $main->fill($validatedData);
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->requested_by = auth()->user()->id;
                 $main->save();
-                $main->employees()->attach($validdata["employee_ids"]);
+                $main->employees()->attach($validatedData["employee_ids"]);
                 $main->refresh();
                 if ($main->getNextPendingApproval()) {
                     Users::find($main->getNextPendingApproval()['user_id'])->notify(new TravelRequestForApproval($main));
