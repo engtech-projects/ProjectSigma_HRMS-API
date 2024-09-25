@@ -113,7 +113,7 @@ class SalaryDisbursementService
         $formattedSalaries = SalaryDisbursementService::formatSalaries($uniqueSalaries);
         $newUniqueGroup = [];
         foreach ($formattedSalaries as $key => $value) {
-            $newUniqueGroup[$key]["details"] = $uniqueGroup[$key];
+            $newUniqueGroup[$key]["details"] = $uniqueGroup[$key] ?? [];
             $newUniqueGroup[$key]["salaries"] = $value["summary"];
         }
         return $newUniqueGroup;
