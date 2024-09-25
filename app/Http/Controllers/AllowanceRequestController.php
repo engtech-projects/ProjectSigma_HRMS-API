@@ -159,8 +159,8 @@ class AllowanceRequestController extends Controller
     public function myRequest()
     {
         $myRequest = AllowanceRequest::with(['employee_allowances','charge_assignment'])
-        ->where("created_by", auth()->user()->id)
-        ->get();;
+            ->myRequests()
+            ->get();
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
@@ -179,16 +179,10 @@ class AllowanceRequestController extends Controller
      */
     public function myApproval()
     {
-        $userId = auth()->user()->id;
         $result = AllowanceRequest::with(['employee_allowances', 'charge_assignment'])
-            ->requestStatusPending()
-            ->authUserPending()
+            ->myApprovals()
             ->get();
-        $myApproval = $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
-        if ($myApproval->isEmpty()) {
+        if ($result->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
@@ -197,7 +191,7 @@ class AllowanceRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => AllowanceRequestResource::collection($myApproval)
+            'data' => AllowanceRequestResource::collection($result)
         ]);
     }
 }

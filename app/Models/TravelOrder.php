@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AssignTypes;
 use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
@@ -43,7 +44,7 @@ class TravelOrder extends Model
         'duration_of_travel',
         'means_of_transportation',
         'remarks',
-        'requested_by',
+        'created_by',
         'approvals',
         'request_status',
         'charge_type',
@@ -91,7 +92,7 @@ class TravelOrder extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'requested_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function getTimeOfTravelHumanAttribute()

@@ -31,19 +31,13 @@ class EmployeePanRequestService
     public function getMyRequests()
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
-            ->where("created_by", auth()->user()->id)
+            ->myRequests()
             ->get();
     }
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
-            ->requestStatusPending()
-            ->authUserPending()
+        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
+            ->myApprovals()
             ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
     }
 }

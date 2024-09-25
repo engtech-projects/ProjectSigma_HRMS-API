@@ -53,20 +53,12 @@ class EmployeeLeaveService
 
     public function getMyRequest()
     {
-        $leaveRequest = EmployeeLeaves::where('created_by', auth()->user()->id)->with('employee');
+        $leaveRequest = EmployeeLeaves::myRequests();
         return EmployeeLeaveResource::collection($leaveRequest->orderBy('created_by', 'DESC')->paginate(15));
     }
 
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = EmployeeLeaves::with(['employee', 'department', 'project'])
-            ->requestStatusPending()
-            ->authUserPending()
-            ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
+        return EmployeeLeaves::with(['employee', 'department', 'project'])->myApprovals()->get();
     }
 }

@@ -41,14 +41,12 @@ class OvertimeController extends Controller
         ->with('employees')
         ->orderBy("created_at", "DESC")
         ->get();
-
         return new JsonResponse([
             'success' => true,
             'message' => 'All Overtime Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
         ]);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -59,7 +57,7 @@ class OvertimeController extends Controller
                 $main = new Overtime();
                 $validData = $request->validated();
                 $main->fill($validData);
-                $main->prepared_by = auth()->user()->id;
+                $main->created_by = auth()->user()->id;
                 $main->request_status = StringRequestApprovalStatus::PENDING;
                 $main->save();
                 $main->employees()->attach($validData["employees"]);
@@ -80,7 +78,6 @@ class OvertimeController extends Controller
             ], 400);
         }
     }
-
     /**
      * Display the specified resource.
      */
@@ -98,7 +95,6 @@ class OvertimeController extends Controller
         $data->success = false;
         return response()->json($data, 404);
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -118,12 +114,10 @@ class OvertimeController extends Controller
             $data->success = false;
             return response()->json($data, 400);
         }
-
         $data->message = "Failed update.";
         $data->success = false;
         return response()->json($data, 404);
     }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -146,7 +140,6 @@ class OvertimeController extends Controller
         $data->success = false;
         return response()->json($data, 404);
     }
-
     public function myRequests(OvertimeMyRequestRequest $request)
     {
         $validatedData = $request->validated();
@@ -158,23 +151,21 @@ class OvertimeController extends Controller
         ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
             return $query->whereDate('overtime_date',$validatedData['date_filter']);
         })
-        ->with('employees')
+        ->with(['user.employee'])
+        ->myRequests()
         ->orderBy("created_at", "DESC")
         ->get();
-        $data = $data->where('prepared_by', auth()->user()->id)->load('user.employee');
         return new JsonResponse([
             'success' => true,
             'message' => 'My Request Overtime Request fetched.',
             'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
         ]);
     }
-
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
     public function myApprovals(OvertimeMyApprovalRequest $request)
     {
-        $userId = auth()->user()->id;
         $validatedData = $request->validated();
         $data = Overtime::when($request->has('employee_id'), function($query) use ($validatedData) {
             return $query->whereHas('employees', function($query2) use ($validatedData) {
@@ -184,16 +175,10 @@ class OvertimeController extends Controller
         ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
             return $query->whereDate('overtime_date',$validatedData['date_filter']);
         })
-        ->requestStatusPending()
-        ->authUserPending()
         ->with(['employees', 'department', 'project'])
+        ->myApprovals()
         ->orderBy("created_at", "DESC")
         ->get();
-
-        $data = $data->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return $nextPendingApproval && $userId === $nextPendingApproval['user_id'];
-        });
         return new JsonResponse([
             'success' => true,
             'message' => 'My Request Overtime Request fetched.',

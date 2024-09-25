@@ -41,7 +41,7 @@ class ManpowerRequest extends Model
         'request_status',
         'charged_to',
         'breakdown_details',
-        'requested_by',
+        'created_by',
     ];
 
     protected $casts = [
@@ -77,7 +77,7 @@ class ManpowerRequest extends Model
      * */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'requested_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function job_applicants()
