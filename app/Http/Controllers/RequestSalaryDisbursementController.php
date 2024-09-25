@@ -7,8 +7,10 @@ use App\Http\Requests\GenerateRequestSalaryDisbursementRequest;
 use App\Models\RequestSalaryDisbursement;
 use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
 use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
+use App\Http\Resources\PayrollRecordsPayrollSalariesResource;
 use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
+use App\Http\Services\Payroll\SalaryDisbursementService;
 use App\Models\PayrollDetail;
 use App\Models\PayrollDetailsCharging;
 use App\Models\PayrollRecord;
@@ -42,53 +44,18 @@ class RequestSalaryDisbursementController extends Controller
     {
         $validData = $request->validated();
         $generatedData = $validData;
-        $payrollRecords = PayrollRecord::where([
-            "payroll_date" => $validData["payroll_date"],
-            "payroll_type" => $validData["payroll_type"],
-            "release_type" => $validData["release_type"],
-        ])
-        ->isApproved()
-        ->get();
+        $payrollRecords = SalaryDisbursementService::getPayrollRecordsForDisbursement($validData["payroll_date"], $validData["payroll_type"], $validData["release_type"]);
         $payrollRecordIds = $payrollRecords->pluck("id");
-        $payrollDetailsIds = PayrollDetail::whereIn("payroll_record_id", $payrollRecordIds)->get()->pluck("id");
-        $payrollDetails = PayrollDetail::whereIn("payroll_record_id", $payrollRecordIds)
-        ->with(['payroll_record'])
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            'total_basic_pays',
-            'total_overtime_pays',
-            'total_cash_advance_payments',
-            'total_loan_payments',
-            'total_other_deduction_payments',
-        ])
-        ->sortBy('employee.fullname_first', SORT_NATURAL)
-        ->values();
-        $uniqueGroup =  $payrollDetails->groupBy('payroll_record.charging_name');
-        $chargings = PayrollDetailsCharging::whereIn("payroll_details_id", $payrollDetailsIds)->get()->append(["charging_name"]);
-        $uniqueSalaries = $chargings->groupBy(['charging_name']);
-        [
-            "Salary Regular Regular",
-            "Salary Rest Regular",
-            "Salary RegularHoliday Regular",
-            "Salary SpecialHoliday Regular",
-            "Salary Adjustment",
-        ];
-        [
-            "Salary Regular Overtime",
-            "Salary Rest Overtime",
-            "Salary RegularHoliday Overtime",
-            "Salary SpecialHoliday Overtime",
-        ];
-        $resourceFormattedData = PayrollRecordsPayrollSummaryResource::collection($uniqueGroup);
+        $payrollSummaryDatas = SalaryDisbursementService::getPayrollSummary($payrollRecordIds);
+        $payrollSummaryResource = PayrollRecordsPayrollSummaryResource::collection($payrollSummaryDatas);
         $generatedData["payroll_records_ids"] = $payrollRecordIds;
-        $generatedData["summary"] = $resourceFormattedData;
-        $generatedData["salaries"] = $uniqueSalaries;
+        $generatedData["summary"] = $payrollSummaryResource;
         return new JsonResponse([
             'success' => true,
             'message' => 'Payroll Summary Created.',
             'data' => $generatedData,
         ]);
+
     }
 
     /**
