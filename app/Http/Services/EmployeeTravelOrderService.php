@@ -12,24 +12,20 @@ class EmployeeTravelOrderService
     {
         $this->leaveRequest = $travelOrder;
     }
-
     public function getAll()
     {
         return TravelOrder::with(['employee', 'department'])->get();
     }
-
     public function create($attributes)
     {
         return TravelOrder::create($attributes);
     }
-
     public function getMyRequests()
     {
         return TravelOrder::with(['employee', 'department'])
             ->where("created_by", auth()->user()->id)
             ->get();
     }
-
     public function getAllLeaveRequest()
     {
         $userId = auth()->user()->id;
@@ -39,13 +35,10 @@ class EmployeeTravelOrderService
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
     }
-
     public function getMyRequest()
     {
-        $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('created_by', auth()->user()->id)->load('user.employee');
+        return TravelOrder::with('user.employee')->myRequests()->get();
     }
-
     public function getMyApprovals()
     {
         return TravelOrder::with(['employee', 'department'])

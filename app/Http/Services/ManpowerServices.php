@@ -27,7 +27,6 @@ class ManpowerServices
     {
         return $this->manpowerRequest->forHiring()->orderBy('created_at', 'DESC')->get();
     }
-
     public function getAllManpowerRequest()
     {
         $userId = auth()->user()->id;
@@ -38,13 +37,10 @@ class ManpowerServices
             ->orderBy('created_at', 'desc')
             ->get();
     }
-
     public function getMyRequest()
     {
-        $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('created_by', auth()->user()->id)->load('user.employee');
+        return ManpowerRequest::with('user.employee')->myRequests()->get();
     }
-
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
@@ -54,7 +50,6 @@ class ManpowerServices
             return  ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
         });
     }
-
     public function createManpowerRequest(array $attributes)
     {
         $main = $this->manpowerRequest->create($attributes);
@@ -63,7 +58,6 @@ class ManpowerServices
             Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
         }
     }
-
     public function update($request, $query)
     {
         $query->fill($request);

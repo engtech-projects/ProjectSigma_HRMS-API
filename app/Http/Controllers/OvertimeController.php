@@ -151,11 +151,10 @@ class OvertimeController extends Controller
         ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
             return $query->whereDate('overtime_date',$validatedData['date_filter']);
         })
-        ->with('employees')
+        ->with(['user.employee'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
         ->get();
-        $data = $data->where('prepared_by', auth()->user()->id)->load('user.employee');
         return new JsonResponse([
             'success' => true,
             'message' => 'My Request Overtime Request fetched.',
