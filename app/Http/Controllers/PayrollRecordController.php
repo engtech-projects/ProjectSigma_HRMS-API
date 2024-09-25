@@ -104,6 +104,19 @@ class PayrollRecordController extends Controller
         ]);
     }
 
+    public function generateV2(GeneratePayrollRequest $request)
+    {
+        $filters = $request->validated();
+        // PREFETCH PROCESS CHECK ALL NECESSARY DATA FOR ALL EMPLOYEES
+        $periodDates = Helpers::dateRange([
+            'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
+        ]);
+        $employeesForGeneration = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
+        // Employee Employment and Payroll Validity Checking
+
+
+    }
+
     /**
      * Store a newly created resource in storage.
      */

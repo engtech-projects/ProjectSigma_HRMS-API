@@ -330,6 +330,16 @@ class Employee extends Model
         return $this->hasMany(Schedule::class, 'employee_id');
     }
 
+    public function employee_schedule_regular(): HasMany
+    {
+        return $this->hasMany(Schedule::class, 'employee_id')->regularSchedules();
+    }
+
+    public function employee_schedule_irregular(): HasMany
+    {
+        return $this->hasMany(Schedule::class, 'employee_id')->irregularSchedules();
+    }
+
     public function attendance_log(): HasMany
     {
         return $this->hasMany(AttendanceLog::class);

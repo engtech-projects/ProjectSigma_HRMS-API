@@ -59,6 +59,7 @@ use App\Http\Controllers\Actions\SalaryGrade\{
 };
 use App\Http\Controllers\Actions\Attendance\{
     EmployeeDtrController,
+    EmployeeDtrControllerV2,
 };
 use App\Http\Controllers\Actions\ProjectMember\{
     AttachProjectEmployee,
@@ -318,6 +319,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
         Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+    });
+    // Version 2 Optimization
+    Route::prefix("v2")->group(function() {
+        Route::prefix('payroll')->group(function () {
+            Route::post('generate-payroll', [PayrollRecordController::class, 'generateV2']);
+        });
+        Route::prefix('attendance')->group(function () {
+            Route::get('dtr', EmployeeDtrControllerV2::class);
+        });
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH

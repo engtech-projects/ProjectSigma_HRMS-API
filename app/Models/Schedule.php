@@ -187,6 +187,28 @@ class Schedule extends Model
         });
     }
 
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo)
+    {
+        return $query->where(function($query) use ($dateFrom, $dateTo) {
+            $query->where(function($query) use ($dateFrom, $dateTo) {
+                $query->where('scheduleType', self::TYPE_REGULAR)
+                ->where(function($query) use ($dateFrom, $dateTo) {
+                    $query->whereBetween('startRecur', [$dateFrom, $dateTo])
+                    ->orWhere(function($query) use ($dateFrom, $dateTo) {
+                        $query->where('startRecur', '<=', $dateFrom)
+                        ->where(function($query) use ($dateTo) {
+                            $query->where('endRecur', '>=', $dateTo)
+                            ->orWhereNull('endRecur');
+                        });
+                    });
+                });
+            })->orWhere(function($query) use ($dateFrom, $dateTo) {
+                $query->where('scheduleType', self::TYPE_IRREGULAR)
+                ->whereBetween('startRecur', [$dateFrom, $dateTo]);
+            });
+        });
+    }
+
     public function scopeRegularSchedules(Builder $query)
     {
         return $query->where('scheduleType', self::TYPE_REGULAR);

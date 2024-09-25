@@ -120,4 +120,13 @@ class EmployeeLeaves extends Model
         }
         return 1;
     }
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo)
+    {
+        return $query->whereBetween('date_of_absence_from', [$dateFrom, $dateTo])
+        ->orwhereBetween('date_of_absence_to', [$dateFrom, $dateTo])
+        ->orWhere(function($query) use ($dateFrom, $dateTo) {
+            $query->where('date_of_absence_from', '<=', $dateFrom)
+                  ->where('date_of_absence_to', '>=', $dateTo);
+        });
+    }
 }

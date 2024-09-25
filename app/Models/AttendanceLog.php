@@ -97,6 +97,10 @@ class AttendanceLog extends Model
                 return $query->where('project_id', $filters['project_id']);
             });
     }
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void
+    {
+        $query->whereBetween('date', [$dateFrom, $dateTo]);
+    }
 
     public function employee(): BelongsTo
     {

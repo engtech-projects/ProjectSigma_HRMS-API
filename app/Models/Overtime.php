@@ -94,6 +94,11 @@ class Overtime extends Model
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void
+    {
+        $query->whereBetween('overtime_date', [$dateFrom, $dateTo]);
+    }
+
     public function scopePayrollOvertime(Builder $query, array $filters = [])
     {
         $query->whereBetween('overtime_date', array($filters['cutoff_start'], $filters['cutoff_end']))

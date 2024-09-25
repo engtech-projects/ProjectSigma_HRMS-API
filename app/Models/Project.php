@@ -40,4 +40,12 @@ class Project extends Model
     {
         return $this->hasMany(Schedule::class, "project_id");
     }
+    public function schedule_regular()
+    {
+        return $this->hasMany(Schedule::class, "project_id")->regularSchedules();
+    }
+    public function schedule_irregular()
+    {
+        return $this->hasMany(Schedule::class, "project_id")->irregularSchedules();
+    }
 }

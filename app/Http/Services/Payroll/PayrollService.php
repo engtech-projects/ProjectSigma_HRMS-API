@@ -92,5 +92,23 @@ class PayrollService
         }
         return round($salary, 2);
     }
-
+    public static function GeneratePayrollEmployeePayrollPrefetch($employees)
+    {
+        // PRE FETCH FOR GENERATE PAYROLL
+        // WILL SEGGREGATE EMPLOYEE BASED ON EMPLOYMENT STATUS TO AVOID DTR OVERHEAD FOR FIXED RATE EMPLOYEES
+        $errors = [];
+        $fixedRateEmployees = [];
+        $nonFixedRateEmployees = [];
+        foreach ($employees as $employee) {
+            if (!$employee->current_employment) {
+                    $errors[] = "Employee ".$employee->fullname_first." is not Employed.";
+            }
+            if (!$employee->current_employment->position_id) {
+                $errors[] = "Employee ".$employee->fullname_first." has no Position Set.";
+            }
+            if (!$employee->current_employment->employee_salarygrade) {
+                $errors[] = "Employee ".$employee->fullname_first." has no Salary Grade Set.";
+            }
+        }
+    }
 }
