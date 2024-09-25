@@ -302,7 +302,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('pagibig-remittance-summary', [ReportController::class, 'pagibigRemittanceSummary']);
-
+        Route::get('philhealth-remittance-summary', [ReportController::class, 'philhealthRemittanceSummary']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
@@ -324,7 +324,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
-        Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+        Route::get("format-approvals", [ApiServiceController::class, "formatSingleApproval"]);
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH
