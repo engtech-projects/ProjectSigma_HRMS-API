@@ -58,7 +58,7 @@ class TravelOrderController extends Controller
                 $validdata = $request->validated();
                 $main->fill($validdata);
                 $main->request_status = StringRequestApprovalStatus::PENDING;
-                $main->requested_by = auth()->user()->id;
+                $main->created_by = auth()->user()->id;
                 $main->save();
                 $main->employees()->attach($validdata["employee_ids"]);
                 $main->refresh();

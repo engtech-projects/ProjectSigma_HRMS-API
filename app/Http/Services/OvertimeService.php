@@ -53,8 +53,8 @@ class OvertimeService
 
     public function getMyRequest()
     {
-        $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('created_by', auth()->user()->id)->load('user.employee');
+        $overtimeRequest = $this->getAll();
+        return $overtimeRequest->where('created_by', auth()->user()->id)->load('user.employee');
     }
 
     public function getMyApprovals()

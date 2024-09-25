@@ -73,7 +73,7 @@ class ApproveApproval extends Controller
                     Users::find($model->created_by)->notify(new LeaveRequestApproved($model)); // Notify the requestor
                     break;
                 case ApprovalModels::TravelOrder->name:
-                    Users::find($model->requested_by)->notify(new TravelRequestApproved($model)); // Notify the requestor
+                    Users::find($model->created_by)->notify(new TravelRequestApproved($model)); // Notify the requestor
                     break;
                 case ApprovalModels::CashAdvance->name:
                     Users::find($model->created_by)->notify(new CashAdvanceApproved($model)); // Notify the requestor
@@ -82,7 +82,7 @@ class ApproveApproval extends Controller
                     Users::find($model->created_by)->notify(new FailureToLogRequestApproved($model)); // Notify the requestor
                     break;
                 case ApprovalModels::ManpowerRequest->name:
-                    Users::find($model->requested_by)->notify(new ManpowerRequestApproved($model)); // Notify the requestor
+                    Users::find($model->created_by)->notify(new ManpowerRequestApproved($model)); // Notify the requestor
                     break;
                 case ApprovalModels::Overtime->name:
                     Users::find($model->created_by)->notify(new OvertimeRequestApproved($model)); // Notify the requestor

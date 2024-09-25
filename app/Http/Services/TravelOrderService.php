@@ -20,7 +20,7 @@ class TravelOrderService
     public function getMyRequest()
     {
         $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('requested_by', auth()->user()->id)->load('user.employee');
+        return $manpowerRequest->where('created_by', auth()->user()->id)->load('user.employee');
     }
 
     public function getMyApprovals()
