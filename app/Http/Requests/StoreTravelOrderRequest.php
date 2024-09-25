@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AssignTypes;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Traits\HasApprovalValidation;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreTravelOrderRequest extends FormRequest
 {
@@ -34,6 +36,22 @@ class StoreTravelOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'charge_type' => [
+                'required',
+                new Enum(AssignTypes::class)
+            ],
+            'project_id' => [
+                'required_if:charge_type,==,' . AssignTypes::PROJECT->value,
+                'nullable',
+                "integer",
+                "exists:projects,id",
+            ],
+            'department_id' => [
+                'required_if:charge_type,==,' . AssignTypes::DEPARTMENT->value,
+                'nullable',
+                "integer",
+                "exists:departments,id",
+            ],
             'requesting_office' => [
                 "required",
                 "integer",
