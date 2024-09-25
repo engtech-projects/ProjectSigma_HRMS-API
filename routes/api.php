@@ -324,7 +324,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
-        Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+        Route::get("format-approvals", [ApiServiceController::class, "formatSingleApproval"]);
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH

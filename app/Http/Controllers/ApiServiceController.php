@@ -15,4 +15,12 @@ class ApiServiceController extends Controller
             "success" => true,
         ]);
     }
+    public function formatSingleApproval(FormatApprovalsRequest $request) {
+        $validatedData = $request->validated();
+        return response()->json([
+            "message" => "Successfully Formatted Approvals.",
+            "data" => new HrmsServiceApprovalAttributeResource($validatedData),
+            "success" => true,
+        ]);
+    }
 }
