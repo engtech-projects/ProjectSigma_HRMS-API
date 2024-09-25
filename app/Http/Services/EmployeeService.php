@@ -161,7 +161,8 @@ class EmployeeService
         $sss = $filters["deduct_sss"] ? $employee->sss_deduction($monthlySalary, $filters["payroll_type"]) : [];
         $philhealth = $filters["deduct_philhealth"] ? $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]) : [];
         $pagibig = $filters["deduct_pagibig"] ? $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]) : [];
-        $monthlyTaxExempt = $sss['employee_compensation'] + $sss['employee_contribution'] + $philhealth['employee_contribution'] + $pagibig['employee_contribution'];
+        $monthlyTaxExempt = 0;
+        // $monthlyTaxExempt = $sss['employee_compensation'] + $sss['employee_contribution'] + $philhealth['employee_contribution'] + $pagibig['employee_contribution'];
         $taxableMonthlySalary = $monthlySalary - $monthlyTaxExempt;
         $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
         $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
