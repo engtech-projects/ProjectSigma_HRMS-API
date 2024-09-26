@@ -3,6 +3,7 @@
 namespace App\Http\Services\Attendance;
 
 use App\Enums\AttendanceLogType;
+use App\Enums\EventTypes;
 use App\Enums\PayrollType;
 use App\Enums\WorkLocation;
 use App\Helpers;
@@ -38,7 +39,7 @@ class AttendanceService
                 $query->betweenDates($dateFrom, $dateTo);
             },
             'attendance_log' => function ($query) use ($dateFrom, $dateTo) {
-                $query->betweenDates($dateFrom, $dateTo);
+                $query->with(["department", "project"])->betweenDates($dateFrom, $dateTo);
             },
             'employee_leave' => function ($query) use ($dateFrom, $dateTo) {
                 $query->betweenDates($dateFrom, $dateTo);
@@ -84,7 +85,7 @@ class AttendanceService
             "leaves" => $employee->employee_leave,
             'events' => Events::betweenDates($dateFrom, $dateTo)->get(),
         ];
-        $employee["dtr"] = Self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo);
+        $employee["dtr"] = self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo);
         return $employee;
     }
 
@@ -96,26 +97,26 @@ class AttendanceService
         return collect($periodDates)->groupBy("date")->map(function ($val, $date) use ($employeeDatas) {
             $carbonDate = Carbon::parse($date);
             // Get applied Schedule for date
-            $appliedDateSchedule = Self::getAppliedDateSchedule($employeeDatas, $carbonDate);
-            $appliedDateOvertime = Self::getAppliedDateOvertime($employeeDatas, $carbonDate);
-            $appliedDateAttendanceLogs = Self::getAppliedDateAttendanceLogs($employeeDatas, $carbonDate);
-            $appliedDateTravelOrders = Self::getAppliedDateTravelOrders($employeeDatas, $carbonDate);
-            $appliedDateLeaves = Self::getAppliedDateLeaves($employeeDatas, $carbonDate);
-            $appliedDateEvents = Self::getAppliedDateEvents($employeeDatas, $carbonDate);
+            $appliedDateSchedule = self::getAppliedDateSchedule($employeeDatas, $carbonDate);
+            $appliedDateOvertime = self::getAppliedDateOvertime($employeeDatas, $carbonDate);
+            $appliedDateAttendanceLogs = self::getAppliedDateAttendanceLogs($employeeDatas, $carbonDate);
+            $appliedDateTravelOrders = self::getAppliedDateTravelOrders($employeeDatas, $carbonDate);
+            $appliedDateLeaves = self::getAppliedDateLeaves($employeeDatas, $carbonDate);
+            $appliedDateEvents = self::getAppliedDateEvents($employeeDatas, $carbonDate);
             $dateDataForProcessing = [
-                "schedule" => $appliedDateSchedule,
-                "overtime" => $appliedDateOvertime,
-                "attendances_logs" => $appliedDateAttendanceLogs,
+                "schedules" => $appliedDateSchedule,
+                "overtimes" => $appliedDateOvertime,
+                "attendance_logs" => $appliedDateAttendanceLogs,
                 "travel_orders" => $appliedDateTravelOrders,
                 "leaves" => $appliedDateLeaves,
                 "events" => $appliedDateEvents,
             ];
-            $processedMetaData = Self::calculateDateAttendanceMetaData($dateDataForProcessing, $date);
+            $processedMetaData = self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate);
             return [
                 "date" => $date,
-                "schedule" => $appliedDateSchedule,
-                "overtime" => $appliedDateOvertime,
-                "attendances_logs" => $appliedDateAttendanceLogs,
+                "schedules" => $appliedDateSchedule,
+                "overtimes" => $appliedDateOvertime,
+                "attendance_logs" => $appliedDateAttendanceLogs,
                 "travel_orders" => $appliedDateTravelOrders,
                 "leaves" => $appliedDateLeaves,
                 "events" => $appliedDateEvents,
@@ -220,7 +221,7 @@ class AttendanceService
             return $date->gte($data->start_date) && $date->lte($data->end_date);
         })->values();
     }
-    public static function calculateDateAttendanceMetaData($schedule, $date)
+    public static function calculateDateAttendanceMetaData($employeeDayData, $date)
     {
         $metaResult = [
             "charging" => [
@@ -272,10 +273,90 @@ class AttendanceService
                 "undertime" => 0,
             ],
             "summary" => [
-                "Chargings" => "",
-                ""
+                "schedules" => [],
+                "overtimes" => [],
             ]
         ];
+        $workRendered = self::calculateWorkRendered($employeeDayData, $date);
+        $overtimeRendered = self::calculateOvertimeRendered($employeeDayData, $date);
+        $type = "rest";
+        if (sizeof(collect($employeeDayData["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::REGULARHOLIDAY)) > 0) { // Regular Holiday
+            $type = "regular_holidays";
+        } elseif (sizeof(collect($employeeDayData["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
+            $type = "special_holidays";
+        } elseif ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
+            $type = "rest";
+        } else { // Regular Work Day
+            $type = "regular";
+        }
+        // $metaResult[$type]["reg_hrs"] += $workRendered["rendered"];
+        // $metaResult[$type]["overtime"] += $overtimeRendered["rendered"];
+        // $metaResult[$type]["late"] += $workRendered["late"];
+        // $metaResult[$type]["undertime"] += $workRendered["undertime"];
+        // array_push($metaResult["charging"][$type]["reg_hrs"], ...$workRendered["charging"]);
+        // array_push($metaResult["charging"][$type]["overtime"], ...$overtimeRendered["charging"]);
+        // $metaResult["total"]["reg_hrs"] = $workRendered["rendered"];
+        // $metaResult["total"]["overtime"] = $overtimeRendered["rendered"];
+        // $metaResult["total"]["late"] = $workRendered["late"];
+        // $metaResult["total"]["undertime"] = $workRendered["undertime"];
+        array_push($metaResult["summary"]["schedules"], ...$workRendered["summary"]); // Here shows schedules with
+        // array_push($metaResult["summary"]["overtimes"], ...$overtimeRendered["summary"]);
         return $metaResult;
+    }
+    public static function calculateWorkRendered($employeeDayData, $date)
+    {
+        $schedulesSummary = [];
+        $duration = 0;
+        $totalLate = 0;
+        $undertime = 0;
+        $chargings = [];
+        foreach ($employeeDayData['schedules'] as $schedule) {
+            $scheduleMetaData = [
+                "date" => $date,
+                "day_of_week" => $schedule->dayOfWeek,
+                "start_time_sched" => $schedule->start_time_human,
+                "end_time_sched" => $schedule->end_time_human,
+                "start_time_log" => "ABSENT",
+                "end_time_log" => "ABSENT",
+                "duration" => 0,
+                "late" => 0,
+                "undertime" => 0,
+            ];
+            // HAS ATTENDANCE LOG
+            $attendanceLogIn = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
+                return $data->log_type == AttendanceLogType::TIME_IN &&
+                (
+                    $data->time >= $schedule->buffer_time_start_early ||
+                    $data->time >= $schedule->startTime
+                ) &&
+                $data->time <= $schedule->endTime;
+            })->values();
+            // CONNECTED TO OVERTIME
+            $otAsLogIn = collect($employeeDayData["overtimes"])->filter(function ($otData) use ($schedule) {
+                $otSchedOut = $otData->overtime_end_time;
+                $schedIn = Carbon::parse($schedule->startTime);
+                return $schedIn->equalTo($otSchedOut);
+            })->first();
+            $attendanceLogOut = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
+                return $data->log_type == AttendanceLogType::TIME_OUT &&
+                $data->time >= $schedule->startTime &&
+                (
+                    $data->time <= $schedule->buffer_time_end_late ||
+                    $data->time <= $schedule->endTime
+                );
+            })->values();
+            array_push($schedulesSummary, $scheduleMetaData);
+        }
+        return  [
+            "rendered" => round($duration, 2),
+            "late" => $totalLate,
+            "undertime" => $undertime,
+            "charging" => $chargings,
+            "summary" => $schedulesSummary,
+        ];
+    }
+    public static function calculateOvertimeRendered($employeeDayData, $date)
+    {
+        return [];
     }
 }
