@@ -10,6 +10,7 @@ use App\Enums\EmployeeStudiesType;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\RequestStatusType;
+use App\Enums\WorkLocation;
 use App\Http\Traits\Attendance;
 use App\Models\Traits\HasProjectEmployee;
 use Illuminate\Notifications\Notifiable;
@@ -386,21 +387,25 @@ class Employee extends Model
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
-        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
-        if ($schedule && sizeof($schedule) > 0) {
-            return $schedule;
-        }
-        $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->regularSchedules()->get();
-        if ($schedule && sizeof($schedule) > 0) {
-            return $schedule;
-        }
-        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()?->employee_department?->schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
-        if ($schedule && sizeof($schedule) > 0) {
-            return $schedule;
-        }
-        $schedule = $this->employee_internal()?->currentOnDate($date)?->first()?->employee_department?->schedule()?->schedulesOnDay($date)->regularSchedules()->get();
-        if ($schedule && sizeof($schedule) > 0) {
-            return $schedule;
+        $employeeInternalOnDate = $this->employee_internal()?->currentOnDate($date)?->first();
+        if ($employeeInternalOnDate->work_location == WorkLocation::OFFICE->value) {
+            $schedule = $this->employee_internal()?->currentOnDate($date)?->first()?->employee_department?->schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
+            $schedule = $this->employee_internal()?->currentOnDate($date)?->first()?->employee_department?->schedule()?->schedulesOnDay($date)->regularSchedules()->get();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
+        } else {
+            $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
+            $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->regularSchedules()->get();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
         }
         return collect([]); // returns collection of empty array if no schedule is found
     }
