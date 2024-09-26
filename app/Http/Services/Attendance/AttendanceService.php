@@ -106,17 +106,20 @@ class AttendanceService
             return [
                 "date" => $date,
                 "schedule" => $appliedDateSchedule,
-                "metadata" => $processedMetaData,
+                "overtime" => $appliedDateOvertime,
+                "attendances" => $appliedDateAttendanceLogs,
+                "travel_orders" => $appliedDateTravelOrders,
+                "leaves" => $appliedDateLeaves,
                 "events" => $appliedDateEvents,
+                "metadata" => $processedMetaData,
             ];
         });
     }
     public static function getAppliedDateSchedule($employeeDatas, $date)
     {
-
         $schedule = $employeeDatas["employee_schedules_irregular"]->where(function ($data) use ($date) {
             return $date->eq($data->startRecur);
-        });
+        })->values();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
@@ -127,7 +130,7 @@ class AttendanceService
                 is_null($data->endRecur) ||
                 $date->lt($data->endRecur)
             );
-        });
+        })->values();
         if ($schedule && sizeof($schedule) > 0) {
             return $schedule;
         }
@@ -141,7 +144,7 @@ class AttendanceService
         if ($currentInternalOnDate->work_location == WorkLocation::OFFICE->value) {
             $schedule = $currentInternalOnDate['department_schedules_irregular']->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
-            });
+            })->values();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
@@ -152,7 +155,7 @@ class AttendanceService
                     is_null($data->endRecur) ||
                     $date->lt($data->endRecur)
                 );
-            });
+            })->values();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
@@ -161,7 +164,7 @@ class AttendanceService
             $latestProject = $employeeDatas["employee"]->employee_has_projects->first();
             $schedule = $latestProject->schedule_irregular->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
-            });
+            })->values();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
@@ -172,7 +175,7 @@ class AttendanceService
                     is_null($data->endRecur) ||
                     $date->lt($data->endRecur)
                 );
-            })->all();
+            })->values();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
@@ -181,7 +184,9 @@ class AttendanceService
     }
     public static function getAppliedDateOvertime($employeeDatas, $date)
     {
-
+        return $employeeDatas["overtimes"]->where(function ($data) use ($date) {
+            return $date->eq($data->overtime_date);
+        })->values();
     }
     public static function getAppliedDateAttendanceLogs($employeeDatas, $date)
     {
@@ -199,7 +204,7 @@ class AttendanceService
     {
         return $employeeDatas["events"]->where(function ($data) use ($date) {
             return $date->gte($data->start_date) && $date->lte($data->end_date);
-        });
+        })->values();
     }
     public static function calculateDateAttendanceMetaData($schedule)
     {
