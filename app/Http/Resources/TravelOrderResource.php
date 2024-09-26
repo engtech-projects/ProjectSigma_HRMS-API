@@ -16,23 +16,15 @@ class TravelOrderResource extends JsonResource
     {
         $user = $this->when('user', function () {
             return [
-                    "name" => $this->user->employee?->fullname_first,
+                    "name" => $this->user->employee?->fullname_last,
                     "type" => $this->user->type,
             ];
-        });
-
-        $employees = $this->whenLoaded('employees', function () {
-            $arr = array();
-            foreach ($this->employees as $key) {
-                array_push($arr, array("id" => $key->id, "name" => $key?->fullname_first));
-            }
-            return $arr;
         });
 
         return [
             "id" => $this->id,
             "name" => $this->name,
-            "employees" => $employees,
+            "employees" => $this->employees,
             "requesting_office" => $this->requesting_office,
             "destination" => $this->destination,
             "purpose_of_travel" => $this->purpose_of_travel,
