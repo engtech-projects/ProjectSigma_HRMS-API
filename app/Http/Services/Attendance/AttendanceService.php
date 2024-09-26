@@ -107,7 +107,7 @@ class AttendanceService
                 "date" => $date,
                 "schedule" => $appliedDateSchedule,
                 "overtime" => $appliedDateOvertime,
-                "attendances" => $appliedDateAttendanceLogs,
+                "attendances_logs" => $appliedDateAttendanceLogs,
                 "travel_orders" => $appliedDateTravelOrders,
                 "leaves" => $appliedDateLeaves,
                 "events" => $appliedDateEvents,
@@ -190,7 +190,9 @@ class AttendanceService
     }
     public static function getAppliedDateAttendanceLogs($employeeDatas, $date)
     {
-
+        return $employeeDatas["attendanceLogs"]->where(function ($data) use ($date) {
+            return $date->eq($data->date);
+        })->values();
     }
     public static function getAppliedDateTravelOrders($employeeDatas, $date)
     {
