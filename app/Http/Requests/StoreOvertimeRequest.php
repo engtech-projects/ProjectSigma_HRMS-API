@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\RequestStatusType;
 use App\Enums\StringRequestApprovalStatus;
 use App\Http\Traits\HasApprovalValidation;
 use App\Models\Employee;
 use App\Models\Overtime;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -48,7 +50,9 @@ class StoreOvertimeRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     if ($this->hasPendingOvertime($value)) {
                         $employeeName = $this->getEmployeeName($value);
-                        $fail('The employee ' . $employeeName . ' has a pending overtime request.');
+                        $startTime12Hour = $this->formatTimeTo12Hour($this->overtime_start_time);
+                        $endTime12Hour = $this->formatTimeTo12Hour($this->overtime_end_time);
+                        $fail($employeeName . ' has a pending overtime request for ' . $this->overtime_date . ' '.$startTime12Hour. ' and ' .$endTime12Hour);
                     }
                 },
             ],
@@ -103,12 +107,25 @@ class StoreOvertimeRequest extends FormRequest
     {
         return Overtime::whereHas('employees', function ($query) use ($employeeId) {
             $query->where('employee_id', $employeeId);
-        })->myApprovals()->exists();
+        })
+        ->where(function ($query) {
+            $query->where('overtime_date', $this->overtime_date)
+                ->where(function ($query) {
+                    $query->where('overtime_start_time', '<=', $this->overtime_end_time)
+                        ->where('overtime_end_time', '>=', $this->overtime_start_time);
+                });
+        })
+        ->whereIn('request_status', [RequestStatusType::PENDING->value, RequestStatusType::APPROVED->value])
+        ->exists();
     }
 
     protected function getEmployeeName($employeeId)
     {
         $employee = Employee::find($employeeId);
         return $employee ? $employee->fullname_first : 'Unknown';
+    }
+    protected function formatTimeTo12Hour($time)
+    {
+        return Carbon::createFromFormat('H:i', $time)->format('g:i A');
     }
 }
