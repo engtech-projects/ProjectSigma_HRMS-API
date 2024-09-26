@@ -3,6 +3,7 @@
 namespace App\Http\Services\Attendance;
 
 use App\Enums\AttendanceLogType;
+use App\Enums\AttendanceSettings;
 use App\Enums\EventTypes;
 use App\Enums\PayrollType;
 use App\Enums\WorkLocation;
@@ -10,6 +11,7 @@ use App\Helpers;
 use App\Models\Employee;
 use App\Models\Events;
 use App\Models\PayrollRecord;
+use App\Models\Settings;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Log;
@@ -289,15 +291,15 @@ class AttendanceService
         } else { // Regular Work Day
             $type = "regular";
         }
-        // $metaResult[$type]["reg_hrs"] += $workRendered["rendered"];
+        $metaResult[$type]["reg_hrs"] += $workRendered["rendered"];
         // $metaResult[$type]["overtime"] += $overtimeRendered["rendered"];
-        // $metaResult[$type]["late"] += $workRendered["late"];
-        // $metaResult[$type]["undertime"] += $workRendered["undertime"];
-        // array_push($metaResult["charging"][$type]["reg_hrs"], ...$workRendered["charging"]);
+        $metaResult[$type]["late"] += $workRendered["late"];
+        $metaResult[$type]["undertime"] += $workRendered["undertime"];
+        array_push($metaResult["charging"][$type]["reg_hrs"], ...$workRendered["charging"]);
         // array_push($metaResult["charging"][$type]["overtime"], ...$overtimeRendered["charging"]);
-        // $metaResult["total"]["reg_hrs"] = $workRendered["rendered"];
+        $metaResult["total"]["reg_hrs"] = $workRendered["rendered"];
         // $metaResult["total"]["overtime"] = $overtimeRendered["rendered"];
-        // $metaResult["total"]["late"] = $workRendered["late"];
+        $metaResult["total"]["late"] = $workRendered["late"];
         // $metaResult["total"]["undertime"] = $workRendered["undertime"];
         array_push($metaResult["summary"]["schedules"], ...$workRendered["summary"]); // Here shows schedules with
         // array_push($metaResult["summary"]["overtimes"], ...$overtimeRendered["summary"]);
@@ -310,18 +312,29 @@ class AttendanceService
         $totalLate = 0;
         $undertime = 0;
         $chargings = [];
+        $absentToday = false;
+        // SETUP LEAVE FOR CHECKING IF ON LEAVE AND WILL APPLY FOR TODAY
+        $leaveUsedToday = array_fill(0, sizeof($employeeDayData["leaves"]), 0);
+        $hasLeaveToday = sizeof($employeeDayData["leaves"]) > 0;
+        // SETTINGS FOR LATES AND ABSENT
+        $lateMinsAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value; // Minutes of late that will be considered as not late
+        $lateMinsConsideredAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value; // Minutes of late that will be considered as absent for a schedule
         foreach ($employeeDayData['schedules'] as $schedule) {
             $scheduleMetaData = [
                 "date" => $date,
                 "day_of_week" => $schedule->dayOfWeek,
                 "start_time_sched" => $schedule->start_time_human,
                 "end_time_sched" => $schedule->end_time_human,
-                "start_time_log" => "ABSENT",
-                "end_time_log" => "ABSENT",
+                "start_time_log" => "NO LOG",
+                "end_time_log" => "NO LOG",
                 "duration" => 0,
                 "late" => 0,
                 "undertime" => 0,
             ];
+            $leaveUsed = false; // To Indicate if leave has been used for the schedule
+            // Prepare TIME INS
+            $scheduleDateTimeIn = $date->copy()->setTimeFromTimeString($schedule->startTime);
+            $timeIn = null;
             // HAS ATTENDANCE LOG
             $attendanceLogIn = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
                 return $data->log_type == AttendanceLogType::TIME_IN &&
@@ -331,12 +344,42 @@ class AttendanceService
                 ) &&
                 $data->time <= $schedule->endTime;
             })->values();
+            if (sizeof($attendanceLogIn) > 0) {
+                $timeIn = $attendanceLogIn->first()->time;
+                $scheduleMetaData["start_time_log"] = $timeIn;
+            }
             // CONNECTED TO OVERTIME
             $otAsLogIn = collect($employeeDayData["overtimes"])->filter(function ($otData) use ($schedule) {
                 $otSchedOut = $otData->overtime_end_time;
                 $schedIn = Carbon::parse($schedule->startTime);
                 return $schedIn->equalTo($otSchedOut);
             })->first();
+            if ($otAsLogIn) {
+                $timeIn = $schedule->startTime;
+                $scheduleMetaData["start_time_log"] = "ON OVERTIME";
+            }
+            if (!$timeIn) {
+                // is On Travel Order
+                $onTravelOrder = sizeof($employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeIn) {
+                    return $trOrd->datetimeIsApplicable($scheduleDateTimeIn);
+                })) > 0;
+                if (!$timeIn && $onTravelOrder) {
+                    $timeIn = $schedule->startTime;
+                    $scheduleMetaData["start_time_log"] = "ON TRAVEL ORDER";
+                }
+                // Is On Leave
+                foreach ($employeeDayData["leaves"] as $index => $leave) {
+                    if (!$timeIn && $hasLeaveToday && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
+                        $leaveUsedToday[$index] += 0.5;
+                        $leaveUsed = true;
+                        $timeIn = $schedule->startTime;
+                        $scheduleMetaData["start_time_log"] = $leave->leave()->leave_name;
+                    }
+                }
+            }
+            // PREPARE TIME OUTS
+            $scheduleDateTimeOut = $date->copy()->setTimeFromTimeString($schedule->endTime);
+            $timeOut = null;
             $attendanceLogOut = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
                 return $data->log_type == AttendanceLogType::TIME_OUT &&
                 $data->time >= $schedule->startTime &&
@@ -345,8 +388,13 @@ class AttendanceService
                     $data->time <= $schedule->endTime
                 );
             })->values();
+            if (!$timeIn && !$timeOut) {
+                array_push($schedulesSummary, $scheduleMetaData);
+                continue;
+            }
             array_push($schedulesSummary, $scheduleMetaData);
         }
+
         return  [
             "rendered" => round($duration, 2),
             "late" => $totalLate,
@@ -357,6 +405,17 @@ class AttendanceService
     }
     public static function calculateOvertimeRendered($employeeDayData, $date)
     {
-        return [];
+        $schedulesSummary = [];
+        $duration = 0;
+        $totalLate = 0;
+        $undertime = 0;
+        $chargings = [];
+        return [
+            "rendered" => round($duration, 2),
+            "late" => $totalLate,
+            "undertime" => $undertime,
+            "charging" => $chargings,
+            "summary" => $schedulesSummary,
+        ];
     }
 }
