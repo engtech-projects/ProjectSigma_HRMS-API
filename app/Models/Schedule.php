@@ -192,19 +192,11 @@ class Schedule extends Model
         return $query->where(function ($query) use ($dateFrom, $dateTo) {
             $query->where('scheduleType', self::TYPE_REGULAR)
             ->where(function ($query) use ($dateFrom, $dateTo) {
-                $query->whereBetween('startRecur', [$dateFrom, $dateTo])
-                ->orWhereBetween('endRecur', [$dateFrom, $dateTo])
-                ->orWhere(function ($query) use ($dateFrom, $dateTo) {
-                    $query
-                    ->whereDate("startRecur", "<=", $dateFrom)
-                    ->whereDate("startRecur", "<=", $dateTo)
-                    ->where(function ($query) use ($dateFrom, $dateTo) {
-                        $query->whereNull('endRecur')
-                        ->orWhere(function ($query) use ($dateFrom, $dateTo) {
-                            $query->whereDate("endRecur", ">", $dateFrom)
-                            ->whereDate("endRecur", ">", $dateTo);
-                        });
-                    });
+                $query
+                ->whereDate("startRecur", "<=", $dateTo)
+                ->where(function ($query) use ($dateFrom) {
+                    $query->whereDate("endRecur", ">", $dateFrom)
+                    ->orWhereNull('endRecur');
                 });
             });
         })->orWhere(function($query) use ($dateFrom, $dateTo) {

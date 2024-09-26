@@ -102,7 +102,15 @@ class AttendanceService
             $appliedDateTravelOrders = Self::getAppliedDateTravelOrders($employeeDatas, $carbonDate);
             $appliedDateLeaves = Self::getAppliedDateLeaves($employeeDatas, $carbonDate);
             $appliedDateEvents = Self::getAppliedDateEvents($employeeDatas, $carbonDate);
-            $processedMetaData = Self::calculateDateAttendanceMetaData($employeeDatas);
+            $dateDataForProcessing = [
+                "schedule" => $appliedDateSchedule,
+                "overtime" => $appliedDateOvertime,
+                "attendances_logs" => $appliedDateAttendanceLogs,
+                "travel_orders" => $appliedDateTravelOrders,
+                "leaves" => $appliedDateLeaves,
+                "events" => $appliedDateEvents,
+            ];
+            $processedMetaData = Self::calculateDateAttendanceMetaData($dateDataForProcessing, $date);
             return [
                 "date" => $date,
                 "schedule" => $appliedDateSchedule,
@@ -196,11 +204,15 @@ class AttendanceService
     }
     public static function getAppliedDateTravelOrders($employeeDatas, $date)
     {
-
+        return $employeeDatas["travel_orders"]->where(function ($data) use ($date) {
+            return $date->gte($data->date_of_travel) && $date->lte($data->date_time_end);
+        })->values();
     }
     public static function getAppliedDateLeaves($employeeDatas, $date)
     {
-
+        return $employeeDatas["leaves"]->where(function ($data) use ($date) {
+            return $date->gte($data->date_of_absence_from) && $date->lte($data->date_of_absence_to);
+        })->values();
     }
     public static function getAppliedDateEvents($employeeDatas, $date)
     {
@@ -208,19 +220,8 @@ class AttendanceService
             return $date->gte($data->start_date) && $date->lte($data->end_date);
         })->values();
     }
-    public static function calculateDateAttendanceMetaData($schedule)
+    public static function calculateDateAttendanceMetaData($schedule, $date)
     {
-        // OUTPUT MUST BE
-        // GET hrsWorked, Overtime, Late, Undertime
-        // Regular
-        // Regular_holidays
-        // Rest
-        // Special_holidays
-        // Total
-        // GET hrsWorked, Overtime
-        // Charging
-        // Then Charges each  attendance type
-        // Summary
         $metaResult = [
             "charging" => [
                 // Charging Structure for reg_hrs and overtime
