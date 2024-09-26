@@ -166,21 +166,21 @@ class Schedule extends Model
     {
         return $query->where(function ($query2) use ($date) {
             $query2->where('scheduleType', self::TYPE_REGULAR)
-                ->where(function ($query3) use ($date) {
-                    $query3->where(function ($query4) use ($date) {
-                        $carbondate = new Carbon($date);
-                        $query4->whereDate('startRecur', '<=', $date)
-                            ->whereNotNull('endRecur')
-                            ->whereDate('endRecur', '>', $date)
-                            ->whereJsonContains("daysOfWeek", (string)$carbondate->dayOfWeek);
-                    })
-                        ->orWhere(function ($query5) use ($date) {
-                            $carbondate = new Carbon($date);
-                            $query5->whereDate('startRecur', '<=', $date)
-                                ->whereNull('endRecur')
-                                ->whereJsonContains("daysOfWeek", (string)$carbondate->dayOfWeek);
-                        });
+            ->where(function ($query3) use ($date) {
+                $query3->where(function ($query4) use ($date) {
+                    $carbondate = new Carbon($date);
+                    $query4->whereDate('startRecur', '<=', $date)
+                        ->whereNotNull('endRecur')
+                        ->whereDate('endRecur', '>', $date)
+                        ->whereJsonContains("daysOfWeek", (string)$carbondate->dayOfWeek);
+                })
+                ->orWhere(function ($query5) use ($date) {
+                    $carbondate = new Carbon($date);
+                    $query5->whereDate('startRecur', '<=', $date)
+                        ->whereNull('endRecur')
+                        ->whereJsonContains("daysOfWeek", (string)$carbondate->dayOfWeek);
                 });
+            });
         })->orWhere(function ($query6) use ($date) {
             $query6->where('scheduleType', self::TYPE_IRREGULAR)
                 ->whereDate('startRecur', '=', $date);
@@ -189,23 +189,27 @@ class Schedule extends Model
 
     public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo)
     {
-        return $query->where(function($query) use ($dateFrom, $dateTo) {
-            $query->where(function($query) use ($dateFrom, $dateTo) {
-                $query->where('scheduleType', self::TYPE_REGULAR)
-                ->where(function($query) use ($dateFrom, $dateTo) {
-                    $query->whereBetween('startRecur', [$dateFrom, $dateTo])
-                    ->orWhere(function($query) use ($dateFrom, $dateTo) {
-                        $query->where('startRecur', '<=', $dateFrom)
-                        ->where(function($query) use ($dateTo) {
-                            $query->where('endRecur', '>=', $dateTo)
-                            ->orWhereNull('endRecur');
+        return $query->where(function ($query) use ($dateFrom, $dateTo) {
+            $query->where('scheduleType', self::TYPE_REGULAR)
+            ->where(function ($query) use ($dateFrom, $dateTo) {
+                $query->whereBetween('startRecur', [$dateFrom, $dateTo])
+                ->orWhereBetween('endRecur', [$dateFrom, $dateTo])
+                ->orWhere(function ($query) use ($dateFrom, $dateTo) {
+                    $query
+                    ->whereDate("startRecur", "<=", $dateFrom)
+                    ->whereDate("startRecur", "<=", $dateTo)
+                    ->where(function ($query) use ($dateFrom, $dateTo) {
+                        $query->whereNull('endRecur')
+                        ->orWhere(function ($query) use ($dateFrom, $dateTo) {
+                            $query->whereDate("endRecur", ">", $dateFrom)
+                            ->whereDate("endRecur", ">", $dateTo);
                         });
                     });
                 });
-            })->orWhere(function($query) use ($dateFrom, $dateTo) {
-                $query->where('scheduleType', self::TYPE_IRREGULAR)
-                ->whereBetween('startRecur', [$dateFrom, $dateTo]);
             });
+        })->orWhere(function($query) use ($dateFrom, $dateTo) {
+            $query->where('scheduleType', self::TYPE_IRREGULAR)
+            ->whereBetween('startRecur', [$dateFrom, $dateTo]);
         });
     }
 
