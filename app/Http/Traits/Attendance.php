@@ -43,7 +43,10 @@ trait Attendance
             $timeIn = $schedule["applied_ins"];
             if ($timeIn) {
                 // Charge for Attendance Log Time In
-                $charge = AttendanceLog::find($timeIn["id"])->charging();
+                $charge = [
+                    "class" => $timeIn->charging_class,
+                    "id" => $timeIn->charging_id,
+                ];
             }
             // Connected to Overtime
             $oTStart = collect($overtime)->filter(function ($otData) use ($schedule) {
@@ -53,6 +56,10 @@ trait Attendance
             })->first();
             if ($oTStart) {
                 $charge = AttendanceLog::find($oTStart["applied_in"]?->id)?->charging() ?? $charge ?? Overtime::find($oTStart["id"])?->charging();
+                $charge = [
+                    "class" => $oTStart->charging_class,
+                    "id" => $oTStart->charging_id,
+                ];
                 $timeIn = (object)["time" => $schedule["startTime"]];
             }
             if (!$timeIn) {
@@ -60,15 +67,21 @@ trait Attendance
                 if (!$timeIn && $hasLeaveToday && $leaveUsedToday < $leaveToday->durationForDate($date)) {
                     $leaveUsedToday = + 0.5;
                     $leaveUsed = true;
-                    $charge = $leaveToday->charging();
+                    $charge = [
+                        "class" => $leaveToday->charging_class,
+                        "id" => $leaveToday->charging_id,
+                    ];
                     $timeIn = (object)["time" => $schedule["startTime"]];
                 }
                 // is On Travel Order
-                $onTravelOrder = sizeof($travelOrder->filter(function ($trOrd) use ($dateTimeInSchedule) {
+                $onTravelOrder = $travelOrder->filter(function ($trOrd) use ($dateTimeInSchedule) {
                     return $trOrd->datetimeIsApplicable($dateTimeInSchedule);
-                })) > 0;
+                })->first();
                 if (!$timeIn && $onTravelOrder) {
-                    // $charge =  TravelOrder::find($travelOrder["id"]);
+                    $charge = [
+                        "class" => $onTravelOrder->charge_type,
+                        "id" => $onTravelOrder->charge_id,
+                    ];
                     $timeIn = (object)["time" => $schedule["startTime"]];
                 }
             }
