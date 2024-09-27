@@ -5,9 +5,11 @@ namespace App\Http\Services;
 use App\Enums\AssignTypes;
 use App\Enums\SalaryRequestType;
 use App\Exceptions\TransactionFailedException;
+use App\Http\Services\Attendance\AttendanceService;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\Department;
 use App\Models\Project;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeService
 {
@@ -71,14 +73,18 @@ class EmployeeService
                 break;
         }
         // Getting Employee DTR and Gross Income
-        $dtr = collect($period)->groupBy(function ($period) use ($filters) {
-            return $period["date"];
-        })->map(function ($period) use ($employee, $filters) {
-            $date = $period[0]["date"];
-            $dtr = $this->employeeDTR($employee, $date);
-            $grossPay =  $employee->salary_gross_pay($dtr["metadata"]);
-            $dtr["grosspay"] = $grossPay;
-            return $dtr;
+        // $dtr = collect($period)->groupBy(function ($period) use ($filters) {
+        //     return $period["date"];
+        // })->map(function ($period) use ($employee, $filters) {
+        //     $date = $period[0]["date"];
+        //     $dtr = $this->employeeDTR($employee, $date);
+        //     $grossPay =  $employee->salary_gross_pay($dtr["metadata"]);
+        //     $dtr["grosspay"] = $grossPay;
+        //     return $dtr;
+        // });
+        $dtr = AttendanceService::generateDtr($employee->id, $filters["cutoff_start"], $filters['cutoff_end'])['dtr']->map(function ($dtrData) use($employee) {
+            $dtrData["grosspay"] = $employee->salary_gross_pay($dtrData["metadata"]);
+            return $dtrData;
         });
         $dtrValues = $dtr->values();
         $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrValues);
@@ -158,18 +164,17 @@ class EmployeeService
     {
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
         $monthlySalary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
-        $sss = $filters["deduct_sss"] ? $employee->sss_deduction($monthlySalary, $filters["payroll_type"]) : [];
-        $philhealth = $filters["deduct_philhealth"] ? $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]) : [];
-        $pagibig = $filters["deduct_pagibig"] ? $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]) : [];
-        $monthlyTaxExempt = 0;
-        // $monthlyTaxExempt = $sss['employee_compensation'] + $sss['employee_contribution'] + $philhealth['employee_contribution'] + $pagibig['employee_contribution'];
+        $sss = $employee->sss_deduction($monthlySalary, $filters["payroll_type"]);
+        $philhealth = $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]);
+        $pagibig = $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]);
+        $monthlyTaxExempt = $sss['employee_compensation'] + $sss['employee_contribution'] + $philhealth['employee_contribution'] + $pagibig['employee_contribution'];
         $taxableMonthlySalary = $monthlySalary - $monthlyTaxExempt;
         $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
         $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
         $result = [
-            "sss" => $sss,
-            "phic" => $philhealth,
-            "hmdf" => $pagibig,
+            "sss" => $filters["deduct_sss"] ? $sss : [],
+            "phic" => $filters["deduct_philhealth"] ? $philhealth : [],
+            "hmdf" => $filters["deduct_pagibig"] ? $pagibig : [],
             "ewtc" => $wtax,
             "loan" => $employee->loan_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
@@ -362,7 +367,7 @@ class EmployeeService
                         "charge_type" => $type,
                         "charge_id" => $id,
                         "charging_name" => $type === "App\\Models\\Department" ? Department::find($id)->department_name : Project::find($id)->project_code,
-                        "amount" => $chargings->sum("amount"),
+                        "amount" => round($chargings->sum("amount"), 2),
                     ];
                 });
             });

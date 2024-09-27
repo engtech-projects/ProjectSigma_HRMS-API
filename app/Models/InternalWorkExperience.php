@@ -66,13 +66,13 @@ class InternalWorkExperience extends Model
     {
         return $this->hasMany(Schedule::class, 'department_id', 'department_id');
     }
-    public function irregular_department_schedule($date)
+    public function department_schedule_regular()
     {
-        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->whereDate('startRecur', $date);
+        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->regularSchedules();
     }
-    public function regular_department_schedule($date)
+    public function department_schedule_irregular()
     {
-        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->employeeSchedule($date);
+        return $this->hasMany(Schedule::class, 'department_id', 'department_id')->irregularSchedules();
     }
     public function regular_project_schedule()
     {
@@ -107,6 +107,19 @@ class InternalWorkExperience extends Model
             $query->where('date_from', '>=', $date)
                 ->orWhereNull('date_to');
         })->where('date_to', '<', $date); */
+    }
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo)
+    {
+        return $query->where(function($query) use ($dateFrom, $dateTo) {
+            $query->whereBetween('date_from', [$dateFrom, $dateTo])
+                  ->orWhere(function($query) use ($dateFrom, $dateTo) {
+                      $query->where('date_from', '<=', $dateFrom)
+                            ->where(function($query) use ($dateTo) {
+                                $query->where('date_to', '>=', $dateTo)
+                                      ->orWhereNull('date_to');
+                            });
+                  });
+        });
     }
     public function work_assignment()
     {

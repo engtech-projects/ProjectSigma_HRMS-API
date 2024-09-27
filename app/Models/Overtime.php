@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AttendanceLogType;
 use App\Enums\PersonelAccessForm;
+use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,7 @@ class Overtime extends Model
     use SoftDeletes;
     use HasApproval;
     use StatusScope;
-
+    use SeparatedCharging;
 
     protected $table = 'overtime';
 
@@ -69,14 +70,15 @@ class Overtime extends Model
     {
         return $this->hasOne(Project::class, "id", "project_id");
     }
-    public function charging()
+    public function charging(): HasOne
     {
         if ($this->department_id) {
-            return $this->department;
+            return $this->hasOne(Department::class, "id", "department_id");
         }
         if ($this->project_id) {
-            return $this->project;
+            return $this->hasOne(Project::class, "id", "project_id");
         }
+        return $this->hasOne(Project::class, "id", "project_id");
     }
 
     public function user(): BelongsTo
@@ -92,6 +94,11 @@ class Overtime extends Model
     public function scopeRequestStatusApproved(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
+    }
+
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void
+    {
+        $query->whereBetween('overtime_date', [$dateFrom, $dateTo]);
     }
 
     public function scopePayrollOvertime(Builder $query, array $filters = [])
@@ -115,17 +122,14 @@ class Overtime extends Model
         return Carbon::parse($this->overtime_end_time)->format("h:i A");
     }
 
-    public function getChargingNameAttribute()
+    public function getBufferTimeStartEarlyAttribute()
     {
-        if($this->project_id) {
-            return $this->project->project_code;
-        }
-        if($this->department_id) {
-            return $this->department->department_name;
-        }
-        return 'No charging found.';
+        return Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
     }
-
+    public function getBufferTimeEndLateAttribute()
+    {
+        return Carbon::parse($this->overtime_end_time)->addHour((int)config("app.logout_late"));
+    }
     public function getAttendanceLogInsAttribute()
     {
         // login = (STARTTIME - BUFFER) to ENDTIME
