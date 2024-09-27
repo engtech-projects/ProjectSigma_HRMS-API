@@ -233,6 +233,7 @@ class EmployeePanRequest extends Model
         $jobApplicant = $this->jobapplicantonly;
         $jobApplicant["first_name"] = $jobApplicant->firstname;
         $jobApplicant["family_name"] = $jobApplicant->lastname;
+        $jobApplicant["date_of_marriage"] = ($jobApplicant["date_of_marriage"] === 'null') ? NULL : $jobApplicant["date_of_marriage"];
         $employee = Employee::create($jobApplicant->toArray());
         // pan request details to internal work experience
         $employeeInternal = $this->toArray();
@@ -274,7 +275,7 @@ class EmployeePanRequest extends Model
             "type" => EmployeeAddressType::PERMANENT,
         ]);
         // employee related person details
-        $employeeRelatedPerson = $this->employeeRelatedPersonDetails($employee);
+        $employeeRelatedPerson = $this->employeeRelatedPersonDetails();
         $employee->employee_related_person()->createMany($employeeRelatedPerson);
         if ($this->jobapplicantonly->workexperience) {
             $externalWorkExp = collect($this->jobapplicantonly->workexperience)->map(function ($workExp) {
@@ -307,26 +308,6 @@ class EmployeePanRequest extends Model
             })->toArray();
             $employee->employee_related_person()->createMany($children);
         }
-        // @Rustom Pedales Duplicate
-        // if ($this->jobapplicantonly->children) {
-        //     //children
-        //     $children = collect($this->jobapplicantonly->children)->map(function ($child) {
-        //         return [
-        //             'relationship' => EmployeeRelatedPersonType::CHILD,
-        //             'type' => EmployeeRelatedPersonType::CHILD,
-        //             'name' => $child->name ?: "N/A",
-        //             'date_of_birth' => $child->birth_date ?: "N/A",
-        //             'street' => "N/A",
-        //             'brgy' => "N/A",
-        //             'city' => "N/A",
-        //             'zip' => "N/A",
-        //             'province' => "N/A",
-        //             'occupation' => "N/A",
-        //             'contact_no' => "N/A",
-        //         ];
-        //     })->toArray();
-        //     $employee->employee_related_person()->createMany($children);
-        // }
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
         $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
