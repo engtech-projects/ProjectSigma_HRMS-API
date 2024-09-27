@@ -167,14 +167,17 @@ class EmployeeService
         $sss = $employee->sss_deduction($monthlySalary, $filters["payroll_type"]);
         $philhealth = $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]);
         $pagibig = $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]);
-        $monthlyTaxExempt = $sss['employee_compensation'] + $sss['employee_contribution'] + $philhealth['employee_contribution'] + $pagibig['employee_contribution'];
+        $ssExempt = ($employee->company_employments->sss_number || strtolower($employee->company_employments->sss_number) == "n/a") ? ($sss['employee_compensation'] + $sss['employee_contribution']) : 0;
+        $philhealthExempt = ($employee->company_employments->phic_number || strtolower($employee->company_employments->phic_number) == "n/a") ? $philhealth['employee_contribution'] : 0;
+        $pagibigExempt = ($employee->company_employments->pagibig_number || strtolower($employee->company_employments->pagibig_number) == "n/a") ? $pagibig['employee_contribution'] : 0;
+        $monthlyTaxExempt = $ssExempt + $philhealthExempt + $pagibigExempt;
         $taxableMonthlySalary = $monthlySalary - $monthlyTaxExempt;
         $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
         $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
         $result = [
-            "sss" => $filters["deduct_sss"] ? $sss : [],
-            "phic" => $filters["deduct_philhealth"] ? $philhealth : [],
-            "hmdf" => $filters["deduct_pagibig"] ? $pagibig : [],
+            "sss" => $filters["deduct_sss"] && ($employee->company_employments->sss_number || strtolower($employee->company_employments->sss_number) == "n/a") ? $sss : [],
+            "phic" => $filters["deduct_philhealth"] && ($employee->company_employments->phic_number || strtolower($employee->company_employments->phic_number) == "n/a") ? $philhealth : [],
+            "hmdf" => $filters["deduct_pagibig"] && ($employee->company_employments->pagibig_number || strtolower($employee->company_employments->pagibig_number) == "n/a") ? $pagibig : [],
             "ewtc" => $wtax,
             "loan" => $employee->loan_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
