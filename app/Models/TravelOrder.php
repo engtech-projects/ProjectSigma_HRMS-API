@@ -123,6 +123,10 @@ class TravelOrder extends Model
     {
         return ($this->charge_type === Department::class || $this->charge_type === AssignTypes::DEPARTMENT->value) ? $this->charge_id : null;
     }
+    public function getChargingProjectIdAttribute()
+    {
+        return ($this->charge_type === Department::class || $this->charge_type === AssignTypes::PROJECT->value) ? $this->charge_id : null;
+    }
     public function getChargingDesignationAttribute()
     {
         if ($this->charging_department_id) {
