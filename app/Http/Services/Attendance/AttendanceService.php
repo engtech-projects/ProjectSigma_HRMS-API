@@ -44,7 +44,7 @@ class AttendanceService
                 $query->with(["department", "project"])->betweenDates($dateFrom, $dateTo);
             },
             'employee_leave' => function ($query) use ($dateFrom, $dateTo) {
-                $query->betweenDates($dateFrom, $dateTo);
+                $query->with(['leave'])->betweenDates($dateFrom, $dateTo);
             },
             'employee_schedule_irregular' => function ($query) use ($dateFrom, $dateTo) {
                 $query->betweenDates($dateFrom, $dateTo);
@@ -116,6 +116,10 @@ class AttendanceService
             $processedMetaData = self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate);
             return [
                 "date" => $date,
+                "schedules_attendances" => $appliedDateSchedule, // TEMPORARY
+                "overtime" => $appliedDateOvertime, // TEMPORARY
+                "travel_order" => $appliedDateTravelOrders, // TEMPORARY
+                "leave" => $appliedDateLeaves, // TEMPORARY
                 "schedules" => $appliedDateSchedule,
                 "overtimes" => $appliedDateOvertime,
                 "attendance_logs" => $appliedDateAttendanceLogs,
@@ -153,13 +157,13 @@ class AttendanceService
             );
         })->first();
         if ($currentInternalOnDate->work_location == WorkLocation::OFFICE->value) {
-            $schedule = $currentInternalOnDate['department_schedules_irregular']->where(function ($data) use ($date) {
+            $schedule = $currentInternalOnDate['department_schedule_irregular']->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
             })->values();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
-            $schedule = $currentInternalOnDate['department_schedules_regular']->where(function ($data) use ($date) {
+            $schedule = $currentInternalOnDate['department_schedule_regular']->where(function ($data) use ($date) {
                 return $date->gte($data->startRecur) &&
                 in_array((string)$date->dayOfWeek, $data->daysOfWeek ?? []) &&
                 (
@@ -325,8 +329,8 @@ class AttendanceService
                 "day_of_week" => $schedule->dayOfWeek,
                 "start_time_sched" => $schedule->start_time_human,
                 "end_time_sched" => $schedule->end_time_human,
-                "start_time_log" => "NO LOG",
-                "end_time_log" => "NO LOG",
+                "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
+                "end_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
                 "duration" => 0,
                 "late" => 0,
                 "undertime" => 0,
@@ -337,13 +341,15 @@ class AttendanceService
             $timeIn = null;
             // HAS ATTENDANCE LOG
             $attendanceLogIn = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
-                return $data->log_type == AttendanceLogType::TIME_IN &&
+                $attendanceTime = Carbon::parse($data->time);
+                return $data->log_type == AttendanceLogType::TIME_IN->value &&
                 (
-                    $data->time >= $schedule->buffer_time_start_early ||
-                    $data->time >= $schedule->startTime
+                    $attendanceTime >= $schedule->buffer_time_start_early ||
+                    $attendanceTime >= $schedule->startTime
                 ) &&
-                $data->time <= $schedule->endTime;
+                $attendanceTime <= $schedule->endTime;
             })->values();
+            Log::info($attendanceLogIn);
             if (sizeof($attendanceLogIn) > 0) {
                 $timeIn = $attendanceLogIn->first()->time;
                 $scheduleMetaData["start_time_log"] = $timeIn;
@@ -370,10 +376,12 @@ class AttendanceService
                 // Is On Leave
                 foreach ($employeeDayData["leaves"] as $index => $leave) {
                     if (!$timeIn && $hasLeaveToday && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
+                        if ($leave->with_pay) {
+                            $leaveUsed = true;
+                            $timeIn = $schedule->startTime;
+                        }
                         $leaveUsedToday[$index] += 0.5;
-                        $leaveUsed = true;
-                        $timeIn = $schedule->startTime;
-                        $scheduleMetaData["start_time_log"] = $leave->leave()->leave_name;
+                        $scheduleMetaData["start_time_log"] = $leave->leave->leave_name;
                     }
                 }
             }
@@ -381,17 +389,76 @@ class AttendanceService
             $scheduleDateTimeOut = $date->copy()->setTimeFromTimeString($schedule->endTime);
             $timeOut = null;
             $attendanceLogOut = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
-                return $data->log_type == AttendanceLogType::TIME_OUT &&
-                $data->time >= $schedule->startTime &&
+                $attendanceTime = Carbon::parse($data->time);
+                return $data->log_type == AttendanceLogType::TIME_OUT->value &&
+                $attendanceTime >= $schedule->startTime &&
                 (
-                    $data->time <= $schedule->buffer_time_end_late ||
-                    $data->time <= $schedule->endTime
+                    $attendanceTime <= $schedule->buffer_time_end_late ||
+                    $attendanceTime <= $schedule->endTime
                 );
             })->values();
-            if (!$timeIn && !$timeOut) {
+            if (sizeof($attendanceLogOut) > 0) {
+                $timeOut = $attendanceLogOut->first()->time;
+            }
+            // CONNECTED TO OVERTIME
+            $otAsLogOut = collect($employeeDayData["overtimes"])->filter(function ($otData) use ($schedule) {
+                $otSchedIn = $otData->overtime_start_time;
+                $schedOut = Carbon::parse($schedule->endTime);
+                return $schedOut->equalTo($otSchedIn);
+            })->first();
+            if ($otAsLogOut) {
+                $timeOut = $schedule->endTime;
+                $scheduleMetaData["end_time_log"] = "ON OVERTIME";
+            }
+            if (!$timeOut) {
+                // is On Travel Order
+                $onTravelOrder = sizeof($employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeOut) {
+                    return $trOrd->datetimeIsApplicable($scheduleDateTimeOut);
+                })) > 0;
+                if (!$timeOut && $onTravelOrder) {
+                    $timeOut = $schedule->endTime;
+                    $scheduleMetaData["start_time_log"] = "ON TRAVEL ORDER";
+                }
+                // Is On Leave
+                // Is On Leave
+                foreach ($employeeDayData["leaves"] as $index => $leave) {
+                    if (!$timeOut && $hasLeaveToday && !$leaveUsed && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
+                        if ($leave->with_pay) {
+                            $timeOut = $schedule->endTime;
+                        }
+                        $leaveUsedToday[$index] = + 0.5;
+                        $scheduleMetaData["end_time_log"] = $leave->leave->leave_name;
+                    }
+                }
+            }
+            if (!$timeIn || !$timeOut) {
                 array_push($schedulesSummary, $scheduleMetaData);
                 continue;
             }
+            $in = Carbon::parse($timeIn);
+            $out = Carbon::parse($timeOut);
+            $startTime = Carbon::parse($schedule->startTime);
+            $endTime = Carbon::parse($schedule->endTime);
+            $dtrIn = $in->gt($startTime) ? $in : $startTime;
+            $dtrOut = $out->gt($endTime) ? $endTime : $out;
+            if ($in->gt($schedule->startTime)) {
+                $lateMinutes = $startTime->diffInMinutes($in);
+                if ($lateMinutes <= $lateMinsAllowance) {
+                    $dtrIn = $startTime;
+                    $lateMinutes = 0;
+                }
+                if ($lateMinutes >= $lateMinsConsideredAbsent) {
+                    $dtrIn = $dtrOut;
+                }
+                $totalLate += $lateMinutes;
+            }
+            if ($endTime->gt($out)) {
+                $undertimeMinutes = $out->diffInMinutes($endTime);
+                $undertime += $undertimeMinutes;
+            }
+            $currentDuration = round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
+            $currentDuration = $currentDuration > 0 ? $currentDuration : 0;
+            $duration += $currentDuration;
             array_push($schedulesSummary, $scheduleMetaData);
         }
 
