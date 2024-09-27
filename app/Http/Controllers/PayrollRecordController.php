@@ -113,7 +113,7 @@ class PayrollRecordController extends Controller
         ]);
         $employeesForGeneration = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
         // Employee Employment and Payroll Validity Checking
-
+        // Check Employee Employment, Position and Salary Grade, when has payroll record for same payroll date
 
     }
 

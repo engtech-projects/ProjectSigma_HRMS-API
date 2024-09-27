@@ -69,14 +69,15 @@ class Overtime extends Model
     {
         return $this->hasOne(Project::class, "id", "project_id");
     }
-    public function charging()
+    public function charging(): HasOne
     {
         if ($this->department_id) {
-            return $this->department;
+            return $this->hasOne(Department::class, "id", "department_id");
         }
         if ($this->project_id) {
-            return $this->project;
+            return $this->hasOne(Project::class, "id", "project_id");
         }
+        return $this->hasOne(Project::class, "id", "project_id");
     }
 
     public function user(): BelongsTo
@@ -131,6 +132,14 @@ class Overtime extends Model
         return 'No charging found.';
     }
 
+    public function getBufferTimeStartEarlyAttribute()
+    {
+        return Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
+    }
+    public function getBufferTimeEndLateAttribute()
+    {
+        return Carbon::parse($this->overtime_end_time)->addHour((int)config("app.logout_late"));
+    }
     public function getAttendanceLogInsAttribute()
     {
         // login = (STARTTIME - BUFFER) to ENDTIME
