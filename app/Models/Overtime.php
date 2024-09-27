@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AttendanceLogType;
 use App\Enums\PersonelAccessForm;
+use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,7 @@ class Overtime extends Model
     use SoftDeletes;
     use HasApproval;
     use StatusScope;
-
+    use SeparatedCharging;
 
     protected $table = 'overtime';
 
@@ -119,17 +120,6 @@ class Overtime extends Model
     public function getEndTimeHumanAttribute()
     {
         return Carbon::parse($this->overtime_end_time)->format("h:i A");
-    }
-
-    public function getChargingNameAttribute()
-    {
-        if($this->project_id) {
-            return $this->project->project_code;
-        }
-        if($this->department_id) {
-            return $this->department->department_name;
-        }
-        return 'No charging found.';
     }
 
     public function getBufferTimeStartEarlyAttribute()

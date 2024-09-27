@@ -208,7 +208,7 @@ trait Attendance
             // $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs === $schedTotalHrs ? 1 : 0;
             $currentOtHrs -= boolval($otVal["meal_deduction"]) && $currentOtHrs >= 3 ? 1 : 0;
             $total += $currentOtHrs;
-            $charge = Overtime::find($otVal["id"])->charging();
+            $charge = Overtime::find($otVal["id"])->charging;
             if ($charge) {
                 array_push($chargings, [
                     "model" => get_class($charge),

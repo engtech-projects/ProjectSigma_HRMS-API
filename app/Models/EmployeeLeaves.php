@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonelAccessForm;
+use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
@@ -25,6 +26,7 @@ class EmployeeLeaves extends Model
     use HasApproval;
     use HasUser;
     use StatusScope;
+    use SeparatedCharging;
 
     protected $casts = [
         "approvals" => "array",
