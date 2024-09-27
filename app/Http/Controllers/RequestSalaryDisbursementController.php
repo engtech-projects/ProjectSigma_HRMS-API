@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\RequestStatuses;
+use App\Http\Requests\GenerateRequestSalaryDisbursementRequest;
+use App\Models\RequestSalaryDisbursement;
+use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
+use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
+use App\Http\Resources\PayrollRecordsPayrollSalariesResource;
+use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
+use App\Http\Resources\RequestPayrollSummaryResource;
+use App\Http\Services\Payroll\SalaryDisbursementService;
+use App\Models\PayrollDetail;
+use App\Models\PayrollDetailsCharging;
+use App\Models\PayrollRecord;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+
+class RequestSalaryDisbursementController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $allRequests = RequestSalaryDisbursement::orderBy("created_at", "DESC")
+        ->get();
+        if ($allRequests->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($allRequests)->collect())
+        ]);
+    }
+
+    public function generateDraft(GenerateRequestSalaryDisbursementRequest $request)
+    {
+        $validData = $request->validated();
+        $generatedData = $validData;
+        $payrollRecords = SalaryDisbursementService::getPayrollRecordsForDisbursement($validData["payroll_date"], $validData["payroll_type"], $validData["release_type"]);
+        $payrollRecordIds = $payrollRecords->pluck("id");
+        $payrollSummaryDatas = SalaryDisbursementService::getPayrollSummary($payrollRecordIds);
+        $payrollSummaryResource = PayrollRecordsPayrollSummaryResource::collection($payrollSummaryDatas);
+        $generatedData["payroll_records_ids"] = $payrollRecordIds;
+        $generatedData["summary"] = $payrollSummaryResource;
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Payroll Summary Created.',
+            'data' => $generatedData,
+        ]);
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreRequestSalaryDisbursementRequest $request)
+    {
+        $validatedData = $request->validated();
+        $validatedData["created_by"] = auth()->user()->id;
+        $validatedData["request_status"] = RequestStatuses::PENDING;
+        DB::transaction(function () use ($validatedData) {
+            $createdRequest = RequestSalaryDisbursement::create($validatedData);
+            $createdRequest->payroll_records()->attach($validatedData["payroll_records_ids"]);
+        });
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Request Success.',
+        ]);
+        // return new JsonResponse([
+        //     'success' => false,
+        //     'message' => 'Unknown Error Occured.',
+        // ], JsonResponse::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(RequestSalaryDisbursement $requestSalaryDisbursement)
+    {
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Resource Fetched.',
+            'data' => new RequestPayrollSummaryResource($requestSalaryDisbursement),
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateRequestSalaryDisbursementRequest $request, RequestSalaryDisbursement $requestSalaryDisbursement)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(RequestSalaryDisbursement $requestSalaryDisbursement)
+    {
+
+    }
+
+    public function myRequests()
+    {
+        $myRequests = RequestSalaryDisbursement::myRequests()
+        ->orderBy("created_at", "DESC")
+        ->get();
+        if ($myRequests->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Request fetched.',
+            'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($myRequests)->collect()),
+        ]);
+    }
+
+    /**
+     * Show can view all pan request to be approved by logged in user (same login in manpower request)
+     */
+    public function myApprovals()
+    {
+        $myApproval = RequestSalaryDisbursement::myApprovals()
+        ->orderBy("created_at", "DESC")
+        ->get();
+        if ($myApproval->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Request fetched.',
+            'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($myApproval)->collect()),
+        ]);
+    }
+}

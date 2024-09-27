@@ -33,7 +33,7 @@ class DisapproveApproval extends Controller
                 Users::find($model->created_by)->notify(new LeaveRequestDenied($model)); // Notify Request Creator Request DENIED (leave & cashadvance)
                 break;
             case ApprovalModels::TravelOrder->name:
-                Users::find($model->requested_by)->notify(new TravelRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->created_by)->notify(new TravelRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::CashAdvance->name:
                 Users::find($model->created_by)->notify(new CashAdvanceDenied($model)); // Notify Request Creator Request DENIED
@@ -42,10 +42,10 @@ class DisapproveApproval extends Controller
                 Users::find($model->created_by)->notify(new FailureToLogRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::ManpowerRequest->name:
-                Users::find($model->requested_by)->notify(new ManpowerRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->created_by)->notify(new ManpowerRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::Overtime->name:
-                Users::find($model->prepared_by)->notify(new OvertimeRequestDenied($model)); // Notify Request Creator Request DENIED
+                Users::find($model->created_by)->notify(new OvertimeRequestDenied($model)); // Notify Request Creator Request DENIED
                 break;
             case ApprovalModels::EmployeePanRequest->name:
                 Users::find($model->created_by)->notify(new PanRequestDenied($model)); // Notify Request Creator Request DENIED

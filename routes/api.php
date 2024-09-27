@@ -88,6 +88,7 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
+use App\Http\Controllers\RequestSalaryDisbursementController;
 use App\Models\EmployeeAllowances;
 use Illuminate\Support\Facades\Artisan;
 
@@ -212,6 +213,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', PayrollRecordController::class)->names("requestPayroll");
         Route::get('records', [PayrollRecordController::class, 'payrollRecords']);
     });
+    Route::prefix('salary-disbursement')->group(function () {
+        Route::post('draft', [RequestSalaryDisbursementController::class, 'generateDraft']);
+        Route::resource('resource', RequestSalaryDisbursementController::class)->names("requestSalaryDisbursement");
+        Route::get('my-requests', [RequestSalaryDisbursementController::class, 'myRequests']);
+        Route::get('my-approvals', [RequestSalaryDisbursementController::class, 'myApprovals']);
+    });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
     Route::prefix("hmo")->group(function () {
@@ -296,7 +303,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('pagibig-remittance-summary', [ReportController::class, 'pagibigRemittanceSummary']);
-
+        Route::get('philhealth-remittance-summary', [ReportController::class, 'philhealthRemittanceSummary']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
@@ -318,7 +325,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
-        Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+        Route::get("format-approvals", [ApiServiceController::class, "formatSingleApproval"]);
     });
     // Version 2 Optimization
     Route::prefix("v2")->group(function() {

@@ -11,18 +11,14 @@ class TravelOrderService
     {
         $this->leaveRequest = $leaveRequest;
     }
-
     public function getAll()
     {
         return TravelOrder::with(['department',"employees"])->orderBy("id", "desc")->get();
     }
-
     public function getMyRequest()
     {
-        $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('requested_by', auth()->user()->id)->load('user.employee');
+        return TravelOrder::with('user.employee')->myRequests()->get();
     }
-
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
@@ -30,7 +26,6 @@ class TravelOrderService
             ->requestStatusPending()
             ->authUserPending()
             ->get();
-
         return $result->filter(function ($item) use ($userId) {
             $nextPendingApproval = $item->getNextPendingApproval();
             return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
