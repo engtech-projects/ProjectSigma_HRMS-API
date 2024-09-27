@@ -125,7 +125,7 @@ class TravelOrder extends Model
     }
     public function getChargingProjectIdAttribute()
     {
-        return ($this->charge_type === Department::class || $this->charge_type === AssignTypes::PROJECT->value) ? $this->charge_id : null;
+        return ($this->charge_type === Project::class || $this->charge_type === AssignTypes::PROJECT->value) ? $this->charge_id : null;
     }
     public function getChargingDesignationAttribute()
     {
