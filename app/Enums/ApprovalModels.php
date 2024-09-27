@@ -10,6 +10,7 @@ use App\Models\FailureToLog;
 use App\Models\ManpowerRequest;
 use App\Models\Overtime;
 use App\Models\PayrollRecord;
+use App\Models\RequestSalaryDisbursement;
 use App\Models\TravelOrder;
 
 enum ApprovalModels: string
@@ -23,6 +24,7 @@ enum ApprovalModels: string
     case Overtime = Overtime::class;
     case GenerateAllowance = AllowanceRequest::class;
     case GeneratePayroll = PayrollRecord::class;
+    case RequestSalaryDisbursement = RequestSalaryDisbursement::class;
 
     public static function toArray(): array
     {
