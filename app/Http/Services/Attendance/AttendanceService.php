@@ -8,6 +8,7 @@ use App\Enums\EventTypes;
 use App\Enums\PayrollType;
 use App\Enums\WorkLocation;
 use App\Helpers;
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Events;
 use App\Models\PayrollRecord;
@@ -479,8 +480,8 @@ class AttendanceService
             $currentDuration = $currentDuration > 0 ? $currentDuration : 0;
             $duration += $currentDuration;
             array_push($chargings, [
-                "model" => $charge['class'],
-                "id" => $charge['id'],
+                "model" => $charge['class'] ?? Department::class,
+                "id" => $charge['id'] ?? 4,
                 "hrs_worked" => $currentDuration,
             ]);
             $scheduleMetaData["duration"] = $currentDuration;
