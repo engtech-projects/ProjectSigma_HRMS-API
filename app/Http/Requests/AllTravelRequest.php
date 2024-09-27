@@ -23,6 +23,7 @@ class AllTravelRequest extends FormRequest
     {
         return [
             'employee_id' => 'nullable|numeric|exists:employees,id',
+            'date_filter' => 'nullable|date'
         ];
     }
 }

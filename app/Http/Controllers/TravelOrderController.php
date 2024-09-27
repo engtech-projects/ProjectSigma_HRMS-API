@@ -39,7 +39,7 @@ class TravelOrderController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->with("employees")
+        ->with(["user.employee"])
         ->orderBy("created_at", "DESC")
         ->get();
 
@@ -153,18 +153,23 @@ class TravelOrderController extends Controller
 
     public function myRequests(TravelRequest $request)
     {
-        $myRequest = $this->RequestService->getMyRequest();
-
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $validatedData = $request->validated();
+        $data = TravelOrder::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employees', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->whereDate('date_of_travel',$validatedData['date_filter']);
+        })
+        ->with(['user.employee'])
+        ->myRequests()
+        ->orderBy("created_at", "DESC")
+        ->get();
         return new JsonResponse([
             'success' => true,
-            'message' => 'TravelOrder Request fetched.',
-            'data' => TravelOrderResource::collection($myRequest)
+            'message' => 'My Request Overtime Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
         ]);
     }
 
@@ -173,17 +178,23 @@ class TravelOrderController extends Controller
      */
     public function myApprovals(TravelApprovalRequest $request)
     {
-        $myApproval = $this->RequestService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        $validatedData = $request->validated();
+        $data = TravelOrder::when($request->has('employee_id'), function($query) use ($validatedData) {
+            return $query->whereHas('employees', function($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->whereDate('date_of_travel',$validatedData['date_filter']);
+        })
+        ->with(['user.employee'])
+        ->myApprovals()
+        ->orderBy("created_at", "DESC")
+        ->get();
         return new JsonResponse([
             'success' => true,
-            'message' => 'LeaveForm Request fetched.',
-            'data' => TravelOrderResource::collection($myApproval)
+            'message' => 'My Request Overtime Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
         ]);
     }
 }
