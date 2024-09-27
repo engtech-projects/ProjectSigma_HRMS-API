@@ -14,19 +14,13 @@ class FailureToLogService
     public function getMyRequests()
     {
         return FailureToLog::with(['employee'])
-            ->where("created_by", auth()->user()->id)
+            ->myRequests()
             ->get();
     }
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = FailureToLog::with(['employee'])
-            ->requestStatusPending()
-            ->authUserPending()
+        return FailureToLog::with(['employee'])
+            ->myApprovals()
             ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
     }
 }

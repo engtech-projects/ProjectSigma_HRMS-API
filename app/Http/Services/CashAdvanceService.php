@@ -12,24 +12,20 @@ class CashAdvanceService
     {
         $this->leaveRequest = $leaveRequest;
     }
-
     public function getAll()
     {
         return CashAdvance::with("employee", "department", "project", "cashAdvancePayments")->orderBy("created_at", "DESC")->get();
     }
-
     public function create($attributes)
     {
         return CashAdvance::create($attributes);
     }
-
     public function getMyRequests()
     {
         return CashAdvance::with(['employee', 'department'])
             ->where("created_by", auth()->user()->id)
             ->get();
     }
-
     public function getMyLeaveForm()
     {
         $userId = auth()->user()->id;
@@ -39,7 +35,6 @@ class CashAdvanceService
             ->whereJsonContains('approvals', ['user_id' => $userId])
             ->get();
     }
-
     public function getAllLeaveRequest()
     {
         $userId = auth()->user()->id;
@@ -49,27 +44,14 @@ class CashAdvanceService
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
     }
-
     public function getMyRequest()
     {
-        $manpowerRequest = CashAdvance::with("employee", "department", "project")
-            ->requestStatusPending()
-            ->authUserPending()
-            ->where('created_by', auth()->user()->id)
+        return CashAdvance::with("employee", "department", "project")
+            ->myRequests()
             ->get();
-        return $manpowerRequest;
     }
-
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = CashAdvance::with("employee", "department", "project")
-            ->requestStatusPending()
-            ->authUserPending()
-            ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
+        return CashAdvance::with("employee", "department", "project")->myApprovals()->get();
     }
 }

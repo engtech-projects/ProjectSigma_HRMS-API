@@ -68,8 +68,8 @@ class StorePayrollRecordRequest extends FormRequest
             'payroll_date' => 'required|date_format:Y-m-d',
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',
-            ...$this->payrollDetails(),
             ...$this->storeApprovals(),
+            ...$this->payrollDetails(),
         ];
     }
 

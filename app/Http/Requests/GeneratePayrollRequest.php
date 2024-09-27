@@ -49,12 +49,24 @@ class GeneratePayrollRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // GENERATE AND STORE SAME FIELDS
             'group_type' => [
-                'required',
+                "required",
+                "string",
                 new Enum(AssignTypes::class)
             ],
-            'project_id' => 'required_if:group_type,project|integer|nullable',
-            'department_id' => 'required_if:group_type,department|integer|nullable',
+            'project_id' => [
+                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
+                'nullable',
+                "integer",
+                "exists:projects,id",
+            ],
+            'department_id' => [
+                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
+                'nullable',
+                "integer",
+                "exists:departments,id",
+            ],
             'payroll_type' => [
                 'required',
                 'string',
@@ -68,11 +80,12 @@ class GeneratePayrollRequest extends FormRequest
             'payroll_date' => 'required|date_format:Y-m-d',
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',
+            ...$this->storeApprovals(),
+            // GENERATE SPECIFIC
             'employee_ids' => 'required|array',
             'deduct_sss' => 'required|boolean',
             'deduct_philhealth' => 'required|boolean',
             'deduct_pagibig' => 'required|boolean',
-            ...$this->storeApprovals(),
             'adjustments' => 'nullable|array',
             'adjustments.*' => [
                 "required",

@@ -111,8 +111,8 @@ class StoreOvertimeRequest extends FormRequest
         ->where(function ($query) {
             $query->where('overtime_date', $this->overtime_date)
                 ->where(function ($query) {
-                    $query->where('overtime_start_time', '<=', $this->overtime_end_time)
-                        ->where('overtime_end_time', '>=', $this->overtime_start_time);
+                    $query->where('overtime_start_time', '<', $this->overtime_end_time)
+                        ->where('overtime_end_time', '>', $this->overtime_start_time);
                 });
         })
         ->whereIn('request_status', [RequestStatusType::PENDING->value, RequestStatusType::APPROVED->value])

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TravelRequest extends FormRequest
+class PhilhealthRemittanceSummaryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,10 @@ class TravelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => 'nullable|numeric|exists:employees,id',
-            'date_filter' => 'nullable|date'
+            'filter_year' => 'required',
+            'filter_month' => 'required',
+            'cutoff_start' => 'required|date',
+            'cutoff_end' => 'required|date',
         ];
     }
 }

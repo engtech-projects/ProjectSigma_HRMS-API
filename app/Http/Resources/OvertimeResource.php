@@ -14,13 +14,6 @@ class OvertimeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user = $this->when('user', function () {
-            return [
-                    "name" => $this->user->employee?->fullname_last,
-                    "type" => $this->user->type,
-            ];
-        });
-
         return [
             "id" => $this->id,
             "employees" => $this->employees,
@@ -36,7 +29,7 @@ class OvertimeResource extends JsonResource
             "department" => $this->department,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "next_approval" => $this->getNextPendingApproval(),
-            "prepared_by" => $user,
+            "created_by" => $this->created_by_user_name,
             "request_status" => $this->request_status,
         ];
     }

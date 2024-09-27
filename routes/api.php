@@ -59,6 +59,7 @@ use App\Http\Controllers\Actions\SalaryGrade\{
 };
 use App\Http\Controllers\Actions\Attendance\{
     EmployeeDtrController,
+    EmployeeDtrControllerV2,
 };
 use App\Http\Controllers\Actions\ProjectMember\{
     AttachProjectEmployee,
@@ -302,7 +303,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('pagibig-remittance-summary', [ReportController::class, 'pagibigRemittanceSummary']);
-
+        Route::get('philhealth-remittance-summary', [ReportController::class, 'philhealthRemittanceSummary']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
@@ -324,7 +325,16 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
-        Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+        Route::get("format-approvals", [ApiServiceController::class, "formatSingleApproval"]);
+    });
+    // Version 2 Optimization
+    Route::prefix("v2")->group(function() {
+        Route::prefix('payroll')->group(function () {
+            Route::post('generate-payroll', [PayrollRecordController::class, 'generateV2']);
+        });
+        Route::prefix('attendance')->group(function () {
+            Route::get('dtr', EmployeeDtrControllerV2::class);
+        });
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH

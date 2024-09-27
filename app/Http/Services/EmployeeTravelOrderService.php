@@ -12,24 +12,20 @@ class EmployeeTravelOrderService
     {
         $this->leaveRequest = $travelOrder;
     }
-
     public function getAll()
     {
         return TravelOrder::with(['employee', 'department'])->get();
     }
-
     public function create($attributes)
     {
         return TravelOrder::create($attributes);
     }
-
     public function getMyRequests()
     {
         return TravelOrder::with(['employee', 'department'])
             ->where("created_by", auth()->user()->id)
             ->get();
     }
-
     public function getAllLeaveRequest()
     {
         $userId = auth()->user()->id;
@@ -39,23 +35,14 @@ class EmployeeTravelOrderService
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
     }
-
     public function getMyRequest()
     {
-        $manpowerRequest = $this->getAll();
-        return $manpowerRequest->where('requested_by', auth()->user()->id)->load('user.employee');
+        return TravelOrder::with('user.employee')->myRequests()->get();
     }
-
     public function getMyApprovals()
     {
-        $userId = auth()->user()->id;
-        $result = TravelOrder::with(['employee', 'department'])
-            ->requestStatusPending()
-            ->authUserPending()
+        return TravelOrder::with(['employee', 'department'])
+            ->myApprovals()
             ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
     }
 }

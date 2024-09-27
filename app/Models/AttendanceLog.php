@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Enums\AttendanceType;
 use App\Enums\AttendanceLogType;
 use App\Models\Traits\HasDepartment;
+use App\Models\Traits\SeparatedCharging;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,6 +18,7 @@ class AttendanceLog extends Model
     use HasFactory;
     use SoftDeletes;
     use HasDepartment;
+    use SeparatedCharging;
 
     protected $fillable = [
         'date',
@@ -96,6 +98,10 @@ class AttendanceLog extends Model
                 }
                 return $query->where('project_id', $filters['project_id']);
             });
+    }
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void
+    {
+        $query->whereBetween('date', [$dateFrom, $dateTo]);
     }
 
     public function employee(): BelongsTo

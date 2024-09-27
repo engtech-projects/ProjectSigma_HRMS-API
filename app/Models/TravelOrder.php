@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AssignTypes;
 use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
@@ -43,11 +44,15 @@ class TravelOrder extends Model
         'duration_of_travel',
         'means_of_transportation',
         'remarks',
-        'requested_by',
+        'created_by',
         'approvals',
         'request_status',
         'charge_type',
         'charge_id',
+    ];
+
+    protected $appends = [
+        'charging_designation',
     ];
 
     public function scopeRequestStatusPending(Builder $query): void
@@ -63,6 +68,14 @@ class TravelOrder extends Model
     public function scopeApproval($query)
     {
         return $query->where("request_status", "=", "Pending");
+    }
+
+    public function scopeBetweenDates($query, $dateFrom, $dateTo)
+    {
+        return $query->whereBetween('date_of_travel', [$dateFrom, $dateTo])
+        ->orWhere(function($query) use ($dateFrom, $dateTo) {
+            $query->whereRaw('DATE_ADD(date_of_travel, INTERVAL duration_of_travel DAY) BETWEEN ? AND ?', [$dateFrom, $dateTo]);
+        });
     }
 
     public function employees(): BelongsToMany
@@ -87,7 +100,7 @@ class TravelOrder extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'requested_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function getTimeOfTravelHumanAttribute()
@@ -113,5 +126,23 @@ class TravelOrder extends Model
     {
         $dt = Carbon::parse($datetime);
         return $dt->gte($this->date_time_start) && $dt->lte($this->date_time_end);
+    }
+    public function getChargingDepartmentIdAttribute()
+    {
+        return ($this->charge_type === Department::class || $this->charge_type === AssignTypes::DEPARTMENT->value) ? $this->charge_id : null;
+    }
+    public function getChargingProjectIdAttribute()
+    {
+        return ($this->charge_type === Project::class || $this->charge_type === AssignTypes::PROJECT->value) ? $this->charge_id : null;
+    }
+    public function getChargingDesignationAttribute()
+    {
+        if ($this->charging_department_id) {
+            return Department::find($this->charging_department_id)?->department_name;
+        }
+        if ($this->charging_project_id) {
+            return Project::find($this->charging_project_id)?->project_code;
+        }
+        return "No charging found.";
     }
 }

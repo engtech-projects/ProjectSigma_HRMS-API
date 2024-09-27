@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -31,4 +32,14 @@ class Events extends Model
         "start_date" => "datetime:Y-m-d",
         "end_date" => "datetime:Y-m-d",
     ];
+
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo)
+    {
+        return $query->whereBetween('start_date', [$dateFrom, $dateTo])
+        ->orwhereBetween('end_date', [$dateFrom, $dateTo])
+        ->orWhere(function($query) use ($dateFrom, $dateTo) {
+            $query->where('start_date', '<=', $dateFrom)
+                  ->where('end_date', '>=', $dateTo);
+        });
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonelAccessForm;
+use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
@@ -25,6 +26,7 @@ class EmployeeLeaves extends Model
     use HasApproval;
     use HasUser;
     use StatusScope;
+    use SeparatedCharging;
 
     protected $casts = [
         "approvals" => "array",
@@ -119,5 +121,14 @@ class EmployeeLeaves extends Model
             return 0;
         }
         return 1;
+    }
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo)
+    {
+        return $query->whereBetween('date_of_absence_from', [$dateFrom, $dateTo])
+        ->orwhereBetween('date_of_absence_to', [$dateFrom, $dateTo])
+        ->orWhere(function($query) use ($dateFrom, $dateTo) {
+            $query->where('date_of_absence_from', '<=', $dateFrom)
+                  ->where('date_of_absence_to', '>=', $dateTo);
+        });
     }
 }
