@@ -54,6 +54,8 @@ class Overtime extends Model
     protected $appends = [
         'start_time_human',
         'end_time_human',
+        'charging_class',
+        'charging_id',
     ];
 
     public function employees(): BelongsToMany

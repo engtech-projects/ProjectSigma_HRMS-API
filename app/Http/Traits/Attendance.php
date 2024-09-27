@@ -57,8 +57,8 @@ trait Attendance
             if ($oTStart) {
                 $charge = AttendanceLog::find($oTStart["applied_in"]?->id)?->charging() ?? $charge ?? Overtime::find($oTStart["id"])?->charging();
                 $charge = [
-                    "class" => $oTStart->charging_class,
-                    "id" => $oTStart->charging_id,
+                    "class" => $oTStart['charging_class'],
+                    "id" => $oTStart['charging_id'],
                 ];
                 $timeIn = (object)["time" => $schedule["startTime"]];
             }
