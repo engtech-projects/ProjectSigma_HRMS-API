@@ -87,12 +87,12 @@ class NotificationsController extends Controller
 
     public function readNotification($notif)
     {
-        Auth::user()->notifications->find($notif)->markAsRead();
+        Auth::user()->notifications->find($notif)?->markAsRead();
     }
 
     public function unreadNotification($notif)
     {
-        Auth::user()->notifications->find($notif)->markAsUnread();
+        Auth::user()->notifications->find($notif)?->markAsUnread();
     }
 
     public function addNotification(ApiNotificationRequest $request, Users $user)

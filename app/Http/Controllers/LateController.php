@@ -36,7 +36,7 @@ class LateController extends Controller
                         return $attendanceTimeIn->gt($schedTimeIn->addMinutes($lateAllowance))
                             && $attendanceTimeIn->lt($schedTimeOut)
                             && in_array(Carbon::parse($attendance->date)->dayOfWeek, $sched->daysOfWeek);
-                    })) > 0;
+                    }) ?? []) > 0;
                 } else {
                     return sizeof($attendance?->project?->project_schedule?->where(function ($sched) use ($attendance, $lateAllowance) {
                         $schedTimeIn = Carbon::parse($sched->startTime);
@@ -45,7 +45,7 @@ class LateController extends Controller
                         return $attendanceTimeIn->gt($schedTimeIn->addMinutes($lateAllowance))
                         && $attendanceTimeIn->lt($schedTimeOut)
                         && in_array(Carbon::parse($attendance->date)->dayOfWeek, $sched->daysOfWeek);
-                    })) > 0;
+                    }) ?? []) > 0;
                 }
             })->countBy("employee_id")->map(function ($val, $key) {
                 $emp = Employee::find($key);
