@@ -126,11 +126,23 @@ class Overtime extends Model
 
     public function getBufferTimeStartEarlyAttribute()
     {
-        return Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
+        $time = Carbon::parse($this->overtime_start_time);
+        $newTime = $time->copy()->subHour((int)config("app.login_early"));
+        if ($newTime->day !== $time->day) {
+            $newTime = $time->copy()->startOfDay();
+        }
+        return $newTime;
+        // return Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
     }
     public function getBufferTimeEndLateAttribute()
     {
-        return Carbon::parse($this->overtime_end_time)->addHour((int)config("app.logout_late"));
+        $time = Carbon::parse($this->overtime_end_time);
+        $newTime = $time->copy()->addHour((int)config("app.logout_late"));
+        if ($newTime->day !== $time->day) {
+            $newTime = $time->copy()->endOfDay();
+        }
+        return $newTime;
+        // return Carbon::parse($this->overtime_end_time)->addHour((int)config("app.logout_late"));
     }
     public function getAttendanceLogInsAttribute()
     {
