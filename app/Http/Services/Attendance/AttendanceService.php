@@ -175,13 +175,13 @@ class AttendanceService
             }
         } elseif ($currentWorkLocation == WorkLocation::PROJECT->value) {
             $latestProject = $employeeDatas["employee"]->employee_has_projects->first();
-            $schedule = $latestProject->schedule_irregular->where(function ($data) use ($date) {
+            $schedule = $latestProject?->schedule_irregular->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
             })->values();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
-            $schedule = $latestProject->schedule_regular->where(function ($data) use ($date) {
+            $schedule = $latestProject?->schedule_regular->where(function ($data) use ($date) {
                 return $date->gte($data->startRecur) &&
                 in_array((string)$date->dayOfWeek, $data->daysOfWeek ?? []) &&
                 (
@@ -321,7 +321,6 @@ class AttendanceService
         $absentToday = true;
         // SETUP LEAVE FOR CHECKING IF ON LEAVE AND WILL APPLY FOR TODAY
         $leaveUsedToday = array_fill(0, sizeof($employeeDayData["leaves"]), 0);
-        $hasLeaveToday = sizeof($employeeDayData["leaves"]) > 0;
         // SETTINGS FOR LATES AND ABSENT
         $lateMinsAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value; // Minutes of late that will be considered as not late
         $lateMinsConsideredAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value; // Minutes of late that will be considered as absent for a schedule
@@ -394,18 +393,23 @@ class AttendanceService
                 }
                 // Is On Leave
                 foreach ($employeeDayData["leaves"] as $index => $leave) {
-                    if (!$timeIn && $hasLeaveToday && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
+                    // Logic to set Time In if On Leave
+                    // Only sets time if on leave with pay
+                    // Deduct half day Used to leave for a leave
+                    // display leave name for any type of leave
+                    if (!$timeIn && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
                         if ($leave->with_pay) {
                             $leaveUsed = true;
                             $timeIn = $schedule->startTime;
                         }
-                        $leaveUsedToday[$index] += 0.5;
+                        // $leaveUsedToday[$index] += 0.5; // Deduct half day Used to leave for a leave in OUT
                         $scheduleMetaData["start_time_log"] = $leave->leave->leave_name;
                         $charge = [
                             "class" => $leave->charging_class,
                             "id" => $leave->charging_id,
                         ];
                         array_push($chargingNames, $leave->charging_name);
+                        break;
                     }
                 }
             }
@@ -446,13 +450,14 @@ class AttendanceService
                 }
                 // Is On Leave
                 foreach ($employeeDayData["leaves"] as $index => $leave) {
-                    if (!$timeOut && $hasLeaveToday && !$leaveUsed && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
+                    if (!$timeOut && $leaveUsed && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
                         if ($leave->with_pay) {
                             $timeOut = $schedule->endTime;
                         }
                         $leaveUsedToday[$index] = + 0.5;
                         $scheduleMetaData["end_time_log"] = $leave->leave->leave_name;
                     }
+                    break;
                 }
             }
             if (!$timeIn || !$timeOut) {
