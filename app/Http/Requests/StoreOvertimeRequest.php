@@ -52,7 +52,7 @@ class StoreOvertimeRequest extends FormRequest
                         $employeeName = $this->getEmployeeName($value);
                         $startTime12Hour = $this->formatTimeTo12Hour($this->overtime_start_time);
                         $endTime12Hour = $this->formatTimeTo12Hour($this->overtime_end_time);
-                        $fail($employeeName . ' has a pending overtime request for ' . $this->overtime_date . ' '.$startTime12Hour. ' and ' .$endTime12Hour);
+                        $fail("OVERTIME CONFLICT ERROR:" . $employeeName . 'already has a pending/approved overtime request conflicting with ' . $this->overtime_date . ' '.$startTime12Hour. ' and ' .$endTime12Hour);
                     }
                 },
             ],
