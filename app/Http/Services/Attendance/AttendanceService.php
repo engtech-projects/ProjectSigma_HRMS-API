@@ -118,10 +118,6 @@ class AttendanceService
             $processedMetaData = self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate);
             return [
                 "date" => $date,
-                "schedules_attendances" => $appliedDateSchedule, // TEMPORARY
-                "overtime" => $appliedDateOvertime, // TEMPORARY
-                "travel_order" => $appliedDateTravelOrders, // TEMPORARY
-                "leave" => $appliedDateLeaves, // TEMPORARY
                 "schedules" => $appliedDateSchedule,
                 "overtimes" => $appliedDateOvertime,
                 "attendance_logs" => $appliedDateAttendanceLogs,
@@ -283,6 +279,7 @@ class AttendanceService
             "summary" => [
                 "schedules" => [],
                 "overtimes" => [],
+                "charging_names" => "",
             ]
         ];
         $workRendered = self::calculateWorkRendered($employeeDayData, $date);
@@ -309,6 +306,8 @@ class AttendanceService
         $metaResult["total"]["undertime"] = $workRendered["undertime"];
         array_push($metaResult["summary"]["schedules"], ...$workRendered["summary"]); // Here shows schedules with
         array_push($metaResult["summary"]["overtimes"], ...$overtimeRendered["summary"]);
+        $chargingNames = array_unique(array_merge($workRendered["charging_names"], $overtimeRendered["charging_names"]));
+        $metaResult["summary"]["charging_names"] = implode(", ", $chargingNames); // Here shows schedules with
         return $metaResult;
     }
     public static function calculateWorkRendered($employeeDayData, $date)
@@ -318,6 +317,7 @@ class AttendanceService
         $totalLate = 0;
         $undertime = 0;
         $chargings = [];
+        $chargingNames = [];
         $absentToday = true;
         // SETUP LEAVE FOR CHECKING IF ON LEAVE AND WILL APPLY FOR TODAY
         $leaveUsedToday = array_fill(0, sizeof($employeeDayData["leaves"]), 0);
@@ -330,6 +330,7 @@ class AttendanceService
                 "date" => $date,
                 "day_of_week" => $date->dayOfWeek,
                 "day_of_week_name" => $date->englishDayOfWeek,
+                "id" => $schedule->id,
                 "start_time_sched" => $schedule->start_time_human,
                 "end_time_sched" => $schedule->end_time_human,
                 "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
@@ -355,11 +356,12 @@ class AttendanceService
             })->sortBy("time")->values();
             if (sizeof($attendanceLogIn) > 0) {
                 $timeIn = $attendanceLogIn->first()->time;
-                $scheduleMetaData["start_time_log"] = $timeIn;
+                $scheduleMetaData["start_time_log"] = Carbon::parse($timeIn)->format("h:i A");
                 $charge = [
                     "class" => $attendanceLogIn->first()->charging_class,
                     "id" => $attendanceLogIn->first()->charging_id,
                 ];
+                array_push($chargingNames, $attendanceLogIn->first()->charging_name);
             }
             // CONNECTED TO OVERTIME
             $otAsLogIn = collect($employeeDayData["overtimes"])->filter(function ($otData) use ($schedule) {
@@ -374,6 +376,7 @@ class AttendanceService
                     "class" => $otAsLogIn->charging_class,
                     "id" => $otAsLogIn->charging_id,
                 ];
+                array_push($chargingNames, $otAsLogIn->charging_name);
             }
             if (!$timeIn) {
                 // is On Travel Order
@@ -387,6 +390,7 @@ class AttendanceService
                         "class" => $travelOrderAsLogIn->charge_type,
                         "id" => $travelOrderAsLogIn->charge_id,
                     ];
+                    array_push($chargingNames, $travelOrderAsLogIn->charging_name);
                 }
                 // Is On Leave
                 foreach ($employeeDayData["leaves"] as $index => $leave) {
@@ -401,6 +405,7 @@ class AttendanceService
                             "class" => $leave->charging_class,
                             "id" => $leave->charging_id,
                         ];
+                        array_push($chargingNames, $leave->charging_name);
                     }
                 }
             }
@@ -418,6 +423,7 @@ class AttendanceService
             })->sortBy("time")->values();
             if (sizeof($attendanceLogOut) > 0) {
                 $timeOut = $attendanceLogOut->last()->time;
+                $scheduleMetaData["end_time_log"] = Carbon::parse($timeOut)->format("h:i A");
             }
             // CONNECTED TO OVERTIME
             $otAsLogOut = collect($employeeDayData["overtimes"])->filter(function ($otData) use ($schedule) {
@@ -500,6 +506,7 @@ class AttendanceService
             "late" => $totalLate,
             "undertime" => $undertime,
             "charging" => $chargings,
+            "charging_names" => $chargingNames,
             "summary" => $schedulesSummary,
         ];
     }
@@ -508,11 +515,13 @@ class AttendanceService
         $otSchedulesSummary = [];
         $totalHrsWorked = 0;
         $chargings = [];
+        $chargingNames = [];
         foreach ($employeeDayData["overtimes"] as $overtime) {
             $overtimeMetaData = [
                 "date" => $date,
                 "day_of_week" => $date->dayOfWeek,
                 "day_of_week_name" => $date->englishDayOfWeek,
+                "id" => $overtime->id,
                 "start_time_sched" => $overtime->start_time_human,
                 "end_time_sched" => $overtime->end_time_human,
                 "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
@@ -535,7 +544,7 @@ class AttendanceService
             })->sortBy("time")->values();
             if (sizeof($attendanceLogIn) > 0) {
                 $appliedIn = $attendanceLogIn->first()->time;
-                $overtimeMetaData["start_time_log"] = $appliedIn;
+                $overtimeMetaData["start_time_log"] = Carbon::parse($appliedIn)->format("h:i A");
             }
             $hasSchedStart = collect($employeeDayData["schedules"])->contains(function ($schedData) use ($overtime) {
                 $schedOut = $schedData->endTime;
@@ -570,7 +579,7 @@ class AttendanceService
             })->sortBy("time")->values();
             if (sizeof($attendanceLogOut) > 0) {
                 $appliedOut = $attendanceLogOut->last()->time;
-                $overtimeMetaData["end_time_log"] = $appliedOut;
+                $overtimeMetaData["end_time_log"] = Carbon::parse($appliedOut)->format("h:i A");
             }
             $hasSchedContinuation = collect($employeeDayData["schedules"])->contains(function ($schedData) use ($overtime) {
                 $schedIn = $schedData->startTime;
@@ -613,11 +622,13 @@ class AttendanceService
                 "id" => $overtime->charging_id,
                 "hrs_worked" => $currentOtHrs,
             ]);
+            array_push($chargingNames, $overtime->charging_name);
             array_push($otSchedulesSummary, $overtimeMetaData);
         }
         return [
             "rendered" => round($totalHrsWorked, 2),
             "charging" => $chargings,
+            "charging_names" => $chargingNames,
             "summary" => $otSchedulesSummary,
         ];
     }
