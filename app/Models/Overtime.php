@@ -131,7 +131,7 @@ class Overtime extends Model
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->startOfDay();
         }
-        return $newTime;
+        return $newTime->format("H:i:s");
         // return Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
     }
     public function getBufferTimeEndLateAttribute()
@@ -141,7 +141,7 @@ class Overtime extends Model
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->endOfDay();
         }
-        return $newTime;
+        return $newTime->format("H:i:s");
         // return Carbon::parse($this->overtime_end_time)->addHour((int)config("app.logout_late"));
     }
     public function getAttendanceLogInsAttribute()

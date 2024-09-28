@@ -63,7 +63,7 @@ class PayrollRecordController extends Controller
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
         $employeePayrollGeneratedSamePayrollDate = PayrollDetail::whereIn('employee_id', $filters['employee_ids'])->whereHas("payroll_record", function ($query) use ($filters) {
             $query->where("payroll_date", $filters["payroll_date"])
-            ->whereIn("status", [RequestStatuses::APPROVED, RequestStatuses::PENDING]);
+            ->whereIn("request_status", [RequestStatuses::APPROVED, RequestStatuses::PENDING]);
         })->get()->pluck("employee_id")->all();
         // Employee Employment and Payroll Validity Checking
         foreach ($employeeDtr as $employee) {

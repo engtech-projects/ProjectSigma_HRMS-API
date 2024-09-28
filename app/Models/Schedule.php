@@ -86,9 +86,9 @@ class Schedule extends Model
         $time = Carbon::parse($this->startTime);
         $newTime = $time->copy()->subHour((int)config("app.login_early"));
         if ($newTime->day !== $time->day) {
-            $newTime = $time->copy()->endOfDay();
+            $newTime = $time->copy()->startOfDay();
         }
-        return $newTime;
+        return $newTime->format("H:i:s");
         // return Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
     }
     public function getBufferTimeEndLateAttribute()
@@ -98,7 +98,7 @@ class Schedule extends Model
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->endOfDay();
         }
-        return $newTime;
+        return $newTime->format("H:i:s");
         // return Carbon::parse($this->endTime)->addHour((int)config("app.logout_late"));
     }
     public function getAttendanceLogInsAttribute()
