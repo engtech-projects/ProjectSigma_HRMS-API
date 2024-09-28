@@ -53,6 +53,8 @@ class TravelOrder extends Model
 
     protected $appends = [
         'charging_designation',
+        "date_time_start",
+        "date_time_end",
     ];
 
     public function scopeRequestStatusPending(Builder $query): void

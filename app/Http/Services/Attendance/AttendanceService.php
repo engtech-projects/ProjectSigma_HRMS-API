@@ -342,7 +342,7 @@ class AttendanceService
             $charge = null;
             $leaveUsed = false; // To Indicate if leave has been used for the schedule
             // Prepare TIME INS
-            $scheduleDateTimeIn = $date->copy()->setTimeFromTimeString($schedule->startTime);
+            $scheduleDateTimeIn = $date->copy()->setTimeFromTimeString($schedule->startTime->format("H:i:s"));
             $timeIn = null;
             // HAS ATTENDANCE LOG
             $attendanceLogIn = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
@@ -410,7 +410,7 @@ class AttendanceService
                 }
             }
             // PREPARE TIME OUTS
-            $scheduleDateTimeOut = $date->copy()->setTimeFromTimeString($schedule->endTime);
+            $scheduleDateTimeOut = $date->copy()->setTimeFromTimeString($schedule->endTime->format("H:i:s"));
             $timeOut = null;
             $attendanceLogOut = $employeeDayData["attendance_logs"]->where(function ($data) use ($schedule) {
                 $attendanceTime = Carbon::parse($data->time);
@@ -437,12 +437,12 @@ class AttendanceService
             }
             if (!$timeOut) {
                 // is On Travel Order
-                $onTravelOrder = sizeof($employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeOut) {
+                $travelOrderAsLogOut = $employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeOut) {
                     return $trOrd->datetimeIsApplicable($scheduleDateTimeOut);
-                })) > 0;
-                if (!$timeOut && $onTravelOrder) {
+                })->first();
+                if (!$timeOut && $travelOrderAsLogOut) {
                     $timeOut = $schedule->endTime;
-                    $scheduleMetaData["start_time_log"] = "ON TRAVEL ORDER";
+                    $scheduleMetaData["end_time_log"] = "ON TRAVEL ORDER";
                 }
                 // Is On Leave
                 foreach ($employeeDayData["leaves"] as $index => $leave) {
