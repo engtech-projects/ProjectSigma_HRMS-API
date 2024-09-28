@@ -6,6 +6,7 @@ use App\Enums\PayrollDetailsDeductionType;
 use App\Enums\RequestStatusType;
 use App\Enums\PostingStatusType;
 use App\Enums\LoanPaymentsType;
+use App\Enums\RequestStatuses;
 use App\Helpers;
 use App\Models\Employee;
 use App\Models\PayrollRecord;
@@ -24,11 +25,13 @@ use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
 use App\Models\LoanPayments;
 use App\Models\OtherDeductionPayments;
+use App\Models\PayrollDetail;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 
 class PayrollRecordController extends Controller
@@ -58,6 +61,10 @@ class PayrollRecordController extends Controller
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
         $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
+        $employeePayrollGeneratedSamePayrollDate = PayrollDetail::whereIn('employee_id', $filters['employee_ids'])->whereHas("payroll_record", function ($query) use ($filters) {
+            $query->where("payroll_date", $filters["payroll_date"])
+            ->whereIn("status", [RequestStatuses::APPROVED, RequestStatuses::PENDING]);
+        })->get()->pluck("employee_id")->all();
         // Employee Employment and Payroll Validity Checking
         foreach ($employeeDtr as $employee) {
             if (!$employee->current_employment) {
@@ -76,6 +83,12 @@ class PayrollRecordController extends Controller
                 return new JsonResponse([
                     'success' => false,
                     'message' => "Employee ".$employee->fullname_first." has no Salary Grade Set.",
+                ], 400);
+            }
+            if(in_array($employee->id, $employeePayrollGeneratedSamePayrollDate)) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Employee ".$employee->fullname_first." has already Pending/Approved generated payroll for this payroll date.",
                 ], 400);
             }
         }

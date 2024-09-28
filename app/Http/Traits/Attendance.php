@@ -57,8 +57,8 @@ trait Attendance
             if ($oTStart) {
                 $charge = AttendanceLog::find($oTStart["applied_in"]?->id)?->charging() ?? $charge ?? Overtime::find($oTStart["id"])?->charging();
                 $charge = [
-                    "class" => $oTStart->charging_class,
-                    "id" => $oTStart->charging_id,
+                    "class" => $oTStart['charging_class'],
+                    "id" => $oTStart['charging_id'],
                 ];
                 $timeIn = (object)["time" => $schedule["startTime"]];
             }
@@ -144,13 +144,11 @@ trait Attendance
             $currentDuration = round($dtrIn->diffInMinutes($dtrOut) / 60, 2);
             $currentDuration = $currentDuration > 0 ? $currentDuration : 0;
             $duration += $currentDuration;
-            if ($charge) {
-                array_push($chargings, [
-                    "model" => get_class($charge),
-                    "id" => $charge->id,
-                    "hrs_worked" => $currentDuration,
-                ]);
-            }
+            array_push($chargings, [
+                "model" => $charge['class'] ?? Department::class,
+                "id" => $charge['id'] ?? 4,
+                "hrs_worked" => $currentDuration,
+            ]);
         }
 
         return [

@@ -158,7 +158,8 @@ class AttendanceService
                 is_null($data->date_to)
             );
         })->first();
-        if ($currentInternalOnDate->work_location == WorkLocation::OFFICE->value) {
+        $currentWorkLocation = $currentInternalOnDate->work_location ?? "";
+        if ($currentWorkLocation == WorkLocation::OFFICE->value) {
             $schedule = $currentInternalOnDate['department_schedule_irregular']->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
             })->values();
@@ -176,8 +177,7 @@ class AttendanceService
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
-        }
-        if ($currentInternalOnDate->work_location == WorkLocation::PROJECT->value) {
+        } elseif ($currentWorkLocation == WorkLocation::PROJECT->value) {
             $latestProject = $employeeDatas["employee"]->employee_has_projects->first();
             $schedule = $latestProject->schedule_irregular->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
