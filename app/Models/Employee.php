@@ -388,16 +388,17 @@ class Employee extends Model
             return $schedule;
         }
         $employeeInternalOnDate = $this->employee_internal()?->currentOnDate($date)?->first();
-        if ($employeeInternalOnDate->work_location == WorkLocation::OFFICE->value) {
-            $schedule = $this->employee_internal()?->currentOnDate($date)?->first()?->employee_department?->schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
+        $workLocation = $employeeInternalOnDate?->work_location ?? "";
+        if ($workLocation == WorkLocation::OFFICE->value) {
+            $schedule = $employeeInternalOnDate->employee_department?->schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
-            $schedule = $this->employee_internal()?->currentOnDate($date)?->first()?->employee_department?->schedule()?->schedulesOnDay($date)->regularSchedules()->get();
+            $schedule = $employeeInternalOnDate->employee_department?->schedule()?->schedulesOnDay($date)->regularSchedules()->get();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
-        } else {
+        } elseif ($workLocation == WorkLocation::PROJECT->value) {
             $schedule = $this->employee_has_projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;

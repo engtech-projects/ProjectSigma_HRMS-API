@@ -22,8 +22,16 @@ class GenerateDtrRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cutoff_start' => 'required|date_format:Y-m-d',
-            'cutoff_end' => 'required|date_format:Y-m-d',
+            'cutoff_start' => [
+                'required',
+                'date_format:Y-m-d',
+                'before_or_equal:cutoff_end'
+            ],
+            'cutoff_end' => [
+                'required',
+                'date_format:Y-m-d',
+                'after_or_equal:cutoff_start'
+            ],
             'employee_id' => 'exists:employees,id',
         ];
     }
