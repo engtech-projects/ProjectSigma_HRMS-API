@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Employee;
+use App\Models\Leave;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Traits\HasApprovalValidation;
 
@@ -81,6 +83,12 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "required",
                 "numeric",
                 "gt:0",
+                function ($attribute, $value, $fail) {
+                    if ($this->exceedsLeaveBalance() && $this->with_pay) {
+                        $leaveRequestType = $this->getLeaveRequestType();
+                        $fail("Not enough ".$leaveRequestType." balance" );
+                    }
+                },
             ],
             'with_pay' => [
                 "required",
@@ -88,5 +96,22 @@ class StoreEmployeeLeavesRequest extends FormRequest
             ],
         ];
         return array_merge($rules, $this->storeApprovals());
+    }
+    protected function exceedsLeaveBalance()
+    {
+        $employee = Employee::find($this->employee_id);
+        if (!$employee) {
+            return true;
+        }
+        $leaveCredits = $employee->getLeaveCreditsAttribute();
+        $leave = $leaveCredits->firstWhere('id', $this->leave_id);
+        if (!$leave || $leave->balance < $this->number_of_days) {
+            return true;
+        }
+        return false;
+    }
+    protected function getLeaveRequestType()
+    {
+        return Leave::where('id',$this->leave_id)->pluck('leave_name')->first();
     }
 }
