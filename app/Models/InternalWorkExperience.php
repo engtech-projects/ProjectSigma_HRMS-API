@@ -55,7 +55,7 @@ class InternalWorkExperience extends Model
 
     public function position(): HasOne
     {
-        return $this->hasOne(Position::class, "id", "position_id");
+        return $this->hasOne(Position::class, "id", "position_id")->withTrashed();
     }
 
     public function employees()
