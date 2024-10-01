@@ -124,6 +124,11 @@ class TravelOrder extends Model
         return Carbon::parse($this->date_time_start)
             ->addHour($this->duration_of_travel * 24)->format("Y-m-d H:i:s");
     }
+    public function getDateTimeEndHumanAttribute()
+    {
+        return Carbon::parse($this->date_time_start)
+            ->addHour($this->duration_of_travel * 24)->format("F j, Y h:i A");
+    }
     public function datetimeIsApplicable($datetime)
     {
         $dt = Carbon::parse($datetime);
