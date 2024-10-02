@@ -502,8 +502,8 @@ class AttendanceService
         }
         if ($absentToday && !$isSunday) {
             $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
-                $data["start_time_log"] .= "ABSENT";
-                $data["end_time_log"] .= "ABSENT";
+                $data["start_time_log"] .= " ABSENT";
+                $data["end_time_log"] .= " ABSENT";
                 return $data;
             })->values();
         }
