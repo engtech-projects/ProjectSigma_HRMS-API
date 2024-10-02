@@ -325,6 +325,7 @@ class AttendanceService
         $lateMinsAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value; // Minutes of late that will be considered as not late
         $lateMinsConsideredAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value; // Minutes of late that will be considered as absent for a schedule
         foreach ($employeeDayData['schedules'] as $schedule) {
+            $isSunday = $date->dayOfWeek == Carbon::SUNDAY;
             $scheduleMetaData = [
                 "date" => $date,
                 "day_of_week" => $date->dayOfWeek,
@@ -332,8 +333,8 @@ class AttendanceService
                 "id" => $schedule->id,
                 "start_time_sched" => $schedule->start_time_human,
                 "end_time_sched" => $schedule->end_time_human,
-                "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
-                "end_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
+                "start_time_log" => $isSunday ? "SUNDAY" : "NO LOG",
+                "end_time_log" => $isSunday ? "SUNDAY" : "NO LOG",
                 "duration" => 0,
                 "late" => 0,
                 "undertime" => 0,
@@ -499,10 +500,10 @@ class AttendanceService
             array_push($schedulesSummary, $scheduleMetaData);
             $absentToday = false;
         }
-        if ($absentToday) {
+        if ($absentToday && !$isSunday) {
             $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
-                $data["start_time_log"] = "ABSENT";
-                $data["end_time_log"] = "ABSENT";
+                $data["start_time_log"] .= "ABSENT";
+                $data["end_time_log"] .= "ABSENT";
                 return $data;
             })->values();
         }
