@@ -324,8 +324,8 @@ class AttendanceService
         // SETTINGS FOR LATES AND ABSENT
         $lateMinsAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value; // Minutes of late that will be considered as not late
         $lateMinsConsideredAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value; // Minutes of late that will be considered as absent for a schedule
+        $isSunday = $date->dayOfWeek == Carbon::SUNDAY;
         foreach ($employeeDayData['schedules'] as $schedule) {
-            $isSunday = $date->dayOfWeek == Carbon::SUNDAY;
             $scheduleMetaData = [
                 "date" => $date,
                 "day_of_week" => $date->dayOfWeek,
