@@ -74,6 +74,11 @@ class CashAdvance extends Model
         return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id');
     }
 
+    public function cashAdvancePaymentsPosted(): HasMany
+    {
+        return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id')->isPosted();
+    }
+
     public function created_by_user(): BelongsTo
     {
         return $this->belongsTo(Users::class, "created_by", "id");
@@ -86,12 +91,12 @@ class CashAdvance extends Model
 
     public function getTotalPaidAttribute()
     {
-        return $this->cashAdvancePayments()->sum("amount_paid");
+        return $this->cashAdvancePaymentsPosted()->sum("amount_paid");
     }
 
     public function cashPaid()
     {
-        $totalpaid = $this->cashAdvancePayments()->sum("amount_paid");
+        $totalpaid = $this->cashAdvancePaymentsPosted()->sum("amount_paid");
         if ($this->amount <= $totalpaid) {
             return true;
         }
@@ -101,7 +106,7 @@ class CashAdvance extends Model
     public function paymentWillOverpay($amount)
     {
         // $totalpaid = $this->loanPayments()->sum('amount_paid');
-        $totalpaid = $this->cashAdvancePayments()->sum('amount_paid');
+        $totalpaid = $this->cashAdvancePaymentsPosted()->sum('amount_paid');
 
         if ($this->amount < $totalpaid + $amount) {
             return true;
