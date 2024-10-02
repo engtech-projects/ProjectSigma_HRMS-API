@@ -58,9 +58,9 @@ class SalaryDisbursementService
             $overtimeSalaries = $dataCollection->filter(function ($chargingItem) use ($overtime_pay_names) {
                 return in_array($chargingItem['name'], $overtime_pay_names);
             });
-            $payBasic = $basicSalaries->sum("amount");
-            $payOvertime = $overtimeSalaries->sum("amount");
-            $payGross = $payBasic + $payOvertime;
+            $payBasic = round($basicSalaries->sum("amount"), 2);
+            $payOvertime = round($overtimeSalaries->sum("amount"), 2);
+            $payGross = round($payBasic + $payOvertime, 2);
 
             $returnData[$key] = [
                 "data" => $dataCollection,
