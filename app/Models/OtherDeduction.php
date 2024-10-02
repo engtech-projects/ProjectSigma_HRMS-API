@@ -49,6 +49,11 @@ class OtherDeduction extends Model
         return $this->hasMany(OtherDeductionPayments::class, 'otherdeduction_id', 'id');
     }
 
+    public function otherDeductionPaymentPosted(): HasMany
+    {
+        return $this->hasMany(OtherDeductionPayments::class, 'otherdeduction_id', 'id')->isPosted();
+    }
+
     public function getBalanceAttribute()
     {
         return floatval($this->amount - $this->totalPaid);
@@ -56,12 +61,12 @@ class OtherDeduction extends Model
 
     public function getTotalPaidAttribute()
     {
-        return $this->otherDeductionPayment()->sum("amount_paid");
+        return $this->otherDeductionPaymentPosted()->sum("amount_paid");
     }
 
     public function cashPaid()
     {
-        $totalpaid = $this->otherDeductionPayment()->sum("amount_paid");
+        $totalpaid = $this->otherDeductionPaymentPosted()->sum("amount_paid");
         if ($this->amount <= $totalpaid) {
             return true;
         }
@@ -70,7 +75,7 @@ class OtherDeduction extends Model
 
     public function paymentWillOverpay($amount)
     {
-        $totalpaid = $this->otherDeductionPayment()->sum('amount_paid');
+        $totalpaid = $this->otherDeductionPaymentPosted()->sum('amount_paid');
 
         if ($this->amount < $totalpaid + $amount) {
             return true;

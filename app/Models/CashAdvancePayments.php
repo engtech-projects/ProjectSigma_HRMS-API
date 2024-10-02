@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PostingStatusType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,16 @@ class CashAdvancePayments extends Model
     public function getDatePaidHumanAttribute()
     {
         return Carbon::parse($this->date_paid)->format("F j, Y");
+    }
+
+    public function scopeIsPosted($query)
+    {
+        return $query->where('posting_status', PostingStatusType::POSTED->value);
+    }
+
+    public function scopeIsNotPosted($query)
+    {
+        return $query->where('posting_status', PostingStatusType::NOTPOSTED->value);
     }
 
 }

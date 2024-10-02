@@ -48,6 +48,11 @@ class Loans extends Model
     {
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::POSTED);
     }
+
+    public function loanPaymentsPosted(): HasMany
+    {
+        return $this->hasMany(LoanPayments::class)->isPosted();
+    }
     public function loan_payment_notposted(): HasMany
     {
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::NOTPOSTED);
