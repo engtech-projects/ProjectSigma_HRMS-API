@@ -13,6 +13,9 @@ enum AccessibilityInventory: string
     case INVENTORY_ITEMPROFILE_NEW_ALLREQUESTS = "inventory:item profile_new profile_all request";
     case INVENTORY_ITEMPROFILE_NEW_MYAPPROVALS = "inventory:item profile_new profile_my approvals";
     case INVENTORY_ITEMPROFILE_NEW_FORM = "inventory:item profile_new profile_forms and my requests";
+    case INVENTORY_WAREHOUSE_OVERVIEW = "inventory:warehouse_overview";
+    case INVENTORY_WAREHOUSE_VIEWONLY = "inventory:warehouse_view only";
+    case INVENTORY_WAREHOUSE_PSSMANAGER = "inventory:warehouse_pss manager";
 
     public static function toArray(): array
     {
