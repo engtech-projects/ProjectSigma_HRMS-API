@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AttendanceLogType;
+use App\Enums\GroupType;
 use App\Enums\ScheduleGroupType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -167,6 +168,17 @@ class Schedule extends Model
     public function getEndTimeHumanAttribute()
     {
         return Carbon::parse($this->endTime)->format("h:i A");
+    }
+    public function getScheduleTypeNameAttribute()
+    {
+        if ($this->groupType === 'project') {
+            return $this->project->project_code . " SCHEDULE";
+        } elseif ($this->groupType === 'department') {
+            return $this->department->department_name . " SCHEDULE";
+        } elseif ($this->groupType === 'employee') {
+            return "EMPLOYEE SCHEDULE";
+        }
+        return "UNKNOWN SCHEDULE";
     }
     /**
      * MODEL
