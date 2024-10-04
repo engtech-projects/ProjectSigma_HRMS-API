@@ -90,6 +90,9 @@ class AttendanceService
             'events' => Events::betweenDates($dateFrom, $dateTo)->get(),
         ];
         $employee["dtr"] = self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo);
+        $employee["date_from"] = $dateFrom;
+        $employee["date_to"] = $dateTo;
+        $employee["current_position"] = $employee->current_position_name;
         return $employee;
     }
 
@@ -331,6 +334,9 @@ class AttendanceService
                 "day_of_week" => $date->dayOfWeek,
                 "day_of_week_name" => $date->englishDayOfWeek,
                 "id" => $schedule->id,
+                "sched_from" => $schedule->schedule_type_name,
+                "start_time" => $schedule->startTime,
+                "end_time" => $schedule->endTime,
                 "start_time_sched" => $schedule->start_time_human,
                 "end_time_sched" => $schedule->end_time_human,
                 "start_time_log" => $isSunday ? "SUNDAY" : "NO LOG",
@@ -507,6 +513,7 @@ class AttendanceService
                 return $data;
             })->values();
         }
+        $schedulesSummary = collect($schedulesSummary)->sortBy("start_time")->values();
         return  [
             "rendered" => round($duration, 2),
             "late" => $totalLate,
@@ -528,6 +535,8 @@ class AttendanceService
                 "day_of_week" => $date->dayOfWeek,
                 "day_of_week_name" => $date->englishDayOfWeek,
                 "id" => $overtime->id,
+                "start_time" => $overtime->overtime_start_time,
+                "end_time" => $overtime->overtime_end_time,
                 "start_time_sched" => $overtime->start_time_human,
                 "end_time_sched" => $overtime->end_time_human,
                 "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
