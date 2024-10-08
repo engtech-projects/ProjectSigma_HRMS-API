@@ -39,6 +39,9 @@ class TravelOrderController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+            return $query->whereDate('date_of_travel',$validatedData['date_filter']);
+        })
         ->with(["user.employee"])
         ->orderBy("created_at", "DESC")
         ->get();
