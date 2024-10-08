@@ -52,8 +52,10 @@ class ReportController extends Controller
         ->map(function ($employeeData) {
             return [
                 ...$employeeData->first()->toArray(),
-                'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
+                'sss_employer_contribution' => $employeeData->sum("sss_employer_contribution"),
                 'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
+                'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
+                'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
                 'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
                 'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
                 'total_sss' => $employeeData->sum("total_sss"),
