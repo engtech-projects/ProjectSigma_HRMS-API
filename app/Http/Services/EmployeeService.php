@@ -160,6 +160,20 @@ class EmployeeService
         return $maincollection;
     }
 
+    public static function govNumberIsValid($govNumber)
+    {
+        if(empty($govNumber)) {
+            return false;
+        }
+        if(strtolower($govNumber) == "n/a") {
+            return false;
+        }
+        if(strtolower($govNumber) == "na") {
+            return false;
+        }
+        return true;
+    }
+
     public function getSalaryDeduction($employee, $filters, $actualSalary = 0)
     {
         $salaryGrade = $employee->current_employment?->employee_salarygrade;
@@ -167,17 +181,17 @@ class EmployeeService
         $sss = $employee->sss_deduction($monthlySalary, $filters["payroll_type"]);
         $philhealth = $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]);
         $pagibig = $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]);
-        $ssExempt = ($employee->company_employments->sss_number || strtolower($employee->company_employments->sss_number) == "n/a") ? ($sss['employee_compensation'] + $sss['employee_contribution']) : 0;
-        $philhealthExempt = ($employee->company_employments->phic_number || strtolower($employee->company_employments->phic_number) == "n/a") ? $philhealth['employee_contribution'] : 0;
-        $pagibigExempt = ($employee->company_employments->pagibig_number || strtolower($employee->company_employments->pagibig_number) == "n/a") ? $pagibig['employee_contribution'] : 0;
+        $ssExempt = ($employee->company_employments->sss_number || self::govNumberIsValid($employee->company_employments->sss_number)) ? ($sss['employee_compensation'] + $sss['employee_contribution']) : 0;
+        $philhealthExempt = ($employee->company_employments->phic_number || self::govNumberIsValid($employee->company_employments->phic_number)) ? $philhealth['employee_contribution'] : 0;
+        $pagibigExempt = ($employee->company_employments->pagibig_number || self::govNumberIsValid($employee->company_employments->pagibig_number)) ? $pagibig['employee_contribution'] : 0;
         $monthlyTaxExempt = $ssExempt + $philhealthExempt + $pagibigExempt;
         $taxableMonthlySalary = $monthlySalary - $monthlyTaxExempt;
         $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
         $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
         $result = [
-            "sss" => $filters["deduct_sss"] && ($employee->company_employments->sss_number || strtolower($employee->company_employments->sss_number) == "n/a") ? $sss : [],
-            "phic" => $filters["deduct_philhealth"] && ($employee->company_employments->phic_number || strtolower($employee->company_employments->phic_number) == "n/a") ? $philhealth : [],
-            "hmdf" => $filters["deduct_pagibig"] && ($employee->company_employments->pagibig_number || strtolower($employee->company_employments->pagibig_number) == "n/a") ? $pagibig : [],
+            "sss" => $filters["deduct_sss"] && ($employee->company_employments->sss_number || self::govNumberIsValid($employee->company_employments->sss_number)) ? $sss : [],
+            "phic" => $filters["deduct_philhealth"] && ($employee->company_employments->phic_number || self::govNumberIsValid($employee->company_employments->phic_number)) ? $philhealth : [],
+            "hmdf" => $filters["deduct_pagibig"] && ($employee->company_employments->pagibig_number || self::govNumberIsValid($employee->company_employments->pagibig_number)) ? $pagibig : [],
             "ewtc" => $wtax,
             "loan" => $employee->loan_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
