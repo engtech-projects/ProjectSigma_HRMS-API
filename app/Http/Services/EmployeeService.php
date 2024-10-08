@@ -189,9 +189,9 @@ class EmployeeService
         $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
         $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
         $result = [
-            "sss" => $filters["deduct_sss"] && self::govNumberIsValid($employee->company_employments->sss_number) ? $sss : [],
-            "phic" => $filters["deduct_philhealth"] && self::govNumberIsValid($employee->company_employments->phic_number) ? $philhealth : [],
-            "hmdf" => $filters["deduct_pagibig"] && self::govNumberIsValid($employee->company_employments->pagibig_number) ? $pagibig : [],
+            "sss" => ($filters["deduct_sss"] && self::govNumberIsValid($employee->company_employments->sss_number)) ? $sss : [],
+            "phic" => ($filters["deduct_philhealth"] && self::govNumberIsValid($employee->company_employments->phic_number)) ? $philhealth : [],
+            "hmdf" => ($filters["deduct_pagibig"] && self::govNumberIsValid($employee->company_employments->pagibig_number)) ? $pagibig : [],
             "ewtc" => $wtax,
             "loan" => $employee->loan_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
             "cash_advance" => $employee->cash_advance_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
