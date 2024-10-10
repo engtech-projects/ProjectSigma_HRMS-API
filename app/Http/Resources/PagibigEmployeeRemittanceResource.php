@@ -19,8 +19,6 @@ class PagibigEmployeeRemittanceResource extends JsonResource
             "employee_name" => $this['employee']['fullname_last'],
             "employee_pagibig_id" => $this['employee']['company_employments']['pagibig_number'],
             "total_contribution" => $this['total_pagibig_contribution'],
-            "total_compensation" => $this['total_pagibig_compensation'],
-            "total_pagibig" => $this['total_pagibig'],
         ];
     }
 }
