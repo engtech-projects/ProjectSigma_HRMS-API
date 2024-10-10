@@ -16,9 +16,9 @@ class PhilhealthGroupRemittanceResource extends JsonResource
     {
         return [
             ...parent::toArray($request),
-            "employee_name" => $this->employee->fullname_last,
-            "employee_philhealth_id" => $this->employee->company_employments->phic_number,
-            "total_contribution" => $this->total_philhealth_contribution,
+            "employee_name" => $this['employee']['fullname_last'],
+            "employee_philhealth_id" => $this['employee']['company_employments']['phic_number'],
+            "total_contribution" => $this['total_philhealth_contribution'],
         ];
     }
 }
