@@ -151,23 +151,6 @@ class ReportController extends Controller
             "total_sss",
         ])
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'sss_employer_contribution' => $employeeData->sum("sss_employer_contribution"),
-                'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
-                'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
-                'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
-                'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
-                'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
-                'total_sss' => $employeeData->sum("total_sss"),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ]
-            ];
-        })
         ->values()
         ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
@@ -278,19 +261,6 @@ class ReportController extends Controller
             "total_pagibig_contribution",
         ])
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'pagibig_employee_contribution' => $employeeData->sum("pagibig_employee_contribution"),
-                'pagibig_employer_contribution' => $employeeData->sum("pagibig_employer_contribution"),
-                'total_pagibig_contribution' => $employeeData->sum("total_pagibig_contribution"),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ]
-            ];
-        })
         ->values()
         ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
@@ -401,19 +371,6 @@ class ReportController extends Controller
             "total_philhealth_contribution"
         ])
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'philhealth_employee_contribution' => $employeeData->sum("philhealth_employee_contribution"),
-                'philhealth_employer_contribution' => $employeeData->sum("philhealth_employer_contribution"),
-                'total_philhealth_contribution' => $employeeData->sum("total_philhealth_contribution"),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ]
-            ];
-        })
         ->values()
         ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
