@@ -162,7 +162,7 @@
                         </tr>
                         <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">SSS -</td>
-                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->sss_employee_contribution, 2) }}</td>
+                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->sss_employee_contribution + $payroll->sss_employee_compensation, 2) }}</td>
                         </tr>
                         <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">PHIC -</td>
@@ -174,18 +174,18 @@
                         </tr>
                         <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">CASH ADVANCE -</td>
-                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->total_deduct, 2) }}</td>
+                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->total_cash_advance_payments, 2) }}</td>
                         </tr>
-                        @foreach ($loans ?? [] as $loan)
+                        @foreach ($payroll->loanPayments ?? [] as $loan)
                             <tr>
                                 <td class="payroll_label" style="text-align: right; padding-right:10px;">Loan</td>
-                                <td style="text-align: right; padding-right:10px;"></td>
+                                <td style="text-align: right; padding-right:10px;">{{ number_format($loan->amount, 2) }}</td>
                             </tr>
                         @endforeach
-                        @foreach ($otherDeductions ?? [] as $otherDeduction)
+                        @foreach ($payroll->otherDeductionPayments ?? [] as $otherDeduction)
                             <tr>
-                                <td class="payroll_label" style="text-align: right; padding-right:10px;">otherDeduction</td>
-                                <td style="text-align: right; padding-right:10px;"></td>
+                                <td class="payroll_label" style="text-align: right; padding-right:10px;">{{ $otherDeduction->deduction->name }}</td>
+                                <td style="text-align: right; padding-right:10px;">{{ number_format($otherDeduction->amount, 2) }}</td>
                             </tr>
                         @endforeach
                     </table>
