@@ -64,7 +64,7 @@
                         <tr>
                             <td class="font-weight:bold;" style="color:rgb(48, 85, 80);">Employee Name: <span style="color:black;">{{ $payroll->employee->fullname_first }}</span></td>
                             <td></td>
-                            <td class="payroll_label" style="color:rgb(48, 85, 80)"><span>Rate: </span><span style="color:black;">{{ $payroll->regular_hours > 0 ? number_format(($payroll->regular_pay / $payroll->regular_hours), 2) : '0.00' }}</span></td>
+                            <td class="payroll_label" style="color:rgb(48, 85, 80)"><span>Rate: </span><span style="color:black;">{{ $payroll->employee->current_salarygrade_and_step }}</span></td>
                             <td class="payroll_label" style="color:rgb(48, 85, 80)"><span>Total Days of Work: </span><span style="color:black;">{{ intval($payroll->regular_hours / 8) + ($payroll->regular_hours % 8 > 0 ? 0.5 : 0) }} day/s</span></td>
                         </tr>
                         <tr>
@@ -132,6 +132,13 @@
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">Spcl./Hol hrs. -</td>
                             <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->special_holiday_hours, 2) }}</td>
                             <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->special_holiday_pay, 2) }}</td>
+                            <td style="text-align: right; padding-right:10px;"></td>
+                            <td style="text-align: right; padding-right:10px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="payroll_label" style="text-align: right; padding-right:10px;">Adjustments -</td>
+                            <td style="text-align: right; padding-right:10px;">-</td>
+                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->total_adjustment, 2) }}</td>
                             <td style="text-align: right; padding-right:10px;"></td>
                             <td style="text-align: right; padding-right:10px;"></td>
                         </tr>

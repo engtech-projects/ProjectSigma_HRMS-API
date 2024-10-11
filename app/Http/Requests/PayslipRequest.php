@@ -18,9 +18,11 @@ class PayslipRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'ids' => json_decode($this->ids, true),
-        ]);
+        if (gettype($this->ids) == "string") {
+            $this->merge([
+                'ids' => json_decode($this->ids, true),
+            ]);
+        }
     }
     /**
      * Get the validation rules that apply to the request.
@@ -30,7 +32,19 @@ class PayslipRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ids' => 'required|array|exists:payroll_details,id',
+            'ids' => [
+                'required',
+                'array'
+            ],
+            'ids.*' => [
+                'required',
+                'integer',
+                'exists:payroll_details,id'
+            ],
+            'hr' => [
+                'nullable',
+                'string',
+            ],
         ];
     }
 }
