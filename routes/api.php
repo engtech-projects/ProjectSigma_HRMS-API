@@ -326,6 +326,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
         Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+        Route::get("user-employees/{user}", [ApiServiceController::class, "getUserEmployees"]);
     });
     // Version 2 Optimization
     Route::prefix("v2")->group(function() {
