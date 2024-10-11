@@ -154,7 +154,7 @@
                         </tr>
                         <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">Withholding Tax -</td>
-                            <td style="text-align: right; padding-right:10px;"></td>
+                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->withholdingtax_contribution, 2) }}</td>
                         </tr>
                         <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">Gross Pay:</td>
