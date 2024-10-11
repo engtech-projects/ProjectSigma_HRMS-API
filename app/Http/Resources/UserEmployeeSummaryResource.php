@@ -17,6 +17,7 @@ class UserEmployeeSummaryResource extends JsonResource
         return [
             'id' => $this->id,
             'email' => $this->email,
+            'name' => $this->name,
             "employee" => new EmployeeSummaryResource($this->employee),
         ];
     }
