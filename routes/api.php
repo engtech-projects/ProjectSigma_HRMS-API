@@ -218,6 +218,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', RequestSalaryDisbursementController::class)->names("requestSalaryDisbursement");
         Route::get('my-requests', [RequestSalaryDisbursementController::class, 'myRequests']);
         Route::get('my-approvals', [RequestSalaryDisbursementController::class, 'myApprovals']);
+        Route::get('payslip-ready', [RequestSalaryDisbursementController::class, 'payslipReady']);
+        Route::get('payslip-ready/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'payslipReadyShow']);
     });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
@@ -325,7 +327,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
-        Route::get("format-approvals", [ApiServiceController::class, "formatSingleApproval"]);
+        Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
     });
     // Version 2 Optimization
     Route::prefix("v2")->group(function() {

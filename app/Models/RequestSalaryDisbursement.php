@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\DisbursementStatus;
+use App\Enums\RequestStatuses;
 use App\Traits\HasApproval;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -52,6 +55,10 @@ class RequestSalaryDisbursement extends Model
      * STATIC SCOPES
      * ==================================================
      */
+    public function scopeDisbursementStatusReleased(Builder $query)
+    {
+        return $query->where('disbursement_status', DisbursementStatus::RELEASED);
+    }
 
     /**
      * ==================================================
@@ -64,4 +71,12 @@ class RequestSalaryDisbursement extends Model
      * MODEL FUNCTIONS
      * ==================================================
      */
+    public function completeRequestStatus()
+    {
+        $this->request_status = RequestStatuses::APPROVED->value;
+        // temporary, to be removed. Change to PROCESSING. when Accounting is implemented add function to change status to RELEASED
+        $this->disbursement_status = DisbursementStatus::RELEASED->value;
+        $this->save();
+        $this->refresh();
+    }
 }

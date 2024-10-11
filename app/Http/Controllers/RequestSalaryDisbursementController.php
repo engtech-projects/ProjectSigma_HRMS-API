@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DisbursementStatus;
 use App\Enums\RequestStatuses;
 use App\Http\Requests\GenerateRequestSalaryDisbursementRequest;
 use App\Models\RequestSalaryDisbursement;
@@ -9,6 +10,7 @@ use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
 use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
 use App\Http\Resources\PayrollRecordsPayrollSalariesResource;
 use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
+use App\Http\Resources\PayslipReadyListResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Http\Services\Payroll\SalaryDisbursementService;
 use App\Models\PayrollDetail;
@@ -83,19 +85,19 @@ class RequestSalaryDisbursementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RequestSalaryDisbursement $requestSalaryDisbursement)
+    public function show(RequestSalaryDisbursement $resource)
     {
         return new JsonResponse([
             'success' => true,
             'message' => 'Resource Fetched.',
-            'data' => new RequestPayrollSummaryResource($requestSalaryDisbursement),
+            'data' => new RequestPayrollSummaryResource($resource),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequestSalaryDisbursementRequest $request, RequestSalaryDisbursement $requestSalaryDisbursement)
+    public function update(UpdateRequestSalaryDisbursementRequest $request, RequestSalaryDisbursement $resource)
     {
         //
     }
@@ -103,7 +105,7 @@ class RequestSalaryDisbursementController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(RequestSalaryDisbursement $requestSalaryDisbursement)
+    public function destroy(RequestSalaryDisbursement $resource)
     {
 
     }
@@ -144,6 +146,50 @@ class RequestSalaryDisbursementController extends Controller
             'success' => true,
             'message' => 'Request fetched.',
             'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($myApproval)->collect()),
+        ]);
+    }
+
+    /**
+     * All Salary Disbursement Requests that are Ready for Payslip
+     */
+    public function payslipReady()
+    {
+        $payslipReady = RequestSalaryDisbursement::isApproved()
+        ->where("disbursement_status", DisbursementStatus::RELEASED)
+        ->orderBy("created_at", "DESC")
+        ->get();
+        if ($payslipReady->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Request fetched.',
+            'data' => PaginateResourceCollection::paginate(RequestPayrollSummaryResource::collection($payslipReady)->collect()),
+        ]);
+    }
+    /**
+     * All Salary Disbursement Requests that are Ready for Payslip
+     */
+    public function payslipReadyShow(RequestSalaryDisbursement $requestSalaryDisbursement)
+    {
+        $payrollDetails = PayrollDetail::whereIn("payroll_record_id", $requestSalaryDisbursement->payroll_records->pluck('id')->all())
+        ->get()
+        ->sortBy("employee.fullname_last", SORT_NATURAL)
+        ->values()
+        ->all();
+        if (collect($payrollDetails)->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Request fetched.',
+            'data' => PayslipReadyListResource::collection($payrollDetails),
         ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
 use App\Enums\AttendanceType;
+use App\Enums\WorkLocation;
 use App\Http\Requests\AllAttendanceLogsRequest;
 use App\Http\Requests\StoreQrAttendanceLog;
 use App\Models\AttendanceLog;
@@ -89,10 +90,17 @@ class AttendanceLogController extends Controller
             $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
             $type = $main->assignment_type;
             $id = $main->assignment->id;
+            $employee = Employee::with('employee_schedule', 'profile_photo', )->find($val["employee_id"]);
             switch ($type) {
                 case AttendanceLogController::DEPARTMENT:
                     $type = AssignTypes::DEPARTMENT->value;
-                    $mainsave->department_id = $id;
+                    if ($employee->current_employment->work_location == WorkLocation::OFFICE->value) {
+                        $mainsave->department_id = $employee->current_employment->department_id;
+                    } else if ($employee->current_employment->work_location == WorkLocation::PROJECT->value && $employee->employee_has_projects()?->orderBy('id', 'desc')->first()?->id) {
+                        $mainsave->project_id = $employee->employee_has_projects()?->orderBy('id', 'desc')->first()?->id;
+                    } else {
+                        $mainsave->department_id = $id;
+                    }
                     break;
                 case AttendanceLogController::PROJECT:
                     $type = AssignTypes::PROJECT->value;
@@ -105,7 +113,6 @@ class AttendanceLogController extends Controller
             $mainsave->attendance_type = AttendanceType::FACIAL->value;
             $mainsave->fill($val);
             if ($mainsave->save()) {
-                $employee = Employee::with('employee_schedule', 'profile_photo', )->find($val["employee_id"]);
                 $return = [];
                 $return['log_saved'] = $mainsave;
                 $return['schedule'] = $employee->applied_schedule_with_attendance($dateNow);

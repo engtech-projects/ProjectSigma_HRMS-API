@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FormatApprovalsRequest;
+use App\Http\Requests\FormatSingleApprovalRequest;
 use App\Http\Resources\HrmsServiceApprovalAttributeResource;
 
 class ApiServiceController extends Controller
@@ -11,11 +12,11 @@ class ApiServiceController extends Controller
         $validatedData = $request->validated();
         return response()->json([
             "message" => "Successfully Formatted Approvals.",
-            "data" => new HrmsServiceApprovalAttributeResource($validatedData),
+            "data" => HrmsServiceApprovalAttributeResource::collection($validatedData['approvals']),
             "success" => true,
         ]);
     }
-    public function formatSingleApproval(FormatApprovalsRequest $request) {
+    public function formatSingleApproval(FormatSingleApprovalRequest $request) {
         $validatedData = $request->validated();
         return response()->json([
             "message" => "Successfully Formatted Approvals.",
