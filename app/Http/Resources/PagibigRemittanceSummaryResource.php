@@ -14,7 +14,16 @@ class PagibigRemittanceSummaryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $dataCollection = collect(parent::toArray($request));
+        $dataCollection = collect(parent::toArray($request))
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) {
+            return [
+                ...$employeeData->first(),
+                'pagibig_employee_contribution' => $employeeData->sum("pagibig_employee_contribution"),
+                'pagibig_employer_contribution' => $employeeData->sum("pagibig_employer_contribution"),
+                'total_pagibig_contribution' => $employeeData->sum("total_pagibig_contribution"),
+            ];
+        });
         return [
             "data" => parent::toArray($request),
             "summary" => [

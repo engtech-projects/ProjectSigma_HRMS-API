@@ -14,7 +14,20 @@ class SssRemittanceSummaryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $dataCollection = collect(parent::toArray($request));
+        $dataCollection = collect(parent::toArray($request))
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) {
+            return [
+                ...$employeeData->first(),
+                'sss_employer_contribution' => $employeeData->sum("sss_employer_contribution"),
+                'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
+                'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
+                'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
+                'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
+                'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
+                'total_sss' => $employeeData->sum("total_sss"),
+            ];
+        });
         return [
             "data" => parent::toArray($request),
             "summary" => [
