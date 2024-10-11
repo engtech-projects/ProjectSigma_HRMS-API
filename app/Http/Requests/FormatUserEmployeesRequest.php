@@ -23,13 +23,17 @@ class FormatUserEmployeesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
-                "nullable",
-                "integer",
-                "exists:users,id",
+            'user_ids' => [
+                'required',
+                'array',
+            ],
+            'user_ids.*' => [
+                'required',
+                'integer',
+                'exists:users,id',
                 Rule::notIn([1]),
             ],
-            
+
         ];
     }
 }
