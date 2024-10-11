@@ -3,8 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Carbon;
-use App\Enums\RequestApprovalStatus;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,12 +40,12 @@ trait HasApproval
      */
     public function scopeRequestStatusPending(Builder $query): void
     {
-        $query->where('request_status', RequestStatusType::PENDING);
+        $query->where('request_status', RequestStatuses::PENDING);
     }
     public function scopeAuthUserPending(Builder $query): void
     {
         $query->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestApprovalStatus::PENDING]);
+            ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestStatuses::PENDING]);
     }
     public function scopeAuthUserNextApproval(Builder $query): void
     {
@@ -59,7 +58,7 @@ trait HasApproval
     }
     public function scopeIsApproved(Builder $query): void
     {
-        $query->where('request_status', RequestStatusType::APPROVED->value);
+        $query->where('request_status', RequestStatuses::APPROVED->value);
     }
     public function scopeMyRequests(Builder $query): void
     {
@@ -83,13 +82,13 @@ trait HasApproval
      */
     public function completeRequestStatus()
     {
-        $this->request_status = RequestApprovalStatus::APPROVED;
+        $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
         $this->refresh();
     }
     public function denyRequestStatus()
     {
-        $this->request_status = RequestApprovalStatus::DENIED;
+        $this->request_status = RequestStatuses::DENIED->value;
         $this->save();
         $this->refresh();
     }
@@ -107,14 +106,14 @@ trait HasApproval
     public function getUserPendingApproval($userId)
     {
         return collect($this->approvals)->where('user_id', $userId)
-            ->where('status', RequestApprovalStatus::PENDING);
+            ->where('status', RequestStatuses::PENDING);
     }
     public function getNextPendingApproval()
     {
-        if($this->request_status != RequestStatusType::PENDING->value) {
+        if($this->request_status != RequestStatuses::PENDING->value) {
             return null;
         }
-        return collect($this->approvals)->where('status', RequestApprovalStatus::PENDING)->first();
+        return collect($this->approvals)->where('status', RequestStatuses::PENDING->value)->first();
     }
     public function approveCurrentApproval()
     {
@@ -123,14 +122,14 @@ trait HasApproval
         $currentApprovalIndex = collect($this->approvals)->search($currentApproval);
         $this->approvals = collect($this->approvals)->map(function ($approval, $index) use($currentApprovalIndex) {
             if ($index === $currentApprovalIndex) {
-                $approval["status"] = RequestApprovalStatus::APPROVED;
+                $approval["status"] = RequestStatuses::APPROVED;
                 $approval["date_approved"] = Carbon::now()->format('F j, Y h:i A');
             }
             return $approval;
         });
         $this->save();
         $this->refresh();
-        if (collect($this->approvals)->last()['status'] === RequestApprovalStatus::APPROVED) {
+        if (collect($this->approvals)->last()['status'] === RequestStatuses::APPROVED->value) {
             $this->completeRequestStatus();
         }
     }
@@ -141,7 +140,7 @@ trait HasApproval
         $currentApprovalIndex = collect($this->approvals)->search($currentApproval);
         $this->approvals = collect($this->approvals)->map(function ($approval, $index) use($currentApprovalIndex, $remarks) {
             if ($index === $currentApprovalIndex) {
-                $approval["status"] = RequestApprovalStatus::DENIED;
+                $approval["status"] = RequestStatuses::DENIED;
                 $approval["date_denied"] = Carbon::now()->format('F j, Y h:i A');
                 $approval["remarks"] = $remarks;
             }
@@ -182,7 +181,7 @@ trait HasApproval
         }
         DB::beginTransaction();
         // UPDATE CURRENT APPROVAL TO DENIED/APPROVED
-        if ($data['status'] === RequestApprovalStatus::DENIED) {
+        if ($data['status'] === RequestStatuses::DENIED->value) {
             $this->denyCurrentApproval($data["remarks"]);
         } else {
             $this->approveCurrentApproval();
@@ -192,7 +191,7 @@ trait HasApproval
             "approvals" => $currentApproval,
             'success' => true,
             "status_code" => JsonResponse::HTTP_OK,
-            "message" => $data['status'] === RequestApprovalStatus::APPROVED ? "Successfully approved." : "Successfully denied.",
+            "message" => $data['status'] === RequestStatuses::APPROVED->value ? "Successfully approved." : "Successfully denied.",
         ];
     }
 }

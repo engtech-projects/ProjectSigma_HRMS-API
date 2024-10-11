@@ -44,16 +44,16 @@ class FormatApprovalsRequest extends FormRequest
                 "max:200",
             ],
             'approvals.*.remarks' => [
-                "required",
+                "nullable",
                 "string",
                 "max:200",
             ],
             'approvals.*.date_approved' => [
-                "required",
+                "nullable",
                 "date",
             ],
             'approvals.*.date_denied' => [
-                "required",
+                "nullable",
                 "date",
             ],
         ];
