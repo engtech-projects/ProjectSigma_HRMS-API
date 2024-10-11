@@ -184,7 +184,7 @@
                         @endforeach
                         @foreach ($payroll->otherDeductionPayments ?? [] as $otherDeduction)
                             <tr>
-                                <td class="payroll_label" style="text-align: right; padding-right:10px;">{{ $otherDeduction->deduction->otherdeduction_name }}</td>
+                                <td class="payroll_label" style="text-align: right; padding-right:10px;">{{ $otherDeduction->deduction->otherdeduction->otherdeduction_name }}</td>
                                 <td style="text-align: right; padding-right:10px;">{{ number_format($otherDeduction->amount, 2) }}</td>
                             </tr>
                         @endforeach
