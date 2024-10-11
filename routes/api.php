@@ -89,7 +89,6 @@ use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use App\Http\Controllers\RequestSalaryDisbursementController;
-use App\Models\EmployeeAllowances;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -328,9 +327,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // SERVICES ROUTES
     Route::prefix('services')->group(function () {
         Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+        Route::get("user-employees", [ApiServiceController::class, "getUserEmployees"]);
     });
     // Version 2 Optimization
-    Route::prefix("v2")->group(function() {
+    Route::prefix("v2")->group(function () {
         Route::prefix('payroll')->group(function () {
             Route::post('generate-payroll', [PayrollRecordController::class, 'generateV2']);
         });
