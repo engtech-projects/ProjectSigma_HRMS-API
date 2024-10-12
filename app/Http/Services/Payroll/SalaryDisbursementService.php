@@ -2,14 +2,12 @@
 
 namespace App\Http\Services\Payroll;
 
-use App\Enums\PayrollType;
 use App\Models\PayrollDetail;
 use App\Models\PayrollDetailsCharging;
 use App\Models\PayrollRecord;
 
 class SalaryDisbursementService
 {
-
     public static function getPayrollRecordsForDisbursement($payrollDate, $payrollType, $releaseType)
     {
         return PayrollRecord::where([

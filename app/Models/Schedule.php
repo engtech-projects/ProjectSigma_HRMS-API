@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\AttendanceLogType;
-use App\Enums\GroupType;
 use App\Enums\ScheduleGroupType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -107,7 +106,7 @@ class Schedule extends Model
         // login = (STARTTIME - BUFFER) to ENDTIME
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_IN)
-            ->where( function($query) {
+            ->where(function ($query) {
                 // ADDED ORWHERE FOR NEAR EDGE OF DAYS EXCEEDING WHEN ADDED/SUBTRACTED BUFFER
                 $query->whereTime('time', ">=", $this->buffer_time_start_early)
                 ->orWhereTime('time', ">=", $this->startTime);
@@ -121,7 +120,7 @@ class Schedule extends Model
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_OUT)
             ->whereTime('time', ">=", $this->startTime)
-            ->where( function($query) {
+            ->where(function ($query) {
                 // ADDED ORWHERE FOR NEAR EDGE OF DAYS EXCEEDING WHEN ADDED/SUBTRACTED BUFFER
                 $query->whereTime('time', "<=", $this->buffer_time_end_late)
                 ->orWhereTime('time', "<=", $this->endTime);
@@ -223,7 +222,7 @@ class Schedule extends Model
                     ->orWhereNull('endRecur');
                 });
             });
-        })->orWhere(function($query) use ($dateFrom, $dateTo) {
+        })->orWhere(function ($query) use ($dateFrom, $dateTo) {
             $query->where('scheduleType', self::TYPE_IRREGULAR)
             ->whereBetween('startRecur', [$dateFrom, $dateTo]);
         });

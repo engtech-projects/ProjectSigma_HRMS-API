@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\AssignTypes;
-use App\Enums\GroupType;
 use App\Traits\HasApproval;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;

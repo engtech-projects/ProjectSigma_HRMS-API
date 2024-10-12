@@ -34,13 +34,13 @@ class TravelOrderController extends Controller
     public function index(AllTravelRequest $request)
     {
         $validatedData = $request->validated();
-        $data = TravelOrder::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employees', function($query2) use ($validatedData) {
+        $data = TravelOrder::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employees', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
-            return $query->whereDate('date_of_travel',$validatedData['date_filter']);
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
+            return $query->whereDate('date_of_travel', $validatedData['date_filter']);
         })
         ->with(["user.employee"])
         ->orderBy("created_at", "DESC")
@@ -157,13 +157,13 @@ class TravelOrderController extends Controller
     public function myRequests(TravelRequest $request)
     {
         $validatedData = $request->validated();
-        $data = TravelOrder::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employees', function($query2) use ($validatedData) {
+        $data = TravelOrder::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employees', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
-            return $query->whereDate('date_of_travel',$validatedData['date_filter']);
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
+            return $query->whereDate('date_of_travel', $validatedData['date_filter']);
         })
         ->with(['user.employee'])
         ->myRequests()
@@ -182,13 +182,13 @@ class TravelOrderController extends Controller
     public function myApprovals(TravelApprovalRequest $request)
     {
         $validatedData = $request->validated();
-        $data = TravelOrder::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employees', function($query2) use ($validatedData) {
+        $data = TravelOrder::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employees', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
-            return $query->whereDate('date_of_travel',$validatedData['date_filter']);
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
+            return $query->whereDate('date_of_travel', $validatedData['date_filter']);
         })
         ->with(['user.employee'])
         ->myApprovals()

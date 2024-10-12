@@ -75,7 +75,7 @@ class TravelOrder extends Model
     public function scopeBetweenDates($query, $dateFrom, $dateTo)
     {
         return $query->whereBetween('date_of_travel', [$dateFrom, $dateTo])
-        ->orWhere(function($query) use ($dateFrom, $dateTo) {
+        ->orWhere(function ($query) use ($dateFrom, $dateTo) {
             $query->whereRaw('DATE_ADD(date_of_travel, INTERVAL duration_of_travel DAY) BETWEEN ? AND ?', [$dateFrom, $dateTo]);
         });
     }

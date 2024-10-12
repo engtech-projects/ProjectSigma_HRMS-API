@@ -110,11 +110,11 @@ class InternalWorkExperience extends Model
     }
     public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo)
     {
-        return $query->where(function($query) use ($dateFrom, $dateTo) {
+        return $query->where(function ($query) use ($dateFrom, $dateTo) {
             $query->whereBetween('date_from', [$dateFrom, $dateTo])
-                  ->orWhere(function($query) use ($dateFrom, $dateTo) {
+                  ->orWhere(function ($query) use ($dateFrom, $dateTo) {
                       $query->where('date_from', '<=', $dateFrom)
-                            ->where(function($query) use ($dateTo) {
+                            ->where(function ($query) use ($dateTo) {
                                 $query->where('date_to', '>=', $dateTo)
                                       ->orWhereNull('date_to');
                             });

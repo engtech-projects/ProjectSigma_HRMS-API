@@ -86,7 +86,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     if ($this->exceedsLeaveBalance() && $this->with_pay) {
                         $leaveRequestType = $this->getLeaveRequestType();
-                        $fail("Not enough ".$leaveRequestType." balance" );
+                        $fail("Not enough ".$leaveRequestType." balance");
                     }
                 },
             ],
@@ -112,6 +112,6 @@ class StoreEmployeeLeavesRequest extends FormRequest
     }
     protected function getLeaveRequestType()
     {
-        return Leave::where('id',$this->leave_id)->pluck('leave_name')->first();
+        return Leave::where('id', $this->leave_id)->pluck('leave_name')->first();
     }
 }

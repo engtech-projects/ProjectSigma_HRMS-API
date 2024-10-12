@@ -37,7 +37,7 @@ class Events extends Model
     {
         return $query->whereBetween('start_date', [$dateFrom, $dateTo])
         ->orwhereBetween('end_date', [$dateFrom, $dateTo])
-        ->orWhere(function($query) use ($dateFrom, $dateTo) {
+        ->orWhere(function ($query) use ($dateFrom, $dateTo) {
             $query->where('start_date', '<=', $dateFrom)
                   ->where('end_date', '>=', $dateTo);
         });

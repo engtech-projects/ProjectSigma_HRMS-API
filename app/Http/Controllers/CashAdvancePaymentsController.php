@@ -18,8 +18,8 @@ class CashAdvancePaymentsController extends Controller
     public function index(CashAdvancePaymentRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $data = CashAdvancePayments::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = CashAdvancePayments::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 return $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })

@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\AssignTypes;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
-use App\Http\Traits\HasApprovalValidation;
 
 class StoreEmployeeAllowancesRequest extends FormRequest
 {

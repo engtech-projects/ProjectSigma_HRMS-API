@@ -2,14 +2,11 @@
 
 namespace App\Models\Traits;
 
-use App\Enums\PersonelAccessForm;
 use App\Models\Department;
 use App\Models\Project;
-use Illuminate\Database\Eloquent\Builder;
 
 trait SeparatedCharging
 {
-
     public function getChargingNameAttribute()
     {
         if($this->project_id) {

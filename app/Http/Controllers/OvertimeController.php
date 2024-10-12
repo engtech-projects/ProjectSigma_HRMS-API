@@ -30,13 +30,13 @@ class OvertimeController extends Controller
     public function index(OvertimeRequest $request)
     {
         $validatedData = $request->validated();
-        $data = Overtime::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employees', function($query2) use ($validatedData) {
+        $data = Overtime::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employees', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
-            return $query->whereDate('overtime_date',$validatedData['date_filter']);
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
+            return $query->whereDate('overtime_date', $validatedData['date_filter']);
         })
         ->with('employees')
         ->orderBy("created_at", "DESC")
@@ -143,13 +143,13 @@ class OvertimeController extends Controller
     public function myRequests(OvertimeMyRequestRequest $request)
     {
         $validatedData = $request->validated();
-        $data = Overtime::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employees', function($query2) use ($validatedData) {
+        $data = Overtime::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employees', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
-            return $query->whereDate('overtime_date',$validatedData['date_filter']);
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
+            return $query->whereDate('overtime_date', $validatedData['date_filter']);
         })
         ->with(['user.employee'])
         ->myRequests()
@@ -167,13 +167,13 @@ class OvertimeController extends Controller
     public function myApprovals(OvertimeMyApprovalRequest $request)
     {
         $validatedData = $request->validated();
-        $data = Overtime::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employees', function($query2) use ($validatedData) {
+        $data = Overtime::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employees', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
-            return $query->whereDate('overtime_date',$validatedData['date_filter']);
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
+            return $query->whereDate('overtime_date', $validatedData['date_filter']);
         })
         ->with(['employees', 'department', 'project'])
         ->myApprovals()

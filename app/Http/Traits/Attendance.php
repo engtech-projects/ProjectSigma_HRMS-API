@@ -11,7 +11,6 @@ use App\Enums\EventTypes;
 use App\Models\Department;
 use App\Models\Overtime;
 use App\Models\Project;
-use App\Models\TravelOrder;
 use Illuminate\Support\Facades\Log;
 
 trait Attendance

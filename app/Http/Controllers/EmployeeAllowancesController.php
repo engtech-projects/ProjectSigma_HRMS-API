@@ -3,25 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
-use App\Enums\RequestStatusType;
-use App\Http\Requests\EmployeeAllowanceGenerateDraftRequest;
 use App\Http\Requests\FilterEmployeeAllowancesRequest;
 use App\Models\EmployeeAllowances;
 use App\Http\Requests\StoreEmployeeAllowancesRequest;
 use App\Http\Requests\UpdateEmployeeAllowancesRequest;
 use App\Http\Resources\AllowanceRecordsResource;
 use App\Http\Resources\AllowanceRequestResource;
-use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\EmployeeAllowanceService;
 use App\Models\AllowanceRequest;
 use App\Models\Department;
 use App\Models\Project;
-use App\Models\Users;
-use App\Notifications\AllowanceRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class EmployeeAllowancesController extends Controller
 {

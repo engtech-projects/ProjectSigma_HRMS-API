@@ -101,7 +101,7 @@ class PayrollService
         $nonFixedRateEmployees = [];
         foreach ($employees as $employee) {
             if (!$employee->current_employment) {
-                    $errors[] = "Employee ".$employee->fullname_first." is not Employed.";
+                $errors[] = "Employee ".$employee->fullname_first." is not Employed.";
             }
             if (!$employee->current_employment->position_id) {
                 $errors[] = "Employee ".$employee->fullname_first." has no Position Set.";
