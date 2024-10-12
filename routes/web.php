@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PayslipController;
 use App\Models\JobApplicants;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,4 @@ Route::get('/', function () {
 //     $data = JobApplicants::findOrFail(1);
 //     return view('reports.docs.application_form', ["application" => $data]);
 // });
+Route::get('payslip', [PayslipController::class, 'index']);

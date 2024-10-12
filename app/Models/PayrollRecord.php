@@ -7,6 +7,7 @@ use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasApproval;
@@ -63,6 +64,11 @@ class PayrollRecord extends Model
         return $this->belongsTo(Users::class, "created_by", "id");
     }
 
+    public function salary_disbursement(): BelongsToMany
+    {
+        return $this->belongsToMany(RequestSalaryDisbursement::class, RequestSalaryDisbursementPayrollRecords::class, "payroll_record_id", "request_salary_disbursement_id");
+    }
+
     public function charging()
     {
         if ($this->department_id) {
@@ -88,6 +94,7 @@ class PayrollRecord extends Model
     {
         return Carbon::parse($this->payroll_date)->format("F j, Y");
     }
+
 
     public function getCutoffStartHumanAttribute()
     {
