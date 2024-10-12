@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class EmployeeLeaves extends Model
@@ -126,7 +125,7 @@ class EmployeeLeaves extends Model
     {
         return $query->whereBetween('date_of_absence_from', [$dateFrom, $dateTo])
         ->orwhereBetween('date_of_absence_to', [$dateFrom, $dateTo])
-        ->orWhere(function($query) use ($dateFrom, $dateTo) {
+        ->orWhere(function ($query) use ($dateFrom, $dateTo) {
             $query->where('date_of_absence_from', '<=', $dateFrom)
                   ->where('date_of_absence_to', '>=', $dateTo);
         });

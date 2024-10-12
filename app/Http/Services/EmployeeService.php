@@ -9,7 +9,6 @@ use App\Http\Services\Attendance\AttendanceService;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\Department;
 use App\Models\Project;
-use Illuminate\Support\Facades\Log;
 
 class EmployeeService
 {
@@ -82,7 +81,7 @@ class EmployeeService
         //     $dtr["grosspay"] = $grossPay;
         //     return $dtr;
         // });
-        $dtr = AttendanceService::generateDtr($employee->id, $filters["cutoff_start"], $filters['cutoff_end'])['dtr']->map(function ($dtrData) use($employee) {
+        $dtr = AttendanceService::generateDtr($employee->id, $filters["cutoff_start"], $filters['cutoff_end'])['dtr']->map(function ($dtrData) use ($employee) {
             $dtrData["grosspay"] = $employee->salary_gross_pay($dtrData["metadata"]);
             return $dtrData;
         });

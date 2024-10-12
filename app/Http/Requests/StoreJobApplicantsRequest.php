@@ -17,7 +17,7 @@ class StoreJobApplicantsRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge(
-            array_map(function($value){
+            array_map(function ($value) {
                 return $value === 'n/a' || $value === 'N/A' ? null : $value;
             }, $this->all())
         );

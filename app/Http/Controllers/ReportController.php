@@ -30,7 +30,7 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
@@ -73,11 +73,11 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
-            return $query->when(!empty($validatedData['project_id']), function($query2) use ($validatedData) {
-                    return $query2->where('project_id', $validatedData["project_id"]);
-                })
-                ->when(!empty($validatedData['department_id']), function($query2) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
+                return $query2->where('project_id', $validatedData["project_id"]);
+            })
+                ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
                     return $query2->where('department_id', $validatedData["department_id"]);
                 })
                 ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
@@ -132,7 +132,7 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
             return $query
                 ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
@@ -165,7 +165,7 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
@@ -200,11 +200,11 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
-            return $query->when(!empty($validatedData['project_id']), function($query2) use ($validatedData) {
-                    return $query2->where('project_id', $validatedData["project_id"]);
-                })
-                ->when(!empty($validatedData['department_id']), function($query2) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
+                return $query2->where('project_id', $validatedData["project_id"]);
+            })
+                ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
                     return $query2->where('department_id', $validatedData["department_id"]);
                 })
                 ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
@@ -246,7 +246,7 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
             return $query
                 ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
@@ -275,7 +275,7 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
@@ -309,11 +309,11 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
-            return $query->when(!empty($validatedData['project_id']), function($query2) use ($validatedData) {
-                    return $query2->where('project_id', $validatedData["project_id"]);
-                })
-                ->when(!empty($validatedData['department_id']), function($query2) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
+                return $query2->where('project_id', $validatedData["project_id"]);
+            })
+                ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
                     return $query2->where('department_id', $validatedData["department_id"]);
                 })
                 ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
@@ -356,7 +356,7 @@ class ReportController extends Controller
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function($query) use ($validatedData) {
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
             return $query
                 ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();

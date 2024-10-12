@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 trait HasApproval
 {
-
     /**
      * ==================================================
      * MODEL RELATIONSHIPS
@@ -120,7 +119,7 @@ trait HasApproval
         // USE THIS FUNCTION IF SURE TO APPROVE CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
         $currentApproval = $this->getNextPendingApproval();
         $currentApprovalIndex = collect($this->approvals)->search($currentApproval);
-        $this->approvals = collect($this->approvals)->map(function ($approval, $index) use($currentApprovalIndex) {
+        $this->approvals = collect($this->approvals)->map(function ($approval, $index) use ($currentApprovalIndex) {
             if ($index === $currentApprovalIndex) {
                 $approval["status"] = RequestStatuses::APPROVED;
                 $approval["date_approved"] = Carbon::now()->format('F j, Y h:i A');
@@ -138,7 +137,7 @@ trait HasApproval
         // USE THIS FUNCTION IF SURE TO DENY CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
         $currentApproval = $this->getNextPendingApproval();
         $currentApprovalIndex = collect($this->approvals)->search($currentApproval);
-        $this->approvals = collect($this->approvals)->map(function ($approval, $index) use($currentApprovalIndex, $remarks) {
+        $this->approvals = collect($this->approvals)->map(function ($approval, $index) use ($currentApprovalIndex, $remarks) {
             if ($index === $currentApprovalIndex) {
                 $approval["status"] = RequestStatuses::DENIED;
                 $approval["date_denied"] = Carbon::now()->format('F j, Y h:i A');

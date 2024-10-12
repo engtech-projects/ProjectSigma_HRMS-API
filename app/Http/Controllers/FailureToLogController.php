@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
-use App\Enums\GroupType;
 use App\Http\Requests\FailToLogRequest;
 use App\Models\FailureToLog;
 use Illuminate\Http\JsonResponse;
@@ -33,8 +32,8 @@ class FailureToLogController extends Controller
     public function index(FailToLogRequest $request)
     {
         $validatedData = $request->validated();
-        $data = FailureToLog::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = FailureToLog::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })

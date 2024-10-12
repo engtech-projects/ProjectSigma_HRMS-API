@@ -2,16 +2,6 @@
 
 namespace App\Enums;
 
-use App\Models\AllowanceRequest;
-use App\Models\CashAdvance;
-use App\Models\EmployeeLeaves;
-use App\Models\EmployeePanRequest;
-use App\Models\FailureToLog;
-use App\Models\ManpowerRequest;
-use App\Models\Overtime;
-use App\Models\PayrollRecord;
-use App\Models\TravelOrder;
-
 enum NotificationModules: string
 {
     case ACCOUNTING = "Accounting";

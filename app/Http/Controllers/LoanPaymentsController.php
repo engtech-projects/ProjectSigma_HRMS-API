@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PostingStatusType;
 use App\Http\Requests\LoansAllRequest;
 use App\Http\Resources\LoanPaymentResource;
 use App\Models\LoanPayments;
@@ -19,8 +18,8 @@ class LoanPaymentsController extends Controller
     public function index(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
-        $data = LoanPayments::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = LoanPayments::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 return $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })

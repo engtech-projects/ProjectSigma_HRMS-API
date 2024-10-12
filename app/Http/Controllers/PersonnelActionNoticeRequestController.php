@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use App\Utils\PaginateResourceCollection;
-use App\Exceptions\TransactionFailedException;
 use App\Http\Services\EmployeePanRequestService;
 use App\Models\EmployeePanRequest;
 use App\Http\Resources\EmployeePanRequestResource;

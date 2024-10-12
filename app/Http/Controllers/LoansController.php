@@ -20,8 +20,8 @@ class LoansController extends Controller
     public function index(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
-        $data = Loans::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = Loans::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
@@ -41,8 +41,8 @@ class LoansController extends Controller
     public function ongoing(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
-        $data = Loans::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = Loans::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
@@ -63,8 +63,8 @@ class LoansController extends Controller
     public function paid(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
-        $data = Loans::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = Loans::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })

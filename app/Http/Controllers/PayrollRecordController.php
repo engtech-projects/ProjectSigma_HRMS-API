@@ -17,11 +17,9 @@ use App\Http\Requests\GeneratePayrollRequest;
 use App\Http\Requests\PayrollRecordsRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Http\Requests\StorePayrollRecordRequest;
-use App\Http\Resources\PayrollRecordResource;
 use App\Http\Resources\PayrollRecordsResource;
 use App\Http\Resources\PayrollRequestResource;
 use App\Models\Department;
-use App\Models\PayrollDetailDeduction;
 use App\Models\CashAdvancePayments;
 use App\Models\LoanPayments;
 use App\Models\OtherDeductionPayments;
@@ -31,7 +29,6 @@ use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
 use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
-use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 
 class PayrollRecordController extends Controller

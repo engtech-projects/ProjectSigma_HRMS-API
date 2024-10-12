@@ -32,10 +32,10 @@ class EmployeeLeavesController extends Controller
     public function index(AllLeaveRequestRequest $request)
     {
         $validatedData = $request->validated();
-        $data = EmployeeLeaves::when($request->has('employee_id'), function($query) use ($validatedData) {
+        $data = EmployeeLeaves::when($request->has('employee_id'), function ($query) use ($validatedData) {
             return $query->where('employee_id', $validatedData['employee_id']);
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
             return $query->where('date_of_absence_from', '<=', $validatedData['date_filter'])
                 ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
         })
@@ -143,10 +143,10 @@ class EmployeeLeavesController extends Controller
     public function myRequests(MyLeaveRequest $request)
     {
         $validatedData = $request->validated();
-        $data = EmployeeLeaves::when($request->has('employee_id'), function($query) use ($validatedData) {
+        $data = EmployeeLeaves::when($request->has('employee_id'), function ($query) use ($validatedData) {
             return $query->where('employee_id', $validatedData['employee_id']);
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
             return $query->where('date_of_absence_from', '<=', $validatedData['date_filter'])
                 ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
         })
@@ -185,10 +185,10 @@ class EmployeeLeavesController extends Controller
     public function myApprovals(ApprovalLeaveRequest $request)
     {
         $validatedData = $request->validated();
-        $data = EmployeeLeaves::when($request->has('employee_id'), function($query) use ($validatedData) {
+        $data = EmployeeLeaves::when($request->has('employee_id'), function ($query) use ($validatedData) {
             return $query->where('employee_id', $validatedData['employee_id']);
         })
-        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function($query) use ($validatedData) {
+        ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
             return $query->where('date_of_absence_from', '<=', $validatedData['date_filter'])
             ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
         })

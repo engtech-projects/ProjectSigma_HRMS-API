@@ -32,8 +32,8 @@ class CashAdvanceController extends Controller
     public function index(CashAdvanceAllRequest $request)
     {
         $validatedData = $request->validated();
-        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = CashAdvance::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
@@ -180,8 +180,8 @@ class CashAdvanceController extends Controller
     public function myRequests(CashAdvanceAllRequest $request)
     {
         $validatedData = $request->validated();
-        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = CashAdvance::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
@@ -203,8 +203,8 @@ class CashAdvanceController extends Controller
     public function myApprovals(CashAdvanceAllRequest $request)
     {
         $validatedData = $request->validated();
-        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = CashAdvance::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
@@ -222,8 +222,8 @@ class CashAdvanceController extends Controller
     public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)
     {
         $validatedData = $request->validated();
-        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = CashAdvance::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
@@ -245,8 +245,8 @@ class CashAdvanceController extends Controller
     public function getPaidCashAdvance(PaidCashAdvanceRequest $request)
     {
         $validatedData = $request->validated();
-        $data = CashAdvance::when($request->has('employee_id'), function($query) use ($validatedData) {
-            return $query->whereHas('employee', function($query2) use ($validatedData) {
+        $data = CashAdvance::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })

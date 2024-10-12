@@ -5,16 +5,13 @@ namespace App\Http\Services\Attendance;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceSettings;
 use App\Enums\EventTypes;
-use App\Enums\PayrollType;
 use App\Enums\WorkLocation;
 use App\Helpers;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Events;
-use App\Models\PayrollRecord;
 use App\Models\Settings;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Log;
 
 class AttendanceService

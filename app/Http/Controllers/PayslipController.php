@@ -1,13 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Enums\DisbursementStatus;
 use App\Http\Requests\PayslipRequest;
 use App\Http\Resources\PayrollDetailsResource;
 use App\Models\PayrollDetail;
-use Barryvdh\DomPDF\Facade\Pdf;
-
-use Illuminate\Http\Request;
 
 class PayslipController extends Controller
 {
