@@ -947,7 +947,14 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 2090,
                     'accessibilities_name' => AccessibilityInventory::INVENTORY_ITEMPROFILE_NEW_PROFILE->value,
-                    'deleted_at' => CArbon::now(),
+                    'deleted_at' => Carbon::now(),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2095,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_ITEMPROFILE_BULKUPLOAD->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
