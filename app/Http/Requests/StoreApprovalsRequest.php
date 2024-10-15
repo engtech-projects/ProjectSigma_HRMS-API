@@ -36,9 +36,9 @@ class StoreApprovalsRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals.*.userselector' => [
-                "nullable",
-                "boolean",
+            'approvals.*.selector_type' => [
+                "required",
+                "string",
             ],
             'approvals.*.user_id' => [
                 "nullable",

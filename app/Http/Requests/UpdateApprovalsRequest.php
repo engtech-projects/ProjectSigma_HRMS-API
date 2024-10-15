@@ -34,9 +34,9 @@ class UpdateApprovalsRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'approvals.*.userselector' => [
-                "nullable",
-                "boolean",
+            'approvals.*.selector_type' => [
+                "required",
+                "string",
             ],
             'approvals.*.user_id' => [
                 "nullable",
