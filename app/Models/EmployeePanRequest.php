@@ -422,6 +422,7 @@ class EmployeePanRequest extends Model
         $companyEmployment = $this->employee->company_employments;
         $interWorkExp = $this->getInternalWorkExp($this->employee_id);
         $interWorkExp->date_to = $this->date_of_effictivity;
+        $interWorkExp->status = EmployeeInternalWorkExperiencesStatus::PREVIOUS;
         $interWorkExp->save();
         $companyEmployment->update([
             'status' => EmployeeCompanyEmploymentsStatus::INACTIVE->value
