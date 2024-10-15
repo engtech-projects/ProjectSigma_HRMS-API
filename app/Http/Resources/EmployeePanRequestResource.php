@@ -51,6 +51,7 @@ class EmployeePanRequestResource extends JsonResource
             "request_created_at" => $this->request_created_at,
             "request_status" => $this->request_status,
             "comments" => $this->comments,
+            "created_by_user_name" => $this->created_by_user_name,
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "next_approval" => $this->getNextPendingApproval(),
         ];

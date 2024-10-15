@@ -4,8 +4,11 @@ namespace App\Http\Requests;
 
 use App\Enums\EmploymentStatus;
 use App\Enums\HireSourceType;
+use App\Enums\RequestStatuses;
 use App\Enums\SalaryRequestType;
 use App\Http\Traits\HasApprovalValidation;
+use App\Models\Employee;
+use App\Models\EmployeePanRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -47,12 +50,22 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "integer",
                 "exists:job_applicants,id",
                 'required_if:type,==,New Hire',
+                function ($attribute, $value, $fail) {
+                    if ($this->pendingNewHire($value)) {
+                        $fail("This NEW HIRE has a pending PAN request");
+                    }
+                },
             ],
             'employee_id' => [
                 "nullable",
                 "integer",
                 "exists:employees,id",
                 'required_if:type,==,Termination,Transfer,Promotion',
+                function ($attribute, $value, $fail) {
+                    if ($this->pendingEmployee($value)) {
+                        $fail("This EMPLOYEE has a pending PAN request");
+                    }
+                },
             ],
             'company_id_num' => [
                 "nullable",
@@ -131,5 +144,17 @@ class StoreEmployeePanRequestRequest extends FormRequest
             ],
             ...$this->storeApprovals(),
         ];
+    }
+    protected function pendingEmployee($employeeId)
+    {
+        return EmployeePanRequest::where('employee_id', $employeeId)
+        ->whereIn('request_status', [RequestStatuses::PENDING->value,])
+        ->exists();
+    }
+    protected function pendingNewHire($employeeId)
+    {
+        return EmployeePanRequest::where('pan_job_applicant_id', $employeeId)
+        ->whereIn('request_status', [RequestStatuses::PENDING->value,])
+        ->exists();
     }
 }
