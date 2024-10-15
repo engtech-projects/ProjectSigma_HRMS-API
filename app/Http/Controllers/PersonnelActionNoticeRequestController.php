@@ -176,7 +176,7 @@ class PersonnelActionNoticeRequestController extends Controller
         // Locate to get the last index of - + 1 for start
         // max cast substring to get max number
         $maxCompany = CompanyEmployee::addSelect(DB::raw("MAX(CAST(SUBSTRING(employeedisplay_id, LOCATE('-', employeedisplay_id, 6)+1, 4) AS UNSIGNED)) as companyid"))->first()->companyid;
-        $maxHiring = EmployeePanRequest::addSelect(DB::raw("MAX(CAST(SUBSTRING(company_id_num, LOCATE('-', company_id_num, 13)+1, 4) AS UNSIGNED)) as companyid"))->first()->companyid;
+        $maxHiring = EmployeePanRequest::addSelect(DB::raw("MAX(CAST(SUBSTRING(company_id_num, LOCATE('-', company_id_num, 6)+1, 4) AS UNSIGNED)) as companyid"))->first()->companyid;
         $max = $maxCompany > $maxHiring ? $maxCompany : $maxHiring;
         $date = Carbon::now()->format("ymj");
         return response()->json([
