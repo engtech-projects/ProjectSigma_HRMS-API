@@ -54,7 +54,7 @@
     </style>
     <body style="width: 210mm; height: 297mm; margin: 0; padding: 0; font-family: 'AkagiPro-extrabold'">
         @foreach ($payroll_details as $payroll)
-            <div style="page-break-before: always; height: 50%; width: 100%; overflow:hidden;">
+            <div style="height: 50%; width: 100%; overflow:hidden;">
                 <div class="logo_container">
                     <img src="{{ asset('images/print_logo.jpg') }}" alt="logo" style="height: 65px">
                     <h2 style="text-transform: uppercase; font-weight: bold;">PAYSLIP</h2>
@@ -157,10 +157,6 @@
                             <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->withholdingtax_contribution, 2) }}</td>
                         </tr>
                         <tr>
-                            <td class="payroll_label" style="text-align: right; padding-right:10px;">Gross Pay:</td>
-                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->gross_pay, 2) }}</td>
-                        </tr>
-                        <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">SSS -</td>
                             <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->sss_employee_contribution + $payroll->sss_employee_compensation, 2) }}</td>
                         </tr>
@@ -205,7 +201,7 @@
                         <p class="payroll_label">Receive by:</p>
                     </div>
                     <div style="padding-right:10px;">
-                        <p style="padding:0;">ROBERTO SEVILLA</p>
+                        <p style="padding:0;">{{ $payroll->payroll_record->salary_disbursement()->isApproved()->first()?->created_by_user_name }}</p>
                         <p style="padding:0;">HR SPECIALIST / PAYROLL</p>
                     </div>
                 </div>
