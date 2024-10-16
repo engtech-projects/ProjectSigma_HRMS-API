@@ -51,9 +51,10 @@ class ApprovalsController extends Controller
     public function store(StoreApprovalsRequest $request)
     {
         $main = new Approvals();
-        $main->fill($request->validated());
+        $validData = $request->validated();
+        $main->fill($validData);
         $data = json_decode('{}');
-        $main->approvals = json_encode($request->approvals);
+        $main->approvals = json_encode($validData['approvals']);
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
@@ -86,26 +87,21 @@ class ApprovalsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateApprovalsRequest $request, $id)
+    public function update(UpdateApprovalsRequest $request, Approvals $approval)
     {
-        $main = Approvals::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $main->fill($request->validated());
-            if ($main->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Update failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        $validData = $request->validated();
+        $approval->fill($validData);
+        if ($approval->save()) {
+            return response()->json([
+                'data' => $approval,
+                'message' => 'Successfully update.',
+                'success' => true,
+            ]);
         }
-
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404);
+        return response()->json([
+            "message" => "Update failed.",
+            "success" => false
+        ], 400);
     }
 
     /**
