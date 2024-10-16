@@ -25,6 +25,8 @@ class SSSContribution extends Model
         'employer_share',
         'employee_compensation',
         'employer_compensation',
+        'employee_wisp',
+        'employer_wisp',
     ];
 
 

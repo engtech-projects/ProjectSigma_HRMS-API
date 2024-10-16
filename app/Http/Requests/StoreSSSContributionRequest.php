@@ -64,6 +64,20 @@ class StoreSSSContributionRequest extends FormRequest
                 'decimal:0,2',
                 "numeric",
             ],
+            'employee_wisp' => [
+                "required",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
+                "numeric",
+            ],
+            'employer_wisp' => [
+                "required",
+                "min:0",
+                'max:999999',
+                'decimal:0,2',
+                "numeric",
+            ],
         ];
     }
 }
