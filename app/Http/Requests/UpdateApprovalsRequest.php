@@ -40,8 +40,8 @@ class UpdateApprovalsRequest extends FormRequest
             ],
             'approvals.*.user_id' => [
                 "nullable",
+                "required_if:approvals.*.selector_type,==,specific",
                 "exists:users,id",
-                "required_if:users.type,Employee,"
             ],
         ];
     }
