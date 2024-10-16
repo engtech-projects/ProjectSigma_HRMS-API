@@ -11,4 +11,9 @@ trait HasCreatedBy
     {
         return $this->belongsTo(Users::class, "created_by", "id");
     }
+
+    public function getCreatedByUserNameAttribute()
+    {
+        return $this->created_by_user->employee?->fullname_first ?? $this->created_by_user->name;
+    }
 }
