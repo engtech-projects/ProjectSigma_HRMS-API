@@ -79,6 +79,7 @@ use App\Http\Controllers\AttendancePortalController;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ExternalWorkExperienceController;
+use App\Http\Controllers\HrmsEnumController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\NotificationsController;
@@ -337,6 +338,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('attendance')->group(function () {
             Route::get('dtr', EmployeeDtrControllerV2::class);
         });
+    });
+    Route::prefix("enums")->group(function () {
+        Route::get('employee-heads', [HrmsEnumController::class, 'employeeHeads']);
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH
