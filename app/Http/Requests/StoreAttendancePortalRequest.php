@@ -28,19 +28,24 @@ class StoreAttendancePortalRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'group_type' => [
+            'assignments' => [
+                "required",
+                "array",
+                "min:1",
+            ],
+            'assignments.*.assignment_type' => [
                 "required",
                 "string",
-                new Enum(AssignTypes::class)
+                new Enum(AssignTypes::class),
             ],
-            'project_id' => [
-                'required_if:group_type,==,' . AssignTypes::PROJECT->value,
+            'assignments.*.project_id' => [
+                'required_if:assignments.*.assignment_type,==,' . AssignTypes::PROJECT->value,
                 'nullable',
                 "integer",
                 "exists:projects,id",
             ],
-            'department_id' => [
-                'required_if:group_type,==,' . AssignTypes::DEPARTMENT->value,
+            'assignments.*.department_id' => [
+                'required_if:assignments.*.assignment_type,==,' . AssignTypes::DEPARTMENT->value,
                 'nullable',
                 "integer",
                 "exists:departments,id",
