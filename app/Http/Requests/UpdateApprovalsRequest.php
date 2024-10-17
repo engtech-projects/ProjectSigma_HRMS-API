@@ -34,14 +34,14 @@ class UpdateApprovalsRequest extends FormRequest
                 "nullable",
                 "string",
             ],
-            'approvals.*.userselector' => [
-                "nullable",
-                "boolean",
+            'approvals.*.selector_type' => [
+                "required",
+                "string",
             ],
             'approvals.*.user_id' => [
                 "nullable",
+                "required_if:approvals.*.selector_type,==,specific",
                 "exists:users,id",
-                "required_if:users.type,Employee,"
             ],
         ];
     }

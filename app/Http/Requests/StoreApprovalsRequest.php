@@ -36,12 +36,13 @@ class StoreApprovalsRequest extends FormRequest
                 "required",
                 "string",
             ],
-            'approvals.*.userselector' => [
-                "nullable",
-                "boolean",
+            'approvals.*.selector_type' => [
+                "required",
+                "string",
             ],
             'approvals.*.user_id' => [
                 "nullable",
+                "required_if:approvals.*.selector_type,==,specific",
                 "integer",
                 "exists:users,id",
                 Rule::notIn([1]),
