@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('payroll_details', function (Blueprint $table) {
             $table->after('sss_employer_compensation', function (Blueprint $table) {
-                $table->float("sss_employee_wisp");
-                $table->float("sss_employer_wisp");
+                $table->float("sss_employee_wisp")->nullable();
+                $table->float("sss_employer_wisp")->nullable();
             });
         });
     }

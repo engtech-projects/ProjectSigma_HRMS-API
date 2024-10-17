@@ -424,7 +424,7 @@ class EmployeeService
                     "charge_type" => $charging["type"],
                     "charge_id" => $charging["id"],
                     "charging_name" => $charging["charging_name"],
-                    "amount" => $salaryDeductions["sss"]["employer_contribution"] + $salaryDeductions["sss"]["employer_compensation"],
+                    "amount" => $salaryDeductions["sss"]["employer_contribution"] + $salaryDeductions["sss"]["employer_compensation"] + $salaryDeductions["sss"]["employer_wisp"],
                 ],
             ];
         }

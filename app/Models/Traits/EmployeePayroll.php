@@ -71,7 +71,7 @@ trait EmployeePayroll
         $sss =  $deduction->contribution($salary);
         $result = [
             "employer_contribution" => 0,
-            "employee_contribution" =>  0,
+            "employee_contribution" => 0,
             "employer_compensation" => 0,
             "employee_compensation" => 0,
             "employer_wisp" => 0,
