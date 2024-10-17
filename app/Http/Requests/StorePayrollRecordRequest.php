@@ -210,6 +210,18 @@ class StorePayrollRecordRequest extends FormRequest
                 "min:0",
                 'decimal:0,2',
             ],
+            'payroll_details.*.sss_employee_wisp' => [
+                'nullable',
+                "numeric",
+                "min:0",
+                'decimal:0,2',
+            ],
+            'payroll_details.*.sss_employer_wisp' => [
+                'nullable',
+                "numeric",
+                "min:0",
+                'decimal:0,2',
+            ],
             'payroll_details.*.philhealth_employee_contribution' => [
                 'nullable',
                 "numeric",

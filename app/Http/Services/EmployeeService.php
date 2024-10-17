@@ -180,7 +180,7 @@ class EmployeeService
         $sss = $employee->sss_deduction($monthlySalary, $filters["payroll_type"]);
         $philhealth = $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]);
         $pagibig = $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]);
-        $ssExempt =  self::govNumberIsValid($employee->company_employments->sss_number) ? ($sss['employee_compensation'] + $sss['employee_contribution']) : 0;
+        $ssExempt =  self::govNumberIsValid($employee->company_employments->sss_number) ? ($sss['employee_contribution'] + $sss['employee_compensation'] + $sss['employee_wisp']) : 0;
         $philhealthExempt = self::govNumberIsValid($employee->company_employments->phic_number) ? $philhealth['employee_contribution'] : 0;
         $pagibigExempt = self::govNumberIsValid($employee->company_employments->pagibig_number) ? $pagibig['employee_contribution'] : 0;
         $monthlyTaxExempt = $ssExempt + $philhealthExempt + $pagibigExempt;
@@ -211,7 +211,7 @@ class EmployeeService
         $otherDeduction = 0;
         $hmo = 0;
         if ($deductions["sss"]) {
-            $sss = $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_contribution"];
+            $sss = $deductions["sss"]["employee_contribution"] + $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_wisp"];
         }
         if ($deductions["phic"]) {
             $phic = $deductions["phic"]["employee_contribution"];
