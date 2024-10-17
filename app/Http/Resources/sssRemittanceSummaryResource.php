@@ -41,6 +41,9 @@ class SssRemittanceSummaryResource extends JsonResource
                 "total_employee_compensation" => $dataCollection->sum("sss_employee_compensation"),
                 "total_employer_compensation" => $dataCollection->sum("sss_employer_compensation"),
                 "total_compensation" => $dataCollection->sum("total_sss_compensation"),
+                "total_employee_wisp" => $dataCollection->sum("sss_employee_wisp"),
+                "total_employer_wisp" => $dataCollection->sum("sss_employer_wisp"),
+                "total_wisp" => $dataCollection->sum("total_sss_wisp"),
                 "total_sss" => $dataCollection->sum("total_sss"),
             ]
         ];
