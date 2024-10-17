@@ -12,13 +12,16 @@ trait SalaryDeduction
         $sss = SSSContribution::getContribution($salary);
         $totalContribution = $sss->employee_share + $sss->employer_share;
         $totalCompensation = $sss->employee_compensation + $sss->employer_compensation;
-        $total = $totalCompensation + $totalContribution;
+        $totalWisp = $sss->employee_wisp + $sss->employer_wisp;
+        $total = $totalCompensation + $totalContribution + $totalWisp;
         $total = $payrollType === "weekly" ? $total / 4 : $total / 2;
         return [
             "employee_contribution" => $sss->employee_share,
             "employer_contribution" =>  $sss->employer_share,
             "employee_compensation" => $sss->employee_compensation,
             "employer_compensation" => $sss->employer_compensation,
+            "employee_wisp" => $sss->employee_wisp,
+            "employer_wisp" => $sss->employer_wisp,
             "total" => $total,
         ];
     }

@@ -34,10 +34,12 @@ class PayrollDetail extends Model
         "regular_holiday_ot_pay",
         "special_holiday_ot_pay",
         "gross_pay",
-        "sss_employee_compensation",
-        "sss_employer_compensation",
         "sss_employee_contribution",
         "sss_employer_contribution",
+        "sss_employee_compensation",
+        "sss_employer_compensation",
+        "sss_employee_wisp",
+        "sss_employer_wisp",
         "philhealth_employee_contribution",
         "philhealth_employer_contribution",
         "pagibig_employee_contribution",
@@ -99,9 +101,13 @@ class PayrollDetail extends Model
     {
         return $this->sss_employee_compensation + $this->sss_employer_compensation;
     }
+    public function getTotalSssWispAttribute()
+    {
+        return $this->sss_employee_wisp + $this->sss_employer_wisp;
+    }
     public function getTotalSssAttribute()
     {
-        return $this->total_sss_contribution + $this->total_sss_compensation;
+        return $this->total_sss_contribution + $this->total_sss_compensation + $this->total_sss_wisp;
     }
     public function getTotalPagibigContributionAttribute()
     {
