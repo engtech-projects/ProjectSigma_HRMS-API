@@ -23,8 +23,11 @@ class SssRemittanceSummaryResource extends JsonResource
                 'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
                 'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
                 'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
+                'sss_employer_wisp' => $employeeData->sum("sss_employer_wisp"),
+                'sss_employee_wisp' => $employeeData->sum("sss_employee_wisp"),
                 'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
                 'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
+                'total_sss_wisp' => $employeeData->sum("total_sss_wisp"),
                 'total_sss' => $employeeData->sum("total_sss"),
             ];
         });
@@ -38,6 +41,9 @@ class SssRemittanceSummaryResource extends JsonResource
                 "total_employee_compensation" => $dataCollection->sum("sss_employee_compensation"),
                 "total_employer_compensation" => $dataCollection->sum("sss_employer_compensation"),
                 "total_compensation" => $dataCollection->sum("total_sss_compensation"),
+                "total_employee_wisp" => $dataCollection->sum("sss_employee_wisp"),
+                "total_employer_wisp" => $dataCollection->sum("sss_employer_wisp"),
+                "total_wisp" => $dataCollection->sum("total_sss_wisp"),
                 "total_sss" => $dataCollection->sum("total_sss"),
             ]
         ];

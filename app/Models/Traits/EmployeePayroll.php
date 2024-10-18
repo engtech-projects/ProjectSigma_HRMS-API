@@ -71,11 +71,14 @@ trait EmployeePayroll
         $sss =  $deduction->contribution($salary);
         $result = [
             "employer_contribution" => 0,
-            "employee_contribution" =>  0,
+            "employee_contribution" => 0,
             "employer_compensation" => 0,
             "employee_compensation" => 0,
+            "employer_wisp" => 0,
+            "employee_wisp" => 0,
             "total_contribution" => 0,
             "total_compensation" => 0,
+            "total_wisp" => 0,
         ];
 
         if ($sss) {
@@ -84,8 +87,11 @@ trait EmployeePayroll
                 "employee_contribution" =>  $sss->employee_share,
                 "employer_compensation" => $sss->employer_compensation,
                 "employee_compensation" => $sss->employee_compensation,
+                "employer_wisp" => $sss->employer_wisp,
+                "employee_wisp" => $sss->employee_wisp,
                 "total_contribution" => $sss->employer_share + $sss->employee_share,
                 "total_compensation" => $sss->employer_compensation + $sss->employee_compensation,
+                "total_wisp" => $sss->employer_wisp + $sss->employee_wisp,
             ];
         }
 

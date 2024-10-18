@@ -20,6 +20,7 @@ class SSSEmployeeRemittanceResource extends JsonResource
             "employee_sss_id" => $this['employee']['company_employments']['sss_number'],
             "total_contribution" => $this['total_sss_contribution'],
             "total_compensation" => $this['total_sss_compensation'],
+            "total_wisp" => $this['total_sss_wisp'],
             "total_sss" => $this['total_sss'],
         ];
     }
