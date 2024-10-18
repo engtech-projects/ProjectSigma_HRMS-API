@@ -158,7 +158,7 @@
                         </tr>
                         <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">SSS -</td>
-                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->sss_employee_contribution + $payroll->sss_employee_compensation, 2) }}</td>
+                            <td style="text-align: right; padding-right:10px;">{{ number_format($payroll->sss_employee_contribution + $payroll->sss_employee_compensation + $payroll->sss_employee_wisp, 2) }}</td>
                         </tr>
                         <tr>
                             <td class="payroll_label" style="text-align: right; padding-right:10px;">PHIC -</td>
