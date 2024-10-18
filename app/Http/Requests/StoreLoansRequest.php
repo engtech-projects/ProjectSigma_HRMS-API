@@ -29,6 +29,11 @@ class StoreLoansRequest extends FormRequest
                 "integer",
                 "exists:employees,id",
             ],
+            'name' => [
+                "required",
+                "string",
+                "max:255",
+            ],
             'amount' => [
                 "required",
                 "numeric",
