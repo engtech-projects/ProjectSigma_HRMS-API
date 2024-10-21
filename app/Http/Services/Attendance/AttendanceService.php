@@ -344,6 +344,7 @@ class AttendanceService
             ];
             $charge = null;
             $leaveUsed = false; // To Indicate if leave has been used for the schedule
+            $leaveTypeUsed = "WITHOUT PAY";
             // Prepare TIME INS
             $scheduleDateTimeIn = $date->copy()->setTimeFromTimeString($schedule->startTime->format("H:i:s"));
             $timeIn = null;
@@ -408,12 +409,13 @@ class AttendanceService
                             $leaveUsedToday[$index] < $leave->durationForDate($date)
                         )
                     ) {
+                        $leaveUsed = true;
                         if ($leave->with_pay) {
-                            $leaveUsed = true;
+                            $leaveTypeUsed = "WITH PAY";
                             $timeIn = $schedule->startTime;
                         }
                         // $leaveUsedToday[$index] += 0.5; // Deduct half day Used to leave for a leave in OUT
-                        $scheduleMetaData["start_time_log"] = $leave->leave->leave_name;
+                        $scheduleMetaData["start_time_log"] = $leave->leave->leave_name . " - " . $leaveTypeUsed;
                         $charge = [
                             "class" => $leave->charging_class,
                             "id" => $leave->charging_id,
@@ -460,9 +462,11 @@ class AttendanceService
                 }
                 // Is On Leave
                 if (!$timeOut && $leaveUsed) {
-                    $timeOut = $schedule->endTime;
+                    if ($leaveTypeUsed == "WITH PAY") {
+                        $timeOut = $schedule->endTime;
+                    }
                     $leaveUsedToday[$index] = + 0.5;
-                    $scheduleMetaData["end_time_log"] = $leave->leave->leave_name;
+                    $scheduleMetaData["end_time_log"] = $leave->leave->leave_name . " - " . $leaveTypeUsed;
                 }
             }
             if (!$timeIn || !$timeOut) {
