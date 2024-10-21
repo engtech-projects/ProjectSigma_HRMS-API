@@ -401,7 +401,13 @@ class AttendanceService
                     // Only sets time if on leave with pay
                     // Deduct half day Used to leave for a leave
                     // display leave name for any type of leave
-                    if (!$timeIn && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
+                    if (
+                        !$timeIn &&
+                        (
+                            $leave->durationForDate($date) >= 1 ||
+                            $leaveUsedToday[$index] < $leave->durationForDate($date)
+                        )
+                    ) {
                         if ($leave->with_pay) {
                             $leaveUsed = true;
                             $timeIn = $schedule->startTime;
@@ -453,15 +459,10 @@ class AttendanceService
                     $scheduleMetaData["end_time_log"] = "ON TRAVEL ORDER";
                 }
                 // Is On Leave
-                foreach ($employeeDayData["leaves"] as $index => $leave) {
-                    if (!$timeOut && $leaveUsed && $leaveUsedToday[$index] < $leave->durationForDate($date)) {
-                        if ($leave->with_pay) {
-                            $timeOut = $schedule->endTime;
-                        }
-                        $leaveUsedToday[$index] = + 0.5;
-                        $scheduleMetaData["end_time_log"] = $leave->leave->leave_name;
-                    }
-                    break;
+                if (!$timeOut && $leaveUsed) {
+                    $timeOut = $schedule->endTime;
+                    $leaveUsedToday[$index] = + 0.5;
+                    $scheduleMetaData["end_time_log"] = $leave->leave->leave_name;
                 }
             }
             if (!$timeIn || !$timeOut) {
