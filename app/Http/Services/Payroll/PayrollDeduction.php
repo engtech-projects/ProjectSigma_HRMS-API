@@ -41,8 +41,11 @@ class PayrollDeduction
             "employee_contribution" =>  0,
             "employer_compensation" => 0,
             "employee_compensation" => 0,
+            "employer_wisp" => 0,
+            "employee_wisp" => 0,
             "total_contribution" => 0,
             "total_compensation" => 0,
+            "total_wisp" => 0,
         ];
         if ($sss) {
             $contribution = $this->getContributionTotal([
@@ -53,14 +56,21 @@ class PayrollDeduction
                 "employer" => $sss->employer_compensation,
                 "employee" => $sss->employee_compensation
             ]);
+            $wisp = $this->getCompensationTotal([
+                "employer" => $sss->employer_wisp,
+                "employee" => $sss->employee_wisp
+            ]);
 
             $result = [
                 "employer_contribution" => $contribution["employer"],
                 "employee_contribution" =>  $contribution["employee"],
                 "employer_compensation" => $compensation["employer"],
                 "employee_compensation" => $compensation["employee"],
+                "employer_wisp" => $wisp["employer"],
+                "employee_wisp" => $wisp["employee"],
                 "total_contribution" => $contribution["employer"] + $contribution["employee"],
-                "total_compensation" => $compensation["employer"] + $compensation["employee"]
+                "total_compensation" => $compensation["employer"] + $compensation["employee"],
+                "total_wisp" => $wisp["employer"] + $wisp["employee"],
             ];
         }
         return $result;

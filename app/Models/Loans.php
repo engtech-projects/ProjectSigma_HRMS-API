@@ -28,9 +28,10 @@ class Loans extends Model
     protected $fillable = [
         'id',
         'employee_id',
+        'name',
+        'amount',
         'terms_of_payment', // Not Sure but Removable. deduct every payroll
         'installment_deduction',
-        'amount',
         'deduction_date_start',
     ];
 

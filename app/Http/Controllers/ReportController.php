@@ -35,16 +35,19 @@ class ReportController extends Controller
                 ->isApproved();
         })
         ->where(function ($query) {
-            $query->where("sss_employee_compensation", ">", 0)
-            ->orWhere("sss_employee_contribution", ">", 0)
+            $query->Where("sss_employee_contribution", ">", 0)
+            ->orWhere("sss_employer_contribution", ">", 0)
+            ->orWhere("sss_employee_compensation", ">", 0)
             ->orWhere("sss_employer_compensation", ">", 0)
-            ->orWhere("sss_employer_contribution", ">", 0);
+            ->orWhere("sss_employee_wisp", ">", 0)
+            ->orWhere("sss_employer_wisp", ">", 0);
         })
         ->orderBy("created_at", "DESC")
         ->get()
         ->append([
             "total_sss_contribution",
             "total_sss_compensation",
+            "total_sss_wisp",
             "total_sss",
         ])
         ->sortBy('employee.fullname_last', SORT_NATURAL)
@@ -56,8 +59,11 @@ class ReportController extends Controller
                 'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
                 'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
                 'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
+                'sss_employer_wisp' => $employeeData->sum("sss_employer_wisp"),
+                'sss_employee_wisp' => $employeeData->sum("sss_employee_wisp"),
                 'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
                 'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
+                'total_sss_wisp' => $employeeData->sum("total_sss_wisp"),
                 'total_sss' => $employeeData->sum("total_sss"),
             ];
         })
@@ -84,16 +90,19 @@ class ReportController extends Controller
                 ->isApproved();
         })
         ->where(function ($query) {
-            $query->where("sss_employee_compensation", ">", 0)
-            ->orWhere("sss_employee_contribution", ">", 0)
+            $query->Where("sss_employee_contribution", ">", 0)
+            ->orWhere("sss_employer_contribution", ">", 0)
+            ->orWhere("sss_employee_compensation", ">", 0)
             ->orWhere("sss_employer_compensation", ">", 0)
-            ->orWhere("sss_employer_contribution", ">", 0);
+            ->orWhere("sss_employee_wisp", ">", 0)
+            ->orWhere("sss_employer_wisp", ">", 0);
         })
         ->orderBy("created_at", "DESC")
         ->get()
         ->append([
             "total_sss_contribution",
             "total_sss_compensation",
+            "total_sss_wisp",
             "total_sss",
         ])
         ->sortBy('employee.fullname_last', SORT_NATURAL)
@@ -105,8 +114,11 @@ class ReportController extends Controller
                 'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
                 'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
                 'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
+                'sss_employer_wisp' => $employeeData->sum("sss_employer_wisp"),
+                'sss_employee_wisp' => $employeeData->sum("sss_employee_wisp"),
                 'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
                 'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
+                'total_sss_wisp' => $employeeData->sum("total_sss_wisp"),
                 'total_sss' => $employeeData->sum("total_sss"),
                 "payroll_record" => [
                     ...$employeeData->first()->payroll_record->toArray(),
@@ -138,16 +150,19 @@ class ReportController extends Controller
                 ->isApproved();
         })
         ->where(function ($query) {
-            $query->where("sss_employee_compensation", ">", 0)
-            ->orWhere("sss_employee_contribution", ">", 0)
+            $query->Where("sss_employee_contribution", ">", 0)
+            ->orWhere("sss_employer_contribution", ">", 0)
+            ->orWhere("sss_employee_compensation", ">", 0)
             ->orWhere("sss_employer_compensation", ">", 0)
-            ->orWhere("sss_employer_contribution", ">", 0);
+            ->orWhere("sss_employee_wisp", ">", 0)
+            ->orWhere("sss_employer_wisp", ">", 0);
         })
         ->orderBy("created_at", "DESC")
         ->get()
         ->append([
             "total_sss_contribution",
             "total_sss_compensation",
+            "total_sss_wisp",
             "total_sss",
         ])
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
