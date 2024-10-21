@@ -22,7 +22,7 @@ class AttendancePortalController extends Controller
      */
     public function index()
     {
-        $main = AttendancePortal::with('assignment')->get();
+        $main = AttendancePortal::get();
         if (!is_null($main)) {
             $collection = collect(AttendancePortalResource::collection($main));
             return new JsonResponse([
@@ -164,7 +164,7 @@ class AttendancePortalController extends Controller
     public function attendancePortalSession(Request $request)
     {
         $portalToken = $request->header("Portal_token", $request->bearerToken());
-        $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
+        $main = AttendancePortal::where('portal_token', $portalToken)->first();
         if ($main) {
             return new JsonResponse([
                 'success' => true,

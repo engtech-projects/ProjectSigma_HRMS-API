@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,33 +43,54 @@ class AttendancePortal extends Model
         'id',
         'name_location',
         'ip_address',
-        'assignment_type',
-        'assignment_id',
         'portal_token',
         'last_used',
     ];
 
-    public function assignment(): MorphTo
+    /**
+     * ==================================================
+     * MODEL RELATIONSHIPS
+     * ==================================================
+     */
+    public function departments()
     {
-        return $this->morphTo();
+        return $this->morphedByMany(Department::class, 'assignment', 'att_port_assigns');
     }
-    public function department(): MorphTo
+    public function projects()
     {
-        return $this->morphTo()->where('assignment_type', '=', Department::class);
+        return $this->morphedByMany(Project::class, 'assignment', 'att_port_assigns');
+    }
+    /**
+     * ==================================================
+     * MODEL ATTRIBUTES
+     * ==================================================
+     */
+    public function getDepartmentNamesAttribute()
+    {
+        // return "department names";
+        return implode(", ", $this->departments()->pluck("department_name")->toArray());
     }
 
-    public function project(): MorphTo
+    public function getProjectNamesAttribute()
     {
-        return $this->morphTo()->where('assignment_type', '=', Project::class);
+        // return "project names";
+        return implode(", ", $this->projects()->pluck("project_code")->toArray());
     }
+    /**
+     * ==================================================
+     * STATIC SCOPES
+     * ==================================================
+     */
 
-    public function getAssignmentNameAttribute()
-    {
-        if ($this->assignment_type == AttendancePortal::DEPARTMENT) {
-            return $this->assignment->department_name;
-        }
-        if ($this->assignment_type == AttendancePortal::PROJECT) {
-            return $this->assignment->project_code;
-        }
-    }
+    /**
+     * ==================================================
+     * DYNAMIC SCOPES
+     * ==================================================
+     */
+
+    /**
+     * ==================================================
+     * MODEL FUNCTIONS
+     * ==================================================
+     */
 }
