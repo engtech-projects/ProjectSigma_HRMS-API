@@ -52,4 +52,23 @@ class AttendancePortal extends Model
     {
         return $this->morphTo();
     }
+    public function department(): MorphTo
+    {
+        return $this->morphTo()->where('assignment_type', '=', Department::class);
+    }
+
+    public function project(): MorphTo
+    {
+        return $this->morphTo()->where('assignment_type', '=', Project::class);
+    }
+
+    public function getAssignmentNameAttribute()
+    {
+        if ($this->assignment_type == AttendancePortal::DEPARTMENT) {
+            return $this->assignment->department_name;
+        }
+        if ($this->assignment_type == AttendancePortal::PROJECT) {
+            return $this->assignment->project_code;
+        }
+    }
 }
