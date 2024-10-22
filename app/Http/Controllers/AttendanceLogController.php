@@ -20,6 +20,7 @@ use App\Models\AttendancePortal;
 use App\Models\Employee;
 use App\Models\EmployeePattern;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceLogController extends Controller
 {
@@ -82,11 +83,29 @@ class AttendanceLogController extends Controller
     public function facialAttendance(StoreFacialAttendanceLog $request)
     {
         $portalToken = $request->header("Portal_token", $request->bearerToken());
-        $dateNow = Carbon::now()->format('Y-m-d');
-        $timeNow = Carbon::now()->format('H:i:s');
+        $now = Carbon::now();
+        $dateNow = $now->copy()->format('Y-m-d');
+        $timeNow = $now->copy()->format('H:i:s');
         $val = $request->validated();
+        // Check if Already Logged in/out within 15 mins before and after
+        $lastLogSame = AttendanceLog::where([
+            "employee_id" => $val["employee_id"],
+            "date" => $dateNow,
+            "log_type" => $val["log_type"],
+        ])->whereBetween(
+            "time",
+            [$now->copy()->subMinutes(15)->format('H:i:s'), $now->copy()->addMinutes(15)->format('H:i:s')]
+        )
+        ->first();
+        if ($lastLogSame) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Already Logged " . $lastLogSame->log_type,
+            ], JsonResponse::HTTP_EXPECTATION_FAILED);
+        }
         if ($val) {
             $mainsave = new AttendanceLog();
+            $mainsave->fill($val);
             $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
             $type = $val["assignment_type"];
             $portalDepartmentId = $main->departments()->first()->id;
@@ -112,7 +131,6 @@ class AttendanceLogController extends Controller
             $mainsave->date = $dateNow;
             $mainsave->time = $timeNow;
             $mainsave->attendance_type = AttendanceType::FACIAL->value;
-            $mainsave->fill($val);
             if ($mainsave->save()) {
                 $return = [];
                 $return['log_saved'] = $mainsave;
