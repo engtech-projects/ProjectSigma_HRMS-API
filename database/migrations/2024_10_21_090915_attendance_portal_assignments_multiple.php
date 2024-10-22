@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('attendance_portal_id');
             $table->morphs('assignment');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

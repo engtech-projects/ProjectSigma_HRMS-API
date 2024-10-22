@@ -28,6 +28,15 @@ class AttendancePortalResource extends JsonResource
             "departments" => $this->departments,
             "project_names" => $this->project_names,
             "department_names" => $this->department_names,
+            "assignment_count" => $this->assignment_count,
+            // LEGACY
+            "assignment_type" => $this->assignment_type,
+            "assignment_id" => $this->assignment_id,
+            "assignment" => $this->assignment,
+            // "name" => $this->name, // OLD
+            // "type" => $this->type, // OLD
+            "type" => $this->type ? $this->type : "Multiple/New",
+            "name" => $this->name ? $this->name : $this->department_project_names,
         ];
     }
 }

@@ -7,9 +7,12 @@ use App\Models\AttendancePortal;
 use App\Http\Requests\StoreAttendancePortalRequest;
 use App\Http\Requests\UpdateAttendancePortalRequest;
 use App\Http\Resources\AttendancePortalResource;
+use App\Models\Department;
+use App\Models\Project;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -27,7 +30,7 @@ class AttendancePortalController extends Controller
             $collection = collect(AttendancePortalResource::collection($main));
             return new JsonResponse([
                 'success' => true,
-                'message' => 'TravelOrder Request fetched.',
+                'message' => 'Attendance Portals fetched.',
                 'data' => PaginateResourceCollection::paginate(collect($collection), 15)
             ]);
         }
@@ -44,31 +47,28 @@ class AttendancePortalController extends Controller
     {
         $valData = $request->validated();
         try {
-            if ($valData) {
-                $data = new AttendancePortal();
-                $data->fill($valData);
-                $type = $request["group_type"];
-                switch ($type) {
-                    case AssignTypes::DEPARTMENT->value:
-                        $data->assignment_type = AttendancePortalController::DEPARTMENT;
-                        $data->assignment_id = $request["department_id"];
-                        break;
-                    case AssignTypes::PROJECT->value:
-                        $data->assignment_type = AttendancePortalController::PROJECT;
-                        $data->assignment_id = $request["project_id"];
-                        break;
-                }
-                $secret = Str::random(30);
-                $hashmake = Hash::make($secret);
-                $hashname = hash('sha256', $hashmake);
-                $data->portal_token = $hashname;
-                $data->save();
-                return new JsonResponse([
-                    'success' => true,
-                    'message' => 'Successfully save.',
-                    'data' => $data,
-                ], JsonResponse::HTTP_OK);
+            DB::beginTransaction();
+            $data = new AttendancePortal();
+            $data->fill($valData);
+            $secret = Str::random(30);
+            $hashmake = Hash::make($secret);
+            $hashname = hash('sha256', $hashmake);
+            $data->portal_token = $hashname;
+            $data->save();
+            $assignments = collect($valData["assignments"])->where("assignment_type","==",AssignTypes::DEPARTMENT->value);
+            if ($assignments->count() > 0) {
+                $data->departments()->attach($assignments->pluck("department_id")->toArray(), ["assignment_type" => Department::class]);
             }
+            $assignments = collect($valData["assignments"])->where("assignment_type","==",AssignTypes::PROJECT->value);
+            if ($assignments->count() > 0) {
+                $data->projects()->attach($assignments->pluck("project_id")->toArray(), ["assignment_type" => Project::class]);
+            }
+            DB::commit();
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Successfully save.',
+                'data' => $data,
+            ], JsonResponse::HTTP_OK);
         } catch (\Throwable $th) {
             return new JsonResponse([
                 'success' => false,
@@ -169,7 +169,7 @@ class AttendancePortalController extends Controller
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Successfully fetch.',
-                'data' => $main,
+                'data' => new AttendancePortalResource($main),
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([

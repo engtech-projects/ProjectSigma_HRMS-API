@@ -32,6 +32,7 @@ class StoreAttendancePortalRequest extends FormRequest
                 "required",
                 "array",
                 "min:1",
+                "max:10",
             ],
             'assignments.*.assignment_type' => [
                 "required",
