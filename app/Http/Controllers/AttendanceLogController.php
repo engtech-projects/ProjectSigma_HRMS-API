@@ -100,7 +100,7 @@ class AttendanceLogController extends Controller
         if ($lastLogSame) {
             return new JsonResponse([
                 "success" => false,
-                "message" => "Already Logged " . $lastLogSame->log_type,
+                "message" => "Already Logged " . $lastLogSame->log_type . " on " . $lastLogSame->time_human,
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
         if ($val) {
@@ -108,7 +108,8 @@ class AttendanceLogController extends Controller
             $mainsave->fill($val);
             $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
             $type = $val["assignment_type"];
-            $portalDepartmentId = $main->departments()->first()->id;
+            $portalDepartmentId = $main->departments()->first()?->id;
+            $portalProjectId = $main->projects()->first()?->id;
             $employee = Employee::with('employee_schedule', 'profile_photo', )->find($val["employee_id"]);
             // WHEN TYPE IS PROJECT THE SPECIFIED project_id WILL BE REQUIRED AND LOGGED IN THE ATTENDANCE AS CHARGED
             // WHEN TYPE IS DEPARTMENT THE SPECIFIED department_id WILL BE A PLACEHOLDER AS A LAST RESORT INCASE THE EMPLOYEE DOESN'T HAVE A DEPARTMENT OR PROJECT
@@ -125,7 +126,11 @@ class AttendanceLogController extends Controller
                     break;
                 case AssignTypes::PROJECT->value:
                     $type = AssignTypes::PROJECT->value;
-                    $mainsave->project_id = $val["project_id"];
+                    if ($val["project_id"]) {
+                        $mainsave->project_id = $val["project_id"];
+                    } else {
+                        $mainsave->project_id = $portalProjectId;
+                    }
                     break;
             }
             $mainsave->date = $dateNow;
