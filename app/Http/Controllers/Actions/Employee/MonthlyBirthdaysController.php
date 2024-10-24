@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Actions\Employee;
 
+use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
@@ -17,7 +18,10 @@ class MonthlyBirthdaysController extends Controller
     public function __invoke()
     {
         $month = Carbon::now()->format('m');
-        $employees = Employee::whereMonth('date_of_birth', $month)
+        $employees = Employee::whereHas('company_employments', function ($query) {
+            $query->where("status", EmployeeCompanyEmploymentsStatus::ACTIVE);
+        })
+        ->whereMonth('date_of_birth', $month)
         ->orderByRaw('DAY(date_of_birth)')
         ->get();
 

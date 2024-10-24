@@ -246,6 +246,7 @@ class ReportController extends Controller
         })
         ->values()
         ->all();
+        $data = collect($data);
         $firstRecord = $data->first();
         $dataArray = $data->all();
         return new JsonResponse([

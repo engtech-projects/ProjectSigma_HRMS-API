@@ -508,7 +508,8 @@ class AttendanceService
             array_push($schedulesSummary, $scheduleMetaData);
             $absentToday = false;
         }
-        if ($absentToday && !$isSunday && !$leaveUsed) {
+
+        if ($absentToday && !$isSunday && ((isset($leaveUsed)  && !$leaveUsed) || !isset($leaveUsed))) {
             $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
                 $data["start_time_log"] .= " ABSENT";
                 $data["end_time_log"] .= " ABSENT";
