@@ -26,9 +26,9 @@
                 <col style="width: 33.33%;">
             </colgroup>
             <tr class="table_header">
-                <th style="text-align: center;">Earnings</th>
-                <th style="text-align: center;">Hours</th>
-                <th style="text-align: center;">Amount</th>
+                <th style="text-align: right;">Earnings</th>
+                <th style="text-align: right;">Hours</th>
+                <th style="text-align: right;">Amount</th>
             </tr>
             <tr>
                 <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">Basic Reg. hrs. -</td>
@@ -93,8 +93,8 @@
                 <col style="width: 50%;">
             </colgroup>
             <tr class="table_header">
-                <th style="text-align: center;">Deduction:</th>
-                <th style="text-align: center;">Amount</th>
+                <th style="text-align: right;">Deduction:</th>
+                <th style="text-align: right;">Amount</th>
             </tr>
             <tr>
                 <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">Withholding Tax -</td>
