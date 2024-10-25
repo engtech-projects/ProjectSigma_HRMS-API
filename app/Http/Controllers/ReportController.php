@@ -253,7 +253,7 @@ class ReportController extends Controller
             'success' => true,
             'message' => 'Project Remittance Request fetched.',
             'data' => [
-                'charging' => $firstRecord?->payroll_record->charging_name,
+                'charging' => $firstRecord['payroll_record']['charging_name'],
                 'remittances' => PagibigGroupRemittanceResource::collection($dataArray)
             ],
         ]);
