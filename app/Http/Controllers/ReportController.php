@@ -242,6 +242,10 @@ class ReportController extends Controller
                 'pagibig_employee_contribution' => $employeeData->sum("pagibig_employee_contribution"),
                 'pagibig_employer_contribution' => $employeeData->sum("pagibig_employer_contribution"),
                 'total_pagibig_contribution' => $employeeData->sum("total_pagibig_contribution"),
+                "payroll_record" => [
+                    ...$employeeData->first()->payroll_record->toArray(),
+                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                ],
             ];
         })
         ->values()
@@ -352,6 +356,10 @@ class ReportController extends Controller
                 'philhealth_employee_contribution' => $employeeData->sum("philhealth_employee_contribution"),
                 'philhealth_employer_contribution' => $employeeData->sum("philhealth_employer_contribution"),
                 'total_philhealth_contribution' => $employeeData->sum("total_philhealth_contribution"),
+                "payroll_record" => [
+                    ...$employeeData->first()->payroll_record->toArray(),
+                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                ],
             ];
         })
         ->values()

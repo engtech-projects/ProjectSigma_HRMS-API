@@ -135,6 +135,7 @@ class PayrollRecordController extends Controller
         $attribute = $request->validated();
         $attribute['request_status'] = RequestStatusType::PENDING->value;
         $attribute['created_by'] = auth()->user()->id;
+        $attribute["charging_type"] = $attribute["group_type"];
         // try {
         DB::transaction(function () use ($attribute) {
             $payroll = PayrollRecord::create($attribute);
