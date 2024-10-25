@@ -17,6 +17,20 @@ class PayrollDetailsCharging extends Model
     use SoftDeletes;
     use HasApiTokens;
 
+    CONST BASIC_PAY_NAMES = [
+        "Salary Regular Regular",
+        "Salary Rest Regular",
+        "Salary RegularHoliday Regular",
+        "Salary SpecialHoliday Regular",
+        "Salary Adjustment",
+    ];
+    CONST OVERTIME_PAY_NAMES = [
+        "Salary Regular Overtime",
+        "Salary Rest Overtime",
+        "Salary RegularHoliday Overtime",
+        "Salary SpecialHoliday Overtime",
+    ];
+
     protected $table = "payroll_details_charging";
 
     protected $fillable = [

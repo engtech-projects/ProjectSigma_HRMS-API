@@ -153,4 +153,14 @@ class PayrollDetail extends Model
         }
         return $amt;
     }
+    public function getSalaryChargingNamesAttribute()
+    {
+        $names = [];
+        foreach ($this->charges as $charge) {
+            if (in_array($charge->name, PayrollDetailsCharging::BASIC_PAY_NAMES) || in_array($charge->name, PayrollDetailsCharging::OVERTIME_PAY_NAMES)) {
+                $names[] = $charge->charging_name;
+            }
+        }
+        return implode(", ", $names);
+    }
 }
