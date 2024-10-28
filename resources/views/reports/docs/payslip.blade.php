@@ -116,10 +116,10 @@
                 <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">CASH ADVANCE -</td>
                 <td style="text-align: right; padding:0px; line-height:16px;">{{ number_format($payroll->total_cash_advance_payments, 2) }}</td>
             </tr>
-            @foreach ($payroll->loanPayments ?? [] as $loan)
+            @foreach ($payroll->loanPayments ?? [] as $loanPayment)
             <tr>
-                <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">Loan</td>
-                <td style="text-align: right; padding:0px; line-height:16px;">{{ number_format($loan->amount, 2) }}</td>
+                <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">{{ $loanPayment->deduction->loan->name == '' ? 'Loan' : $loanPayment->deduction->loan->name }}</td>
+                <td style="text-align: right; padding:0px; line-height:16px;">{{ number_format($loanPayment->amount, 2) }}</td>
             </tr>
             @endforeach
             @foreach ($payroll->otherDeductionPayments ?? [] as $otherDeduction)
