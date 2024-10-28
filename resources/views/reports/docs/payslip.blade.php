@@ -118,7 +118,7 @@
             </tr>
             @foreach ($payroll->loanPayments ?? [] as $loanPayment)
             <tr>
-                <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">{{ $loanPayment->deduction->loan->name ?? 'Loan' }}</td>
+                <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">{{ $loanPayment->deduction->loan->name == '' ? 'Loan' : $loanPayment->deduction->loan->name }}</td>
                 <td style="text-align: right; padding:0px; line-height:16px;">{{ number_format($loanPayment->amount, 2) }}</td>
             </tr>
             @endforeach
