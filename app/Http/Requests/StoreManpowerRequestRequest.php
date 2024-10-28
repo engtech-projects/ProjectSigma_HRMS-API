@@ -88,6 +88,12 @@ class StoreManpowerRequestRequest extends FormRequest
             'preferred_qualifications' => [
                 "required",
                 "string",
+                "max:250"
+            ],
+            'remarks' => [
+                "required",
+                "string",
+                "max:250"
             ],
             ...$this->storeApprovals(),
         ];
