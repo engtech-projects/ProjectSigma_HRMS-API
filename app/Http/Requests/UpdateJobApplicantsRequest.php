@@ -27,10 +27,6 @@ class UpdateJobApplicantsRequest extends FormRequest
                 "integer",
                 "exists:manpower_requests,id",
             ],
-            'name_suffix' => [
-                "nullable",
-                "string",
-            ],
             'application_letter_attachment' => [
                 "nullable",
                 "max:10000",
@@ -41,20 +37,30 @@ class UpdateJobApplicantsRequest extends FormRequest
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'lastname' => [
-                "nullable",
-                "string",
-                "max:35"
-            ],
             'firstname' => [
                 "nullable",
                 "string",
-                "max:35"
+                "max:35",
             ],
             'middlename' => [
                 "nullable",
                 "string",
-                "max:35"
+                "max:35",
+            ],
+            'lastname' => [
+                "nullable",
+                "string",
+                "max:35",
+            ],
+            'name_suffix' => [
+                "nullable",
+                "string",
+                "max:35",
+            ],
+            'nickname' => [
+                "nullable",
+                "string",
+                "max:250",
             ],
             'date_of_application' => [
                 "nullable",
