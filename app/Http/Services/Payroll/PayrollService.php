@@ -13,32 +13,6 @@ class PayrollService
         $this->payrollRequest = $payrollRequest;
     }
 
-    public function getAll()
-    {
-        return PayrollRecord::orderBy("created_at", "DESC")
-        ->get();
-    }
-
-    public function getMyRequests()
-    {
-        return PayrollRecord::where("created_by", auth()->user()->id)
-        ->orderBy("created_at", "DESC")
-        ->get();
-    }
-
-    public function getMyApprovals()
-    {
-        $userId = auth()->user()->id;
-        $result = PayrollRecord::requestStatusPending()
-            ->authUserPending()
-            ->orderBy("created_at", "DESC")
-            ->get();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
-    }
-
     public static function getPayrollTypeValue($type, $amount)
     {
         if ($type == PayrollType::WEEKLY->value) {
