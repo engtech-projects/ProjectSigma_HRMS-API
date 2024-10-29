@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EmployeeLoanType;
 use App\Enums\LoanPaymentPostingStatusType;
+use App\Http\Requests\HdmfEmployeeLoansRequest;
 use App\Http\Requests\PagibigEmployeeRemittanceRequest;
 use App\Http\Requests\PagibigGroupRemittanceRequest;
 use App\Http\Requests\PagibigRemittanceSummaryRequest;
@@ -13,6 +15,7 @@ use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
+use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\PagibigEmployeeRemittanceResource;
 use App\Http\Resources\PagibigGroupRemittanceResource;
 use App\Http\Resources\PagibigRemittanceSummaryResource;
@@ -559,6 +562,52 @@ class ReportController extends Controller
             'success' => true,
             'message' => 'Project Remittance Request fetched.',
             'data' => SssEmployeeLoanResource::collection($data),
+        ]);
+    }
+
+    /**
+     * Generates a summary of HDMF employee loans within a specified date range.
+     *
+     * This function processes loan payments to filter employee records with HDMF
+     * loan payments within the given cutoff dates. It groups the results by employee ID
+     * and returns a JSON response containing the summary data.
+     *
+     * @param SssEmployeeLoansRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering loan payments.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of employee HDMF loan summary data.
+     */
+    public function hdmfEmployeeLoans(HdmfEmployeeLoansRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = LoanPayments::whereHas('loan', function ($query) use ($validatedData) {
+            return $query->where('posting_status', LoanPaymentPostingStatusType::POSTED->value)
+                ->when(!empty($validatedData['loan_type']), function ($query2) use ($validatedData) {
+                    return $query2->where('name', $validatedData["loan_type"]);
+                });
+        })
+        ->with(['loan.employee.company_employments'])
+        ->whereBetween('date_paid', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->groupBy('loan.employee.id')
+        ->map(function ($employeeData) use ($validatedData) {
+            return [
+                'total_amount_payment' => $employeeData->sum('amount_paid'),
+                'pagibig_number' => $employeeData->first()->loan->employee->company_employments->pagibig_number,
+                'per_cov' => $validatedData['filter_month'].$validatedData['filter_year'],
+                'employee_loan_type' => EmployeeLoanType::HDMF_MPL->value,
+                'employee_firstname' => $employeeData->first()->loan->employee->first_name,
+                'employee_middlename' => $employeeData->first()->loan->employee->middle_name,
+                'employee_familyname' => $employeeData->first()->loan->employee->family_name,
+                'employee_suffix' => $employeeData->first()->loan->employee->name_suffix,
+            ];
+        });
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Project Remittance Request fetched.',
+            'data' => HdmfEmployeeLoansResource::collection($data),
         ]);
     }
 }
