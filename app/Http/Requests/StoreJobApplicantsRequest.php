@@ -42,10 +42,6 @@ class StoreJobApplicantsRequest extends FormRequest
                 "integer",
                 "exists:manpower_requests,id",
             ],
-            'name_suffix' => [
-                "nullable",
-                "string",
-            ],
             'application_letter_attachment' => [
                 "required",
                 "max:10000",
@@ -56,11 +52,6 @@ class StoreJobApplicantsRequest extends FormRequest
                 "max:10000",
                 "mimes:application/msword,doc,docx,pdf,zip",
             ],
-            'lastname' => [
-                "required",
-                "string",
-                "max:35"
-            ],
             'firstname' => [
                 "required",
                 "string",
@@ -70,6 +61,20 @@ class StoreJobApplicantsRequest extends FormRequest
                 "nullable",
                 "string",
                 "max:35"
+            ],
+            'lastname' => [
+                "required",
+                "string",
+                "max:35"
+            ],
+            'name_suffix' => [
+                "nullable",
+                "string",
+            ],
+            'nickname' => [
+                "required",
+                "string",
+                "max:250"
             ],
             'date_of_birth' => [
                 "nullable",
