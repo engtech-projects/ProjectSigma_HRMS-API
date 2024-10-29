@@ -2,6 +2,7 @@
 
 namespace App\Http\Services\Payroll;
 
+use App\Enums\RequestStatuses;
 use App\Models\PayrollDetail;
 use App\Models\PayrollDetailsCharging;
 use App\Models\PayrollRecord;
@@ -15,7 +16,7 @@ class SalaryDisbursementService
             "payroll_type" => $payrollType,
             "release_type" => $releaseType,
         ])
-        ->isApproved()
+        ->whereNot("request_status", RequestStatuses::DENIED)
         ->get();
     }
     public static function getPayrollDetails($payrollIds)

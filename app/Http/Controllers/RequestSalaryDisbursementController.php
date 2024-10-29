@@ -13,6 +13,7 @@ use App\Http\Resources\PayslipReadyListResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Http\Services\Payroll\SalaryDisbursementService;
 use App\Models\PayrollDetail;
+use App\Models\PayrollRecord;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -63,6 +64,14 @@ class RequestSalaryDisbursementController extends Controller
     public function store(StoreRequestSalaryDisbursementRequest $request)
     {
         $validatedData = $request->validated();
+        // CHECK FOR PENDING PAYROLL RECORDS
+        $payrollRecords = PayrollRecord::whereIn("id", $validatedData["payroll_records_ids"])->isPending()->get();
+        if (!$payrollRecords->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Cannot create request for pending payroll records.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
         $validatedData["created_by"] = auth()->user()->id;
         $validatedData["request_status"] = RequestStatuses::PENDING;
         DB::transaction(function () use ($validatedData) {

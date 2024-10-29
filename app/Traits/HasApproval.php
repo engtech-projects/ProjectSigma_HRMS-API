@@ -55,9 +55,17 @@ trait HasApproval
             JSON_UNQUOTE(JSON_EXTRACT(approvals, REPLACE(JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')), '.status', '.user_id'))) = ?
         ", [$userId]);
     }
+    public function scopeIsPending(Builder $query): void
+    {
+        $query->where('request_status', RequestStatuses::PENDING->value);
+    }
     public function scopeIsApproved(Builder $query): void
     {
         $query->where('request_status', RequestStatuses::APPROVED->value);
+    }
+    public function scopeIsDenied(Builder $query): void
+    {
+        $query->where('request_status', RequestStatuses::DENIED->value);
     }
     public function scopeMyRequests(Builder $query): void
     {
