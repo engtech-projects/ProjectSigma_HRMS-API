@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Traits;
+
+use App\Models\Image;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
+trait UploadFileTrait
+{
+    public function uploadFile($file, $fileLocation)
+    {
+        $hashmake = Hash::make('secret');
+        $hashname = substr(hash('sha256', $hashmake), 0, 20);
+        $originalName = $file->getClientOriginalName();
+        $file->storePubliclyAs($fileLocation . $hashname, $originalName, 'public');
+        return $fileLocation . $hashname . "/" . $originalName;
+    }
+
+    public function replaceUploadFile ($oldFile, $file, $fileLocation) {
+        $oldAttachment = explode("/", $oldFile);
+        $hashmake = Hash::make('secret');
+        $hashname = substr(hash('sha256', $hashmake), 0, 20);
+        $originalName = $file->getClientOriginalName();
+        $file->storePubliclyAs($fileLocation . $hashname, $originalName, 'public');
+        // FILE LOCATION MUST FOLLOW THE SAME STRUCTURE OF public/*/*/*hashedname/*originalname
+        // NOT TESTED MIGHT DELETE ANOTHER FILE
+        Storage::deleteDirectory("public/" . $oldAttachment[0] . "/" . $oldAttachment[1] . "/" . $oldAttachment[2]);
+        return $fileLocation . $hashname . "/" . $originalName;
+    }
+}
