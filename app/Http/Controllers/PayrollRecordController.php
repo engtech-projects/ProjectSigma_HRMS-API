@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\EmployeeService;
 use App\Http\Requests\GeneratePayrollRequest;
+use App\Http\Requests\PayrollRecordsListFilterRequest;
 use App\Http\Requests\PayrollRecordsRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Http\Requests\StorePayrollRecordRequest;
@@ -243,9 +244,25 @@ class PayrollRecordController extends Controller
         ], 404);
     }
 
-    public function index()
+    public function index(PayrollRecordsListFilterRequest $request)
     {
-        $allRequests = $this->payrollService->getAll();
+        $allRequests = PayrollRecord::when($request->has("payroll_date") && $request->payroll_date != '', function ($query) use ($request) {
+            return $query->whereDate("payroll_date", $request->payroll_date);
+        })
+        ->when($request->has("payroll_type") && $request->payroll_type != '', function ($query) use ($request) {
+            $query->where("payroll_type", $request->payroll_type);
+        })
+        ->when($request->has("release_type") && $request->release_type != '', function ($query) use ($request) {
+            $query->where("release_type", $request->release_type);
+        })
+        ->when($request->has("project_id") && $request->project_id != '', function ($query) use ($request) {
+            $query->where("project_id", $request->project_id);
+        })
+        ->when($request->has("department_id") && $request->department_id != '', function ($query) use ($request) {
+            $query->where("department_id", $request->department_id);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get();
         if (!is_null($allRequests)) {
             return new JsonResponse([
                 'success' => true,
@@ -259,9 +276,26 @@ class PayrollRecordController extends Controller
         ], 404);
     }
 
-    public function myRequest()
+    public function myRequest(PayrollRecordsListFilterRequest $request)
     {
-        $myRequest = $this->payrollService->getAll();
+        $myRequest = PayrollRecord::when($request->has("payroll_date") && $request->payroll_date != '', function ($query) use ($request) {
+            return $query->whereDate("payroll_date", $request->payroll_date);
+        })
+        ->when($request->has("payroll_type") && $request->payroll_type != '', function ($query) use ($request) {
+            $query->where("payroll_type", $request->payroll_type);
+        })
+        ->when($request->has("release_type") && $request->release_type != '', function ($query) use ($request) {
+            $query->where("release_type", $request->release_type);
+        })
+        ->when($request->has("project_id") && $request->project_id != '', function ($query) use ($request) {
+            $query->where("project_id", $request->project_id);
+        })
+        ->when($request->has("department_id") && $request->department_id != '', function ($query) use ($request) {
+            $query->where("department_id", $request->department_id);
+        })
+        ->myRequests()
+        ->orderBy("created_at", "DESC")
+        ->get();
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
@@ -278,9 +312,26 @@ class PayrollRecordController extends Controller
     /**
      * Show all requests to be approved/reviewed by current user
      */
-    public function myApproval()
+    public function myApproval(PayrollRecordsListFilterRequest $request)
     {
-        $myApproval = $this->payrollService->getMyApprovals();
+        $myApproval = PayrollRecord::when($request->has("payroll_date") && $request->payroll_date != '', function ($query) use ($request) {
+            return $query->whereDate("payroll_date", $request->payroll_date);
+        })
+        ->when($request->has("payroll_type") && $request->payroll_type != '', function ($query) use ($request) {
+            $query->where("payroll_type", $request->payroll_type);
+        })
+        ->when($request->has("release_type") && $request->release_type != '', function ($query) use ($request) {
+            $query->where("release_type", $request->release_type);
+        })
+        ->when($request->has("project_id") && $request->project_id != '', function ($query) use ($request) {
+            $query->where("project_id", $request->project_id);
+        })
+        ->when($request->has("department_id") && $request->department_id != '', function ($query) use ($request) {
+            $query->where("department_id", $request->department_id);
+        })
+        ->myApprovals()
+        ->orderBy("created_at", "DESC")
+        ->get();;
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
