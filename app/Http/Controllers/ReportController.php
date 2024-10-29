@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LoanPaymentPostingStatusType;
 use App\Http\Requests\PagibigEmployeeRemittanceRequest;
 use App\Http\Requests\PagibigGroupRemittanceRequest;
 use App\Http\Requests\PagibigRemittanceSummaryRequest;
 use App\Http\Requests\PhilhealthEmployeeRemittanceRequest;
 use App\Http\Requests\PhilhealthGroupRemittanceRequest;
 use App\Http\Requests\PhilhealthRemittanceSummaryRequest;
+use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
@@ -17,15 +19,30 @@ use App\Http\Resources\PagibigRemittanceSummaryResource;
 use App\Http\Resources\PhilhealthEmployeeRemittanceResource;
 use App\Http\Resources\PhilhealthGroupRemittanceResource;
 use App\Http\Resources\philhealthRemittanceSummaryResource;
+use App\Http\Resources\SssEmployeeLoanResource;
 use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\sssRemittanceSummaryResource;
+use App\Models\LoanPayments;
 use App\Models\PayrollDetail;
 use Illuminate\Http\JsonResponse;
 
 class ReportController extends Controller
 {
-    // SSS
+
+    /**
+     * Generates a summary of SSS remittances for a specific employee within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have SSS
+     * contributions within the given cutoff dates. It groups the results by employee ID and
+     * returns a JSON response containing the employee remittance summary data.
+     *
+     * @param SssEmployeeRemittanceRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of employee SSS remittance summary data.
+     */
     public function sssEmployeeRemittanceGenerate(SssEmployeeRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -75,6 +92,19 @@ class ReportController extends Controller
             'data' => SSSEmployeeRemittanceResource::collection($data),
         ]);
     }
+    /**
+     * Generates a summary of SSS remittances for all projects within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have SSS
+     * contributions within the given cutoff dates. It groups the results by charging name and
+     * returns a JSON response containing the remittance summary data.
+     *
+     * @param sssGroupRemittanceRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of grouped SSS remittance summary data.
+     */
     public function sssGroupRemittanceGenerate(SssGroupRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -140,6 +170,19 @@ class ReportController extends Controller
             ],
         ]);
     }
+    /**
+     * Generates a summary of SSS remittances for all projects within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have SSS
+     * contributions within the given cutoff dates. It groups the results by charging name and
+     * returns a JSON response containing the remittance summary data.
+     *
+     * @param sssRemittanceSummaryRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of grouped SSS remittance summary data.
+     */
     public function sssRemittanceSummary(sssRemittanceSummaryRequest $request)
     {
         $validatedData = $request->validated();
@@ -175,7 +218,20 @@ class ReportController extends Controller
             'data' => sssRemittanceSummaryResource::collection($uniqueGroup),
         ]);
     }
-    // PAGIBIG
+
+    /**
+     * Generates a summary of Pagibig remittances for employees within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have Pagibig
+     * contributions within the given cutoff dates. It groups the results by employee and
+     * returns a JSON response containing the remittance data.
+     *
+     * @param PagibigEmployeeRemittanceRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of grouped Pagibig employee remittance summary data.
+     */
     public function pagibigEmployeeRemittanceGenerate(PagibigEmployeeRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -211,6 +267,19 @@ class ReportController extends Controller
             'data' => PagibigEmployeeRemittanceResource::collection($data),
         ]);
     }
+    /**
+     * Generates a summary of Pagibig remittances for employees within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have Pagibig
+     * contributions within the given cutoff dates. It groups the results by charging name and
+     * returns a JSON response containing the remittance data.
+     *
+     * @param PagibigGroupRemittanceRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of grouped Pagibig remittance summary data.
+     */
     public function pagibigGroupRemittanceGenerate(PagibigGroupRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -262,6 +331,19 @@ class ReportController extends Controller
             ],
         ]);
     }
+    /**
+     * Generates a summary of Pagibig remittances for employees within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have Pagibig
+     * contributions within the given cutoff dates. It groups the results by charging name and
+     * returns a JSON response containing the remittance data.
+     *
+     * @param PagibigRemittanceSummaryRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of grouped Pagibig remittance summary data.
+     */
     public function pagibigRemittanceSummary(PagibigRemittanceSummaryRequest $request)
     {
         $validatedData = $request->validated();
@@ -290,7 +372,14 @@ class ReportController extends Controller
             'data' => PagibigRemittanceSummaryResource::collection($uniqueGroup),
         ]);
     }
-    // PHILHEALTH
+
+    /**
+     * Philhealth Employee Remittance Generate
+     *
+     * @param PhilhealthEmployeeRemittanceRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
     public function philhealthEmployeeRemittanceGenerate(PhilhealthEmployeeRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -325,6 +414,20 @@ class ReportController extends Controller
             'data' => PhilhealthEmployeeRemittanceResource::collection($data),
         ]);
     }
+
+    /**
+     * Generates a summary of Philhealth remittances for employees within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have Philhealth
+     * contributions within the given cutoff dates. It groups the results by charging name and
+     * returns a JSON response containing the remittance data.
+     *
+     * @param PhilhealthGroupRemittanceRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of grouped Philhealth remittance summary data.
+     */
     public function philhealthGroupRemittanceGenerate(PhilhealthGroupRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -376,6 +479,20 @@ class ReportController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Generates a summary of Philhealth remittances for employees within a specified date range.
+     *
+     * This function processes payroll details to filter employee records that have Philhealth
+     * contributions within the given cutoff dates. It groups the results by charging name and
+     * returns a JSON response containing the remittance data.
+     *
+     * @param PhilhealthRemittanceSummaryRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering payroll records.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of grouped Philhealth remittance summary data.
+     */
     public function philhealthRemittanceSummary(PhilhealthRemittanceSummaryRequest $request)
     {
         $validatedData = $request->validated();
@@ -402,6 +519,46 @@ class ReportController extends Controller
             'success' => true,
             'message' => 'Project Remittance Request fetched.',
             'data' => philhealthRemittanceSummaryResource::collection($uniqueGroup),
+        ]);
+    }
+    /**
+     * Generates a summary of SSS loans for employees within a specified date range.
+     *
+     * This function processes loan payments to filter employee records that have SSS
+     * loan payments within the given cutoff dates. It groups the results by employee ID and
+     * returns a JSON response containing the summary data.
+     *
+     * @param SssEmployeeLoansRequest $request The request instance containing validated data,
+     * including cutoff_start and cutoff_end for filtering loan payments.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
+     * and a collection of employee SSS loan summary data.
+     */
+    public function sssEmployeeLoans(SssEmployeeLoansRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = LoanPayments::whereHas('loan', function ($query) use ($validatedData) {
+            return $query->where('posting_status', LoanPaymentPostingStatusType::POSTED->value)
+                ->when(!empty($validatedData['loan_type']), function ($query2) use ($validatedData) {
+                    return $query2->where('name', $validatedData["loan_type"]);
+                });
+        })
+        ->with(['loan.employee.company_employments'])
+        ->whereBetween('date_paid', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->groupBy('loan.employee.id')
+        ->map(function ($employeeData) {
+            return [
+                'employee_name' => $employeeData->first()->loan->employee->fullname_last,
+                'total_amount_payment' => $employeeData->sum('amount_paid'),
+                'sss_number' => $employeeData->first()->loan->employee->company_employments->sss_number,
+            ];
+        });
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Project Remittance Request fetched.',
+            'data' => SssEmployeeLoanResource::collection($data),
         ]);
     }
 }

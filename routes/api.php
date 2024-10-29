@@ -298,14 +298,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // REPORTS
     Route::prefix('reports')->group(function () {
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
-        Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
-        Route::get('philhealth-employee-remittance', [ReportController::class, 'philhealthEmployeeRemittanceGenerate']);
-        Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
-        Route::get('pagibig-group-remittance', [ReportController::class, 'pagibigGroupRemittanceGenerate']);
-        Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
-        Route::get('pagibig-remittance-summary', [ReportController::class, 'pagibigRemittanceSummary']);
+        Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
+        Route::get('sss-employee-loans', [ReportController::class, 'sssEmployeeLoans']);
+        Route::get('philhealth-employee-remittance', [ReportController::class, 'philhealthEmployeeRemittanceGenerate']);
         Route::get('philhealth-remittance-summary', [ReportController::class, 'philhealthRemittanceSummary']);
+        Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);
+        Route::get('pagibig-group-remittance', [ReportController::class, 'pagibigGroupRemittanceGenerate']);
+        Route::get('pagibig-remittance-summary', [ReportController::class, 'pagibigRemittanceSummary']);
+        Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
