@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Resources\EmployeeDetailedEnumResource;
 use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
@@ -73,38 +74,12 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects'])->orderBy('family_name')->get();
-
-        $employeeCollection = collect($employeeList)->map(function ($employee) {
-            // $leaveCredits = $this->getEmployeeLeaveCredits($employee);
-            $department = $employee->current_employment?->employee_department;
-            $project = $employee->employee_has_projects->last();
-            return [
-                "id" => $employee->id,
-                "first_name" => $employee->first_name,
-                "middle_name" => $employee->middle_name,
-                "family_name" => $employee->family_name,
-                "fullname_last" => $employee->fullname_last,
-                "fullname_first" => $employee->fullname_first,
-                "name_suffix" => $employee->name_suffix,
-                "nick_name" => $employee->nick_name,
-                "gender" => $employee->gender,
-                "department" => $department,
-                "current_employment" => $employee->current_employment,
-                "project" => $project ? [
-                    "id" => $project->id,
-                    "code" => $project->code,
-                    "project_monitoring_id" => $project->project_monitoring_id,
-                    "project_created_at" => $project->pivot->created_at,
-                ] : null,
-                // "leaveCredits" => $leaveCredits,
-            ];
-        });
+        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects', "company_employments"])->orderBy('family_name')->get();
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => $employeeCollection,
+            'data' => EmployeeDetailedEnumResource::collection($employeeList),
         ]);
     }
 
