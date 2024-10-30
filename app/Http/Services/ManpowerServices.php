@@ -3,12 +3,14 @@
 namespace App\Http\Services;
 
 use App\Enums\RequestApprovalStatus;
+use App\Http\Traits\UploadFileTrait;
 use App\Models\ManpowerRequest;
 use App\Models\Users;
 use App\Notifications\ManpowerRequestForApproval;
 
 class ManpowerServices
 {
+    use UploadFileTrait;
     protected $manpowerRequest;
     /**
      * Create a new service instance.
@@ -52,8 +54,9 @@ class ManpowerServices
     }
     public function createManpowerRequest(array $attributes)
     {
-        $main = $this->manpowerRequest->create($attributes);
-        $main->refresh();
+        $main = $this->manpowerRequest->fill($attributes);
+        $main->job_description_attachment = $this->uploadFile($attributes['job_description_attachment'], ManpowerRequest::JDA_DIR);
+        $main->save();
         if ($main->getNextPendingApproval()) {
             Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
         }

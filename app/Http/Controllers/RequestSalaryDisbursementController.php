@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\DisbursementStatus;
 use App\Enums\RequestStatuses;
 use App\Http\Requests\GenerateRequestSalaryDisbursementRequest;
+use App\Http\Requests\PayrollRecordsListFilterRequest;
 use App\Models\RequestSalaryDisbursement;
 use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
 use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
@@ -13,6 +14,7 @@ use App\Http\Resources\PayslipReadyListResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Http\Services\Payroll\SalaryDisbursementService;
 use App\Models\PayrollDetail;
+use App\Models\PayrollRecord;
 use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -22,16 +24,25 @@ class RequestSalaryDisbursementController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(PayrollRecordsListFilterRequest $request)
     {
-        $allRequests = RequestSalaryDisbursement::orderBy("created_at", "DESC")
+        $allRequests = RequestSalaryDisbursement::when($request->has("payroll_date") && $request->payroll_date != '', function ($query) use ($request) {
+            return $query->whereDate("payroll_date", $request->payroll_date);
+        })
+        ->when($request->has("payroll_type") && $request->payroll_type != '', function ($query) use ($request) {
+            $query->where("payroll_type", $request->payroll_type);
+        })
+        ->when($request->has("release_type") && $request->release_type != '', function ($query) use ($request) {
+            $query->where("release_type", $request->release_type);
+        })
+        ->when($request->has("project_id") && $request->project_id != '', function ($query) use ($request) {
+            $query->where("project_id", $request->project_id);
+        })
+        ->when($request->has("department_id") && $request->department_id != '', function ($query) use ($request) {
+            $query->where("department_id", $request->department_id);
+        })
+        ->orderBy("created_at", "DESC")
         ->get();
-        if ($allRequests->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
@@ -63,6 +74,14 @@ class RequestSalaryDisbursementController extends Controller
     public function store(StoreRequestSalaryDisbursementRequest $request)
     {
         $validatedData = $request->validated();
+        // CHECK FOR PENDING PAYROLL RECORDS
+        $payrollRecords = PayrollRecord::whereIn("id", $validatedData["payroll_records_ids"])->isPending()->get();
+        if (!$payrollRecords->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Cannot create request for pending payroll records.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
         $validatedData["created_by"] = auth()->user()->id;
         $validatedData["request_status"] = RequestStatuses::PENDING;
         DB::transaction(function () use ($validatedData) {
@@ -107,17 +126,26 @@ class RequestSalaryDisbursementController extends Controller
 
     }
 
-    public function myRequests()
+    public function myRequests(PayrollRecordsListFilterRequest $request)
     {
-        $myRequests = RequestSalaryDisbursement::myRequests()
+        $myRequests = RequestSalaryDisbursement::when($request->has("payroll_date") && $request->payroll_date != '', function ($query) use ($request) {
+            return $query->whereDate("payroll_date", $request->payroll_date);
+        })
+        ->when($request->has("payroll_type") && $request->payroll_type != '', function ($query) use ($request) {
+            $query->where("payroll_type", $request->payroll_type);
+        })
+        ->when($request->has("release_type") && $request->release_type != '', function ($query) use ($request) {
+            $query->where("release_type", $request->release_type);
+        })
+        ->when($request->has("project_id") && $request->project_id != '', function ($query) use ($request) {
+            $query->where("project_id", $request->project_id);
+        })
+        ->when($request->has("department_id") && $request->department_id != '', function ($query) use ($request) {
+            $query->where("department_id", $request->department_id);
+        })
+        ->myRequests()
         ->orderBy("created_at", "DESC")
         ->get();
-        if ($myRequests->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
         return new JsonResponse([
             'success' => true,
             'message' => 'Request fetched.',
@@ -128,17 +156,26 @@ class RequestSalaryDisbursementController extends Controller
     /**
      * Show can view all pan request to be approved by logged in user (same login in manpower request)
      */
-    public function myApprovals()
+    public function myApprovals(PayrollRecordsListFilterRequest $request)
     {
-        $myApproval = RequestSalaryDisbursement::myApprovals()
+        $myApproval = RequestSalaryDisbursement::when($request->has("payroll_date") && $request->payroll_date != '', function ($query) use ($request) {
+            return $query->whereDate("payroll_date", $request->payroll_date);
+        })
+        ->when($request->has("payroll_type") && $request->payroll_type != '', function ($query) use ($request) {
+            $query->where("payroll_type", $request->payroll_type);
+        })
+        ->when($request->has("release_type") && $request->release_type != '', function ($query) use ($request) {
+            $query->where("release_type", $request->release_type);
+        })
+        ->when($request->has("project_id") && $request->project_id != '', function ($query) use ($request) {
+            $query->where("project_id", $request->project_id);
+        })
+        ->when($request->has("department_id") && $request->department_id != '', function ($query) use ($request) {
+            $query->where("department_id", $request->department_id);
+        })
+        ->myApprovals()
         ->orderBy("created_at", "DESC")
         ->get();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
         return new JsonResponse([
             'success' => true,
             'message' => 'Request fetched.',

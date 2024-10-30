@@ -233,6 +233,7 @@ class EmployeePanRequest extends Model
         $jobApplicant = $this->jobapplicantonly;
         $jobApplicant["first_name"] = $jobApplicant->firstname;
         $jobApplicant["family_name"] = $jobApplicant->lastname;
+        $jobApplicant["nick_name"] = $jobApplicant->nickname;
         $jobApplicant["date_of_marriage"] = ($jobApplicant["date_of_marriage"] === 'null') ? null : $jobApplicant["date_of_marriage"];
         $employee = Employee::create($jobApplicant->toArray());
         // pan request details to internal work experience
