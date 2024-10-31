@@ -22,9 +22,12 @@ class PayrollRecordsPayrollSummaryResource extends JsonResource
             "summary" => [
                 "no_of_employee" => $dataCollection->count(),
                 // SALARY
-                "pay_basic" => $salaries["pay_basic"], // TOTAL OF REGULAR PAYS, ADJUSMENTS
-                "pay_overtime" => $salaries["pay_overtime"], // TOTAL OF OVERTIME PAYS
-                "pay_gross" => $salaries["pay_gross"],
+                "pay_basic" => $dataCollection->sum("total_basic_pays"), // TOTAL OF REGULAR PAYS, ADJUSTMENTS
+                "pay_overtime" => $dataCollection->sum("total_overtime_pays"), // TOTAL OF OVERTIME PAYS
+                "pay_gross" => $dataCollection->sum("gross_pay"),
+                "charging_pay_basic" => $salaries["charging_pay_basic"], // TOTAL OF REGULAR PAYS, ADJUSTMENTS
+                "charging_pay_overtime" => $salaries["charging_pay_overtime"], // TOTAL OF OVERTIME PAYS
+                "charging_pay_gross" => $salaries["charging_pay_gross"],
                 // DEDUCTIONS
                 "deduct_sss_employee_contribution" => $dataCollection->sum("sss_employee_contribution"),
                 "deduct_sss_employee_compensation" => $dataCollection->sum("sss_employee_compensation"),
@@ -37,7 +40,8 @@ class PayrollRecordsPayrollSummaryResource extends JsonResource
                 "deduct_otherdeduction" => $dataCollection->sum("total_other_deduction_payments"),
                 "deduct_total" => $totalDeduct,
                 // NET
-                "net_pay" => round($salaries["pay_gross"] - $totalDeduct, 2),
+                "net_pay" => round($dataCollection->sum("gross_pay") - $totalDeduct, 2),
+                "charging_net_pay" => round($salaries["charging_pay_gross"] - $totalDeduct, 2),
             ]
         ];
     }
