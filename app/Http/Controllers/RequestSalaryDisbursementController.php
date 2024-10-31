@@ -9,6 +9,7 @@ use App\Http\Requests\PayrollRecordsListFilterRequest;
 use App\Models\RequestSalaryDisbursement;
 use App\Http\Requests\StoreRequestSalaryDisbursementRequest;
 use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
+use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
 use App\Http\Resources\PayslipReadyListResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
@@ -60,6 +61,7 @@ class RequestSalaryDisbursementController extends Controller
         $payrollSummaryResource = PayrollRecordsPayrollSummaryResource::collection($payrollSummaryDatas);
         $generatedData["payroll_records_ids"] = $payrollRecordIds;
         $generatedData["summary"] = $payrollSummaryResource;
+        $generatedData["approvals"] = ApprovalAttributeResource::collection($validData["approvals"]);
         return new JsonResponse([
             'success' => true,
             'message' => 'Payroll Summary Created.',
