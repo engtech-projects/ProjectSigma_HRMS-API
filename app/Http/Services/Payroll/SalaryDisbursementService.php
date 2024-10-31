@@ -23,7 +23,7 @@ class SalaryDisbursementService
     {
 
         return PayrollDetail::whereIn("payroll_record_id", $payrollIds)
-        ->with(['payroll_record'])
+        ->with(['payroll_record', 'otherDeductionPayments.deduction.otherdeduction', 'loanPayments.deduction.loan'])
         ->orderBy("created_at", "DESC")
         ->get()
         ->append([
