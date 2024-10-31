@@ -65,9 +65,9 @@ class SalaryDisbursementService
                 "data" => $dataCollection,
                 "summary" => [
                     // SALARY
-                    "pay_basic" => $payBasic, // TOTAL OF REGULAR PAYS, ADJUSMENTS
-                    "pay_overtime" => $payOvertime, // TOTAL OF OVERTIME PAYS
-                    "pay_gross" => $payGross,
+                    "charging_pay_basic" => $payBasic, // TOTAL OF REGULAR PAYS, ADJUSMENTS
+                    "charging_pay_overtime" => $payOvertime, // TOTAL OF OVERTIME PAYS
+                    "charging_pay_gross" => $payGross,
                 ]
             ];
         }
