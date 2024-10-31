@@ -301,7 +301,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
         Route::get('sss-employee-loans', [ReportController::class, 'sssEmployeeLoans']);
+        Route::get('sss-group-loans', [ReportController::class, 'sssGroupLoans']);
         Route::get('hdmf-employee-loans', [ReportController::class, 'hdmfEmployeeLoans']);
+        Route::get('hdmf-group-loans', [ReportController::class, 'hdmfGroupLoans']);
+        Route::get('hdmf-group-loans', [ReportController::class, 'hdmfGroupLoans']);
         Route::get('philhealth-employee-remittance', [ReportController::class, 'philhealthEmployeeRemittanceGenerate']);
         Route::get('philhealth-remittance-summary', [ReportController::class, 'philhealthRemittanceSummary']);
         Route::get('philhealth-group-remittance', [ReportController::class, 'philhealthGroupRemittanceGenerate']);

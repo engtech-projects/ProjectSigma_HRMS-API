@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\EmployeeLoanType;
 use App\Enums\LoanPaymentPostingStatusType;
+use App\Enums\PayrollDetailsDeductionType;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
 use App\Http\Requests\PagibigEmployeeRemittanceRequest;
 use App\Http\Requests\PagibigGroupRemittanceRequest;
@@ -32,20 +33,6 @@ use Illuminate\Http\JsonResponse;
 
 class ReportController extends Controller
 {
-
-    /**
-     * Generates a summary of SSS remittances for a specific employee within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have SSS
-     * contributions within the given cutoff dates. It groups the results by employee ID and
-     * returns a JSON response containing the employee remittance summary data.
-     *
-     * @param SssEmployeeRemittanceRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of employee SSS remittance summary data.
-     */
     public function sssEmployeeRemittanceGenerate(SssEmployeeRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -95,19 +82,6 @@ class ReportController extends Controller
             'data' => SSSEmployeeRemittanceResource::collection($data),
         ]);
     }
-    /**
-     * Generates a summary of SSS remittances for all projects within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have SSS
-     * contributions within the given cutoff dates. It groups the results by charging name and
-     * returns a JSON response containing the remittance summary data.
-     *
-     * @param sssGroupRemittanceRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of grouped SSS remittance summary data.
-     */
     public function sssGroupRemittanceGenerate(SssGroupRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -173,19 +147,6 @@ class ReportController extends Controller
             ],
         ]);
     }
-    /**
-     * Generates a summary of SSS remittances for all projects within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have SSS
-     * contributions within the given cutoff dates. It groups the results by charging name and
-     * returns a JSON response containing the remittance summary data.
-     *
-     * @param sssRemittanceSummaryRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of grouped SSS remittance summary data.
-     */
     public function sssRemittanceSummary(sssRemittanceSummaryRequest $request)
     {
         $validatedData = $request->validated();
@@ -221,20 +182,6 @@ class ReportController extends Controller
             'data' => sssRemittanceSummaryResource::collection($uniqueGroup),
         ]);
     }
-
-    /**
-     * Generates a summary of Pagibig remittances for employees within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have Pagibig
-     * contributions within the given cutoff dates. It groups the results by employee and
-     * returns a JSON response containing the remittance data.
-     *
-     * @param PagibigEmployeeRemittanceRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of grouped Pagibig employee remittance summary data.
-     */
     public function pagibigEmployeeRemittanceGenerate(PagibigEmployeeRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -270,19 +217,6 @@ class ReportController extends Controller
             'data' => PagibigEmployeeRemittanceResource::collection($data),
         ]);
     }
-    /**
-     * Generates a summary of Pagibig remittances for employees within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have Pagibig
-     * contributions within the given cutoff dates. It groups the results by charging name and
-     * returns a JSON response containing the remittance data.
-     *
-     * @param PagibigGroupRemittanceRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of grouped Pagibig remittance summary data.
-     */
     public function pagibigGroupRemittanceGenerate(PagibigGroupRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -334,19 +268,6 @@ class ReportController extends Controller
             ],
         ]);
     }
-    /**
-     * Generates a summary of Pagibig remittances for employees within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have Pagibig
-     * contributions within the given cutoff dates. It groups the results by charging name and
-     * returns a JSON response containing the remittance data.
-     *
-     * @param PagibigRemittanceSummaryRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of grouped Pagibig remittance summary data.
-     */
     public function pagibigRemittanceSummary(PagibigRemittanceSummaryRequest $request)
     {
         $validatedData = $request->validated();
@@ -375,14 +296,6 @@ class ReportController extends Controller
             'data' => PagibigRemittanceSummaryResource::collection($uniqueGroup),
         ]);
     }
-
-    /**
-     * Philhealth Employee Remittance Generate
-     *
-     * @param PhilhealthEmployeeRemittanceRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-
     public function philhealthEmployeeRemittanceGenerate(PhilhealthEmployeeRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -417,20 +330,6 @@ class ReportController extends Controller
             'data' => PhilhealthEmployeeRemittanceResource::collection($data),
         ]);
     }
-
-    /**
-     * Generates a summary of Philhealth remittances for employees within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have Philhealth
-     * contributions within the given cutoff dates. It groups the results by charging name and
-     * returns a JSON response containing the remittance data.
-     *
-     * @param PhilhealthGroupRemittanceRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of grouped Philhealth remittance summary data.
-     */
     public function philhealthGroupRemittanceGenerate(PhilhealthGroupRemittanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -482,20 +381,6 @@ class ReportController extends Controller
             ],
         ]);
     }
-
-    /**
-     * Generates a summary of Philhealth remittances for employees within a specified date range.
-     *
-     * This function processes payroll details to filter employee records that have Philhealth
-     * contributions within the given cutoff dates. It groups the results by charging name and
-     * returns a JSON response containing the remittance data.
-     *
-     * @param PhilhealthRemittanceSummaryRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering payroll records.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of grouped Philhealth remittance summary data.
-     */
     public function philhealthRemittanceSummary(PhilhealthRemittanceSummaryRequest $request)
     {
         $validatedData = $request->validated();
@@ -524,38 +409,117 @@ class ReportController extends Controller
             'data' => philhealthRemittanceSummaryResource::collection($uniqueGroup),
         ]);
     }
-    /**
-     * Generates a summary of SSS loans for employees within a specified date range.
-     *
-     * This function processes loan payments to filter employee records that have SSS
-     * loan payments within the given cutoff dates. It groups the results by employee ID and
-     * returns a JSON response containing the summary data.
-     *
-     * @param SssEmployeeLoansRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering loan payments.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of employee SSS loan summary data.
-     */
     public function sssEmployeeLoans(SssEmployeeLoansRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = PayrollDetail::with(["employee.company_employments"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->with('loanPayments', function ($query) {
+            return $query->where('name', EmployeeLoanType::SSS->value);
+        })
+        ->where(function ($query) {
+            $query->Where("sss_employee_contribution", ">", 0)
+            ->orWhere("sss_employer_contribution", ">", 0)
+            ->orWhere("sss_employee_compensation", ">", 0)
+            ->orWhere("sss_employer_compensation", ">", 0)
+            ->orWhere("sss_employee_wisp", ">", 0)
+            ->orWhere("sss_employer_wisp", ">", 0);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->append([
+            "total_sss_contribution",
+            "total_sss_compensation",
+            "total_sss_wisp",
+            "total_sss",
+        ])
+        ->sortBy('employee.fullname_last', SORT_NATURAL)
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_name" => $employeeData->first()->employee->fullname_last,
+                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
+                "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
+            ];
+        })
+        ->values()
+        ->all();
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => SssEmployeeLoanResource::collection($data),
+        ]);
+    }
+    public function hdmfEmployeeLoans(HdmfEmployeeLoansRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = PayrollDetail::with(["employee.company_employments"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->with('loanPayments', function ($query) {
+            return $query->where('name', EmployeeLoanType::SSS->value);
+        })
+        ->where(function ($query) {
+            $query->orWhere("pagibig_employer_contribution", ">", 0)
+                ->orWhere("pagibig_employee_contribution", ">", 0);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->sortBy('employee.fullname_last', SORT_NATURAL)
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) use ($validatedData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                "first_name" => $employeeData->first()->employee->first_name,
+                "middle_name" => $employeeData->first()->employee->middle_name,
+                "last_name" => $employeeData->first()->employee->family_name,
+                "suffix_name" => $employeeData->first()->employee->suffix_name,
+                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
+                "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
+            ];
+        })
+        ->values()
+        ->all();
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => HdmfEmployeeLoansResource::collection($data),
+        ]);
+    }
+    public function sssGroupLoans(SssEmployeeLoansRequest $request)
     {
         $validatedData = $request->validated();
         $data = LoanPayments::whereHas('loan', function ($query) use ($validatedData) {
             return $query->where('posting_status', LoanPaymentPostingStatusType::POSTED->value)
                 ->when(!empty($validatedData['loan_type']), function ($query2) use ($validatedData) {
                     return $query2->where('name', $validatedData["loan_type"]);
+                })->whereHas('employee.payroll_details.payroll_record', function ($query3) use ($validatedData) {
+                    $query3->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
+                        return $query2->where('department_id', $validatedData["department_id"]);
+                    })
+                    ->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
+                        return $query2->where('project_id', $validatedData["project_id"]);
+                    });
                 });
         })
-        ->with(['loan.employee.company_employments'])
         ->whereBetween('date_paid', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-        ->orderBy("created_at", "DESC")
         ->get()
         ->groupBy('loan.employee.id')
         ->map(function ($employeeData) {
             return [
+                'data' => $employeeData->first(),
                 'employee_name' => $employeeData->first()->loan->employee->fullname_last,
                 'total_amount_payment' => $employeeData->sum('amount_paid'),
                 'sss_number' => $employeeData->first()->loan->employee->company_employments->sss_number,
+                'charging' => optional($employeeData->first()->loan->employee->payroll_details->first()->payroll_record->department)->department_name,
             ];
         });
         return new JsonResponse([
@@ -564,21 +528,7 @@ class ReportController extends Controller
             'data' => SssEmployeeLoanResource::collection($data),
         ]);
     }
-
-    /**
-     * Generates a summary of HDMF employee loans within a specified date range.
-     *
-     * This function processes loan payments to filter employee records with HDMF
-     * loan payments within the given cutoff dates. It groups the results by employee ID
-     * and returns a JSON response containing the summary data.
-     *
-     * @param SssEmployeeLoansRequest $request The request instance containing validated data,
-     * including cutoff_start and cutoff_end for filtering loan payments.
-     *
-     * @return \Illuminate\Http\JsonResponse A JSON response with success status, message,
-     * and a collection of employee HDMF loan summary data.
-     */
-    public function hdmfEmployeeLoans(HdmfEmployeeLoansRequest $request)
+    public function hdmfGroupLoans(HdmfEmployeeLoansRequest $request)
     {
         $validatedData = $request->validated();
         $data = LoanPayments::whereHas('loan', function ($query) use ($validatedData) {
