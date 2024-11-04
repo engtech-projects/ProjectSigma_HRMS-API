@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EmployeeLoanType;
-use App\Enums\LoanPaymentPostingStatusType;
-use App\Enums\PayrollDetailsDeductionType;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
+use App\Http\Requests\HdmfGroupSummaryLoansRequest;
 use App\Http\Requests\PagibigEmployeeRemittanceRequest;
 use App\Http\Requests\PagibigGroupRemittanceRequest;
 use App\Http\Requests\PagibigRemittanceSummaryRequest;
@@ -15,8 +14,10 @@ use App\Http\Requests\PhilhealthRemittanceSummaryRequest;
 use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
+use App\Http\Requests\SssGroupSummaryLoansRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
 use App\Http\Resources\HdmfEmployeeLoansResource;
+use App\Http\Resources\HdmfGroupSummaryLoansResource;
 use App\Http\Resources\PagibigEmployeeRemittanceResource;
 use App\Http\Resources\PagibigGroupRemittanceResource;
 use App\Http\Resources\PagibigRemittanceSummaryResource;
@@ -26,8 +27,8 @@ use App\Http\Resources\philhealthRemittanceSummaryResource;
 use App\Http\Resources\SssEmployeeLoanResource;
 use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
+use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\sssRemittanceSummaryResource;
-use App\Models\LoanPayments;
 use App\Models\PayrollDetail;
 use Illuminate\Http\JsonResponse;
 
@@ -494,7 +495,7 @@ class ReportController extends Controller
             'data' => HdmfEmployeeLoansResource::collection($data),
         ]);
     }
-    public function sssGroupLoans(SssEmployeeLoansRequest $request)
+    public function sssGroupSummaryLoans(SssGroupSummaryLoansRequest $request)
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
@@ -543,10 +544,10 @@ class ReportController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
-            'data' => SssEmployeeLoanResource::collection($data),
+            'data' => SssGroupSummaryLoansResource::collection($data),
         ]);
     }
-    public function hdmfGroupLoans(HdmfEmployeeLoansRequest $request)
+    public function hdmfGroupSummaryLoans(HdmfGroupSummaryLoansRequest $request)
     {
         $validatedData = $request->validated();
         $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
@@ -590,7 +591,7 @@ class ReportController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
-            'data' => SssEmployeeLoanResource::collection($data),
+            'data' => HdmfGroupSummaryLoansResource::collection($data),
         ]);
     }
 }
