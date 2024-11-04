@@ -45,11 +45,9 @@ use App\Http\Controllers\InternalWorkExperienceController;
 use App\Http\Controllers\PhilhealthContributionController;
 use App\Http\Controllers\EmployeeSeminartrainingController;
 use App\Http\Controllers\WitholdingTaxContributionController;
-
 use App\Http\Controllers\PersonnelActionNoticeRequestController;
 use App\Http\Controllers\EmployeeLeavesController;
 use App\Http\Controllers\TravelOrderController;
-
 use App\Http\Controllers\Actions\Approvals\{
     DisapproveApproval,
     ApproveApproval,

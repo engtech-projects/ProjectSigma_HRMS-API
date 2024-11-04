@@ -604,7 +604,7 @@ class AttendanceService
                 $otOut = Carbon::parse($overtime->overtime_end_time);
                 return $otOut->equalTo($schedIn);
             });
-            if($hasSchedContinuation) {
+            if ($hasSchedContinuation) {
                 $appliedOut = $overtime->overtime_end_time;
                 $overtimeMetaData["end_time_log"] = "FROM SCHEDULE";
             }
@@ -618,7 +618,7 @@ class AttendanceService
                     $overtimeMetaData["end_time_log"] = "ON TRAVEL ORDER";
                 }
             }
-            if(!$appliedIn || !$appliedOut) {
+            if (!$appliedIn || !$appliedOut) {
                 array_push($otSchedulesSummary, $overtimeMetaData);
                 continue;
             }

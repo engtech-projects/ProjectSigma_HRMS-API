@@ -103,7 +103,7 @@ class JobApplicantsController extends Controller
     {
         $main = new JobApplicants();
         $validatedData = $request->validated();
-        if(!$validatedData) {
+        if (!$validatedData) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);

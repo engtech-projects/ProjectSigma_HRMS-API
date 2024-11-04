@@ -89,14 +89,14 @@ class EmployeeService
         $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrValues);
         $grossSalaries = collect([...$this->aggregateTotalGrossPays($dtrValues)]);
         $fixedSalary = PayrollService::getPayrollTypeValue($filters["payroll_type"], $employee->current_employment->employee_salarygrade->monthly_salary_amount);
-        if($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
+        if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
             $salary = $fixedSalary;
         } else {
             $salary = round($grossSalaries->values()->sum("regular")  + $grossSalaries->values()->sum("overtime"), 2);
         }
         // Getting Employee Adjustments from Payroll Request
         $adjustments = [];
-        if(isset($filters["adjustments"])) {
+        if (isset($filters["adjustments"])) {
             $adjustments = $this->collectEmployeeAdjustments($filters["adjustments"], $employee->id);
         }
         // Group Together Incomes
@@ -112,7 +112,7 @@ class EmployeeService
             ...$this->aggregateSalaryDeductionEmployersCharging($salaryDeductions, $payrollCharging), // Employer Deductions (SSS, Philhealth, Pagibig)
         ];
         // Salary Chargings
-        if($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
+        if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
             $chargings = collect([
                 ...$chargings,
                 [
@@ -147,7 +147,7 @@ class EmployeeService
 
     public function appendCollection($collection, $maincollection, $type)
     {
-        foreach($collection as $key) {
+        foreach ($collection as $key) {
             $maincollection->push((object)[
                 "id" => $key["id"],
                 "name" => $type,
@@ -161,13 +161,13 @@ class EmployeeService
 
     public static function govNumberIsValid($govNumber)
     {
-        if(empty($govNumber)) {
+        if (empty($govNumber)) {
             return false;
         }
-        if(strtolower($govNumber) == "n/a") {
+        if (strtolower($govNumber) == "n/a") {
             return false;
         }
-        if(strtolower($govNumber) == "na") {
+        if (strtolower($govNumber) == "na") {
             return false;
         }
         return true;

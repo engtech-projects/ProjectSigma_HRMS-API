@@ -92,7 +92,7 @@ trait Attendance
                 $schedOut = Carbon::parse($schedule["endTime"]);
                 return $schedOut->equalTo($otSchedIn);
             })->first();
-            if($oTContinuation) {
+            if ($oTContinuation) {
                 $charge = AttendanceLog::find($oTContinuation["applied_out"]?->id)?->charging() ?? $charge ?? Overtime::find($oTContinuation["id"])?->charging();
                 $timeOut = (object)["time" => $schedule["endTime"]];
             }
@@ -115,7 +115,7 @@ trait Attendance
                     $timeOut = (object)["time" => $schedule["endTime"]];
                 }
             }
-            if(!$timeIn || !$timeOut) {
+            if (!$timeIn || !$timeOut) {
                 continue;
             }
             $in = Carbon::parse($timeIn?->time);
@@ -191,7 +191,7 @@ trait Attendance
                 $otOut = Carbon::parse($otVal["overtime_end_time"]);
                 return $otOut->equalTo($schedIn);
             });
-            if($hasSchedContinuation) {
+            if ($hasSchedContinuation) {
                 $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
             }
             if (!$appliedOut) {
@@ -203,7 +203,7 @@ trait Attendance
                     $appliedOut = (object)["time" => $otVal["overtime_end_time"]];
                 }
             }
-            if(!$appliedIn || !$appliedOut) {
+            if (!$appliedIn || !$appliedOut) {
                 continue;
             }
             $timeIn = Carbon::parse($appliedIn->time);

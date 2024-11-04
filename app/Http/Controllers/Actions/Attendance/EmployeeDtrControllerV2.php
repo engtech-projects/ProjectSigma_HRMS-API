@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Actions\Attendance;
 
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\GenerateDtrRequest;
 use App\Http\Services\Attendance\AttendanceService;
 

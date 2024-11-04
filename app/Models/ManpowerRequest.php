@@ -21,7 +21,7 @@ class ManpowerRequest extends Model
     use SoftDeletes;
     use HasApproval;
 
-    const JDA_DIR = "manpower/jda/";
+    public const JDA_DIR = "manpower/jda/";
 
     protected $fillable = [
         'id',

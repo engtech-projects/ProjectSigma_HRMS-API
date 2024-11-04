@@ -50,7 +50,7 @@ class PersonnelActionNoticeRequestController extends Controller
     public function store(StoreEmployeePanRequestRequest $request)
     {
         $valid = $request->validated();
-        if(!$valid) {
+        if (!$valid) {
             return new JsonResponse([
                 "success" => false,
                 "message" => "Create transaction failed."

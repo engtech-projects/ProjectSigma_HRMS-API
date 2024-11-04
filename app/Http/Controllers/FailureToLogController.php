@@ -63,7 +63,7 @@ class FailureToLogController extends Controller
                 $validatedData["charging_id"] = $validatedData["project_id"];
                 $validatedData["charging_type"] = Project::class;
             }
-            if($validatedData) {
+            if ($validatedData) {
                 $main = FailureToLog::create($validatedData);
                 $main->refresh();
                 if ($main->getNextPendingApproval()) {

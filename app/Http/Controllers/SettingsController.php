@@ -40,7 +40,7 @@ class SettingsController extends Controller
         $settings->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$settings->save()) {
+        if (!$settings->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -75,7 +75,7 @@ class SettingsController extends Controller
         $data = json_decode('{}');
         try {
             $a = array();
-            foreach(json_decode($request->getContent(), true) as $x) {
+            foreach (json_decode($request->getContent(), true) as $x) {
                 array_push($a, $x);
             }
             $settings = Settings::upsert(
@@ -112,7 +112,7 @@ class SettingsController extends Controller
         $data = json_decode('{}');
         if (!is_null($settings)) {
             $settings->fill($request->validated());
-            if($settings->save()) {
+            if ($settings->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $settings;
@@ -136,7 +136,7 @@ class SettingsController extends Controller
         $settings = Settings::find($id);
         $data = json_decode('{}');
         if (!is_null($settings)) {
-            if($settings->delete()) {
+            if ($settings->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $settings;

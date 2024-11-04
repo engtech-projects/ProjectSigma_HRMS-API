@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\UserTypes;
 use App\Http\Resources\UserEmployeeResource;
 use App\Models\Users;
-use Illuminate\Http\Request;
 
 class HrmsEnumController extends Controller
 {

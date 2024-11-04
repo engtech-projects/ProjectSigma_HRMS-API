@@ -38,7 +38,7 @@ class TerminationController extends Controller
         $main->fill($request->validated());
         $data = json_decode('{}');
 
-        if(!$main->save()) {
+        if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -86,7 +86,7 @@ class TerminationController extends Controller
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main->fill($request->validated());
-            if($main->save()) {
+            if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $main;
@@ -110,7 +110,7 @@ class TerminationController extends Controller
         $main = Termination::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
-            if($main->delete()) {
+            if ($main->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;
