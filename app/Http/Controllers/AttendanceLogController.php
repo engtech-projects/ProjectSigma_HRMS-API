@@ -20,7 +20,6 @@ use App\Models\AttendancePortal;
 use App\Models\Employee;
 use App\Models\EmployeePattern;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class AttendanceLogController extends Controller
 {

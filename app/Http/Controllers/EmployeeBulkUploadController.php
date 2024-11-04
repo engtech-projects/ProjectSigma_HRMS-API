@@ -527,7 +527,7 @@ class EmployeeBulkUploadController extends Controller
         $query = Position::getQuery();
         $query->where('name', $position);
         $data = $query->get();
-        if($data) {
+        if ($data) {
             if (count($data) > 1) {
                 $pos = Position::where('department_id', $departmentId)->first();
                 if ($pos) {

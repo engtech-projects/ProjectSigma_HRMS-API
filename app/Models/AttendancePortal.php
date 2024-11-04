@@ -3,10 +3,8 @@
 namespace App\Models;
 
 use App\Enums\AssignTypes;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -61,20 +59,20 @@ class AttendancePortal extends Model
     // LEGACY ATTRIBUTES
     public function getTypeAttribute()
     {
-        if ($this->assignment_type == Self::DEPARTMENT) {
+        if ($this->assignment_type == self::DEPARTMENT) {
             return AssignTypes::DEPARTMENT;
         }
-        if ($this->assignment_type == Self::PROJECT) {
+        if ($this->assignment_type == self::PROJECT) {
             return AssignTypes::PROJECT;
         }
         return "";
     }
     public function getNameAttribute()
     {
-        if ($this->assignment_type == Self::DEPARTMENT) {
+        if ($this->assignment_type == self::DEPARTMENT) {
             return $this->assignment->department_name;
         }
-        if ($this->assignment_type == Self::PROJECT) {
+        if ($this->assignment_type == self::PROJECT) {
             return $this->assignment->project_code;
         }
         return "";

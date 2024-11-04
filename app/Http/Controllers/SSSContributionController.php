@@ -37,7 +37,7 @@ class SSSContributionController extends Controller
         $sss = new SSSContribution();
         $sss->fill($request->validated());
         $data = json_decode('{}');
-        if(!$sss->save()) {
+        if (!$sss->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -75,7 +75,7 @@ class SSSContributionController extends Controller
         $data = json_decode('{}');
         if (!is_null($sss)) {
             $sss->fill($request->validated());
-            if($sss->save()) {
+            if ($sss->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $sss;
@@ -99,7 +99,7 @@ class SSSContributionController extends Controller
         $sss = SSSContribution::find($id);
         $data = json_decode('{}');
         if (!is_null($sss)) {
-            if($sss->delete()) {
+            if ($sss->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $sss;

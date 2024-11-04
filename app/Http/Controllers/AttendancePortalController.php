@@ -55,11 +55,11 @@ class AttendancePortalController extends Controller
             $hashname = hash('sha256', $hashmake);
             $data->portal_token = $hashname;
             $data->save();
-            $assignments = collect($valData["assignments"])->where("assignment_type","==",AssignTypes::DEPARTMENT->value);
+            $assignments = collect($valData["assignments"])->where("assignment_type", "==", AssignTypes::DEPARTMENT->value);
             if ($assignments->count() > 0) {
                 $data->departments()->attach($assignments->pluck("department_id")->toArray(), ["assignment_type" => Department::class]);
             }
-            $assignments = collect($valData["assignments"])->where("assignment_type","==",AssignTypes::PROJECT->value);
+            $assignments = collect($valData["assignments"])->where("assignment_type", "==", AssignTypes::PROJECT->value);
             if ($assignments->count() > 0) {
                 $data->projects()->attach($assignments->pluck("project_id")->toArray(), ["assignment_type" => Project::class]);
             }

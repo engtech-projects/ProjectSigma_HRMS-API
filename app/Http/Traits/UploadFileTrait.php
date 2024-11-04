@@ -2,9 +2,7 @@
 
 namespace App\Http\Traits;
 
-use App\Models\Image;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 trait UploadFileTrait
@@ -18,7 +16,8 @@ trait UploadFileTrait
         return $fileLocation . $hashname . "/" . $originalName;
     }
 
-    public function replaceUploadFile ($oldFile, $file, $fileLocation) {
+    public function replaceUploadFile($oldFile, $file, $fileLocation)
+    {
         $oldAttachment = explode("/", $oldFile);
         $hashmake = Hash::make('secret');
         $hashname = substr(hash('sha256', $hashmake), 0, 20);

@@ -37,7 +37,7 @@ class PhilhealthContributionController extends Controller
         $philhealth = new PhilhealthContribution();
         $philhealth->fill($request->validated());
         $data = json_decode('{}');
-        if(!$philhealth->save()) {
+        if (!$philhealth->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -84,7 +84,7 @@ class PhilhealthContributionController extends Controller
         $data = json_decode('{}');
         if (!is_null($philhealth)) {
             $philhealth->fill($request->validated());
-            if($philhealth->save()) {
+            if ($philhealth->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $philhealth;
@@ -108,7 +108,7 @@ class PhilhealthContributionController extends Controller
         $philhealth = PhilhealthContribution::find($id);
         $data = json_decode('{}');
         if (!is_null($philhealth)) {
-            if($philhealth->delete()) {
+            if ($philhealth->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $philhealth;

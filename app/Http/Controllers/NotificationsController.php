@@ -67,7 +67,7 @@ class NotificationsController extends Controller
                     $lastRequestSent = Carbon::now();
                 }
                 // usleep(500000); // usleep 1 sec = 1000000
-                if(connection_aborted()) {
+                if (connection_aborted()) {
                     break;
                 }
                 sleep(1); // Will check for updates every second

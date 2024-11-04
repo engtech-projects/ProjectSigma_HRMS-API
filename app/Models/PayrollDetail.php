@@ -123,11 +123,18 @@ class PayrollDetail extends Model
     }
     public function getTotalBasicPaysAttribute()
     {
-        return $this->regular_pay + $this->rest_pay + $this->regular_holiday_pay + $this->special_holiday_pay + $this->total_adjustment;
+        return $this->regular_pay +
+            $this->total_adjustment;
     }
     public function getTotalOvertimePaysAttribute()
     {
-        return $this->regular_ot_pay + $this->rest_ot_pay + $this->regular_holiday_ot_pay + $this->special_holiday_ot_pay;
+        return $this->regular_ot_pay +
+            $this->rest_ot_pay +
+            $this->regular_holiday_ot_pay +
+            $this->special_holiday_ot_pay +
+            $this->rest_pay +
+            $this->regular_holiday_pay +
+            $this->special_holiday_pay;
     }
     public function getTotalCashAdvancePaymentsAttribute()
     {

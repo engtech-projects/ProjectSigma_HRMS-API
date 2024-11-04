@@ -39,7 +39,7 @@ class PagibigContributionController extends Controller
         $pagibig = new PagibigContribution();
         $pagibig->fill($request->validated());
         $data = json_decode('{}');
-        if(!$pagibig->save()) {
+        if (!$pagibig->save()) {
             $data->message = "Save failed.";
             $data->success = false;
             return response()->json($data, 400);
@@ -87,7 +87,7 @@ class PagibigContributionController extends Controller
         $data = json_decode('{}');
         if (!is_null($pagibig)) {
             $pagibig->fill($request->validated());
-            if($pagibig->save()) {
+            if ($pagibig->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;
                 $data->data = $pagibig;
@@ -111,7 +111,7 @@ class PagibigContributionController extends Controller
         $pagibig = PagibigContribution::find($id);
         $data = json_decode('{}');
         if (!is_null($pagibig)) {
-            if($pagibig->delete()) {
+            if ($pagibig->delete()) {
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $pagibig;

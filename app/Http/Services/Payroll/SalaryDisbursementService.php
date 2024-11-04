@@ -40,12 +40,12 @@ class SalaryDisbursementService
         foreach ($groupedSalaryChargings as $key => $dataCollection) {
             $basic_pay_names = [
                 "Salary Regular Regular",
-                "Salary Rest Regular",
-                "Salary RegularHoliday Regular",
-                "Salary SpecialHoliday Regular",
                 "Salary Adjustment",
             ];
             $overtime_pay_names = [
+                "Salary Rest Regular",
+                "Salary RegularHoliday Regular",
+                "Salary SpecialHoliday Regular",
                 "Salary Regular Overtime",
                 "Salary Rest Overtime",
                 "Salary RegularHoliday Overtime",

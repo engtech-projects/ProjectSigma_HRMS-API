@@ -80,10 +80,10 @@ class PayrollRecord extends Model
 
     public function getChargingNameAttribute()
     {
-        if($this->project_id) {
+        if ($this->project_id) {
             return $this->project->project_code;
         }
-        if($this->department_id) {
+        if ($this->department_id) {
             return $this->department->department_name;
         }
         return 'No charging found.';

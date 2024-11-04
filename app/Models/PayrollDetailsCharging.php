@@ -17,14 +17,14 @@ class PayrollDetailsCharging extends Model
     use SoftDeletes;
     use HasApiTokens;
 
-    CONST BASIC_PAY_NAMES = [
+    public const BASIC_PAY_NAMES = [
         "Salary Regular Regular",
         "Salary Rest Regular",
         "Salary RegularHoliday Regular",
         "Salary SpecialHoliday Regular",
         "Salary Adjustment",
     ];
-    CONST OVERTIME_PAY_NAMES = [
+    public const OVERTIME_PAY_NAMES = [
         "Salary Regular Overtime",
         "Salary Rest Overtime",
         "Salary RegularHoliday Overtime",
@@ -58,10 +58,10 @@ class PayrollDetailsCharging extends Model
 
     public function getChargingNameAttribute()
     {
-        if($this->charge_type == AttendancePortal::DEPARTMENT) {
+        if ($this->charge_type == AttendancePortal::DEPARTMENT) {
             return $this->charge->department_name;
         }
-        if($this->charge_type == AttendancePortal::PROJECT) {
+        if ($this->charge_type == AttendancePortal::PROJECT) {
             return $this->charge->project_code;
         }
         return 'No charging found.';

@@ -83,7 +83,7 @@ class PayrollRecordController extends Controller
                     'message' => "Employee ".$employee->fullname_first." has no Salary Grade Set.",
                 ], 400);
             }
-            if(in_array($employee->id, $employeePayrollGeneratedSamePayrollDate)) {
+            if (in_array($employee->id, $employeePayrollGeneratedSamePayrollDate)) {
                 return new JsonResponse([
                     'success' => false,
                     'message' => "Employee ".$employee->fullname_first." has already Pending/Approved generated payroll for this payroll date.",
@@ -140,11 +140,11 @@ class PayrollRecordController extends Controller
         // try {
         DB::transaction(function () use ($attribute) {
             $payroll = PayrollRecord::create($attribute);
-            foreach($attribute["payroll_details"] as $employeePayrollData) {
+            foreach ($attribute["payroll_details"] as $employeePayrollData) {
                 $empPayrollDetail = $payroll->payroll_details()->create($employeePayrollData);
                 $empPayrollDetail->adjustments()->createMany($employeePayrollData["adjustments"]);
                 $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
-                if(sizeof($employeePayrollData["deductions"]) > 0) {
+                if (sizeof($employeePayrollData["deductions"]) > 0) {
                     $empPayrollDetail->deductions()->createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
                 }
             }
@@ -331,7 +331,8 @@ class PayrollRecordController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();;
+        ->get();
+        ;
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,

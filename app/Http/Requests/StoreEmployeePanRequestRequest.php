@@ -7,7 +7,6 @@ use App\Enums\HireSourceType;
 use App\Enums\RequestStatuses;
 use App\Enums\SalaryRequestType;
 use App\Http\Traits\HasApprovalValidation;
-use App\Models\Employee;
 use App\Models\EmployeePanRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
