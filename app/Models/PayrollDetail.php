@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PayrollDetailsDeductionType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -169,5 +170,24 @@ class PayrollDetail extends Model
             }
         }
         return implode(", ", $names);
+    }
+    public function scopeHasSssContributions(Builder $query)
+    {
+        $query->where("sss_employee_contribution", ">", 0)
+            ->orWhere("sss_employer_contribution", ">", 0)
+            ->orWhere("sss_employee_compensation", ">", 0)
+            ->orWhere("sss_employer_compensation", ">", 0)
+            ->orWhere("sss_employee_wisp", ">", 0)
+            ->orWhere("sss_employer_wisp", ">", 0);
+    }
+    public function scopeHasPagibigContributions(Builder $query)
+    {
+        $query->where("pagibig_employee_contribution", ">", 0)
+            ->orWhere("pagibig_employer_contribution", ">", 0);
+    }
+    public function scopeHasPhilhealthContributions(Builder $query)
+    {
+        $query->where("philhealth_employee_contribution", ">", 0)
+            ->orWhere("philhealth_employer_contribution", ">", 0);
     }
 }

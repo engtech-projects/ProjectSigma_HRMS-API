@@ -306,8 +306,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
         Route::get('sss-employee-loans', [ReportController::class, 'sssEmployeeLoans']);
         Route::get('hdmf-employee-loans', [ReportController::class, 'hdmfEmployeeLoans']);
+        Route::get('coop-employee-loans', [ReportController::class, 'coopEmployeeLoans']);
         Route::get('sss-group-summary-loans', [ReportController::class, 'sssGroupSummaryLoans']);
         Route::get('hdmf-group-summary-loans', [ReportController::class, 'hdmfGroupSummaryLoans']);
+        Route::get('coop-group-summary-loans', [ReportController::class, 'coopGroupSummaryLoans']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
