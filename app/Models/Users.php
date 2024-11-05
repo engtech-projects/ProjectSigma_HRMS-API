@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,9 @@ class Users extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+    use ModelHelpers;
+
+    protected $table = "users";
 
     protected $primaryKey = 'id';
 

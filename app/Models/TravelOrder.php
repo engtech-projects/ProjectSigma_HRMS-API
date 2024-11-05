@@ -6,6 +6,7 @@ use App\Enums\AssignTypes;
 use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
+use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +28,7 @@ class TravelOrder extends Model
     use SoftDeletes;
     use HasApproval;
     use HasUser;
+    use ModelHelpers;
 
     protected $casts = [
         "approvals" => "array",
