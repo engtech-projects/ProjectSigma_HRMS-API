@@ -86,6 +86,10 @@ class ReportController extends Controller
     {
         return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
     }
+    public function getDefaultLoanPaymentsGroup(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
+    }
     public function getLoanCategoryList()
     {
         return new JsonResponse(ReportService::getLoanCategoryList());

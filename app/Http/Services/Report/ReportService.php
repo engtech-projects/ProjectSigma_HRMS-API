@@ -617,5 +617,38 @@ class ReportService
             'data' => DefaultReportPaymentResource::collection($data),
         ];
     }
+    public static function getDefaultLoanPaymentsGroup($validatedData = [])
+    {
+        $data = PayrollDetail::with(["employee.company_employments"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->whereHas('loanPayments', function ($query) use ($validatedData) {
+            return $query->where('name', $validatedData['loan_type']);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->sortBy('employee.fullname_last', SORT_NATURAL)
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_fullname" => $employeeData->first()->employee->fullname_first,
+                "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
+                "payroll_record" => [
+                    ...$employeeData->first()->payroll_record->toArray(),
+                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                ],
+            ];
+        })
+        ->values()
+        ->all();
+        return [
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => DefaultReportPaymentResource::collection($data),
+        ];
+    }
 }
 
