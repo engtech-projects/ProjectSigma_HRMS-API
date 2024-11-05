@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EmployeeLoanType;
+use App\Http\Requests\DefaultPaymentRequest;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
 use App\Http\Requests\HdmfGroupSummaryLoansRequest;
 use App\Http\Requests\PagibigEmployeeRemittanceRequest;
@@ -85,5 +86,13 @@ class ReportController extends Controller
     public function hdmfGroupSummaryLoans(HdmfGroupSummaryLoansRequest $request)
     {
         return new JsonResponse($this->reportService->hdmfGroupSummaryLoans($request->validated()));
+    }
+    public function getDefaultLoanPayments(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse($this->reportService->getDefaultLoanPayments($request->validated()));
+    }
+    public function getLoanCategoryList()
+    {
+        return new JsonResponse($this->reportService->getLoanCategoryList());
     }
 }

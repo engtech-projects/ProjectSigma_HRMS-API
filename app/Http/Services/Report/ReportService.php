@@ -3,6 +3,7 @@
 namespace App\Http\Services\Report;
 
 use App\Enums\EmployeeLoanType;
+use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
 use App\Http\Resources\PagibigEmployeeRemittanceResource;
@@ -17,6 +18,7 @@ use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\SssRemittanceSummaryResource;
 use App\Models\PayrollDetail;
+use App\Models\PayrollDetailDeduction;
 
 class ReportService
 {
@@ -355,7 +357,7 @@ class ReportService
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
-        ->with('loanPayments', function ($query) {
+        ->whereHas('loanPayments', function ($query) {
             return $query->where('name', EmployeeLoanType::SSS->value);
         })
         ->hasSssContributions()
@@ -392,7 +394,7 @@ class ReportService
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
-        ->with('loanPayments', function ($query) {
+        ->whereHas('loanPayments', function ($query) {
             return $query->where('name', EmployeeLoanType::HDMF_MPL->value);
         })
         ->hasPagibigContributions()
@@ -428,8 +430,8 @@ class ReportService
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
-        ->with('loanPayments', function ($query) {
-            return $query->where('name', EmployeeLoanType::HDMF_MPL->value);
+        ->whereHas('loanPayments', function ($query) {
+            return $query->where('name', EmployeeLoanType::COOP->value);
         })
         ->orderBy("created_at", "DESC")
         ->get()
@@ -463,7 +465,7 @@ class ReportService
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
-        ->with('loanPayments', function ($query) {
+        ->whereHas('loanPayments', function ($query) {
             return $query->where('name', EmployeeLoanType::COOP->value);
         })
         ->orderBy("created_at", "DESC")
@@ -499,7 +501,7 @@ class ReportService
                 ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
-        ->with('loanPayments', function ($query) {
+        ->whereHas('loanPayments', function ($query) {
             return $query->where('name', EmployeeLoanType::SSS->value);
         })
         ->hasSssContributions()
@@ -542,7 +544,7 @@ class ReportService
             return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
                 ->isApproved();
         })
-        ->with('loanPayments', function ($query) {
+        ->whereHas('loanPayments', function ($query) {
             return $query->where('name', EmployeeLoanType::HDMF_MPL->value);
         })
         ->hasPagibigContributions()
@@ -576,6 +578,43 @@ class ReportService
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
             'data' => HdmfGroupSummaryLoansResource::collection($data),
+        ];
+    }
+    public function getLoanCategoryList()
+    {
+        return [
+            'success' => true,
+            'message' => 'SSS Employee Remittance fetched successfully.',
+            'data' => PayrollDetailDeduction::select('name')->distinct()->orderBy('name', 'ASC')->get(),
+        ];
+    }
+    public function getDefaultLoanPayments($validatedData = [])
+    {
+        $data = PayrollDetail::with(["employee.company_employments"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->whereHas('loanPayments', function ($query) use ($validatedData) {
+            return $query->where('name', $validatedData['loan_type']);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->sortBy('employee.fullname_last', SORT_NATURAL)
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_fullname" => $employeeData->first()->employee->fullname_first,
+                "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
+            ];
+        })
+        ->values()
+        ->all();
+        return [
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => DefaultReportPaymentResource::collection($data),
         ];
     }
 }

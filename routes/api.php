@@ -297,6 +297,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // REPORTS
     Route::prefix('reports')->group(function () {
+        Route::get('loan-category-list', [ReportController::class, 'getLoanCategoryList']);
+        Route::get('default-loan-payments', [ReportController::class, 'getDefaultLoanPayments']);
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
