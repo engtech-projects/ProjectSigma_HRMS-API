@@ -22,7 +22,7 @@ use App\Models\PayrollDetailDeduction;
 
 class ReportService
 {
-    public function sssEmployeeRemittance($validatedData = [])
+    public static function sssEmployeeRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -63,7 +63,7 @@ class ReportService
             'data' => SSSEmployeeRemittanceResource::collection($data),
         ];
     }
-    public function sssGroupRemittance($validatedData = [])
+    public static function sssGroupRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -120,7 +120,7 @@ class ReportService
             ],
         ];
     }
-    public function sssRemittanceSummary($validatedData = [])
+    public static function sssRemittanceSummary($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -147,7 +147,7 @@ class ReportService
             'data' => SssRemittanceSummaryResource::collection($uniqueGroup),
         ];
     }
-    public function pagibigEmployeeRemittance($validatedData = [])
+    public static function pagibigEmployeeRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -178,7 +178,7 @@ class ReportService
             'data' => PagibigEmployeeRemittanceResource::collection($data),
         ];
     }
-    public function pagibigGroupRemiitance($validatedData = [])
+    public static function pagibigGroupRemiitance($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -225,7 +225,7 @@ class ReportService
             ],
         ];
     }
-    public function pagibigRemittanceSummary($validatedData = [])
+    public static function pagibigRemittanceSummary($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -249,7 +249,7 @@ class ReportService
             'data' => PagibigRemittanceSummaryResource::collection($uniqueGroup),
         ];
     }
-    public function philhealthEmployeeRemittance($validatedData = [])
+    public static function philhealthEmployeeRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -279,7 +279,7 @@ class ReportService
             'data' => PhilhealthEmployeeRemittanceResource::collection($data),
         ];
     }
-    public function philhealthGroupRemittance($validatedData = [])
+    public static function philhealthGroupRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -326,7 +326,7 @@ class ReportService
             ],
         ];
     }
-    public function philhealthRemittanceSummary($validatedData = [])
+    public static function philhealthRemittanceSummary($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -350,7 +350,7 @@ class ReportService
             'data' => philhealthRemittanceSummaryResource::collection($uniqueGroup),
         ];
     }
-    public function sssEmployeeLoans($validatedData = [])
+    public static function sssEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -387,7 +387,7 @@ class ReportService
             'data' => SssEmployeeLoanResource::collection($data),
         ];
     }
-    public function hdmfEmployeeLoans($validatedData = [])
+    public static function hdmfEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -423,7 +423,7 @@ class ReportService
             'data' => HdmfEmployeeLoansResource::collection($data),
         ];
     }
-    public function coopEmployeeLoans($validatedData = [])
+    public static function coopEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -458,7 +458,7 @@ class ReportService
             'data' => HdmfEmployeeLoansResource::collection($data),
         ];
     }
-    public function coopGroupSummaryLoans($validatedData = [])
+    public static function coopGroupSummaryLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -493,7 +493,7 @@ class ReportService
             'data' => HdmfEmployeeLoansResource::collection($data),
         ];
     }
-    public function sssGroupSummaryLoans($validatedData = [])
+    public static function sssGroupSummaryLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -537,7 +537,7 @@ class ReportService
             'data' => SssGroupSummaryLoansResource::collection($data),
         ];
     }
-    public function hdmfGroupSummaryLoans($validatedData = [])
+    public static function hdmfGroupSummaryLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
@@ -580,7 +580,7 @@ class ReportService
             'data' => HdmfGroupSummaryLoansResource::collection($data),
         ];
     }
-    public function getLoanCategoryList()
+    public static function getLoanCategoryList()
     {
         return [
             'success' => true,
@@ -588,7 +588,7 @@ class ReportService
             'data' => PayrollDetailDeduction::select('name')->distinct()->orderBy('name', 'ASC')->get(),
         ];
     }
-    public function getDefaultLoanPayments($validatedData = [])
+    public static function getDefaultLoanPayments($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
         ->whereHas('payroll_record', function ($query) use ($validatedData) {
