@@ -7,6 +7,7 @@ use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
+use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,7 @@ class EmployeeLeaves extends Model
     use HasUser;
     use StatusScope;
     use SeparatedCharging;
+    use ModelHelpers;
 
     protected $casts = [
         "approvals" => "array",

@@ -8,6 +8,7 @@ use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
 use App\Enums\PersonelAccessForm;
 use App\Models\Traits\HasEmployee;
+use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class FailureToLog extends Model
     use SoftDeletes;
     use HasEmployee;
     use HasApproval;
+    use ModelHelpers;
 
     protected $fillable = [
         'date',

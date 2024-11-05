@@ -18,6 +18,7 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -29,6 +30,7 @@ class EmployeePanRequest extends Model
     use SoftDeletes;
     use HasApproval;
     use HasUser;
+    use ModelHelpers;
 
     public const NEW_HIRE = "New Hire";
     public const TRANSFER = "Transfer";

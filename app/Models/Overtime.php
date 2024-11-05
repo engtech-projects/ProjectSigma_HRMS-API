@@ -7,6 +7,7 @@ use App\Enums\PersonelAccessForm;
 use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
+use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,7 @@ class Overtime extends Model
     use HasApproval;
     use StatusScope;
     use SeparatedCharging;
+    use ModelHelpers;
 
     protected $table = 'overtime';
 

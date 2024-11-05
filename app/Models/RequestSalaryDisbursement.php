@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\DisbursementStatus;
 use App\Enums\RequestStatuses;
 use App\Traits\HasApproval;
+use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +18,7 @@ class RequestSalaryDisbursement extends Model
     use HasFactory;
     use SoftDeletes;
     use HasApproval;
+    use ModelHelpers;
 
     protected $fillable = [
         'payroll_date',

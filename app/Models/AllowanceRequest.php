@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
+use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +19,7 @@ class AllowanceRequest extends Model
     use HasFactory;
     use SoftDeletes;
     use HasApproval;
+    use ModelHelpers;
 
     protected $table = 'allowance_request';
 
