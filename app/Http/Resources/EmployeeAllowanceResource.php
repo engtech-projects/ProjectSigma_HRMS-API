@@ -17,7 +17,7 @@ class EmployeeAllowanceResource extends JsonResource
         return [
             "employee_id" => $this->pivot->employee_id,
             "employee" => $this->fullname_first,
-            "employee_position" => $this->current_employment->position->name,
+            "employee_position" => $this->current_position_name,
             "allowance_rate" => $this->pivot->allowance_rate,
             "allowance_days" => $this->pivot->allowance_days,
             "allowance_amount" => $this->pivot->allowance_amount,
