@@ -22,7 +22,7 @@ class AttendanceLogResource extends JsonResource
             "log_type" => $this->log_type,
             "attendance_type" => $this->attendance_type,
             "assignment" => $this->charging_designation,
-            "employee" => $this->whenLoaded('employee'),
+            "employee" => new EmployeeSummaryResource($this->employee),
         ];
     }
 }
