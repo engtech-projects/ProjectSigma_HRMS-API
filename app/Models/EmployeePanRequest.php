@@ -232,8 +232,14 @@ class EmployeePanRequest extends Model
         // duplicate jobApplicant data to employee
         $jobApplicant = $this->jobapplicantonly;
         $jobApplicant["first_name"] = $jobApplicant->firstname;
+        $jobApplicant["middle_name"] = $jobApplicant->middlename;
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $jobApplicant["nick_name"] = $jobApplicant->nickname;
+        $jobApplicant["name_suffix"] = $jobApplicant->name_suffix;
+        $jobApplicant["nick_name"] = $jobApplicant->contact_info;
+        $jobApplicant["blood_type"] = $jobApplicant->blood_type;
+        $jobApplicant["gender"] = $jobApplicant->gender;
+        $jobApplicant["civil_status"] = $jobApplicant->civil_status;
         $jobApplicant["date_of_marriage"] = ($jobApplicant["date_of_marriage"] === 'null') ? null : $jobApplicant["date_of_marriage"];
         $employee = Employee::create($jobApplicant->toArray());
         // pan request details to internal work experience
@@ -352,6 +358,7 @@ class EmployeePanRequest extends Model
                 "province" => $jobApplicant->icoe_province ?? null,
                 "relationship" => $jobApplicant->icoe_relationship ?? null,
                 "contact_no" => $jobApplicant->telephone_icoe ?? null,
+                "occupation" => $jobApplicant->telephone_icoe ?? null,
                 "type" => EmployeeRelatedPersonType::CONTACT_PERSON
             ]);
         }
