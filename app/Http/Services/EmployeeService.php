@@ -9,6 +9,7 @@ use App\Http\Services\Attendance\AttendanceService;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\Department;
 use App\Models\Project;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeService
 {
@@ -87,12 +88,13 @@ class EmployeeService
         });
         $dtrValues = $dtr->values();
         $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrValues);
-        $grossSalaries = collect([...$this->aggregateTotalGrossPays($dtrValues)]);
         $fixedSalary = PayrollService::getPayrollTypeValue($filters["payroll_type"], $employee->current_employment->employee_salarygrade->monthly_salary_amount);
         if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
             $salary = $fixedSalary;
         } else {
-            $salary = round($grossSalaries->values()->sum("regular")  + $grossSalaries->values()->sum("overtime"), 2);
+            $dtrChargings = $this->aggregateDTRCharging($dtrValues, $employee->current_employment->employee_salarygrade->dailyRate);
+            $salary = round($dtrChargings->values()->sum("amount"), 2);
+            $grossSalaries = collect([...$this->aggregateTotalGrossPays($dtrChargings)]);
         }
         // Getting Employee Adjustments from Payroll Request
         $adjustments = [];
@@ -125,7 +127,7 @@ class EmployeeService
             ]);
         } else {
             $chargings = collect([
-                ...$this->aggregateDTRCharging($dtrValues, $employee->current_employment->employee_salarygrade->dailyRate),
+                ...$dtrChargings,
                 ...$chargings,
             ]);
         }
@@ -282,24 +284,40 @@ class EmployeeService
         ];
     }
 
-    public function aggregateTotalGrossPays($dtrs)
+    public function aggregateTotalGrossPays($chargingSalaries)
     {
         return [
             "regular" => [
-                "regular" => round($dtrs->sum("grosspay.regular.reg_hrs"), 2),
-                "overtime" => round($dtrs->sum("grosspay.regular.overtime"), 2),
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Regular Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Regular Overtime";
+                })->sum("amount"), 2),
             ],
             "rest" => [
-                "regular" => round($dtrs->sum("grosspay.rest.reg_hrs"), 2),
-                "overtime" => round($dtrs->sum("grosspay.rest.overtime"), 2),
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Rest Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Rest Overtime";
+                })->sum("amount"), 2),
             ],
             "regular_holidays" => [
-                "regular" => round($dtrs->sum("grosspay.regular_holidays.reg_hrs"), 2),
-                "overtime" => round($dtrs->sum("grosspay.regular_holidays.overtime"), 2),
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary RegularHoliday Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary RegularHoliday Overtime";
+                })->sum("amount"), 2),
             ],
             "special_holidays" => [
-                "regular" => round($dtrs->sum("grosspay.special_holidays.reg_hrs"), 2),
-                "overtime" => round($dtrs->sum("grosspay.special_holidays.overtime"), 2),
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary SpecialHoliday Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary SpecialHoliday Overtime";
+                })->sum("amount"), 2),
             ],
         ];
     }
@@ -310,80 +328,99 @@ class EmployeeService
             return [
                 ...collect($dtr["metadata"]["charging"]["regular"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "regular",
+                        "salary_type" => "reg_hrs",
                         "name" => "Salary Regular Regular",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("regular", "reg_hrs", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
                 ...collect($dtr["metadata"]["charging"]["regular"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "regular",
+                        "salary_type" => "overtime",
                         "name" => "Salary Regular Overtime",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("regular", "overtime", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
                 ...collect($dtr["metadata"]["charging"]["rest"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "rest",
+                        "salary_type" => "reg_hrs",
                         "name" => "Salary Rest Regular",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("rest", "reg_hrs", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
                 ...collect($dtr["metadata"]["charging"]["rest"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "rest",
+                        "salary_type" => "overtime",
                         "name" => "Salary Rest Overtime",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("rest", "overtime", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
                 ...collect($dtr["metadata"]["charging"]["regular_holidays"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "regular_holidays",
+                        "salary_type" => "reg_hrs",
                         "name" => "Salary RegularHoliday Regular",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("regular_holidays", "reg_hrs", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
                 ...collect($dtr["metadata"]["charging"]["regular_holidays"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "regular_holidays",
+                        "salary_type" => "overtime",
                         "name" => "Salary RegularHoliday Overtime",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("regular_holidays", "overtime", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
                 ...collect($dtr["metadata"]["charging"]["special_holidays"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "special_holidays",
+                        "salary_type" => "reg_hrs",
                         "name" => "Salary SpecialHoliday Regular",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("special_holidays", "reg_hrs", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
                 ...collect($dtr["metadata"]["charging"]["special_holidays"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
                     return [
+                        "day_type" => "special_holidays",
+                        "salary_type" => "overtime",
                         "name" => "Salary SpecialHoliday Overtime",
                         "charge_type" => $dtr2["model"],
                         "charge_id" => $dtr2["id"],
-                        "amount" => PayrollService::getSalaryByRateHour("special_holidays", "overtime", $dailyRate, $dtr2["hrs_worked"])
+                        "hrs_worked" => $dtr2["hrs_worked"],
                     ];
                 }),
             ];
         })
         ->groupBy(["name", "charge_type", "charge_id"])
-        ->flatMap(function ($types, $name) {
-            return $types->flatMap(function ($ids, $type) use ($name) {
-                return $ids->map(function ($chargings, $id) use ($name, $type) {
+        ->flatMap(function ($types, $name) use ($dailyRate) {
+            return $types->flatMap(function ($ids, $type) use ($name, $dailyRate) {
+                return $ids->map(function ($chargings, $id) use ($name, $type, $dailyRate) {
+                    $hrsWorked = round($chargings->sum("hrs_worked"), 2);
                     return [
                         "name" => $name,
                         "charge_type" => $type,
                         "charge_id" => $id,
                         "charging_name" => $type === "App\\Models\\Department" ? Department::find($id)->department_name : Project::find($id)->project_code,
-                        "amount" => round($chargings->sum("amount"), 2),
+                        "hrs_worked" => $hrsWorked,
+                        "amount" => PayrollService::getSalaryByRateHour($chargings->first()["day_type"], $chargings->first()["salary_type"], $dailyRate, $hrsWorked),
+                        "daily_rate" => $dailyRate,
                     ];
                 });
             });
