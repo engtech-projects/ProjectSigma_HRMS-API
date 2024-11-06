@@ -17,8 +17,8 @@ use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\SssRemittanceSummaryResource;
+use App\Models\Loans;
 use App\Models\PayrollDetail;
-use App\Models\PayrollDetailDeduction;
 
 class ReportService
 {
@@ -580,14 +580,6 @@ class ReportService
             'data' => HdmfGroupSummaryLoansResource::collection($data),
         ];
     }
-    public static function getLoanCategoryList()
-    {
-        return [
-            'success' => true,
-            'message' => 'SSS Employee Remittance fetched successfully.',
-            'data' => PayrollDetailDeduction::select('name')->distinct()->orderBy('name', 'ASC')->get(),
-        ];
-    }
     public static function getDefaultLoanPayments($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
@@ -648,6 +640,14 @@ class ReportService
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
             'data' => DefaultReportPaymentResource::collection($data),
+        ];
+    }
+    public static function getLoanCategoryList()
+    {
+        return [
+            'success' => true,
+            'message' => 'Loan Category List fetched successfully.',
+            'data' => Loans::select('name')->distinct()->orderBy('name', 'ASC')->get(),
         ];
     }
 }
