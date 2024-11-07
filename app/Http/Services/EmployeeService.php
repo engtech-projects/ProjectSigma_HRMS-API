@@ -91,6 +91,7 @@ class EmployeeService
         $fixedSalary = PayrollService::getPayrollTypeValue($filters["payroll_type"], $employee->current_employment->employee_salarygrade->monthly_salary_amount);
         if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
             $salary = $fixedSalary;
+            $grossSalaries = collect([]);
         } else {
             $dtrChargings = $this->aggregateDTRCharging($dtrValues, $employee->current_employment->employee_salarygrade->dailyRate);
             $salary = round($dtrChargings->values()->sum("amount"), 2);
