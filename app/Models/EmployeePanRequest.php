@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Http\Traits\UploadFileTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
@@ -33,6 +34,7 @@ class EmployeePanRequest extends Model
     use HasApproval;
     use HasUser;
     use UploadFileTrait;
+    use ModelHelpers;
 
     public const NEW_HIRE = "New Hire";
     public const TRANSFER = "Transfer";
