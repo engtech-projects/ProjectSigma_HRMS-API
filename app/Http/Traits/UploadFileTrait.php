@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Storage;
 
 trait UploadFileTrait
 {
-    public function uploadFile($file, $fileLocation)
+    public function uploadFile($file, $fileLocation, $newName = null)
     {
         $hashmake = Hash::make('secret');
         $hashname = substr(hash('sha256', $hashmake), 0, 20);
-        $originalName = $file->getClientOriginalName();
-        $file->storePubliclyAs($fileLocation . $hashname, $originalName, 'public');
+        $originalName = $newName ?? $file->getClientOriginalName();
+        $file->storePubliclyAs($fileLocation . $originalName, 'public');
         return $fileLocation . $hashname . "/" . $originalName;
     }
 

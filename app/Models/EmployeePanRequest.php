@@ -18,8 +18,11 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Http\Traits\UploadFileTrait;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeePanRequest extends Model
 {
@@ -29,6 +32,7 @@ class EmployeePanRequest extends Model
     use SoftDeletes;
     use HasApproval;
     use HasUser;
+    use UploadFileTrait;
 
     public const NEW_HIRE = "New Hire";
     public const TRANSFER = "Transfer";
@@ -253,6 +257,25 @@ class EmployeePanRequest extends Model
         $employeeInternal['department_id'] = $this->section_department_id;
         $employeeInternal['date_from'] = $this->date_of_effictivity;
         $employee->employee_internal()->create($employeeInternal);
+        $employee->fileuploads()->create([
+            "employee_uploads" => "Application Letter",
+            "upload_type" => "Documents",
+            "file_location" => $jobApplicant->application_letter_attachment,
+        ]);
+        $employee->fileuploads()->create([
+            "employee_uploads" => "Resume",
+            "upload_type" => "Documents",
+            "file_location" => $jobApplicant->resume_attachment,
+        ]);
+        $pdf = Pdf::loadView('reports.docs.application_form', ['application' => $jobApplicant]);
+        $filePath = EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf';
+        Storage::disk('public')->put(EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf', $pdf->output());
+
+        $employee->fileuploads()->create([
+            "employee_uploads" => "Application Form",
+            "upload_type" => "Documents",
+            "file_location" => $filePath,
+        ]);
         //company employements
         $employee->company_employments()->create([
             "employeedisplay_id" => $this->company_id_num,
