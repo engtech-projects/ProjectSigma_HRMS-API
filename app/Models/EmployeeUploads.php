@@ -14,6 +14,8 @@ class EmployeeUploads extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+    public const DOCS_DIR = "employee/docs/";
+    public const MEMO_DIR = "employee/memo/";
     protected $fillable = [
         'id',
         'employee_uploads',

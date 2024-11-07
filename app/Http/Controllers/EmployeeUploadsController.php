@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\EmployeeUploads;
 use App\Http\Requests\StoreEmployeeUploadsRequest;
 use App\Http\Requests\UpdateEmployeeUploadsRequest;
+use App\Http\Traits\UploadFileTrait;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class EmployeeUploadsController extends Controller
 {
+    use UploadFileTrait;
     public const EMPLOYEEDIR = "employee_folder/";
 
     /**
@@ -30,31 +32,22 @@ class EmployeeUploadsController extends Controller
      */
     public function store(StoreEmployeeUploadsRequest $request)
     {
+        $validated = $request->validated();
         $main = new EmployeeUploads();
-        $main->fill($request->validated());
-        $data = json_decode('{}');
-
-        $file_location = $request->file('file');
-
-        $hashmake = Hash::make('secret');
-        $hashname = hash('sha256', $hashmake);
-
-        $name = $file_location->getClientOriginalName();
-
-        $file_location->storePubliclyAs(EmployeeUploadsController::EMPLOYEEDIR . $hashname, $name, 'public');
-
-        $main->file_location = EmployeeUploadsController::EMPLOYEEDIR . $hashname . "/" . $name;
-
+        $main->fill($validated);
+        $location = $validated["upload_type"] == "Documents" ? EmployeeUploads::DOCS_DIR : EmployeeUploads::MEMO_DIR;
+        $main->file_location = $this->uploadFile($validated['file'], $location);
         if (!$main->save()) {
-            $data->message = "Save failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+            return response()->json([
+                "message" => "Save failed.",
+                "success" => false,
+            ], 400);
         }
-
-        $data->message = "Successfully save.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        return response()->json([
+            "message" => "Successfully save.",
+            "success" => true,
+            "data" => $main,
+        ]);
     }
 
     /**
