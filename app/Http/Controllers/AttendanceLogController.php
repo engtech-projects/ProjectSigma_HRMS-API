@@ -38,22 +38,20 @@ class AttendanceLogController extends Controller
     {
         $attendanceLog = $this->attendanceLogService->getAll();
         $collection = collect(AttendanceLogResource::collection($attendanceLog));
-
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",
             "data" => PaginateResourceCollection::paginate($collection, 15)
         ], JsonResponse::HTTP_OK);
     }
-
     public function allAttendanceLogs(AllAttendanceLogsRequest $request)
     {
         $attendanceLog = $this->attendanceLogService->getFilterDateAndEmployee($request);
-        $collection = collect(AttendanceLogResource::collection($attendanceLog));
+        $collection = AttendanceLogResource::collection($attendanceLog)->response()->getData(true);
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",
-            "data" => PaginateResourceCollection::paginate($collection, 15),
+            "data" => $collection,
         ], JsonResponse::HTTP_OK);
     }
 
