@@ -58,7 +58,7 @@ class PayrollRecordController extends Controller
         $periodDates = Helpers::dateRange([
             'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
         ]);
-        $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
+        $employeeDtr = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->orderBy("family_name")->get();
         $employeePayrollGeneratedSamePayrollDate = PayrollDetail::whereIn('employee_id', $filters['employee_ids'])->whereHas("payroll_record", function ($query) use ($filters) {
             $query->where("payroll_date", $filters["payroll_date"])
             ->whereIn("request_status", [RequestStatuses::APPROVED, RequestStatuses::PENDING]);
