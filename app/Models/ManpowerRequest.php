@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ManpowerRequestStatus;
 use App\Traits\HasApproval;
+use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,7 @@ class ManpowerRequest extends Model
     use Notifiable;
     use SoftDeletes;
     use HasApproval;
+    use ModelHelpers;
 
     public const JDA_DIR = "manpower/jda/";
 

@@ -18,8 +18,12 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Http\Traits\UploadFileTrait;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeePanRequest extends Model
 {
@@ -29,6 +33,8 @@ class EmployeePanRequest extends Model
     use SoftDeletes;
     use HasApproval;
     use HasUser;
+    use UploadFileTrait;
+    use ModelHelpers;
 
     public const NEW_HIRE = "New Hire";
     public const TRANSFER = "Transfer";
@@ -232,8 +238,14 @@ class EmployeePanRequest extends Model
         // duplicate jobApplicant data to employee
         $jobApplicant = $this->jobapplicantonly;
         $jobApplicant["first_name"] = $jobApplicant->firstname;
+        $jobApplicant["middle_name"] = $jobApplicant->middlename;
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $jobApplicant["nick_name"] = $jobApplicant->nickname;
+        $jobApplicant["name_suffix"] = $jobApplicant->name_suffix;
+        $jobApplicant["nick_name"] = $jobApplicant->contact_info;
+        $jobApplicant["blood_type"] = $jobApplicant->blood_type;
+        $jobApplicant["gender"] = $jobApplicant->gender;
+        $jobApplicant["civil_status"] = $jobApplicant->civil_status;
         $jobApplicant["date_of_marriage"] = ($jobApplicant["date_of_marriage"] === 'null') ? null : $jobApplicant["date_of_marriage"];
         $employee = Employee::create($jobApplicant->toArray());
         // pan request details to internal work experience
@@ -247,6 +259,25 @@ class EmployeePanRequest extends Model
         $employeeInternal['department_id'] = $this->section_department_id;
         $employeeInternal['date_from'] = $this->date_of_effictivity;
         $employee->employee_internal()->create($employeeInternal);
+        $employee->fileuploads()->create([
+            "employee_uploads" => "Application Letter",
+            "upload_type" => "Documents",
+            "file_location" => $jobApplicant->application_letter_attachment,
+        ]);
+        $employee->fileuploads()->create([
+            "employee_uploads" => "Resume",
+            "upload_type" => "Documents",
+            "file_location" => $jobApplicant->resume_attachment,
+        ]);
+        $pdf = Pdf::loadView('reports.docs.application_form', ['application' => $jobApplicant]);
+        $filePath = EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf';
+        Storage::disk('public')->put(EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf', $pdf->output());
+
+        $employee->fileuploads()->create([
+            "employee_uploads" => "Application Form",
+            "upload_type" => "Documents",
+            "file_location" => $filePath,
+        ]);
         //company employements
         $employee->company_employments()->create([
             "employeedisplay_id" => $this->company_id_num,
@@ -352,6 +383,7 @@ class EmployeePanRequest extends Model
                 "province" => $jobApplicant->icoe_province ?? null,
                 "relationship" => $jobApplicant->icoe_relationship ?? null,
                 "contact_no" => $jobApplicant->telephone_icoe ?? null,
+                "occupation" => $jobApplicant->telephone_icoe ?? null,
                 "type" => EmployeeRelatedPersonType::CONTACT_PERSON
             ]);
         }

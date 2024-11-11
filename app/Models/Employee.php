@@ -321,6 +321,11 @@ class Employee extends Model
         return $this->hasMany(EmployeeUploads::class)->where('upload_type', "=", EmployeeUploadType::DOCUMENTS);
     }
 
+    public function fileuploads(): HasMany
+    {
+        return $this->hasMany(EmployeeUploads::class);
+    }
+
     public function account(): HasOne
     {
         return $this->hasOne(Users::class);
