@@ -377,5 +377,9 @@ if (config()->get('app.artisan') == 'true') {
             Artisan::call("storage:link");
             return "success";
         });
+        Route::get('optimize', function () {
+            Artisan::call("optimize");
+            return "success";
+        });
     });
 }
