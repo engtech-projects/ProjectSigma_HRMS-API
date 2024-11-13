@@ -71,6 +71,7 @@ class SalaryDisbursementService
                 ]
             ];
         }
+        ksort($returnData);
         return $returnData;
     }
     public static function formatSummary($groupedPayrollDetails)
