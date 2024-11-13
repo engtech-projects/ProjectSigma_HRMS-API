@@ -81,6 +81,11 @@ class Schedule extends Model
         }
     }
 
+    /**
+     * ==================================================
+     * MODEL ATTRIBUTES
+     * ==================================================
+     */
     public function getBufferTimeStartEarlyAttribute()
     {
         $time = Carbon::parse($this->startTime);
@@ -127,7 +132,6 @@ class Schedule extends Model
             })
             ->get();
     }
-
     public function getDayOfWeekNamesAttribute()
     {
         $days = [
@@ -143,7 +147,6 @@ class Schedule extends Model
             return $days[$day];
         }, $this->daysOfWeek ?? []);
     }
-
     public function getDayOfWeekNamesShortAttribute()
     {
         $days = [
@@ -159,7 +162,6 @@ class Schedule extends Model
             return $days[$day];
         }, $this->daysOfWeek ?? []);
     }
-
     public function getStartTimeHumanAttribute()
     {
         return Carbon::parse($this->startTime)->format("h:i A");
@@ -179,10 +181,16 @@ class Schedule extends Model
         }
         return "UNKNOWN SCHEDULE";
     }
+    public function getDurationHoursAttribute()
+    {
+        $startTime = Carbon::parse($this->startTime);
+        $endTime = Carbon::parse($this->endTime);
+        return $startTime->diffInHours($endTime);
+    }
     /**
-     * MODEL
-     * LOCAL
-     * SCOPES
+     * ==================================================
+     * MODEL SCOPES
+     * ==================================================
      */
 
     public function scopeSchedulesOnDay(Builder $query, $date)

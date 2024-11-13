@@ -285,10 +285,12 @@ class AttendanceService
         $workRendered = self::calculateWorkRendered($employeeDayData, $date);
         $overtimeRendered = self::calculateOvertimeRendered($employeeDayData, $date);
         $type = "rest";
-        if (sizeof(collect($employeeDayData["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::REGULARHOLIDAY)) > 0) { // Regular Holiday
+        if (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::REGULARHOLIDAY)) { // Regular Holiday
             $type = "regular_holidays";
-        } elseif (sizeof(collect($employeeDayData["events"])->where("with_work", '=', 0)->where("event_type", '=', EventTypes::SPECIALHOLIDAY)) > 0) { // Special Holiday
+            $metaResult["regular"]["reg_hrs"] += collect($employeeDayData["schedules"])->sum("duration_hours"); // add total schedule hours
+        } elseif (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::SPECIALHOLIDAY)) { // Special Holiday
             $type = "special_holidays";
+            $metaResult["regular"]["reg_hrs"] += collect($employeeDayData["schedules"])->sum("duration_hours"); // add total schedule hours
         } elseif ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
             $type = "rest";
         } else { // Regular Work Day
@@ -509,7 +511,37 @@ class AttendanceService
             $absentToday = false;
         }
 
-        if ($absentToday && !$isSunday && ((isset($leaveUsed)  && !$leaveUsed) || !isset($leaveUsed))) {
+        if (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::REGULARHOLIDAY)) {
+            if ($isSunday) {
+                $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
+                    $data["start_time_log"] .= "REGULAR HOLIDAY";
+                    $data["end_time_log"] .= "REGULAR HOLIDAY";
+                    return $data;
+                })->values();
+            } else {
+                $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
+                    $data["start_time_log"] .= "REGULAR HOLIDAY";
+                    $data["end_time_log"] .= "REGULAR HOLIDAY";
+                    return $data;
+                })->values();
+            }
+        } elseif (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::SPECIALHOLIDAY)) {
+            if ($isSunday) {
+                $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
+                    $data["start_time_log"] .= "SPECIAL HOLIDAY";
+                    $data["end_time_log"] .= "SPECIAL HOLIDAY";
+                    return $data;
+                })->values();
+                $duration += 8;
+            } else {
+                $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
+                    $data["start_time_log"] .= "SPECIAL HOLIDAY";
+                    $data["end_time_log"] .= "SPECIAL HOLIDAY";
+                    return $data;
+                })->values();
+                $duration += 8;
+            }
+        } elseif ($absentToday && !$isSunday && ((isset($leaveUsed)  && !$leaveUsed) || !isset($leaveUsed))) {
             $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
                 $data["start_time_log"] .= " ABSENT";
                 $data["end_time_log"] .= " ABSENT";
@@ -649,5 +681,8 @@ class AttendanceService
             "charging_names" => $chargingNames,
             "summary" => $otSchedulesSummary,
         ];
+    }
+    public static function checkHasHolidayWithoutWork($events, $holidayType) {
+        return sizeof(collect($events)->where("with_work", '=', 0)->where("event_type", '=', $holidayType)) > 0;
     }
 }
