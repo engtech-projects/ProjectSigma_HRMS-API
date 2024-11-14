@@ -84,7 +84,7 @@ class AttendanceService
             "attendanceLogs" => $employee->attendance_log,
             "travel_orders" => $employee->employee_travel_order,
             "leaves" => $employee->employee_leave,
-            'events' => Events::betweenDates($dateFrom, $dateTo)->withPay()->get(),
+            'events' => Events::betweenDates($dateFrom, $dateTo)->get(),
         ];
         $employee["dtr"] = Self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging);
         $employee["date_from"] = $dateFrom;
