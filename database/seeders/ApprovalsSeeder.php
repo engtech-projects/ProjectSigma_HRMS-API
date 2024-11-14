@@ -159,28 +159,55 @@ class ApprovalsSeeder extends Seeder
             ]
         );
         //ACCOUNTING
-        // DB::table('approvals')->upsert(
-        //     [
-        //         [
-        //             'id' => 210,
-        //             'form' => "New Item Profile",
-        //             'approvals' => "[]",
-        //             'module' => ApprovalModules::INVENTORY->value,
-        //             'deleted_at' => null,
-        //             'created_at' => Carbon::now(),
-        //             'updated_at' => Carbon::now(),
-        //         ],
-        //     ],
-        //     [
-        //         'id'
-        //     ],
-        //     [
-        //         'form'
-        //         'module'
-        //         'deleted_at'
-        //     ]
-        // );
-        //PROJECTS
+        DB::table('approvals')->upsert(
+            [
+                [
+                    'id' => 2010,
+                    'form' => "Payment Request Form (NPO)",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::ACCOUNTING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2020,
+                    'form' => "Payment Request Form (PO)",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::ACCOUNTING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2030,
+                    'form' => "Disbursement Voucher Request",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::ACCOUNTING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2040,
+                    'form' => "Cash Voucher Request",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::ACCOUNTING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+            ],
+            [
+                'id'
+            ],
+            [
+                'form',
+                'module',
+                'deleted_at',
+            ]
+        );
+        // PROJECTS
         // DB::table('approvals')->upsert(
         //     [
         //         [
