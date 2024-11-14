@@ -712,10 +712,10 @@ class AttendanceService
         $holidays = collect($events)
         ->where("event_type", '=', $holidayType)
         ->when($withPay != -1, function ($query) use ($pay) {
-            $query->where("with_pay", '=', $pay);
+            return $query->where("with_pay", '=', $pay);
         })
         ->when($withWork != -1, function ($query) use ($work) {
-            $query->where("with_work", '=', $work);
+            return $query->where("with_work", '=', $work);
         });
         return sizeof($holidays) > 0;
     }
