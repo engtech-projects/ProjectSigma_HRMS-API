@@ -312,27 +312,6 @@ class AttendanceService
             }
         } elseif (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1)) { // Special Holiday
             $type = "special_holidays";
-            if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1, 0)) {
-                $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration;
-                array_push(
-                    $metaResult["charging"]["regular"]["reg_hrs"],
-                    [
-                        "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
-                        "id" => $payrollCharging ? $payrollCharging["id"] : 4,
-                        "hrs_worked" => $daySchedulesDuration,
-                    ],
-                );
-            } elseif ($workRendered["rendered"]) {
-                $metaResult["regular"]["reg_hrs"] += $workRendered["rendered"];
-                array_push(
-                    $metaResult["charging"]["regular"]["reg_hrs"],
-                    [
-                        "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
-                        "id" => $payrollCharging ? $payrollCharging["id"] : 4,
-                        "hrs_worked" => $workRendered["rendered"],
-                    ],
-                );
-            }
         } elseif ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
             $type = "rest";
         } else { // Regular Work Day
@@ -706,11 +685,13 @@ class AttendanceService
             "summary" => $otSchedulesSummary,
         ];
     }
-    public static function checkHasHoliday($events, $holidayType, $withPay = -1, $withWork = -1) {
+    public static function checkHasHoliday($events, $holidayType = null, $withPay = -1, $withWork = -1) {
         $pay = $withPay === -1 ? 0 : $withPay;
         $work = $withWork === -1 ? 0 : $withWork;
         $holidays = collect($events)
-        ->where("event_type", '=', $holidayType)
+        ->when(!is_null($holidayType), function ($query) use ($holidayType) {
+            return $query->where("event_type", '=', $holidayType);
+        })
         ->when($withPay != -1, function ($query) use ($pay) {
             return $query->where("with_pay", '=', $pay);
         })
