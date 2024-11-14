@@ -86,7 +86,7 @@ class AttendanceService
             "leaves" => $employee->employee_leave,
             'events' => Events::betweenDates($dateFrom, $dateTo)->get(),
         ];
-        $employee["dtr"] = self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging);
+        $employee["dtr"] = Self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging);
         $employee["date_from"] = $dateFrom;
         $employee["date_to"] = $dateTo;
         $employee["current_position"] = $employee->current_position_name;
@@ -101,12 +101,12 @@ class AttendanceService
         return collect($periodDates)->groupBy("date")->map(function ($val, $date) use ($employeeDatas, $payrollCharging) {
             $carbonDate = Carbon::parse($date);
             // Get applied Schedule for date
-            $appliedDateSchedule = self::getAppliedDateSchedule($employeeDatas, $carbonDate);
-            $appliedDateOvertime = self::getAppliedDateOvertime($employeeDatas, $carbonDate);
-            $appliedDateAttendanceLogs = self::getAppliedDateAttendanceLogs($employeeDatas, $carbonDate);
-            $appliedDateTravelOrders = self::getAppliedDateTravelOrders($employeeDatas, $carbonDate);
-            $appliedDateLeaves = self::getAppliedDateLeaves($employeeDatas, $carbonDate);
-            $appliedDateEvents = self::getAppliedDateEvents($employeeDatas, $carbonDate);
+            $appliedDateSchedule = Self::getAppliedDateSchedule($employeeDatas, $carbonDate);
+            $appliedDateOvertime = Self::getAppliedDateOvertime($employeeDatas, $carbonDate);
+            $appliedDateAttendanceLogs = Self::getAppliedDateAttendanceLogs($employeeDatas, $carbonDate);
+            $appliedDateTravelOrders = Self::getAppliedDateTravelOrders($employeeDatas, $carbonDate);
+            $appliedDateLeaves = Self::getAppliedDateLeaves($employeeDatas, $carbonDate);
+            $appliedDateEvents = Self::getAppliedDateEvents($employeeDatas, $carbonDate);
             $dateDataForProcessing = [
                 "employee" => $employeeDatas,
                 "schedules" => $appliedDateSchedule,
@@ -116,7 +116,7 @@ class AttendanceService
                 "leaves" => $appliedDateLeaves,
                 "events" => $appliedDateEvents,
             ];
-            $processedMetaData = self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate, $payrollCharging);
+            $processedMetaData = Self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate, $payrollCharging);
             return [
                 "date" => $date,
                 "schedules" => $appliedDateSchedule,
@@ -284,31 +284,55 @@ class AttendanceService
             ]
         ];
         $daySchedulesDuration = collect($employeeDayData["schedules"])->sum("duration_hours");
-        $workRendered = self::calculateWorkRendered($employeeDayData, $date);
-        $overtimeRendered = self::calculateOvertimeRendered($employeeDayData, $date);
+        $workRendered = Self::calculateWorkRendered($employeeDayData, $date);
+        $overtimeRendered = Self::calculateOvertimeRendered($employeeDayData, $date);
         $type = "rest";
-        if (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value)) { // Regular Holiday
+        if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value, 1)) { // Regular Holiday
             $type = "regular_holidays";
-            $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration;
-            array_push(
-                $metaResult["charging"]["regular"]["reg_hrs"],
-                [
-                    "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
-                    "id" => $payrollCharging ? $payrollCharging["id"] : 4,
-                    "hrs_worked" => $daySchedulesDuration,
-                ],
-            );
-        } elseif (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value)) { // Special Holiday
+            if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value, 1, 0)) {
+                $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration;
+                array_push(
+                    $metaResult["charging"]["regular"]["reg_hrs"],
+                    [
+                        "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
+                        "id" => $payrollCharging ? $payrollCharging["id"] : 4,
+                        "hrs_worked" => $daySchedulesDuration,
+                    ],
+                );
+            } elseif ($workRendered["rendered"]) {
+                $metaResult["regular"]["reg_hrs"] += $workRendered["rendered"];
+                array_push(
+                    $metaResult["charging"]["regular"]["reg_hrs"],
+                    [
+                        "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
+                        "id" => $payrollCharging ? $payrollCharging["id"] : 4,
+                        "hrs_worked" => $workRendered["rendered"],
+                    ],
+                );
+            }
+        } elseif (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1)) { // Special Holiday
             $type = "special_holidays";
-            $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration;
-            array_push(
-                $metaResult["charging"]["regular"]["reg_hrs"],
-                [
-                    "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
-                    "id" => $payrollCharging ? $payrollCharging["id"] : 4,
-                    "hrs_worked" => $daySchedulesDuration,
-                ],
-            );
+            if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1, 0)) {
+                $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration;
+                array_push(
+                    $metaResult["charging"]["regular"]["reg_hrs"],
+                    [
+                        "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
+                        "id" => $payrollCharging ? $payrollCharging["id"] : 4,
+                        "hrs_worked" => $daySchedulesDuration,
+                    ],
+                );
+            } elseif ($workRendered["rendered"]) {
+                $metaResult["regular"]["reg_hrs"] += $workRendered["rendered"];
+                array_push(
+                    $metaResult["charging"]["regular"]["reg_hrs"],
+                    [
+                        "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
+                        "id" => $payrollCharging ? $payrollCharging["id"] : 4,
+                        "hrs_worked" => $workRendered["rendered"],
+                    ],
+                );
+            }
         } elseif ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
             $type = "rest";
         } else { // Regular Work Day
@@ -529,13 +553,13 @@ class AttendanceService
             $absentToday = false;
         }
 
-        if (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value)) {
+        if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value)) {
             $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
                 $data["start_time_log"] .= " REGULAR HOLIDAY";
                 $data["end_time_log"] .= " REGULAR HOLIDAY";
                 return $data;
             })->values();
-        } elseif (Self::checkHasHolidayWithoutWork($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value)) {
+        } elseif (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value)) {
             $schedulesSummary = collect($schedulesSummary)->map(function ($data) {
                 $data["start_time_log"] .= " SPECIAL HOLIDAY";
                 $data["end_time_log"] .= " SPECIAL HOLIDAY";
@@ -682,7 +706,17 @@ class AttendanceService
             "summary" => $otSchedulesSummary,
         ];
     }
-    public static function checkHasHolidayWithoutWork($events, $holidayType) {
-        return sizeof(collect($events)->where("with_work", '=', 0)->where("event_type", '=', $holidayType)) > 0;
+    public static function checkHasHoliday($events, $holidayType, $withPay = -1, $withWork = -1) {
+        $pay = $withPay === -1 ? 0 : $withPay;
+        $work = $withWork === -1 ? 0 : $withWork;
+        $holidays = collect($events)
+        ->where("event_type", '=', $holidayType)
+        ->when($withPay != -1, function ($query) use ($pay) {
+            return $query->where("with_pay", '=', $pay);
+        })
+        ->when($withWork != -1, function ($query) use ($work) {
+            return $query->where("with_work", '=', $work);
+        });
+        return sizeof($holidays) > 0;
     }
 }

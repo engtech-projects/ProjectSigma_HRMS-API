@@ -42,4 +42,20 @@ class Events extends Model
                   ->where('end_date', '>=', $dateTo);
         });
     }
+    public function scopeWithPay(Builder $query)
+    {
+        return $query->where('with_pay', true);
+    }
+    public function scopeWithWork(Builder $query)
+    {
+        return $query->where('with_work', true);
+    }
+    public function scopeWithoutPay(Builder $query)
+    {
+        return $query->where('with_pay', false);
+    }
+    public function scopeWithoutWork(Builder $query)
+    {
+        return $query->where('with_work', false);
+    }
 }
