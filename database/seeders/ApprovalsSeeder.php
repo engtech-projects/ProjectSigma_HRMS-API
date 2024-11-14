@@ -181,15 +181,6 @@ class ApprovalsSeeder extends Seeder
                 ],
                 [
                     'id' => 430,
-                    'form' => "Payroll Pre-Auditing",
-                    'approvals' => "[]",
-                    'module' => ApprovalModules::ACCOUNTING->value,
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-                [
-                    'id' => 440,
                     'form' => "Disbursement Voucher Request",
                     'approvals' => "[]",
                     'module' => ApprovalModules::ACCOUNTING->value,
@@ -198,7 +189,7 @@ class ApprovalsSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
-                    'id' => 450,
+                    'id' => 440,
                     'form' => "Cash Voucher Request",
                     'approvals' => "[]",
                     'module' => ApprovalModules::ACCOUNTING->value,
