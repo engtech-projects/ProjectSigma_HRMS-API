@@ -290,6 +290,7 @@ class AttendanceService
         if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value, 1)) { // Regular Holiday
             $type = "regular_holidays";
             if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value, 1, 0)) {
+                // WITHOUT WORK
                 $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration;
                 array_push(
                     $metaResult["charging"]["regular"]["reg_hrs"],
@@ -299,7 +300,9 @@ class AttendanceService
                         "hrs_worked" => $daySchedulesDuration,
                     ],
                 );
-            } elseif ($workRendered["rendered"]) {
+            } elseif ($workRendered["rendered"] > 0) {
+                // WITH WORK
+                // DUPLICATE THE WORK RENDERED
                 $metaResult["regular"]["reg_hrs"] += $workRendered["rendered"];
                 array_push(
                     $metaResult["charging"]["regular"]["reg_hrs"],
@@ -312,6 +315,19 @@ class AttendanceService
             }
         } elseif (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1)) { // Special Holiday
             $type = "special_holidays";
+            if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value, 1, 0)) {
+                // WITHOUT WORK
+                // TOTAL DAY SCHEDULE - WORK RENDERED = regular
+                $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration - $workRendered["rendered"];
+                array_push(
+                    $metaResult["charging"]["regular"]["reg_hrs"],
+                    [
+                        "model" => $payrollCharging ? $payrollCharging["type"] : Department::class,
+                        "id" => $payrollCharging ? $payrollCharging["id"] : 4,
+                        "hrs_worked" => $daySchedulesDuration - $workRendered["rendered"],
+                    ],
+                );
+            }
         } elseif ($date->dayOfWeek === Carbon::SUNDAY) { // Rest Day
             $type = "rest";
         } else { // Regular Work Day
