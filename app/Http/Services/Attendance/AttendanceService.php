@@ -310,7 +310,7 @@ class AttendanceService
                     ],
                 );
             }
-        } elseif (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value)) { // Special Holiday
+        } elseif (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1)) { // Special Holiday
             $type = "special_holidays";
             if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1, 0)) {
                 $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration;
