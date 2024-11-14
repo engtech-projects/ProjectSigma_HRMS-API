@@ -84,9 +84,9 @@ class AttendanceService
             "attendanceLogs" => $employee->attendance_log,
             "travel_orders" => $employee->employee_travel_order,
             "leaves" => $employee->employee_leave,
-            'events' => Events::betweenDates($dateFrom, $dateTo)->get(),
+            'events' => Events::betweenDates($dateFrom, $dateTo)->withPay()->get(),
         ];
-        $employee["dtr"] = self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging);
+        $employee["dtr"] = Self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging);
         $employee["date_from"] = $dateFrom;
         $employee["date_to"] = $dateTo;
         $employee["current_position"] = $employee->current_position_name;
@@ -101,12 +101,12 @@ class AttendanceService
         return collect($periodDates)->groupBy("date")->map(function ($val, $date) use ($employeeDatas, $payrollCharging) {
             $carbonDate = Carbon::parse($date);
             // Get applied Schedule for date
-            $appliedDateSchedule = self::getAppliedDateSchedule($employeeDatas, $carbonDate);
-            $appliedDateOvertime = self::getAppliedDateOvertime($employeeDatas, $carbonDate);
-            $appliedDateAttendanceLogs = self::getAppliedDateAttendanceLogs($employeeDatas, $carbonDate);
-            $appliedDateTravelOrders = self::getAppliedDateTravelOrders($employeeDatas, $carbonDate);
-            $appliedDateLeaves = self::getAppliedDateLeaves($employeeDatas, $carbonDate);
-            $appliedDateEvents = self::getAppliedDateEvents($employeeDatas, $carbonDate);
+            $appliedDateSchedule = Self::getAppliedDateSchedule($employeeDatas, $carbonDate);
+            $appliedDateOvertime = Self::getAppliedDateOvertime($employeeDatas, $carbonDate);
+            $appliedDateAttendanceLogs = Self::getAppliedDateAttendanceLogs($employeeDatas, $carbonDate);
+            $appliedDateTravelOrders = Self::getAppliedDateTravelOrders($employeeDatas, $carbonDate);
+            $appliedDateLeaves = Self::getAppliedDateLeaves($employeeDatas, $carbonDate);
+            $appliedDateEvents = Self::getAppliedDateEvents($employeeDatas, $carbonDate);
             $dateDataForProcessing = [
                 "employee" => $employeeDatas,
                 "schedules" => $appliedDateSchedule,
@@ -116,7 +116,7 @@ class AttendanceService
                 "leaves" => $appliedDateLeaves,
                 "events" => $appliedDateEvents,
             ];
-            $processedMetaData = self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate, $payrollCharging);
+            $processedMetaData = Self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate, $payrollCharging);
             return [
                 "date" => $date,
                 "schedules" => $appliedDateSchedule,
@@ -284,8 +284,8 @@ class AttendanceService
             ]
         ];
         $daySchedulesDuration = collect($employeeDayData["schedules"])->sum("duration_hours");
-        $workRendered = self::calculateWorkRendered($employeeDayData, $date);
-        $overtimeRendered = self::calculateOvertimeRendered($employeeDayData, $date);
+        $workRendered = Self::calculateWorkRendered($employeeDayData, $date);
+        $overtimeRendered = Self::calculateOvertimeRendered($employeeDayData, $date);
         $type = "rest";
         if (Self::checkHasHoliday($employeeDayData["events"], EventTypes::REGULARHOLIDAY->value, 1)) { // Regular Holiday
             $type = "regular_holidays";
