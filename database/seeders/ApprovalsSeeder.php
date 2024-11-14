@@ -162,7 +162,7 @@ class ApprovalsSeeder extends Seeder
         DB::table('approvals')->upsert(
             [
                 [
-                    'id' => 410,
+                    'id' => 2010,
                     'form' => "Payment Request Form (NPO)",
                     'approvals' => "[]",
                     'module' => ApprovalModules::ACCOUNTING->value,
@@ -171,7 +171,7 @@ class ApprovalsSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
-                    'id' => 420,
+                    'id' => 2020,
                     'form' => "Payment Request Form (PO)",
                     'approvals' => "[]",
                     'module' => ApprovalModules::ACCOUNTING->value,
@@ -180,7 +180,7 @@ class ApprovalsSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
-                    'id' => 430,
+                    'id' => 2030,
                     'form' => "Disbursement Voucher Request",
                     'approvals' => "[]",
                     'module' => ApprovalModules::ACCOUNTING->value,
@@ -189,7 +189,7 @@ class ApprovalsSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
-                    'id' => 440,
+                    'id' => 2040,
                     'form' => "Cash Voucher Request",
                     'approvals' => "[]",
                     'module' => ApprovalModules::ACCOUNTING->value,
