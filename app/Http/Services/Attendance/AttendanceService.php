@@ -711,7 +711,9 @@ class AttendanceService
         $work = $withWork === -1 ? 0 : $withWork;
         $holidays = collect($events)
         ->where("event_type", '=', $holidayType)
-        ->where("with_pay", '=', $pay)
+        ->when($withPay != -1, function ($query) use ($pay) {
+            $query->where("with_pay", '=', $pay);
+        })
         ->when($withWork != -1, function ($query) use ($work) {
             $query->where("with_work", '=', $work);
         });
