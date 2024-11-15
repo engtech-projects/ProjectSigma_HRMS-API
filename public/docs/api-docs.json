@@ -1,9 +1,89 @@
 openapi: 3.0.3
 info:
-  title: Project Sigma - HRMS API
-  description: >-
-    Project Sigma HRMS API
-    Handles User Authentication for Project Sigma
-    and HR Processes
-  version: 0.10.5
+    title: Project Sigma - HRMS API
+    description: >-
+        Project Sigma HRMS API
+        Handles User Authentication for Project Sigma
+        and HR Processes
+    version: 0.10.5
+
+paths:
+    /api/login:
+        post:
+            summary: Authenticate a user
+            description: Authenticates a user and returns a bearer token
+            tags:
+                - AUTHENTICATION
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - username
+                                - password
+                            properties:
+                                username:
+                                    type: string
+                                    maxLength: 35
+                                password:
+                                    type: string
+                                    maxLength: 255
+            responses:
+                200:
+                    description: The user is authenticated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                    user_data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: integer
+                                            name:
+                                                type: string
+                                            email:
+                                                type: string
+                                            email_verified_at:
+                                                type: string
+                                                nullable: true
+                                            type:
+                                                type: string
+                                            created_at:
+                                                type: string
+                                                nullable: true
+                                            updated_at:
+                                                type: string
+                                                nullable: true
+                                            deleted_at:
+                                                type: string
+                                                nullable: true
+                                            accessibilities:
+                                                type: array
+                                                items:
+                                                    type: integer
+                                            employee_id:
+                                                type: integer
+                                                nullable: true
+                                            accessibility_names:
+                                                type: array
+                                                items:
+                                                    type: string
+                                    access_token:
+                                        type: string
+                                    token_type:
+                                        type: string
+                                        
+
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
 
