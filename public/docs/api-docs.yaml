@@ -78,7 +78,23 @@ paths:
                                         type: string
                                     token_type:
                                         type: string
-                                        
+    /api/logout:
+        post:
+            summary: Logout from the API
+            tags:
+                - AUTHENTICATION
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                        mediaType: application/json
+            responses:
+                200:
+                    description: Successfully logged out
 
 components:
     securitySchemes:
