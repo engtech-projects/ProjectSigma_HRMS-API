@@ -1,9 +1,0 @@
-openapi: 3.0.3
-info:
-  title: Project Sigma - HRMS API
-  description: >-
-    Project Sigma HRMS API
-    Handles User Authentication for Project Sigma
-    and HR Processes
-  version: 0.10.5
-
