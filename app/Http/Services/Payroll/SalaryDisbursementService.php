@@ -90,7 +90,7 @@ class SalaryDisbursementService
                     "deduct_sss_employee_contribution" => $dataCollection->sum("sss_employee_contribution"),
                     "deduct_sss_employee_compensation" => $dataCollection->sum("sss_employee_compensation"),
                     "deduct_sss_employee_wisp" => $dataCollection->sum("sss_employee_wisp"),
-                    "deduct_phihealth_employee_contribution" => $dataCollection->sum("phihealth_employee_contribution"),
+                    "deduct_philhealth_employee_contribution" => $dataCollection->sum("philhealth_employee_contribution"),
                     "deduct_pagibig_employee_contribution" => $dataCollection->sum("pagibig_employee_contribution"),
                     "deduct_withholdingtax" => $dataCollection->sum("withholdingtax_contribution"),
                     "deduct_cashadvance" => $dataCollection->sum("total_cash_advance_payments"),
