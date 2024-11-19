@@ -18,6 +18,7 @@ class EmployeeUserResource extends JsonResource
             "id" => $this->id,
             "fullname_first" => $this->fullname_first,
             "fullname_last" => $this->fullname_last,
+            "current_position" => $this->current_position_name,
         ];
     }
 }
