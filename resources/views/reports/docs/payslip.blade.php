@@ -80,6 +80,13 @@
                 <td style="text-align: right; padding:0px; line-height:16px;"></td>
             </tr>
             <tr>
+                <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">Spcl./Hol OT hrs. -</td>
+                <td style="text-align: right; padding:0px; line-height:16px;">{{ number_format($payroll->special_holiday_overtime, 2) }}</td>
+                <td style="text-align: right; padding:0px; line-height:16px;">{{ number_format($payroll->special_holiday_ot_pay, 2) }}</td>
+                <td style="text-align: right; padding:0px; line-height:16px;"></td>
+                <td style="text-align: right; padding:0px; line-height:16px;"></td>
+            </tr>
+            <tr>
                 <td class="payroll_label" style="text-align: right; padding:0px; line-height:16px;">Adjustments -</td>
                 <td style="text-align: right; padding:0px; line-height:16px;">-</td>
                 <td style="text-align: right; padding:0px; line-height:16px;">{{ number_format($payroll->total_adjustment, 2) }}</td>
