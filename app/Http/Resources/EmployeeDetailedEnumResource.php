@@ -18,8 +18,8 @@ class EmployeeDetailedEnumResource extends JsonResource
             ...parent::toArray($request),
             "fullname_first" => $this->fullname_first,
             "fullname_last" => $this->fullname_last,
-            "department" => $this->current_employment?->employee_department,
-            "project" => $this->employee_has_projects?->last(),
+            "department" => $this->current_employment?->department,
+            "project" => $this->current_employement?->latest_project?->last(),
         ];
     }
 }

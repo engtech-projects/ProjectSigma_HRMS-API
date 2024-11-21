@@ -23,6 +23,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 
 class EmployeePanRequest extends Model
@@ -81,7 +82,6 @@ class EmployeePanRequest extends Model
         'approvals',
     ];
 
-
     /**
      * MODEL STATIC
      * METHODS
@@ -95,34 +95,11 @@ class EmployeePanRequest extends Model
         });
     }
 
-    public function getFullNameAttribute()
-    {
-        if ($this->type == "New Hire") {
-            return $this->jobapplicant?->fullname_last;
-        } else {
-            return $this->employee?->fullname_last;
-        }
-    }
-    public function requestCreatedAt(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->created_at->format('F j, Y')
-        );
-    }
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-    public function scopeApproval($query)
-    {
-        return $query->where("request_status", "=", "Pending");
-    }
-    public function scopeCreatedBy(Builder $query, $id): void
-    {
-        $query->where("created_by", $id);
-    }
-
+    /**
+     * ==================================================
+     * MODEL RELATIONSHIPS
+     * ==================================================
+     */
     public function jobapplicant(): HasOne
     {
         return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id")->with('manpower');
@@ -162,7 +139,58 @@ class EmployeePanRequest extends Model
     {
         return $this->hasOne(Position::class, "id", "designation_position");
     }
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, EmployeePanRequestProjects::class)
+        ->withtimestamps();
+    }
+    /**
+     * ==================================================
+     * MODEL ATTRIBUTES
+     * ==================================================
+     */
+     public function getFullNameAttribute()
+     {
+         if ($this->type == "New Hire") {
+             return $this->jobapplicant?->fullname_last;
+         } else {
+             return $this->employee?->fullname_last;
+         }
+     }
+    public function requestCreatedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->created_at->format('F j, Y')
+        );
+    }
 
+    /**
+     * ==================================================
+     * STATIC SCOPES
+     * ==================================================
+     */
+     public function scopeRequestStatusPending(Builder $query): void
+     {
+         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+     }
+     public function scopeApproval($query)
+     {
+         return $query->where("request_status", "=", "Pending");
+     }
+     public function scopeCreatedBy(Builder $query, $id): void
+     {
+         $query->where("created_by", $id);
+     }
+    /**
+     * ==================================================
+     * DYNAMIC SCOPES
+     * ==================================================
+     */
+    /**
+     * ==================================================
+     * MODEL FUNCTIONS
+     * ==================================================
+     */
     public function completeRequestStatus()
     {
         switch ($this->type) {
@@ -472,9 +500,5 @@ class EmployeePanRequest extends Model
     public function rehire()
     {
         // JUST A PLACEHOLDER WILL PROBABLY BE USED SOON
-    }
-    public function work_assignment()
-    {
-        return $this->morphedToMany(EmployeePanRequest::EMPLOYEE_WORK_ASSIGNMENT, 'work_assignment');
     }
 }

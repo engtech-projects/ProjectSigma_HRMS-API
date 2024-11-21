@@ -74,7 +74,7 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects', "company_employments"])->orderBy('family_name')->get();
+        $employeeList = Employee::with(['current_employment.position', 'current_employment.projects', "company_employments"])->orderBy('family_name')->get();
 
         return new JsonResponse([
             'success' => true,
@@ -139,6 +139,7 @@ class EmployeeController extends Controller
             "employee_seminartraining",
             "employee_internal.employee_salarygrade.salary_grade_level",
             "employee_internal.position",
+            "employee_internal.projects",
             "employee_externalwork",
             "images",
             'face_patterns',

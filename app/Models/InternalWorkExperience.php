@@ -11,6 +11,9 @@ use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Enums\InternalWorkExpStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class InternalWorkExperience extends Model
 {
@@ -42,15 +45,14 @@ class InternalWorkExperience extends Model
             $internalWorkExp->status = EmployeeInternalWorkExperiencesStatus::CURRENT;
         });
     }
-
+    /**
+    * ==================================================
+    * MODEL RELATIONSHIPS
+    * ==================================================
+    */
     public function employee_salarygrade(): HasOne
     {
         return $this->hasOne(SalaryGradeStep::class, "id", "salary_grades")->withTrashed();
-    }
-
-    public function employee_department(): HasOne
-    {
-        return $this->hasOne(Department::class, "id", "department_id");
     }
 
     public function position(): HasOne
@@ -61,6 +63,10 @@ class InternalWorkExperience extends Model
     public function employees()
     {
         return $this->hasMany(Employee::class, 'id', 'employee_id');
+    }
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'id');
     }
     public function department_schedule()
     {
@@ -74,25 +80,38 @@ class InternalWorkExperience extends Model
     {
         return $this->hasMany(Schedule::class, 'department_id', 'department_id')->irregularSchedules();
     }
-    public function regular_project_schedule()
+    public function projects(): BelongsToMany
     {
+        return $this->belongsToMany(Project::class, InternalWorkExperienceProjects::class)
+            ->withTimestamps();
     }
-    public function irregular_project_schedule($date)
+    public function latest_project(): HasOneThrough
     {
-        return $this->hasMany(ProjectMember::class, 'project_id', 'project_id');
+        return $this->projects()->orderBy('created_at', 'desc')->first();
     }
-
-
-    public function scopeByEmployee(Builder $query, $id): Builder
-    {
-        return $this->where('employee_id', $id);
-    }
-
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
     public function scopeStatusCurrent(Builder $query): Builder
     {
         return $query->where('status', InternalWorkExpStatus::CURRENT);
     }
-
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    public function scopeByEmployee(Builder $query, $id): Builder
+    {
+        return $this->where('employee_id', $id);
+    }
     public function scopeCurrentOnDate(Builder $query, $date): Builder
     {
 
@@ -121,9 +140,10 @@ class InternalWorkExperience extends Model
                   });
         });
     }
-    public function work_assignment()
-    {
-        return $this->morphedToMany(InternalWorkExperience::EMPLOYEE_WORK_ASSIGNMENT, 'work_assignment');
-    }
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
 
 }

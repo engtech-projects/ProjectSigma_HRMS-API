@@ -61,15 +61,15 @@ class AttendanceService
                     "department_schedule_regular" => function ($query) use ($dateFrom, $dateTo) {
                         $query->betweenDates($dateFrom, $dateTo);
                     },
-                ]);
-            },
-            'employee_has_projects' => function ($query) use ($dateFrom, $dateTo) {
-                $query->with([
-                    "schedule_irregular" => function ($query) use ($dateFrom, $dateTo) {
-                        $query->betweenDates($dateFrom, $dateTo);
-                    },
-                    "schedule_regular" => function ($query) use ($dateFrom, $dateTo) {
-                        $query->betweenDates($dateFrom, $dateTo);
+                    'projects' => function ($query) use ($dateFrom, $dateTo) {
+                        $query->with([
+                            "schedule_irregular" => function ($query) use ($dateFrom, $dateTo) {
+                                $query->betweenDates($dateFrom, $dateTo);
+                            },
+                            "schedule_regular" => function ($query) use ($dateFrom, $dateTo) {
+                                $query->betweenDates($dateFrom, $dateTo);
+                            },
+                        ]);
                     },
                 ]);
             },
@@ -78,7 +78,7 @@ class AttendanceService
             "employee" => $employee,
             "employee_schedules_irregular" => $employee->employee_schedule_irregular,
             "employee_schedules_regular" => $employee->employee_schedule_regular,
-            // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_has_projects"
+            // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"projects"
             // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_internal"
             "overtimes" => $employee->employee_overtime,
             "attendanceLogs" => $employee->attendance_log,
@@ -175,7 +175,7 @@ class AttendanceService
                 return $schedule;
             }
         } elseif ($currentWorkLocation == WorkLocation::PROJECT->value) {
-            $latestProject = $employeeDatas["employee"]->employee_has_projects->first();
+            $latestProject = $currentInternalOnDate->latest_project;
             $schedule = $latestProject?->schedule_irregular->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
             })->values();
