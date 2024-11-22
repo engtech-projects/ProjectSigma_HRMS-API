@@ -82,6 +82,8 @@ class EmployeePanRequest extends Model
         'approvals',
     ];
 
+    protected $perPage = 10;
+
     /**
      * MODEL STATIC
      * METHODS
@@ -150,18 +152,26 @@ class EmployeePanRequest extends Model
      * ==================================================
      */
      public function getFullNameAttribute()
-     {
-         if ($this->type == "New Hire") {
-             return $this->jobapplicant?->fullname_last;
-         } else {
-             return $this->employee?->fullname_last;
-         }
-     }
+    {
+        if ($this->type == "New Hire") {
+            return $this->jobapplicant?->fullname_last;
+        } else {
+            return $this->employee?->fullname_last;
+        }
+    }
     public function requestCreatedAt(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->created_at->format('F j, Y')
         );
+    }
+    public function getProjectNamesAttribute()
+    {
+        return $this->projects()->pluck('project_code')->implode(', ');
+    }
+    public function getDepartmentNamesAttribute()
+    {
+        return $this->department?->department_name;
     }
 
     /**

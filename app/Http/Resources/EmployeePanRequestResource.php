@@ -33,7 +33,7 @@ class EmployeePanRequestResource extends JsonResource
                 ];
             }),
             "applicant_employee" => $this->full_name,
-            "hire_source" => $this->work_location,
+            "hire_source" => $this->hire_source,
             "employment_status" => $this->employment_status,
             "designation_position" => $this->designation_position, // position_id
             "position" => $this->whenLoaded('position'),
@@ -42,6 +42,8 @@ class EmployeePanRequestResource extends JsonResource
             "salarygrade" => $this->whenLoaded('salarygrade'),
             "work_location" => $this->work_location,
             "section_department_id" => $this->section_department_id, // department_id
+            "department_name" => $this->department_name,
+            "project_names" => $this->project_names,
             "department" => $this->whenLoaded('department'),
             "type_of_termination" => $this->type_of_termination,
             "reasons_for_termination" => $this->reasons_for_termination,

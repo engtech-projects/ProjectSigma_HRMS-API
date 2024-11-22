@@ -6,6 +6,7 @@ use App\Enums\EmploymentStatus;
 use App\Enums\HireSourceType;
 use App\Enums\RequestStatuses;
 use App\Enums\SalaryRequestType;
+use App\Enums\WorkLocation;
 use App\Http\Traits\HasApprovalValidation;
 use App\Models\EmployeePanRequest;
 use Illuminate\Foundation\Http\FormRequest;
@@ -110,7 +111,18 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:departments,id",
-                'required_if:type,==,New Hire',
+                'required_if:work_location,==,'.WorkLocation::OFFICE->value,
+            ],
+            'projects' => [
+                "nullable",
+                "array",
+                'required_if:work_location,==,'.WorkLocation::PROJECT->value,
+            ],
+            'projects.*' => [
+                "nullable",
+                "integer",
+                "exists:projects,id",
+                'required_if:work_location,==,'.WorkLocation::PROJECT->value,
             ],
             'type_of_termination' => [
                 "nullable",

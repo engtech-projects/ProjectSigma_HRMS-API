@@ -29,6 +29,7 @@ return [
 
     'artisan' => env('ENABLE_ARTISAN_ROUTES', 'false'),
     'logout_change_password' => env('LOGOUT_CHANGE_PASSWORD', false),
+    'pagination_per_page' => env('PAGINATION_PER_PAGE', 10),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

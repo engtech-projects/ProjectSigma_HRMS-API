@@ -22,6 +22,8 @@ class EmployeePanRequestService
     public function create($attributes)
     {
         $main = EmployeePanRequest::create($attributes);
+        $main->projects()->sync($attributes['projects']);
+        $main->save();
         $main->refresh();
         if ($main->getNextPendingApproval()) {
             Users::find($main->getNextPendingApproval()['user_id'])->notify(new PanRequestForApproval($main));
@@ -32,12 +34,12 @@ class EmployeePanRequestService
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->myRequests()
-            ->get();
+            ->paginate();
     }
     public function getMyApprovals()
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->myApprovals()
-            ->get();
+            ->paginate();
     }
 }
