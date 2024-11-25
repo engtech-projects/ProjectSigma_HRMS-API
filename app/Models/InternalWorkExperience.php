@@ -94,6 +94,18 @@ class InternalWorkExperience extends Model
     * MODEL ATTRIBUTES
     * ==================================================
     */
+    public function getProjectNamesAttribute()
+    {
+        return $this->projects()->pluck('project_code');
+    }
+    public function getProjectIdsAttribute()
+    {
+        return $this->projects()->pluck('id');
+    }
+    public function getDepartmentNameAttribute()
+    {
+        return $this->department?->department_name ?? "";
+    }
     /**
     * ==================================================
     * STATIC SCOPES

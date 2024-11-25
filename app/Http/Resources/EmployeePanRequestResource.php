@@ -43,7 +43,7 @@ class EmployeePanRequestResource extends JsonResource
             "work_location" => $this->work_location,
             "section_department_id" => $this->section_department_id, // department_id
             "department_name" => $this->department_name,
-            "project_names" => $this->project_names,
+            "project_names" => $this->project_names->implode(", "),
             "department" => $this->whenLoaded('department'),
             "type_of_termination" => $this->type_of_termination,
             "reasons_for_termination" => $this->reasons_for_termination,
@@ -51,6 +51,7 @@ class EmployeePanRequestResource extends JsonResource
             "last_day_worked" => $this->last_day_worked,
             "created_by" => $this->created_by,
             "request_created_at" => $this->request_created_at,
+            "created_at_human" => $this->created_at_human,
             "request_status" => $this->request_status,
             "comments" => $this->comments,
             "created_by_user_name" => $this->created_by_user_name,

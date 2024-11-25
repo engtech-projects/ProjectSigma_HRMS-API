@@ -42,11 +42,6 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
                 "nullable",
                 "string"
             ],
-            'department_id' => [
-                "nullable",
-                "integer",
-                "exists:departments,id"
-            ],
             'immediate_supervisor' => [
                 "nullable",
                 "string"
@@ -60,10 +55,21 @@ class UpdateInternalWorkExperienceRequest extends FormRequest
                 "nullable",
                 "string"
             ],
-            'work_location' => [
+            'department_id' => [
                 "nullable",
-                "string",
-                'in:Office,Project Code'
+                "integer",
+                "exists:departments,id"
+            ],
+            'project_ids' => [
+                "nullable",
+                "array",
+                "min:1",
+                "exists:departments,id"
+            ],
+            'project_ids.*' => [
+                "required",
+                "integer",
+                "exists:projects,id"
             ],
             'hire_source' => [
                 "nullable",

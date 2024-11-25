@@ -12,6 +12,7 @@ use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\EmployeeDetailedEnumResource;
+use App\Http\Resources\EmployeeInfos\CompleteDetailsResource;
 use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
@@ -151,7 +152,7 @@ class EmployeeController extends Controller
             $main["digital_signature"] = $main->digital_signature;
             $data->message = "Successfully fetch.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new CompleteDetailsResource($main);
             return response()->json($data);
         }
         $data->message = "No data found.";

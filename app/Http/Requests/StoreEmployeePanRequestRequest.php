@@ -116,6 +116,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'projects' => [
                 "nullable",
                 "array",
+                "min:1",
                 'required_if:work_location,==,'.WorkLocation::PROJECT->value,
             ],
             'projects.*' => [
