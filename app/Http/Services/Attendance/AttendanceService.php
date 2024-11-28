@@ -454,34 +454,6 @@ class AttendanceService
                     ];
                     array_push($chargingNames, $travelOrderAsLogIn->charging_name);
                 }
-                // Is On Leave
-                foreach ($employeeDayData["leaves"] as $index => $leave) {
-                    // Logic to set Time In if On Leave
-                    // Only sets time if on leave with pay
-                    // Deduct half day Used to leave for a leave
-                    // display leave name for any type of leave
-                    if (
-                        !$timeIn &&
-                        (
-                            $leave->durationForDate($date) >= 1 ||
-                            $leaveUsedToday[$index] < $leave->durationForDate($date)
-                        )
-                    ) {
-                        $leaveUsed = true;
-                        if ($leave->with_pay) {
-                            $leaveTypeUsed = "WITH PAY";
-                            $timeIn = $schedule->startTime;
-                        }
-                        // $leaveUsedToday[$index] += 0.5; // Deduct half day Used to leave for a leave in OUT
-                        $scheduleMetaData["start_time_log"] = $leave->leave->leave_name . " - " . $leaveTypeUsed;
-                        $charge = [
-                            "class" => $leave->charging_class,
-                            "id" => $leave->charging_id,
-                        ];
-                        array_push($chargingNames, $leave->charging_name);
-                        break;
-                    }
-                }
             }
             // PREPARE TIME OUTS
             $scheduleDateTimeOut = $date->copy()->setTimeFromTimeString($schedule->endTime->format("H:i:s"));
@@ -518,18 +490,41 @@ class AttendanceService
                     $timeOut = $schedule->endTime;
                     $scheduleMetaData["end_time_log"] = "ON TRAVEL ORDER";
                 }
-                // Is On Leave
-                if (!$timeOut && $leaveUsed) {
-                    if ($leaveTypeUsed == "WITH PAY") {
-                        $timeOut = $schedule->endTime;
-                    }
-                    $leaveUsedToday[$index] = + 0.5;
-                    $scheduleMetaData["end_time_log"] = $leave->leave->leave_name . " - " . $leaveTypeUsed;
-                }
             }
             if (!$timeIn || !$timeOut) {
-                array_push($schedulesSummary, $scheduleMetaData);
-                continue;
+                // Is On Leave
+                foreach ($employeeDayData["leaves"] as $index => $leave) {
+                    // Logic to set Time In & Out if On Leave
+                    // Only sets time if on leave with pay
+                    // Deduct half day Used to leave for a leave
+                    // display leave name for any type of leave
+                    if (
+                        (
+                            $leave->durationForDate($date) >= 1 ||
+                            $leaveUsedToday[$index] < $leave->durationForDate($date)
+                        )
+                    ) {
+                        if ($leave->with_pay) {
+                            $leaveUsed = true;
+                            $leaveTypeUsed = "WITH PAY";
+                            $timeIn = $schedule->startTime;
+                            $timeOut = $schedule->endTime;
+                        }
+                        $leaveUsedToday[$index] += 0.5;
+                        $scheduleMetaData["start_time_log"] = $leave->leave->leave_name . " - " . $leaveTypeUsed;
+                        $scheduleMetaData["end_time_log"] = $leave->leave->leave_name . " - " . $leaveTypeUsed;
+                        $charge = [
+                            "class" => $leave->charging_class,
+                            "id" => $leave->charging_id,
+                        ];
+                        array_push($chargingNames, $leave->charging_name);
+                        break;
+                    }
+                }
+                if (!$leaveUsed) {
+                    array_push($schedulesSummary, $scheduleMetaData);
+                    continue;
+                }
             }
             $in = Carbon::parse($timeIn);
             $out = Carbon::parse($timeOut);
