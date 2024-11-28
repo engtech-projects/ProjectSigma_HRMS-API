@@ -500,8 +500,8 @@ class AttendanceService
                     // display leave name for any type of leave
                     if (
                         (
-                            $leave->durationForDate($date) >= 1 ||
-                            $leaveUsedToday[$index] < $leave->durationForDate($date)
+                            $leave->daily_date_durations[$date->format('Y-m-d')] >= 1 ||
+                            $leaveUsedToday[$index] < $leave->daily_date_durations[$date->format('Y-m-d')]
                         )
                     ) {
                         if ($leave->with_pay) {
