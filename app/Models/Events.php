@@ -26,6 +26,7 @@ class Events extends Model
         'start_date',
         'end_date',
         'description',
+        'attendance_date',
     ];
 
     protected $casts = [

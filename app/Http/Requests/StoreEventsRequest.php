@@ -57,6 +57,11 @@ class StoreEventsRequest extends FormRequest
                 "required",
                 "string",
             ],
+            'attendance_date' => [
+                "nullable",
+                "required_if:event_type,".EventTypes::REGULARHOLIDAY->value,
+                "date",
+            ],
         ];
     }
 }

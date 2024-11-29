@@ -57,6 +57,11 @@ class UpdateEventsRequest extends FormRequest
                 "nullable",
                 "string",
             ],
+            'attendance_date' => [
+                "nullable",
+                "required_if:event_type,".EventTypes::REGULARHOLIDAY->value,
+                "date",
+            ],
         ];
     }
 }

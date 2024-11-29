@@ -53,6 +53,8 @@ class EmployeeLeaves extends Model
         'created_by',
     ];
 
+    protected $appends = ['daily_date_durations'];
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
@@ -99,6 +101,21 @@ class EmployeeLeaves extends Model
         return $this->belongsTo(Leave::class, "leave_id", "id");
     }
 
+    public function getDailyDateDurationsAttribute()
+    {
+        $dates = [];
+        $date = $this->date_of_absence_from->copy();
+        if ($this->number_of_days <= 1) {
+            return [$this->date_of_absence_from->format('Y-m-d') => $this->number_of_days];
+        }
+        $remDuration = $this->number_of_days;
+        while ($remDuration > 0) {
+            $dates[$date->format('Y-m-d')] = $remDuration % 1 != 0 ? 0.5 : 1;
+            $date->addDay(1);
+            $remDuration--;
+        }
+        return $dates;
+    }
     public function scopeWithPayLeave(Builder $query): void
     {
         $query->where('with_pay', true);
