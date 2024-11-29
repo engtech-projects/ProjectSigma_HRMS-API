@@ -623,24 +623,29 @@ class AttendanceService
         $chargings = [];
         $chargingNames = [];
         foreach ($employeeDayData["overtimes"] as $overtime) {
+            $dateTimeInSchedule = Carbon::parse($overtime->overtime_date)->setTimeFromTimeString($overtime->overtime_start_time->format("H:i:s"));
+            $dateTimeOutSchedule = Carbon::parse($overtime->overtime_date)->setTimeFromTimeString($overtime->overtime_end_time->format("H:i:s"));
             $overtimeMetaData = [
                 "date" => $date,
                 "day_of_week" => $date->dayOfWeek,
                 "day_of_week_name" => $date->englishDayOfWeek,
                 "id" => $overtime->id,
                 "start_time" => $overtime->overtime_start_time,
+                "start_time_v2" => $dateTimeInSchedule,
+                "start_time_buffer" => $overtime->buffer_time_start_early,
                 "end_time" => $overtime->overtime_end_time,
+                "end_time_v2" => $dateTimeOutSchedule,
+                "end_time_buffer" => $overtime->buffer_time_end_late,
                 "start_time_sched" => $overtime->start_time_human,
                 "end_time_sched" => $overtime->end_time_human,
                 "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
                 "end_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
-                "duration" => 0,
+                "duration" => $overtime->total_hour_duration,
                 "late" => 0,
                 "undertime" => 0,
             ];
             // PREPARE TIME INS
             $appliedIn = null;
-            $dateTimeInSchedule = Carbon::parse($overtime->overtime_date)->setTimeFromTimeString($overtime->overtime_start_time->format("H:i:s"));
             $attendanceLogIn = $employeeDayData["attendance_logs"]->where(function ($data) use ($overtime) {
                 $attendanceTime = Carbon::parse($data->time);
                 return $data->log_type == AttendanceLogType::TIME_IN->value &&
@@ -675,7 +680,6 @@ class AttendanceService
             }
             // PREPARE TIME OUTS
             $appliedOut = null;
-            $dateTimeOutSchedule = Carbon::parse($overtime->overtime_date)->setTimeFromTimeString($overtime->overtime_end_time->format("H:i:s"));
             $attendanceLogOut = $employeeDayData["attendance_logs"]->where(function ($data) use ($overtime) {
                 $attendanceTime = Carbon::parse($data->time);
                 return $data->log_type == AttendanceLogType::TIME_OUT->value &&

@@ -115,7 +115,10 @@ class Overtime extends Model
                 return $query->where('project_id', $filters['project_id']);
             });
     }
-
+    public function getTotalHourDurationAttribute()
+    {
+        return Carbon::parse($this->overtime_end_time)->diffInHours(Carbon::parse($this->overtime_start_time));
+    }
     public function getStartTimeHumanAttribute()
     {
         return Carbon::parse($this->overtime_start_time)->format("h:i A");
