@@ -52,7 +52,7 @@ enum AccessibilityHrms: string
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";
-    case HRMS_PROJECTMEMBER = "hrms:project members";
+    case HRMS_LOCATION_EMPLOYEES = "hrms:location employees";
     // case HRMS_ = "";
     // case HRMS_ = "";
     case HRMS_SETUP_POSITION = "hrms:setup_position";

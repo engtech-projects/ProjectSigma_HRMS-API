@@ -75,6 +75,7 @@ use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\AttendancePortalController;
 use App\Http\Controllers\CashAdvanceController;
+use App\Http\Controllers\Employee\WorkLocationsController;
 use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ExternalWorkExperienceController;
 use App\Http\Controllers\HrmsEnumController;
@@ -251,7 +252,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('internalwork-experience', InternalWorkExperienceController::class);
         Route::resource('termination', TerminationController::class);
         Route::resource('externalwork-experience', ExternalWorkExperienceController::class);
-
+        Route::get('location-employees', WorkLocationsController::class);
         Route::prefix('statistics')->group(function () {
             Route::get('attendance-infractions', CountAbsentLateController::class);
             Route::get('gender', CountEmployeeGenderController::class);
