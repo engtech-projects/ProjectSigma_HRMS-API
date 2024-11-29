@@ -665,7 +665,7 @@ class AttendanceService
                 return $otIn->equalTo($schedOut);
             });
             if ($hasSchedStart) {
-                $appliedIn = $overtime->overtime_start_time;
+                $appliedIn = $dateTimeInSchedule;
                 $overtimeMetaData["start_time_log"] = "FROM SCHEDULE";
             }
             if (!$appliedIn) {
@@ -699,7 +699,7 @@ class AttendanceService
                 return $otOut->equalTo($schedIn);
             });
             if ($hasSchedContinuation) {
-                $appliedOut = $overtime->overtime_end_time;
+                $appliedOut = $dateTimeOutSchedule;
                 $overtimeMetaData["end_time_log"] = "FROM SCHEDULE";
             }
             if (!$appliedOut) {
