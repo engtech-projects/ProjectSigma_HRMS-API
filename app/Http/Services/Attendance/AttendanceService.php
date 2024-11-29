@@ -77,6 +77,7 @@ class AttendanceService
         ])->find($employeeId);
         $employeeDatas = [
             "employee" => $employee,
+            "internals" => $employee->employee_internal,
             "employee_schedules_irregular" => $employee->employee_schedule_irregular,
             "employee_schedules_regular" => $employee->employee_schedule_regular,
             // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_has_projects"
@@ -102,6 +103,7 @@ class AttendanceService
         return collect($periodDates)->groupBy("date")->map(function ($val, $date) use ($employeeDatas, $payrollCharging) {
             $carbonDate = Carbon::parse($date);
             // Get applied Schedule for date
+            $appliedDateInternal = Self::getAppliedDateInternal($employeeDatas, $carbonDate);
             $appliedDateSchedule = Self::getAppliedDateSchedule($employeeDatas, $carbonDate);
             $appliedDateOvertime = Self::getAppliedDateOvertime($employeeDatas, $carbonDate);
             $appliedDateAttendanceLogs = Self::getAppliedDateAttendanceLogs($employeeDatas, $carbonDate);
@@ -109,7 +111,9 @@ class AttendanceService
             $appliedDateLeaves = Self::getAppliedDateLeaves($employeeDatas, $carbonDate);
             $appliedDateEvents = Self::getAppliedDateEvents($employeeDatas, $carbonDate);
             $dateDataForProcessing = [
+                "date" => $date,
                 "employee" => $employeeDatas,
+                "internal" => $appliedDateInternal,
                 "schedules" => $appliedDateSchedule,
                 "overtimes" => $appliedDateOvertime,
                 "attendance_logs" => $appliedDateAttendanceLogs,
@@ -120,6 +124,7 @@ class AttendanceService
             $processedMetaData = Self::calculateDateAttendanceMetaData($dateDataForProcessing, $carbonDate, $payrollCharging);
             return [
                 "date" => $date,
+                "internal" => $appliedDateInternal,
                 "schedules" => $appliedDateSchedule,
                 "overtimes" => $appliedDateOvertime,
                 "attendance_logs" => $appliedDateAttendanceLogs,
@@ -129,6 +134,16 @@ class AttendanceService
                 "metadata" => $processedMetaData,
             ];
         });
+    }
+    public static function getAppliedDateInternal($employeeDatas, $date)
+    {
+        return $employeeDatas["internals"]->where(function ($data) use ($date) {
+            return $date->gte($data->date_from) &&
+            (
+                $date->lte($data->date_to) ||
+                is_null($data->date_to)
+            );
+        })->first();
     }
     public static function getAppliedDateSchedule($employeeDatas, $date)
     {
@@ -278,12 +293,22 @@ class AttendanceService
                 "late" => 0,
                 "undertime" => 0,
             ],
+            "total" => [
+                "reg_hrs" => 0,
+                "overtime" => 0,
+                "late" => 0,
+                "undertime" => 0,
+            ],
             "summary" => [
                 "schedules" => [],
                 "overtimes" => [],
                 "charging_names" => "",
             ]
         ];
+        if (!$employeeDayData["internal"]) {
+            return $metaResult;
+        }
+        $employmentStatusOnDate = $employeeDayData["internal"]->employment_status;
         $daySchedulesDuration = collect($employeeDayData["schedules"])->sum("duration_hours");
         $workRendered = Self::calculateWorkRendered($employeeDayData, $date);
         $overtimeRendered = Self::calculateOvertimeRendered($employeeDayData, $date);
@@ -292,7 +317,7 @@ class AttendanceService
         $specialHoliday = Self::getHoliday($employeeDayData["events"], EventTypes::SPECIALHOLIDAY->value, 1);
         if (!is_null($regularHoliday)) { // Regular Holiday
             $type = "regular_holidays";
-            if ($employeeDayData["employee"]["employee"]['current_employment']->employment_status == EmploymentStatus::REGULAR->value) {
+            if ($employmentStatusOnDate == EmploymentStatus::REGULAR->value) {
                 // REGULAR EMPLOYEE
                 if ($regularHoliday->with_work == 0) {
                     // WITHOUT WORK
@@ -333,7 +358,7 @@ class AttendanceService
             }
         } elseif (!is_null($specialHoliday)) { // Special Holiday
             $type = "special_holidays";
-            if ($employeeDayData["employee"]["employee"]['current_employment']->employment_status == EmploymentStatus::REGULAR->value && $specialHoliday->with_work == 0) {
+            if ($employmentStatusOnDate == EmploymentStatus::REGULAR->value && $specialHoliday->with_work == 0) {
                 // REGULAR EMPLOYEE AND EVENT WITHOUT WORK
                 // TOTAL DAY SCHEDULE - WORK RENDERED = regular
                 $metaResult["regular"]["reg_hrs"] += $daySchedulesDuration - $workRendered["rendered"];
