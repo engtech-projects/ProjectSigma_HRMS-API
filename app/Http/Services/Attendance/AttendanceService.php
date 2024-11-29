@@ -633,12 +633,12 @@ class AttendanceService
                 "start_time" => $overtime->overtime_start_time,
                 "start_time_v2" => $dateTimeInSchedule,
                 "start_time_buffer" => $overtime->buffer_time_start_early,
+                "start_time_sched" => $overtime->start_time_human,
+                "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
                 "end_time" => $overtime->overtime_end_time,
                 "end_time_v2" => $dateTimeOutSchedule,
                 "end_time_buffer" => $overtime->buffer_time_end_late,
-                "start_time_sched" => $overtime->start_time_human,
                 "end_time_sched" => $overtime->end_time_human,
-                "start_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
                 "end_time_log" => $date->dayOfWeek == Carbon::SUNDAY ? "SUNDAY" : "NO LOG",
                 "duration" => $overtime->total_hour_duration,
                 "late" => 0,
@@ -716,8 +716,8 @@ class AttendanceService
                 array_push($otSchedulesSummary, $overtimeMetaData);
                 continue;
             }
-            $timeIn = Carbon::parse($appliedIn);
-            $timeOut = Carbon::parse($appliedOut);
+            $timeIn = Carbon::parse(Carbon::parse($appliedIn)->format("H:i"));
+            $timeOut = Carbon::parse(Carbon::parse($appliedOut)->format("H:i"));
             $schedIn = Carbon::parse($overtime->overtime_start_time);
             $schedOut = Carbon::parse($overtime->overtime_end_time);
             $renderIn = $timeIn->lt($schedIn) ? $schedIn : $timeIn;
