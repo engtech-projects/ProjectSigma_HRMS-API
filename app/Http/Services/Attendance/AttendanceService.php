@@ -477,7 +477,7 @@ class AttendanceService
                         "class" => $travelOrderAsLogIn->charge_type,
                         "id" => $travelOrderAsLogIn->charge_id,
                     ];
-                    array_push($chargingNames, $travelOrderAsLogIn->charging_name);
+                    array_push($chargingNames, $travelOrderAsLogIn->charging_designation);
                 }
             }
             // PREPARE TIME OUTS
