@@ -16,6 +16,7 @@ enum AccessibilityAccounting: string
     case ACCOUNTING_SETUP_CHART_OF_ACCOUNTS = "accounting:setup_chart of accounts";
     case ACCOUNTING_SETUP_STAKEHOLDERS = "accounting:setup_stakeholders";
     case ACCOUNTING_SETUP_SYNCHRONIZATION = "accounting:setup_synchronization";
+    case ACCOUNTING_SETUP_PARTICULAR_GROUP = "accounting:setup_particular group";
 
     //Accounting Request
     case ACCOUNTING_REQUEST_PURCHASE_ORDER = "accounting:request_purchase order";
