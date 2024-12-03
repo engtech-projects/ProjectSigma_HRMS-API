@@ -21,14 +21,14 @@ class WorkLocationMembersResource extends JsonResource
                     "name" => $this->department_name ?? $this->project_code,
                     "type" => $this->department_name ? "Department" : "Project",
                 ],
-                "employees" => $this->employees
+                "employees" => EmployeeSummaryResource::collection($this->employees),
             ];
         } else { // UNASSIGNED EMPLOYEES
             return [
                 "location_information" => [
                     "name" => "UNASSIGNED",
                 ],
-                "employees" => parent::toArray($request),
+                "employees" => EmployeeSummaryResource::collection(parent::toArray($request)),
             ];
         }
     }
