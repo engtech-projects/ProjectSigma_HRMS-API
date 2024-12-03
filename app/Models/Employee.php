@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Traits\EmployeeDTR;
 use App\Models\Traits\EmployeePayroll;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
@@ -335,6 +336,10 @@ class Employee extends Model
     {
         return $this->current_employment?->position?->name ?? "No Position Found";
     }
+    public function getCurrentAssignmentNamesAttribute()
+    {
+        return $this->current_employment?->position?->name ?? "Unassigned";
+    }
     public function getCurrentSalarygradeAndStepAttribute()
     {
         if (!$this->current_employment) {
@@ -350,6 +355,12 @@ class Employee extends Model
     * STATIC SCOPES
     * ==================================================
     */
+    public function scopeIsActive(Builder $query): void
+    {
+        $query->whereHas("company_employments", function ($query) {
+            $query->where("status", "active");
+        });
+    }
     /**
     * ==================================================
     * DYNAMIC SCOPES

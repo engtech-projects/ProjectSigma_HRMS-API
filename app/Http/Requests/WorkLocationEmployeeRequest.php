@@ -24,9 +24,13 @@ class WorkLocationEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "unassigned" => [
+                "nullable",
+                "boolean",
+            ],
             "type" => [
-                "required",
+                "nullable",
+                "required_if:unassigned,==,false",
                 "string",
                 new Enum(AssignTypes::class),
             ],

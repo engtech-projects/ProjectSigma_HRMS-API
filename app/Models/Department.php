@@ -52,7 +52,7 @@ class Department extends Model
 
     public function employees(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, 'internal_work_exp')
+        return $this->belongsToMany(Employee::class, 'internal_work_experiences')
             ->withPivot([
                 'department_id',
                 'employee_id'
