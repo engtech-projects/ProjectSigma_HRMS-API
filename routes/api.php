@@ -319,8 +319,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
         Route::get('list', ProjectListController::class);
-        // Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
-        // Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);
     });
     // NOTIFICATIONS
     Route::prefix('notifications')->group(function () {
