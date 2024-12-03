@@ -360,15 +360,8 @@ class ReportService
         ->whereHas('loanPayments', function ($query) {
             return $query->where('name', EmployeeLoanType::SSS->value);
         })
-        ->hasSssContributions()
         ->orderBy("created_at", "DESC")
         ->get()
-        ->append([
-            "total_sss_contribution",
-            "total_sss_compensation",
-            "total_sss_wisp",
-            "total_sss",
-        ])
         ->sortBy('employee.fullname_last', SORT_NATURAL)
         ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
@@ -387,6 +380,52 @@ class ReportService
             'data' => SssEmployeeLoanResource::collection($data),
         ];
     }
+    public static function sssGroupSummaryLoans($validatedData = [])
+    {
+        $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query
+                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->whereHas('loanPayments', function ($query) {
+            return $query->where('name', EmployeeLoanType::SSS->value);
+        })
+        ->hasSssContributions()
+        ->get()
+        ->append([
+            "total_sss_contribution",
+            "total_sss_compensation",
+            "total_sss_wisp",
+            "total_sss",
+        ])
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) use ($validatedData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_name" => $employeeData->first()->employee->fullname_last,
+                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
+                "total_group_amount" => $employeeData->sum(function($detail) use ($validatedData) {
+                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                }),
+                "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                "payroll_record" => [
+                    ...$employeeData->first()->payroll_record->toArray(),
+                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                ],
+            ];
+        })
+        ->sortBy("payroll_record.charging_name", SORT_NATURAL)
+        ->sortBy("employee_name", SORT_NATURAL)
+        ->values()
+        ->all();
+        return [
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => SssGroupSummaryLoansResource::collection($data),
+        ];
+    }
     public static function hdmfEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
@@ -397,7 +436,6 @@ class ReportService
         ->whereHas('loanPayments', function ($query) {
             return $query->where('name', EmployeeLoanType::HDMF_MPL->value);
         })
-        ->hasPagibigContributions()
         ->orderBy("created_at", "DESC")
         ->get()
         ->sortBy('employee.fullname_last', SORT_NATURAL)
@@ -412,7 +450,9 @@ class ReportService
                 "suffix_name" => $employeeData->first()->employee->suffix_name,
                 "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                "total_payments" => $employeeData->sum(function($detail) use ($validatedData) {
+                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                }),
             ];
         })
         ->values()
@@ -421,6 +461,46 @@ class ReportService
             'success' => true,
             'message' => 'Pagibig Employee Remittance Request fetched.',
             'data' => HdmfEmployeeLoansResource::collection($data),
+        ];
+    }
+    public static function hdmfGroupSummaryLoans($validatedData = [])
+    {
+        $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->whereHas('loanPayments', function ($query) {
+            return $query->where('name', EmployeeLoanType::HDMF_MPL->value);
+        })
+        ->get()
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) use ($validatedData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_name" => $employeeData->first()->employee->fullname_last,
+                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
+                "first_name" => $employeeData->first()->employee->first_name,
+                "middle_name" => $employeeData->first()->employee->middle_name,
+                "last_name" => $employeeData->first()->employee->family_name,
+                "suffix_name" => $employeeData->first()->employee->suffix_name,
+                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                "total_payments" => $employeeData->sum(function($detail) use ($validatedData) {
+                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                }),
+                "payroll_record" => [
+                    ...$employeeData->first()->payroll_record->toArray(),
+                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                ],
+            ];
+        })
+        ->sortBy("payroll_record.charging_name", SORT_NATURAL)
+        ->values()
+        ->all();
+        return [
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => HdmfGroupSummaryLoansResource::collection($data),
         ];
     }
     public static function coopEmployeeLoans($validatedData = [])
@@ -491,97 +571,6 @@ class ReportService
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
             'data' => HdmfEmployeeLoansResource::collection($data),
-        ];
-    }
-    public static function sssGroupSummaryLoans($validatedData = [])
-    {
-        $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', EmployeeLoanType::SSS->value);
-        })
-        ->hasSssContributions()
-        ->get()
-        ->append([
-            "total_sss_contribution",
-            "total_sss_compensation",
-            "total_sss_wisp",
-            "total_sss",
-        ])
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_name" => $employeeData->first()->employee->fullname_last,
-                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
-                "total_group_amount" => $employeeData->sum(function($detail) use ($validatedData) {
-                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-                }),
-                "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->sortBy("payroll_record.charging_name", SORT_NATURAL)
-        ->sortBy("employee_name", SORT_NATURAL)
-        ->values()
-        ->all();
-        return [
-            'success' => true,
-            'message' => 'Employee Remittance Request fetched.',
-            'data' => SssGroupSummaryLoansResource::collection($data),
-        ];
-    }
-    public static function hdmfGroupSummaryLoans($validatedData = [])
-    {
-        $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', EmployeeLoanType::HDMF_MPL->value);
-        })
-        ->hasPagibigContributions()
-        ->get()
-        ->append([
-            "total_pagibig_contribution",
-        ])
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_name" => $employeeData->first()->employee->fullname_last,
-                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
-                "total_group_amount" => $employeeData->sum(function($detail) use ($validatedData) {
-                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-                }),
-                "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->sortBy("payroll_record.charging_name", SORT_NATURAL)
-        ->values()
-        ->all();
-        return [
-            'success' => true,
-            'message' => 'Employee Remittance Request fetched.',
-            'data' => HdmfGroupSummaryLoansResource::collection($data),
         ];
     }
     public static function getDefaultLoanPayments($validatedData = [])
