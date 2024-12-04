@@ -80,8 +80,8 @@ class AttendanceService
             "internals" => $employee->employee_internal,
             "employee_schedules_irregular" => $employee->employee_schedule_irregular,
             "employee_schedules_regular" => $employee->employee_schedule_regular,
-            // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"projects"
-            // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_internal"
+            // PROJECT SCHEDULES TO BE TAKEN FROM employee->"employee_internal->projects"
+            // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_internal->department"
             "overtimes" => $employee->employee_overtime,
             "attendanceLogs" => $employee->attendance_log,
             "travel_orders" => $employee->employee_travel_order,
@@ -191,7 +191,7 @@ class AttendanceService
                 return $schedule;
             }
         } elseif ($currentWorkLocation == WorkLocation::PROJECT->value) {
-            $latestProject = $currentInternalOnDate->latest_project;
+            $latestProject = $currentInternalOnDate->projects()->orderBy('id', 'desc')->first();
             $schedule = $latestProject?->schedule_irregular->where(function ($data) use ($date) {
                 return $date->eq($data->startRecur);
             })->values();
