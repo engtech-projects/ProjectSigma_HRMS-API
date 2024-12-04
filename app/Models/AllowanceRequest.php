@@ -51,7 +51,9 @@ class AllowanceRequest extends Model
 
     public function employee_allowances(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, EmployeeAllowances::class, "allowance_request_id", "employee_id")->withPivot(["allowance_amount", "allowance_rate", "allowance_days"]);
+        return $this->belongsToMany(Employee::class, EmployeeAllowances::class, "allowance_request_id", "employee_id")
+        ->withPivot(["allowance_amount", "allowance_rate", "allowance_days"])
+        ->withTimestamps();
     }
 
     public function scopeRequestStatusPending(Builder $query): void

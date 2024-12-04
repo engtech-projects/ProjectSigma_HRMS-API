@@ -500,10 +500,10 @@ class EmployeeBulkUploadController extends Controller
                         $employee->employee_related_person()->createMany($employeeRelatedPerson);
                         $employee->employee_education()->createMany($employeeEducation);
                         $employee->employee_studies()->createMany($studies);
+                        $employeeInternal = $employee->employee_internal()->create($internalRecord);
                         if ($projectId) {
-                            $employee->employee_has_projects()->attach(['project_id' => $projectId]);
+                            $employeeInternal->projects()->attach(['project_id' => $projectId]);
                         }
-                        $employee->employee_internal()->create($internalRecord);
                         DB::commit();
                     } catch (Exception $th) {
                         $employee->delete();

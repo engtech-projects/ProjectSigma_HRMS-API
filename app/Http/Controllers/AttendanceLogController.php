@@ -115,8 +115,8 @@ class AttendanceLogController extends Controller
                     $type = AssignTypes::DEPARTMENT->value;
                     if ($employee->current_employment->work_location == WorkLocation::OFFICE->value) {
                         $mainsave->department_id = $employee->current_employment->department_id;
-                    } elseif ($employee->current_employment->work_location == WorkLocation::PROJECT->value && $employee->employee_has_projects()?->orderBy('id', 'desc')->first()?->id) {
-                        $mainsave->project_id = $employee->employee_has_projects()?->orderBy('id', 'desc')->first()?->id;
+                    } elseif ($employee->current_employment->work_location == WorkLocation::PROJECT->value && $employee->current_employment->latest_project?->id) {
+                        $mainsave->project_id = $employee->current_employment->latest_project?->id;
                     } else {
                         $mainsave->department_id = $portalDepartmentId;
                     }

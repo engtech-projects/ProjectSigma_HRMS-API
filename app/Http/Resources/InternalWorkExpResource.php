@@ -29,7 +29,7 @@ class InternalWorkExpResource extends JsonResource
             "salary_grades" => $this->salary_grades,
             "department_id" => $this->department_id,
             "employee_salarygrade" => $this->whenLoaded('employee_salarygrade'),
-            "employee_department" => $this->whenLoaded('employee_salarygrade'),
+            "department" => $this->whenLoaded('department'),
         ];
         /* return parent::toArray($request); */
     }

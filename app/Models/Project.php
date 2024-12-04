@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasProjectEmployee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,7 +12,6 @@ class Project extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use HasProjectEmployee;
 
     protected $fillable = [
         'project_monitoring_id',
@@ -31,12 +30,25 @@ class Project extends Model
      * RELATED
      * RELATION
      */
+    public function employees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'project_employees')
+            ->withPivot([
+                'project_id',
+                'employee_id'
+            ])
+            ->withtimestamps();
+    }
     public function employee_allowance(): MorphOne
     {
         return $this->morphOne(EmployeeAllowances::class, 'charge_assignment');
     }
 
     public function project_schedule()
+    {
+        return $this->hasMany(Schedule::class, "project_id");
+    }
+    public function schedules()
     {
         return $this->hasMany(Schedule::class, "project_id");
     }
