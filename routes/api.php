@@ -385,5 +385,9 @@ if (config()->get('app.artisan') == 'true') {
             Artisan::call("optimize:clear");
             return "success";
         });
+        Route::get('custom/{command}', function ($command) {
+            Artisan::call($command);
+            return "success";
+        });
     });
 }
