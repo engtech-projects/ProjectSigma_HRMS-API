@@ -90,6 +90,14 @@ class ReportController extends Controller
     {
         return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
     }
+    public function hdmfCalamityGroupSummaryLoans(HdmfGroupSummaryLoansRequest $request)
+    {
+        return new JsonResponse(ReportService::hdmfCalamityGroupSummaryLoans($request->validated()));
+    }
+    public function hdmfCalamityEmployeeLoans(HdmfEmployeeLoansRequest $request)
+    {
+        return new JsonResponse(ReportService::hdmfCalamityEmployeeLoans($request->validated()));
+    }
     public function getLoanCategoryList()
     {
         return new JsonResponse(ReportService::getLoanCategoryList());

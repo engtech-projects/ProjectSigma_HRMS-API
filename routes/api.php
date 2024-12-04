@@ -313,6 +313,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('sss-group-summary-loans', [ReportController::class, 'sssGroupSummaryLoans']);
         Route::get('hdmf-group-summary-loans', [ReportController::class, 'hdmfGroupSummaryLoans']);
         Route::get('coop-group-summary-loans', [ReportController::class, 'coopGroupSummaryLoans']);
+        Route::get('hdmf-calamity-group-summary-loans', [ReportController::class, 'hdmfCalamityGroupSummaryLoans']);
+        Route::get('hdmf-calamity-employee-loans', [ReportController::class, 'hdmfCalamityEmployeeLoans']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
