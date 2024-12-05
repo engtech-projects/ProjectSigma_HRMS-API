@@ -118,7 +118,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "array",
                 "min:1",
                 'required_if:work_location,==,'.WorkLocation::PROJECT->value,
-                'excluded_if:work_location,==,'.WorkLocation::OFFICE->value,
+                'exclude_if:work_location,==,'.WorkLocation::OFFICE->value,
             ],
             'projects.*' => [
                 "nullable",
