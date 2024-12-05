@@ -242,13 +242,7 @@ class ReportService
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
         ->values()
         ->all();
-        $uniqueGroup = collect($data)->groupBy('payroll_record.charging_name')
-            ->map(function($group) {
-                return [
-                    ...$group->first()->toArray(),
-                    'total_pagibig_contribution' => $group->sum('total_pagibig_contribution')
-                ];
-            });
+        $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
         return [
             'success' => true,
             'message' => 'SSS Group Remittance Request fetched.',
