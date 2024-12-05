@@ -26,6 +26,9 @@ class StoreEmployeePanRequestRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->prepareApprovalValidation();
+        if ($this->work_location === WorkLocation::OFFICE->value && $this->projects === []) {
+            $this->merge(['projects' => null]);
+        }
     }
 
     /**
@@ -118,7 +121,6 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "array",
                 "min:1",
                 'required_if:work_location,==,'.WorkLocation::PROJECT->value,
-                'exclude_if:work_location,==,'.WorkLocation::OFFICE->value,
             ],
             'projects.*' => [
                 "nullable",
