@@ -175,7 +175,7 @@ class EmployeePanRequest extends Model
     {
         return $this->projects()->pluck('id');
     }
-    public function getDepartmentNamesAttribute()
+    public function getDepartmentNameAttribute()
     {
         return $this->department?->department_name;
     }
