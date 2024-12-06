@@ -44,12 +44,18 @@ class ProjectMonitoringService
     public function getAllProjects()
     {
         $response = Http::withToken($this->authToken)
+            ->withUrlParameters([
+                "stage" => "awarded",
+                "status" => "ongoing",
+                "paginate" => false,
+                "sort" => "asc"
+            ])
             ->acceptJson()
             ->get($this->apiUrl.'/api/projects');
         Log::info($response->json());
         if (! $response->successful()) {
             return [];
         }
-        return $response->json()['data'];
+        return $response->json();
     }
 }
