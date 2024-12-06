@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ApiSyncController extends Controller
 {
-    //
-    public function syncAll()
+    public function syncAll(Request $request)
     {
         $authToken = $request->bearerToken();
         DB::transaction(function () use ($authToken) {
@@ -27,7 +26,7 @@ class ApiSyncController extends Controller
             'success' => true,
         ]);
     }
-    public function syncAllProjectMonitoring()
+    public function syncAllProjectMonitoring(Request $request)
     {
         $authToken = $request->bearerToken();
         DB::transaction(function () use ($authToken) {
@@ -41,7 +40,7 @@ class ApiSyncController extends Controller
             'success' => true,
         ]);
     }
-    public function syncProjects()
+    public function syncProjects(Request $request)
     {
         $authToken = $request->bearerToken();
         DB::transaction(function () use ($authToken) {
