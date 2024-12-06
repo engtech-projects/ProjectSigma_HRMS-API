@@ -72,6 +72,7 @@ use App\Http\Controllers\Actions\Employee\{
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AllowanceRequestController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\ApiSyncController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\AttendancePortalController;
 use App\Http\Controllers\CashAdvanceController;
@@ -348,6 +349,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::prefix("enums")->group(function () {
         Route::get('employee-heads', [HrmsEnumController::class, 'employeeHeads']);
+    });
+    Route::prefix('sync')->group(function () {
+        Route::post('/all', [ApiSyncController::class, 'syncAll']);
+        Route::prefix('project')->group(function () {
+            Route::post('/all', [ApiSyncController::class, 'syncAllProjectMonitoring']);
+            Route::post('/project', [ApiSyncController::class, 'syncProjects']);
+        });
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH
