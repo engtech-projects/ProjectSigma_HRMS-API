@@ -72,9 +72,11 @@ use App\Http\Controllers\Actions\Employee\{
 use App\Http\Controllers\Actions\Project\ProjectListController;
 use App\Http\Controllers\AllowanceRequestController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\ApiSyncController;
 use App\Http\Controllers\AttendanceBulkUpload;
 use App\Http\Controllers\AttendancePortalController;
 use App\Http\Controllers\CashAdvanceController;
+use App\Http\Controllers\Employee\WorkLocationsController;
 use App\Http\Controllers\EmployeeAllowancesController;
 use App\Http\Controllers\ExternalWorkExperienceController;
 use App\Http\Controllers\HrmsEnumController;
@@ -251,7 +253,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('internalwork-experience', InternalWorkExperienceController::class);
         Route::resource('termination', TerminationController::class);
         Route::resource('externalwork-experience', ExternalWorkExperienceController::class);
-
+        Route::get('location-employees', WorkLocationsController::class);
         Route::prefix('statistics')->group(function () {
             Route::get('attendance-infractions', CountAbsentLateController::class);
             Route::get('gender', CountEmployeeGenderController::class);
@@ -313,14 +315,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('sss-group-summary-loans', [ReportController::class, 'sssGroupSummaryLoans']);
         Route::get('hdmf-group-summary-loans', [ReportController::class, 'hdmfGroupSummaryLoans']);
         Route::get('coop-group-summary-loans', [ReportController::class, 'coopGroupSummaryLoans']);
+        Route::get('hdmf-calamity-group-summary-loans', [ReportController::class, 'hdmfCalamityGroupSummaryLoans']);
+        Route::get('hdmf-calamity-employee-loans', [ReportController::class, 'hdmfCalamityEmployeeLoans']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
         Route::resource('project', ProjectController::class);
         Route::get('list', ProjectListController::class);
-        Route::put('attach-employee/{projectMonitoringId}', AttachProjectEmployee::class);
-        Route::get('project-employee/{projectMonitoringId}', ProjectEmployeeList::class);
-        Route::get('project-member-list/{projectMonitoringId}', ProjectMemberList::class);
     });
     // NOTIFICATIONS
     Route::prefix('notifications')->group(function () {
@@ -348,6 +349,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::prefix("enums")->group(function () {
         Route::get('employee-heads', [HrmsEnumController::class, 'employeeHeads']);
+    });
+    Route::prefix('sync')->group(function () {
+        Route::post('/all', [ApiSyncController::class, 'syncAll']);
+        Route::prefix('project')->group(function () {
+            Route::post('/all', [ApiSyncController::class, 'syncAllProjectMonitoring']);
+            Route::post('/project', [ApiSyncController::class, 'syncProjects']);
+        });
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH

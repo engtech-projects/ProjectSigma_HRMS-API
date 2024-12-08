@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\WorkLocation;
 use App\Models\InternalWorkExperience;
 use App\Http\Requests\StoreInternalWorkExperienceRequest;
 use App\Http\Requests\UpdateInternalWorkExperienceRequest;
@@ -64,10 +65,14 @@ class InternalWorkExperienceController extends Controller
      */
     public function update(UpdateInternalWorkExperienceRequest $request, $id)
     {
+        $validatedData = $request->validated();
         $main = InternalWorkExperience::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
-            $main->fill($request->validated());
+            $main->fill($validatedData);
+            if ($main->work_location === WorkLocation::PROJECT->value) {
+                $main->projects()->sync($validatedData["project_ids"]);
+            }
             if ($main->save()) {
                 $data->message = "Successfully update.";
                 $data->success = true;

@@ -19,4 +19,5 @@ class ProjectMember extends Model
         'project_id',
         'employee_id',
     ];
+    protected $table = 'project_employees';
 }

@@ -267,7 +267,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 37,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_PROJECTMEMBER->value,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOCATION_EMPLOYEES->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -996,6 +996,13 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 1200,
                     'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_JOURNAL_ENTRY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 1210,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_SETUP_PARTICULAR_GROUP->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

@@ -95,6 +95,41 @@ paths:
             responses:
                 200:
                     description: Successfully logged out
+    /api/employee/location-employees:
+        get:
+            summary: Get members based on type and id
+            tags:
+                - EMPLOYEE
+            security:
+                - bearerAuth: []
+            parameters:
+                - in: query
+                  name: type
+                  schema:
+                    type: string
+                    enum: [Project, Department]
+                  required: false
+                - in: query
+                  name: project_id
+                  schema:
+                    type: integer
+                  required: false
+                - in: query
+                  name: department_id
+                  schema:
+                    type: integer
+                  required: false
+                - in: query
+                  name: unassigned
+                  schema:
+                    type: string
+                    enum: [1, 0]
+                  required: false
+            responses:
+                200:
+                    description: Successfully get members
+                    content:
+                        application/json: {}
 
 components:
     securitySchemes:

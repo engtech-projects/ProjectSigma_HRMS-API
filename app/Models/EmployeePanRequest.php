@@ -18,11 +18,14 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Enums\WorkLocation;
 use App\Http\Traits\UploadFileTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EmployeePanRequest extends Model
@@ -81,6 +84,7 @@ class EmployeePanRequest extends Model
         'approvals',
     ];
 
+    protected $perPage = 10;
 
     /**
      * MODEL STATIC
@@ -95,34 +99,11 @@ class EmployeePanRequest extends Model
         });
     }
 
-    public function getFullNameAttribute()
-    {
-        if ($this->type == "New Hire") {
-            return $this->jobapplicant?->fullname_last;
-        } else {
-            return $this->employee?->fullname_last;
-        }
-    }
-    public function requestCreatedAt(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->created_at->format('F j, Y')
-        );
-    }
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-    public function scopeApproval($query)
-    {
-        return $query->where("request_status", "=", "Pending");
-    }
-    public function scopeCreatedBy(Builder $query, $id): void
-    {
-        $query->where("created_by", $id);
-    }
-
+    /**
+     * ==================================================
+     * MODEL RELATIONSHIPS
+     * ==================================================
+     */
     public function jobapplicant(): HasOne
     {
         return $this->hasOne(JobApplicants::class, "id", "pan_job_applicant_id")->with('manpower');
@@ -162,7 +143,70 @@ class EmployeePanRequest extends Model
     {
         return $this->hasOne(Position::class, "id", "designation_position");
     }
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, EmployeePanRequestProjects::class)
+        ->withtimestamps();
+    }
+    /**
+     * ==================================================
+     * MODEL ATTRIBUTES
+     * ==================================================
+     */
+     public function getFullNameAttribute()
+    {
+        if ($this->type == "New Hire") {
+            return $this->jobapplicant?->fullname_last;
+        } else {
+            return $this->employee?->fullname_last;
+        }
+    }
+    public function requestCreatedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->created_at->format('F j, Y')
+        );
+    }
+    public function getProjectNamesAttribute()
+    {
+        return $this->projects()->pluck('project_code');
+    }
+    public function getProjectIdsAttribute()
+    {
+        return $this->projects()->pluck('id');
+    }
+    public function getDepartmentNameAttribute()
+    {
+        return $this->department?->department_name;
+    }
 
+    /**
+     * ==================================================
+     * STATIC SCOPES
+     * ==================================================
+     */
+     public function scopeRequestStatusPending(Builder $query): void
+     {
+         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+     }
+     public function scopeApproval($query)
+     {
+         return $query->where("request_status", "=", "Pending");
+     }
+     public function scopeCreatedBy(Builder $query, $id): void
+     {
+         $query->where("created_by", $id);
+     }
+    /**
+     * ==================================================
+     * DYNAMIC SCOPES
+     * ==================================================
+     */
+    /**
+     * ==================================================
+     * MODEL FUNCTIONS
+     * ==================================================
+     */
     public function completeRequestStatus()
     {
         switch ($this->type) {
@@ -258,7 +302,10 @@ class EmployeePanRequest extends Model
         $employeeInternal['immediate_supervisor'] = $jobApplicant->immediate_supervisor ?? "N/A";
         $employeeInternal['department_id'] = $this->section_department_id;
         $employeeInternal['date_from'] = $this->date_of_effictivity;
-        $employee->employee_internal()->create($employeeInternal);
+        $employeeInternalWork = $employee->employee_internal()->create($employeeInternal);
+        if ($this->work_location === WorkLocation::PROJECT->value) {
+            $employeeInternalWork->projects()->attach($this->project_ids);
+        }
         $employee->fileuploads()->create([
             "employee_uploads" => "Application Letter",
             "upload_type" => "Documents",
@@ -269,15 +316,19 @@ class EmployeePanRequest extends Model
             "upload_type" => "Documents",
             "file_location" => $jobApplicant->resume_attachment,
         ]);
-        $pdf = Pdf::loadView('reports.docs.application_form', ['application' => $jobApplicant]);
-        $filePath = EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf';
-        Storage::disk('public')->put(EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf', $pdf->output());
+        try {
+            $pdf = Pdf::loadView('reports.docs.application_form', ['application' => $jobApplicant]);
+            $filePath = EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf';
+            Storage::disk('public')->put(EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf', $pdf->output());
 
-        $employee->fileuploads()->create([
-            "employee_uploads" => "Application Form",
-            "upload_type" => "Documents",
-            "file_location" => $filePath,
-        ]);
+            $employee->fileuploads()->create([
+                "employee_uploads" => "Application Form",
+                "upload_type" => "Documents",
+                "file_location" => $filePath,
+            ]);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+        }
         //company employements
         $employee->company_employments()->create([
             "employeedisplay_id" => $this->company_id_num,
@@ -409,13 +460,18 @@ class EmployeePanRequest extends Model
 
         $newInterWorkExp = $interWorkExp->toArray();
         unset($newInterWorkExp["id"]);
-        $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
         $newInterWorkExp['work_location'] = $this->work_location ?? $interWorkExp->work_location;
+        if ($newInterWorkExp['work_location'] === WorkLocation::OFFICE->value) {
+            $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
+        }
         $newInterWorkExp['date_from'] = $this->date_of_effictivity;
         $newInterWorkExp['salary_type'] = $this->salary_type;
         $newInterWorkExp['date_to'] = null;
         $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
-        InternalWorkExperience::create($newInterWorkExp);
+        $newWorkExp = InternalWorkExperience::create($newInterWorkExp);
+        if ($this->work_location === WorkLocation::PROJECT->value) {
+            $newWorkExp->projects()->attach($this->project_ids);
+        }
     }
 
     /** Promotion Employee PAN request approved
@@ -472,9 +528,5 @@ class EmployeePanRequest extends Model
     public function rehire()
     {
         // JUST A PLACEHOLDER WILL PROBABLY BE USED SOON
-    }
-    public function work_assignment()
-    {
-        return $this->morphedToMany(EmployeePanRequest::EMPLOYEE_WORK_ASSIGNMENT, 'work_assignment');
     }
 }

@@ -75,7 +75,7 @@ class Schedule extends Model
         if ($this->deparment_id) {
             return $this->department->employees();
         } elseif ($this->project_id) {
-            return $this->project->project_has_employees();
+            return $this->project->employees();
         } else {
             return $this->hasMany(Employee::class, "id", "employee_id");
         }

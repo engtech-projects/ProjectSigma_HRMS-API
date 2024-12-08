@@ -12,6 +12,7 @@ use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\EmployeeDetailedEnumResource;
+use App\Http\Resources\EmployeeInfos\CompleteDetailsResource;
 use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
@@ -74,7 +75,7 @@ class EmployeeController extends Controller
 
     public function get()
     {
-        $employeeList = Employee::with(['current_employment.position', 'employee_has_projects', "company_employments"])->orderBy('family_name')->get();
+        $employeeList = Employee::with(['current_employment.position', 'current_employment.projects', "company_employments"])->orderBy('family_name')->get();
 
         return new JsonResponse([
             'success' => true,
@@ -139,6 +140,7 @@ class EmployeeController extends Controller
             "employee_seminartraining",
             "employee_internal.employee_salarygrade.salary_grade_level",
             "employee_internal.position",
+            "employee_internal.projects",
             "employee_externalwork",
             "images",
             'face_patterns',
@@ -150,7 +152,7 @@ class EmployeeController extends Controller
             $main["digital_signature"] = $main->digital_signature;
             $data->message = "Successfully fetch.";
             $data->success = true;
-            $data->data = $main;
+            $data->data = new CompleteDetailsResource($main);
             return response()->json($data);
         }
         $data->message = "No data found.";

@@ -243,7 +243,7 @@ class ReportService
         ->values()
         ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
-        return[
+        return [
             'success' => true,
             'message' => 'SSS Group Remittance Request fetched.',
             'data' => PagibigRemittanceSummaryResource::collection($uniqueGroup),
@@ -636,6 +636,76 @@ class ReportService
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
             'data' => DefaultReportPaymentResource::collection($data),
+        ];
+    }
+    public static function hdmfCalamityEmployeeLoans($validatedData = [])
+    {
+        $data = PayrollDetail::with(["employee.company_employments"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->whereHas('loanPayments', function ($query) {
+            return $query->where('name', EmployeeLoanType::CALAMITY_LOAN->value);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->sortBy('employee.fullname_last', SORT_NATURAL)
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) use ($validatedData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                "first_name" => $employeeData->first()->employee->first_name,
+                "middle_name" => $employeeData->first()->employee->middle_name,
+                "last_name" => $employeeData->first()->employee->family_name,
+                "suffix_name" => $employeeData->first()->employee->suffix_name,
+                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
+                "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+            ];
+        })
+        ->values()
+        ->all();
+        return [
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => HdmfEmployeeLoansResource::collection($data),
+        ];
+    }
+    public static function hdmfCalamityGroupSummaryLoans($validatedData = [])
+    {
+        $data = PayrollDetail::with(["employee.company_employments"])
+        ->whereHas('payroll_record', function ($query) use ($validatedData) {
+            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                ->isApproved();
+        })
+        ->whereHas('loanPayments', function ($query) {
+            return $query->where('name', EmployeeLoanType::CALAMITY_LOAN->value);
+        })
+        ->orderBy("created_at", "DESC")
+        ->get()
+        ->sortBy('employee.fullname_last', SORT_NATURAL)
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) use ($validatedData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                "first_name" => $employeeData->first()->employee->first_name,
+                "middle_name" => $employeeData->first()->employee->middle_name,
+                "last_name" => $employeeData->first()->employee->family_name,
+                "suffix_name" => $employeeData->first()->employee->suffix_name,
+                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
+                "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
+            ];
+        })
+        ->values()
+        ->all();
+        return [
+            'success' => true,
+            'message' => 'Employee Remittance Request fetched.',
+            'data' => HdmfEmployeeLoansResource::collection($data),
         ];
     }
     public static function getLoanCategoryList()

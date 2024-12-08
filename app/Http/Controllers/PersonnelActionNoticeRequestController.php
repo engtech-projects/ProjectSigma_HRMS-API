@@ -29,18 +29,22 @@ class PersonnelActionNoticeRequestController extends Controller
     public function index(Request $request)
     {
         $panRequest = EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
+            ->when($request->has("employee"), function ($query) use ($request) {
+                $query->whereHas('employee', function ($q) use ($request) {
+                    $q->where(DB::raw("CONCAT(first_name, ' ', middle_name, ' ', family_name)"), 'LIKE', "%{$request->employee}%");
+                })->orWhereHas('jobapplicant', function ($q) use ($request) {
+                    $q->where(DB::raw("CONCAT(firstname, ' ', middlename, ' ', lastname)"), 'LIKE', "%{$request->employee}%");
+                });
+            })
             ->orderBy('created_at', 'desc')
-            ->get();
-        $panRequest = $request->whenHas("employee", function ($name) use ($panRequest) {
-            return collect($panRequest)->filter(function ($data) use ($name) {
-                return str_contains(strtolower($data->full_name), $name);
-            });
-        });
-        $paginated = EmployeePanRequestResource::collection($panRequest);
+            ->paginate();
+        // TO FIX EMPLOYEE FILTER
+
+        $paginated = EmployeePanRequestResource::collection($panRequest)->response()->getData(true);
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",
-            "data" => PaginateResourceCollection::paginate(collect($paginated), 15)
+            "data" => $paginated
         ]);
     }
 
@@ -76,11 +80,11 @@ class PersonnelActionNoticeRequestController extends Controller
                 "message" => "No data found.",
             ]);
         }
-        $paginated = EmployeePanRequestResource::collection($noticeRequest);
+        $paginated = EmployeePanRequestResource::collection($noticeRequest)->response()->getData(true);
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",
-            "data" => PaginateResourceCollection::paginate(collect($paginated), 15)
+            "data" => $paginated
         ]);
     }
 
@@ -99,7 +103,7 @@ class PersonnelActionNoticeRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Personnel Action Notice Request fetched.',
-            'data' => EmployeePanRequestResource::collection($myApproval)
+            'data' => EmployeePanRequestResource::collection($myApproval)->response()->getData(true)
         ]);
     }
 
