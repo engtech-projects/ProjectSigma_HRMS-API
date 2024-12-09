@@ -206,6 +206,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 2050,
+                    'form' => "Payment Request Form (PAYROLL)",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::ACCOUNTING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [
                 'id'
