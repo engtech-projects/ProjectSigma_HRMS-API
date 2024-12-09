@@ -80,7 +80,7 @@ class StoreOvertimeRequest extends FormRequest
                 "date",
                 "date_format:Y-m-d",
                 function ($attribute, $value, $fail) {
-                    if ($this->isPayrollLocked($value)) {
+                    if ($this->isPayrollLocked($this->overtime_date)) {
                         $fail("Payroll is locked for this overtime date.");
                     }
                 },
