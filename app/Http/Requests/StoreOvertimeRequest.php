@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\RequestStatusType;
 use App\Enums\StringRequestApprovalStatus;
+use App\Http\Requests\Traits\PayrollLockValidationTrait;
 use App\Http\Traits\HasApprovalValidation;
 use App\Models\Employee;
 use App\Models\Overtime;
@@ -14,6 +15,7 @@ use Illuminate\Validation\Rules\Enum;
 class StoreOvertimeRequest extends FormRequest
 {
     use HasApprovalValidation;
+    use PayrollLockValidationTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -77,6 +79,11 @@ class StoreOvertimeRequest extends FormRequest
                 "required",
                 "date",
                 "date_format:Y-m-d",
+                function ($attribute, $value, $fail) {
+                    if ($this->isPayrollLocked($value)) {
+                        $fail("Payroll is locked for this overtime date.");
+                    }
+                },
             ],
             'overtime_start_time' => [
                 "required",

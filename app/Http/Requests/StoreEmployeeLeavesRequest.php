@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Traits\PayrollLockValidationTrait;
 use App\Models\Employee;
 use App\Models\Leave;
 use Illuminate\Foundation\Http\FormRequest;
@@ -10,6 +11,7 @@ use App\Http\Traits\HasApprovalValidation;
 class StoreEmployeeLeavesRequest extends FormRequest
 {
     use HasApprovalValidation;
+    use PayrollLockValidationTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -68,12 +70,22 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "required",
                 "date",
                 "date_format:Y-m-d",
+                function ($attribute, $value, $fail) {
+                    if ($this->isPayrollLocked($value)) {
+                        $fail("Payroll is locked for this Leave date.");
+                    }
+                },
             ],
             'date_of_absence_to' => [
                 "required",
                 "date",
                 "date_format:Y-m-d",
-                "after_or_equal:date_of_absence_from"
+                "after_or_equal:date_of_absence_from",
+                function ($attribute, $value, $fail) {
+                    if ($this->isPayrollLocked($value)) {
+                        $fail("Payroll is locked for this Leave date.");
+                    }
+                },
             ],
             'reason_for_absence' => [
                 "required",
