@@ -25,8 +25,14 @@ class ProjectMonitoringService
     public function syncProjects()
     {
         $projects = $this->getAllProjects();
+        Log::info($projects);
         collect($projects)->map(function ($project) {
-            $project['project_monitoring_id'] = $project['id'];
+            return [
+                "id" => $project['id'],
+                "project_monitoring_id" => $project['id'],
+                "project_code" => $project['code'],
+                "status" => $project['status'],
+            ];
         });
         Project::upsert(
             $projects,
