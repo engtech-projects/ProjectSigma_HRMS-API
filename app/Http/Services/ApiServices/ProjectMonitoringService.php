@@ -52,7 +52,6 @@ class ProjectMonitoringService
             ])
             ->acceptJson()
             ->get($this->apiUrl.'/api/projects');
-        Log::info($response->json());
         if (! $response->successful()) {
             return [];
         }

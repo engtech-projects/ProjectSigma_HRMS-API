@@ -399,11 +399,12 @@ class Employee extends Model
                 return $schedule;
             }
         } elseif ($workLocation == WorkLocation::PROJECT->value) {
-            $schedule = $this->projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
+            $latestProject = $employeeInternalOnDate->projects()?->orderBy('id', 'desc')->first();
+            $schedule = $latestProject?->project_schedule()?->schedulesOnDay($date)->irregularSchedules()->get();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }
-            $schedule = $this->projects()?->orderBy('id', 'desc')->first()?->project_schedule()?->schedulesOnDay($date)->regularSchedules()->get();
+            $schedule = $latestProject?->project_schedule()?->schedulesOnDay($date)->regularSchedules()->get();
             if ($schedule && sizeof($schedule) > 0) {
                 return $schedule;
             }

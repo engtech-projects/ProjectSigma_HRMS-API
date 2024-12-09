@@ -30,7 +30,6 @@ class RestructureEmployeeProjects extends Command
     public function handle()
     {
         $projectMembers = ProjectMember::get()->groupBy('employee_id');
-        Log::info($projectMembers);
         $employees = Employee::isActive()->get();
         foreach ($employees as $employee) {
             if (isset($projectMembers[$employee->id]) && $employee->current_employment->work_location == WorkLocation::PROJECT->value) {
