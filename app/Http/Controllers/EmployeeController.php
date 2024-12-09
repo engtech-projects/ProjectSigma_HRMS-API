@@ -149,7 +149,7 @@ class EmployeeController extends Controller
         if (!is_null($main)) {
             $main["age"] = $main->age;
             $main["profile_photo"] = $main->profile_photo?->append("base64");
-            $main["digital_signature"] = $main->digital_signature;
+            $main["digital_signature"] = $main->digital_signature?->append("base64");
             $data->message = "Successfully fetch.";
             $data->success = true;
             $data->data = new CompleteDetailsResource($main);
