@@ -19,7 +19,7 @@ class EmployeeDetailedEnumResource extends JsonResource
             "fullname_first" => $this->fullname_first,
             "fullname_last" => $this->fullname_last,
             "department" => $this->current_employment?->department,
-            "project" => $this->current_employement?->latest_project?->last(),
+            "project" => $this->current_employement?->projects()?->last(),
         ];
     }
 }

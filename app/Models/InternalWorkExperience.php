@@ -85,10 +85,6 @@ class InternalWorkExperience extends Model
         return $this->belongsToMany(Project::class, InternalWorkExperienceProjects::class)
             ->withTimestamps();
     }
-    public function latest_project(): HasOneThrough
-    {
-        return $this->projects()->orderBy('created_at', 'desc')->first();
-    }
     /**
     * ==================================================
     * MODEL ATTRIBUTES
