@@ -14,9 +14,9 @@ trait PayrollLockValidationTrait
     // RETURNS TRUE IF PAYROLL IS LOCKED
     public function isPayrollLocked($dateCheck) : bool
     {
-        // if ($this->checkUserAccess(["ADMIN ONLY"])) { // CHECK FOR ADMIN BYPASS
-        //     return false; // FALSE TO ALLOW ADMIN BYPASS
-        // }
+        if ($this->checkUserAccess(["ADMIN ONLY"])) { // CHECK FOR ADMIN BYPASS
+            return false; // FALSE TO ALLOW ADMIN BYPASS
+        }
         $dateCheck = Carbon::parse($dateCheck)->startOfDay();
         $allSettings = Settings::get();
         $pr1Day = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_20TH_LOCKUP_DAY_LIMIT->value)->first()->value;
@@ -34,14 +34,6 @@ trait PayrollLockValidationTrait
         $pr1Date2 = $dateToday->copy()->setDay($pr1Day);
         $pr2Sched2 = $dateToday->copy()->setDay($pr2SchedDay)->setTimeFromTimeString($pr2SchedTime);
         $pr2Date2 = $dateToday->copy()->setDay($pr2Day);
-        Log::info("Prev Month Sched 1 " . $pr1Sched1);
-        Log::info("Prev Month Date 1 " . $pr1Date1);
-        Log::info("Prev Month Sched 2 " . $pr2Sched1);
-        Log::info("Prev Month Date 2 " . $pr2Date1);
-        Log::info("Current Month Sched 1 " . $pr1Sched2);
-        Log::info("Current Month Date 1 " . $pr1Date2);
-        Log::info("Current Month Sched 2 " . $pr2Sched2);
-        Log::info("Current Month Date 2 " . $pr2Date2);
         $maxDateAllowed = Carbon::now()->endOfMonth(); // the last day of the locked payroll period
         if ($dateToday->gt($pr1Sched1)) {
             $maxDateAllowed = $pr1Date1;
@@ -55,8 +47,6 @@ trait PayrollLockValidationTrait
         if ($dateToday->gt($pr2Sched2)) {
             $maxDateAllowed = $pr2Date2;
         }
-        Log::info("Date Today " . $dateToday);
-        Log::info("Max Date Allowed " . $maxDateAllowed);
         return $maxDateAllowed->gt($dateCheck);
     }
 }
