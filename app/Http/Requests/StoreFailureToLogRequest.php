@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\AssignTypes;
 use App\Enums\AttendanceLogType;
+use App\Http\Requests\Traits\PayrollLockValidationTrait;
 use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -11,6 +12,7 @@ use Illuminate\Validation\Rules\Enum;
 class StoreFailureToLogRequest extends FormRequest
 {
     use HasApprovalValidation;
+    use PayrollLockValidationTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -31,7 +33,15 @@ class StoreFailureToLogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => 'required|date_format:Y-m-d',
+            'date' => [
+                'required',
+                'date_format:Y-m-d',
+                function ($attribute, $value, $fail) {
+                    if ($this->isPayrollLocked($value)) {
+                        $fail("Payroll is locked for this Log date.");
+                    }
+                },
+            ],
             'time' => 'required|date_format:H:i',
             'log_type' => [
                 'required',
