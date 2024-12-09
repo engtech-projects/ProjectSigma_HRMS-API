@@ -6,16 +6,18 @@ use App\Enums\AttendanceSettings;
 use App\Http\Traits\CheckAccessibility;
 use App\Models\Settings;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 trait PayrollLockValidationTrait
 {
     use CheckAccessibility;
-    public function isPayrollLocked($dateCheck)
+    // RETURNS TRUE IF PAYROLL IS LOCKED
+    public function isPayrollLocked($dateCheck) : bool
     {
-        if ($this->checkUserAccess(["ADMIN ONLY"])) { // CHECK FOR ADMIN BYPASS
-            return true;
-        }
-        $dateCheck = Carbon::parse($dateCheck);
+        // if ($this->checkUserAccess(["ADMIN ONLY"])) { // CHECK FOR ADMIN BYPASS
+        //     return false; // FALSE TO ALLOW ADMIN BYPASS
+        // }
+        $dateCheck = Carbon::parse($dateCheck)->startOfDay();
         $allSettings = Settings::get();
         $pr1Day = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_20TH_LOCKUP_DAY_LIMIT->value)->first()->value;
         $pr1SchedDay = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_20TH_LOCKUP_SCHEDULE_DAY_OF_MONTH->value)->first()->value;
@@ -23,25 +25,38 @@ trait PayrollLockValidationTrait
         $pr2Day = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_5TH_LOCKUP_DAY_LIMIT->value)->first()->value;
         $pr2SchedDay = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_5TH_LOCKUP_SCHEDULE_DAY_OF_MONTH->value)->first()->value;
         $pr2SchedTime = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_5TH_LOCKUP_SCHEDULE_TIME_OF_DAY->value)->first()->value;
-        $dateToday = Carbon::now(); // Used to identify which payroll period is now locked
+        $dateToday = Carbon::now()->startOfDay(); // Used to identify which payroll period is now locked
         $pr1Sched1 = $dateToday->copy()->subMonth()->setDay($pr1SchedDay)->setTimeFromTimeString($pr1SchedTime);
         $pr1Date1 = $dateToday->copy()->subMonth()->setDay($pr1Day);
-        $pr1Sched2 = $dateToday->copy()->setDay($pr1SchedDay)->setTimeFromTimeString($pr1SchedTime);
-        $pr1Date2 = $dateToday->copy()->setDay($pr1Day);
         $pr2Sched1 = $dateToday->copy()->subMonth()->setDay($pr2SchedDay)->setTimeFromTimeString($pr2SchedTime);
         $pr2Date1 = $dateToday->copy()->subMonth()->setDay($pr2Day);
+        $pr1Sched2 = $dateToday->copy()->setDay($pr1SchedDay)->setTimeFromTimeString($pr1SchedTime);
+        $pr1Date2 = $dateToday->copy()->setDay($pr1Day);
         $pr2Sched2 = $dateToday->copy()->setDay($pr2SchedDay)->setTimeFromTimeString($pr2SchedTime);
         $pr2Date2 = $dateToday->copy()->setDay($pr2Day);
+        Log::info("Prev Month Sched 1 " . $pr1Sched1);
+        Log::info("Prev Month Date 1 " . $pr1Date1);
+        Log::info("Prev Month Sched 2 " . $pr2Sched1);
+        Log::info("Prev Month Date 2 " . $pr2Date1);
+        Log::info("Current Month Sched 1 " . $pr1Sched2);
+        Log::info("Current Month Date 1 " . $pr1Date2);
+        Log::info("Current Month Sched 2 " . $pr2Sched2);
+        Log::info("Current Month Date 2 " . $pr2Date2);
         $maxDateAllowed = Carbon::now()->endOfMonth(); // the last day of the locked payroll period
-        if ($dateToday->lt($pr1Sched1)) {
+        if ($dateToday->gt($pr1Sched1)) {
             $maxDateAllowed = $pr1Date1;
-        } else if ($dateToday->lt($pr2Sched1)) {
+        }
+        if ($dateToday->gt($pr2Sched1)) {
             $maxDateAllowed = $pr2Date1;
-        } else if ($dateToday->lt($pr1Sched2)) {
+        }
+        if ($dateToday->gt($pr1Sched2)) {
             $maxDateAllowed = $pr1Date2;
-        } else if ($dateToday->lt($pr2Sched2)) {
+        }
+        if ($dateToday->gt($pr2Sched2)) {
             $maxDateAllowed = $pr2Date2;
         }
-        return $maxDateAllowed->lt($dateCheck);
+        Log::info("Date Today " . $dateToday);
+        Log::info("Max Date Allowed " . $maxDateAllowed);
+        return $maxDateAllowed->gt($dateCheck);
     }
 }

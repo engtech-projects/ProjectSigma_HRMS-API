@@ -71,7 +71,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "date",
                 "date_format:Y-m-d",
                 function ($attribute, $value, $fail) {
-                    if ($this->isPayrollLocked($value)) {
+                    if ($this->isPayrollLocked($this->date_of_absence_from)) {
                         $fail("Payroll is locked for this Leave date.");
                     }
                 },
@@ -82,7 +82,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "date_format:Y-m-d",
                 "after_or_equal:date_of_absence_from",
                 function ($attribute, $value, $fail) {
-                    if ($this->isPayrollLocked($value)) {
+                    if ($this->isPayrollLocked($this->date_of_absence_to)) {
                         $fail("Payroll is locked for this Leave date.");
                     }
                 },

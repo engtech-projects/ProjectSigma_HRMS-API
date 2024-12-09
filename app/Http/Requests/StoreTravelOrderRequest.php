@@ -71,7 +71,7 @@ class StoreTravelOrderRequest extends FormRequest
                 "required",
                 "date",
                 function ($attribute, $value, $fail) {
-                    if ($this->isPayrollLocked($value)) {
+                    if ($this->isPayrollLocked($this->date_of_travel)) {
                         $fail("Payroll is locked for this travel date.");
                     }
                 },

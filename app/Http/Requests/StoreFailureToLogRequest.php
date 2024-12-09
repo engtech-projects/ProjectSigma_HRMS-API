@@ -37,7 +37,7 @@ class StoreFailureToLogRequest extends FormRequest
                 'required',
                 'date_format:Y-m-d',
                 function ($attribute, $value, $fail) {
-                    if ($this->isPayrollLocked($value)) {
+                    if ($this->isPayrollLocked($this->date)) {
                         $fail("Payroll is locked for this Log date.");
                     }
                 },
