@@ -16,6 +16,7 @@ class CompleteDetailsResource extends JsonResource
     {
         return [
             ...parent::toArray($request),
+            "current_employment" => new InternalWorkResource($this->current_employment),
             "employee_internal" => InternalWorkResource::collection($this->employee_internal),
         ];
     }
