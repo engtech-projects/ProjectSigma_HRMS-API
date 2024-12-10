@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\AssignTypes;
+use App\Http\Requests\Traits\PayrollLockValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Validation\Rules\Enum;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Rules\Enum;
 class StoreTravelOrderRequest extends FormRequest
 {
     use HasApprovalValidation;
+    use PayrollLockValidationTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -68,6 +70,11 @@ class StoreTravelOrderRequest extends FormRequest
             'date_of_travel' => [
                 "required",
                 "date",
+                function ($attribute, $value, $fail) {
+                    if ($this->isPayrollLocked($this->date_of_travel)) {
+                        $fail("Payroll is locked for this travel date.");
+                    }
+                },
             ],
             'time_of_travel' => [
                 "required",
