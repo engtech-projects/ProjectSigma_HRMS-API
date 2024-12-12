@@ -523,10 +523,11 @@ class AttendanceService
                     // Only sets time if on leave with pay
                     // Deduct half day Used to leave for a leave
                     // display leave name for any type of leave
+                    $leaveOnDayDuration = in_array($date->format('Y-m-d'), array_keys($leave->daily_date_durations)) ? $leave->daily_date_durations[$date->format('Y-m-d')] : 0;
                     if (
                         (
-                            $leave->daily_date_durations[$date->format('Y-m-d')] >= 1 ||
-                            $leaveUsedToday[$index] < $leave->daily_date_durations[$date->format('Y-m-d')]
+                            $leaveOnDayDuration >= 1 ||
+                            $leaveUsedToday[$index] < $leaveOnDayDuration
                         )
                     ) {
                         if ($leave->with_pay) {
