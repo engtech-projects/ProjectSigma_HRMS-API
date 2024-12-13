@@ -383,6 +383,14 @@ Route::middleware('portal_in')->group(function () {
         Route::get('today-logs', [AttendanceLogController::class, "getToday"]);
     });
 });
+// SECRET API KEY ROUTES
+Route::middleware("secret_api")->group(function () {
+    // SIGMA SERVICES ROUTES
+    Route::prefix('sigma')->group(function () {
+        Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
+        Route::get("user-employees", [ApiServiceController::class, "getUserEmployees"]);
+    });
+});
 
 //public
 Route::prefix("department")->group(function () {
