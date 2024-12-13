@@ -60,9 +60,9 @@ class InternalWorkExperience extends Model
         return $this->hasOne(Position::class, "id", "position_id")->withTrashed();
     }
 
-    public function employees()
+    public function employee()
     {
-        return $this->hasMany(Employee::class, 'id', 'employee_id');
+        return $this->belongsTo(Employee::class);
     }
     public function department(): BelongsTo
     {

@@ -15,8 +15,8 @@ class ProjectListController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $projectService = new ProjectMonitoringService($request->bearerToken());
-        $projectService->syncAll();
+        // $projectService = new ProjectMonitoringService($request->bearerToken());
+        // $projectService->syncAll();
         $allProjects = Project::all();
         return new JsonResponse([
             'success' => true,
