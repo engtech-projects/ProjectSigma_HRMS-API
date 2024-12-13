@@ -17,7 +17,7 @@ enum AccessibilityAccounting: string
     case ACCOUNTING_SETUP_STAKEHOLDERS = "accounting:setup_stakeholders";
     case ACCOUNTING_SETUP_SYNCHRONIZATION = "accounting:setup_synchronization";
     case ACCOUNTING_SETUP_PARTICULAR_GROUP = "accounting:setup_particular group";
-
+    case ACCOUNTING_SETUP_TERMS = "accounting:setup_terms";
     //Accounting Request
     case ACCOUNTING_REQUEST_PURCHASE_ORDER = "accounting:request_purchase order";
     case ACCOUNTING_REQUEST_NON_PURCHASE_ORDER = "accounting:request_non purchase order";
