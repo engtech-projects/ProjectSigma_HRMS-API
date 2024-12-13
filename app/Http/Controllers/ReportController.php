@@ -145,7 +145,7 @@ class ReportController extends Controller
     {
         return new JsonResponse(ReportService::otherDeductionsCategoryList());
     }
-    public function otherDeductionsDefaultEmployee(OtherDeductionPaymentsReportRequest $request)
+    public function otherDeductionsReports(OtherDeductionPaymentsReportRequest $request)
     {
         $validated = $request->validated();
         $reportData = null;

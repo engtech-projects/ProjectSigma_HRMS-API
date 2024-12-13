@@ -273,7 +273,9 @@ class Employee extends Model
     }
     public function employee_travel_order(): BelongsToMany
     {
-        return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id')->requestStatusApproved();
+        return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id')
+        ->requestStatusApproved()
+        ->whereNull("travel_order_members.deleted_at");
     }
     public function employee_overtime(): BelongsToMany
     {

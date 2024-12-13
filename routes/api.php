@@ -329,8 +329,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::prefix("other-deductions")->group(function () {
             Route::get('category-list', [ReportController::class, 'otherDeductionsCategoryList']);
-            Route::get("default-employee", [ReportController::class, "defaultOtherDeductionsEmployee"]);
-            Route::get("default-group", [ReportController::class, "defaultOtherDeductionsGroup"]);
+            Route::get("get", [ReportController::class, "otherDeductionsReports"]);
         });
     });
     // PROJECT
