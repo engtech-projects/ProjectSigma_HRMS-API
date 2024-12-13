@@ -25,7 +25,7 @@ trait PayrollLockValidationTrait
         $pr2Day = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_5TH_LOCKUP_DAY_LIMIT->value)->first()->value;
         $pr2SchedDay = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_5TH_LOCKUP_SCHEDULE_DAY_OF_MONTH->value)->first()->value;
         $pr2SchedTime = $allSettings->where('setting_name', AttendanceSettings::PAYROLL_5TH_LOCKUP_SCHEDULE_TIME_OF_DAY->value)->first()->value;
-        $dateToday = Carbon::now()->startOfDay(); // Used to identify which payroll period is now locked
+        $dateToday = Carbon::now(); // Used to identify which payroll period is now locked
         $pr1Sched1 = $dateToday->copy()->subMonth()->setDay($pr1SchedDay)->setTimeFromTimeString($pr1SchedTime);
         $pr1Date1 = $dateToday->copy()->subMonth()->setDay($pr1Day);
         $pr2Sched1 = $dateToday->copy()->subMonth()->setDay($pr2SchedDay)->setTimeFromTimeString($pr2SchedTime);
