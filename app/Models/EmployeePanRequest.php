@@ -169,11 +169,11 @@ class EmployeePanRequest extends Model
     }
     public function getProjectNamesAttribute()
     {
-        return $this->projects()->pluck('project_code');
+        return $this->projects->pluck('project_code');
     }
     public function getProjectIdsAttribute()
     {
-        return $this->projects()->pluck('id');
+        return $this->projects->pluck('id');
     }
     public function getDepartmentNameAttribute()
     {
