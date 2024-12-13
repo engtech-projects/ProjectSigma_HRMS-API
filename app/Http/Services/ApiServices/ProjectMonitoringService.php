@@ -25,18 +25,19 @@ class ProjectMonitoringService
     public function syncProjects()
     {
         $projects = $this->getAllProjects();
-        collect($projects)->map(function ($project) {
+        $projects = collect($projects)->map(function ($project) {
             return [
                 "id" => $project['id'],
                 "project_monitoring_id" => $project['id'],
                 "project_code" => $project['code'],
                 "status" => $project['status'],
             ];
-        });
+        })->toArray();
         Project::upsert(
             $projects,
             [
-                'id'
+                'id',
+                'project_monitoring_id',
             ],
             [
                 'project_monitoring_id',

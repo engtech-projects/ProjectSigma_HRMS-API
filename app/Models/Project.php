@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InternalWorkExpStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -30,14 +31,11 @@ class Project extends Model
      * RELATED
      * RELATION
      */
-    public function employees(): BelongsToMany
+    public function employeeInternalWorks(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, 'project_employees')
-            ->withPivot([
-                'project_id',
-                'employee_id'
-            ])
-            ->withtimestamps();
+        return $this->belongsToMany(InternalWorkExperience::class, InternalWorkExperienceProjects::class, 'project_id', 'internal_work_experience_id', 'id', 'id')
+        ->where('status', InternalWorkExpStatus::CURRENT->value)
+        ->withTimestamps();
     }
     public function employee_allowance(): MorphOne
     {
