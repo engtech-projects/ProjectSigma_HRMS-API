@@ -262,12 +262,12 @@ class PayrollRecordController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate();
         if (!is_null($allRequests)) {
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Payrollrecord request fetched.',
-                'data' => PaginateResourceCollection::paginate(collect(PayrollRequestResource::collection($allRequests))),
+                'data' => PayrollRequestResource::collection($allRequests)->response()->getData(true),
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
@@ -295,7 +295,7 @@ class PayrollRecordController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate();
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
@@ -305,10 +305,9 @@ class PayrollRecordController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(PayrollRequestResource::collection($myRequest))),
+            'data' => PayrollRequestResource::collection($myRequest)->response()->getData(true),
         ]);
     }
-
     /**
      * Show all requests to be approved/reviewed by current user
      */
@@ -331,8 +330,7 @@ class PayrollRecordController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();
-        ;
+        ->paginate();
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
@@ -342,7 +340,7 @@ class PayrollRecordController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
-            'data' => PayrollRequestResource::collection($myApproval)
+            'data' => PayrollRequestResource::collection($myApproval)->response()->getData(true),
         ]);
     }
     /**
