@@ -338,7 +338,7 @@ class Employee extends Model
     }
     public function getCurrentAssignmentNamesAttribute()
     {
-        return $this->current_employment?->position?->name ?? "Unassigned";
+        return $this->current_employment?->assignment_name ?? "Unassigned";
     }
     public function getCurrentSalarygradeAndStepAttribute()
     {

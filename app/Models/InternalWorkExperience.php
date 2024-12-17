@@ -60,6 +60,7 @@ class InternalWorkExperience extends Model
         return $this->hasOne(Position::class, "id", "position_id")->withTrashed();
     }
 
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);
@@ -101,6 +102,10 @@ class InternalWorkExperience extends Model
     public function getDepartmentNameAttribute()
     {
         return $this->department?->department_name ?? "";
+    }
+    public function getAssignmentNameAttribute()
+    {
+        return $this->department_name ?? $this->project_names ?? "Unassigned";
     }
     /**
     * ==================================================
