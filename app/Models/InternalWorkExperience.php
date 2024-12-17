@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
 use App\Enums\InternalWorkExpStatus;
+use App\Enums\WorkLocation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -105,7 +106,12 @@ class InternalWorkExperience extends Model
     }
     public function getAssignmentNameAttribute()
     {
-        return $this->department_name ?? $this->project_names ?? "Unassigned";
+        if ($this->work_location === WorkLocation::OFFICE->value) {
+            return $this->department_name ?? "Unassigned";
+        } elseif ($this->work_location === WorkLocation::PROJECT->value) {
+            $projName =  implode(", ", $this->project_names->toArray());
+            return $projName ?? "Unassigned";
+        }
     }
     /**
     * ==================================================
