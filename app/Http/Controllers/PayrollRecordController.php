@@ -7,6 +7,7 @@ use App\Enums\RequestStatusType;
 use App\Enums\PostingStatusType;
 use App\Enums\LoanPaymentsType;
 use App\Enums\RequestStatuses;
+use App\Enums\TermsOfPaymentType;
 use App\Helpers;
 use App\Models\Employee;
 use App\Models\PayrollRecord;
@@ -115,19 +116,6 @@ class PayrollRecordController extends Controller
         ]);
     }
 
-    public function generateV2(GeneratePayrollRequest $request)
-    {
-        $filters = $request->validated();
-        // PREFETCH PROCESS CHECK ALL NECESSARY DATA FOR ALL EMPLOYEES
-        $periodDates = Helpers::dateRange([
-            'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
-        ]);
-        $employeesForGeneration = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
-        // Employee Employment and Payroll Validity Checking
-        // Check Employee Employment, Position and Salary Grade, when has payroll record for same payroll date
-
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -146,6 +134,15 @@ class PayrollRecordController extends Controller
                 $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
                 if (sizeof($employeePayrollData["deductions"]) > 0) {
                     $empPayrollDetail->deductions()->createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
+                }
+                if ( $employeePayrollData["advance_amount"] > 0) {
+                    $empPayrollDetail->employee->other_deduction()->create([
+                        'otherdeduction_name' => "Payroll Advance",
+                        'terms_of_payment' => TermsOfPaymentType::MONTHLY->value,
+                        'installment_deduction' => floatval($employeePayrollData["advance_amount"]) * 5,
+                        'amount' => $employeePayrollData["advance_amount"],
+                        'deduction_date_start' => $attribute["payroll_date"],
+                    ]);
                 }
             }
             $payroll->refresh();
