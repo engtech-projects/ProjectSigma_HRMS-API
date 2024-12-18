@@ -72,16 +72,6 @@ class EmployeeService
                 $payrollCharging["charging_name"] = Project::find($filters["project_id"])->project_code;
                 break;
         }
-        // Getting Employee DTR and Gross Income
-        // $dtr = collect($period)->groupBy(function ($period) use ($filters) {
-        //     return $period["date"];
-        // })->map(function ($period) use ($employee, $filters) {
-        //     $date = $period[0]["date"];
-        //     $dtr = $this->employeeDTR($employee, $date);
-        //     $grossPay =  $employee->salary_gross_pay($dtr["metadata"]);
-        //     $dtr["grosspay"] = $grossPay;
-        //     return $dtr;
-        // });
         $dtr = AttendanceService::generateDtr($employee->id, $filters["cutoff_start"], $filters['cutoff_end'], $payrollCharging);
         $dtr = $dtr['dtr']->map(function ($dtrData) use ($employee) {
             $dtrData["grosspay"] = $employee->salary_gross_pay($dtrData["metadata"]);
@@ -89,6 +79,8 @@ class EmployeeService
         });
         $dtrValues = $dtr->values();
         $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrValues);
+        $advanceAmount = 0;
+        $advanceCharging = [];
         $fixedSalary = PayrollService::getPayrollTypeValue($filters["payroll_type"], $employee->current_employment->employee_salarygrade->monthly_salary_amount);
         if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
             $salary = $fixedSalary;
@@ -96,7 +88,21 @@ class EmployeeService
         } else {
             $dtrChargings = $this->aggregateDTRCharging($dtrValues, $employee->current_employment->employee_salarygrade->dailyRate);
             $salary = round($dtrChargings->values()->sum("amount"), 2);
-            $grossSalaries = collect([...$this->aggregateTotalGrossPays($dtrChargings)]);
+            $grossSalaries = [...$this->aggregateTotalGrossPays($dtrChargings)];
+            if ($filters["advance_days"] > 0) {
+                $advanceAmount = $filters["advance_days"] * $employee->current_employment->employee_salarygrade->dailyRate; // Advance Amount used for Advance Pay Deduction for next payroll
+                $advanceCharging[] = [
+                    "name" => "Salary Regular Regular",
+                    "charging_name" => $payrollCharging["charging_name"],
+                    "charge_type" => $payrollCharging["type"],
+                    "charge_id" => $payrollCharging["id"],
+                    "amount" => $advanceAmount
+                ];
+                Log::info($grossSalaries);
+                $grossSalaries['regular']['regular'] += $advanceAmount;
+                $salary = $salary + $advanceAmount;
+            }
+            $grossSalaries = collect($grossSalaries);
         }
         // Getting Employee Adjustments from Payroll Request
         $adjustments = [];
@@ -131,9 +137,11 @@ class EmployeeService
             $chargings = collect([
                 ...$dtrChargings,
                 ...$chargings,
+                ...$advanceCharging,
             ]);
         }
         $result["dtr"] = $dtr;
+        $result["advance_amount"] = $advanceAmount;
         $result["adjustments"] = $adjustments->values()->all();
         $result["gross_pays"] = $grossPays;
         $result["salary_deduction"] = $salaryDeductions;

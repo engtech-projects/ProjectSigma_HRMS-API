@@ -7,6 +7,7 @@ use App\Enums\RequestStatusType;
 use App\Enums\PostingStatusType;
 use App\Enums\LoanPaymentsType;
 use App\Enums\RequestStatuses;
+use App\Enums\TermsOfPaymentType;
 use App\Helpers;
 use App\Models\Employee;
 use App\Models\PayrollRecord;
@@ -115,19 +116,6 @@ class PayrollRecordController extends Controller
         ]);
     }
 
-    public function generateV2(GeneratePayrollRequest $request)
-    {
-        $filters = $request->validated();
-        // PREFETCH PROCESS CHECK ALL NECESSARY DATA FOR ALL EMPLOYEES
-        $periodDates = Helpers::dateRange([
-            'period_start' => $filters["cutoff_start"], 'period_end' => $filters["cutoff_end"]
-        ]);
-        $employeesForGeneration = Employee::whereIn('id', $filters['employee_ids'])->with("current_employment.employee_salarygrade")->get();
-        // Employee Employment and Payroll Validity Checking
-        // Check Employee Employment, Position and Salary Grade, when has payroll record for same payroll date
-
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -146,6 +134,15 @@ class PayrollRecordController extends Controller
                 $empPayrollDetail->charges()->createMany($employeePayrollData["chargings"]);
                 if (sizeof($employeePayrollData["deductions"]) > 0) {
                     $empPayrollDetail->deductions()->createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
+                }
+                if ( $employeePayrollData["advance_amount"] > 0) {
+                    $empPayrollDetail->employee->other_deduction()->create([
+                        'otherdeduction_name' => "Payroll Advance",
+                        'terms_of_payment' => TermsOfPaymentType::MONTHLY->value,
+                        'installment_deduction' => floatval($employeePayrollData["advance_amount"]) * 5,
+                        'amount' => $employeePayrollData["advance_amount"],
+                        'deduction_date_start' => $attribute["payroll_date"],
+                    ]);
                 }
             }
             $payroll->refresh();
@@ -262,12 +259,12 @@ class PayrollRecordController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate();
         if (!is_null($allRequests)) {
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Payrollrecord request fetched.',
-                'data' => PaginateResourceCollection::paginate(collect(PayrollRequestResource::collection($allRequests))),
+                'data' => PayrollRequestResource::collection($allRequests)->response()->getData(true),
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
@@ -295,7 +292,7 @@ class PayrollRecordController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate();
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
@@ -305,10 +302,9 @@ class PayrollRecordController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(PayrollRequestResource::collection($myRequest))),
+            'data' => PayrollRequestResource::collection($myRequest)->response()->getData(true),
         ]);
     }
-
     /**
      * Show all requests to be approved/reviewed by current user
      */
@@ -331,8 +327,7 @@ class PayrollRecordController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();
-        ;
+        ->paginate();
         if ($myApproval->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
@@ -342,7 +337,7 @@ class PayrollRecordController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Payrollrecord Request fetched.',
-            'data' => PayrollRequestResource::collection($myApproval)
+            'data' => PayrollRequestResource::collection($myApproval)->response()->getData(true),
         ]);
     }
     /**

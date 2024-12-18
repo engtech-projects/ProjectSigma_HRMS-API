@@ -25,7 +25,93 @@ class StoreEmployeePanRequestRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        // REMOVE GENERAL FIELDS
+        // $this->merge(['date_of_effictivity' => null]);
+        // $this->merge(['type' => null]);
+        // $this->merge(['comments' => null]);
+        // // REMOVE NEWHIRE EXCLUSIVE FIELDS
+        // $this->merge(['pan_job_applicant_id' => null]);
+        // $this->merge(['company_id_num' => null]);
+        // $this->merge(['hire_source' => null]);
+        // // REMOVE NEWHIRE/PROMOTION FIELDS
+        // $this->merge(['employment_status' => null]);
+        // $this->merge(['designation_position' => null]);
+        // $this->merge(['salary_grades' => null]);
+        // // REMOVE NEWHIRE/TRANSFER FIELDS
+        // $this->merge(['work_location' => null]);
+        // $this->merge(['section_department_id' => null]);
+        // $this->merge(['projects' => null]);
+        // // REMOVE NEWHIRE/TRANSFER/PROMOTION FIELDS
+        // $this->merge(['salary_type' => null]);
+        // // REMOVE TRANSFER/PROMOTION/TERMINATION FIELDS
+        // $this->merge(['employee_id' => null]);
+        // // REMOVE TERMINATION EXCLUSIVE FIELDS
+        // $this->merge(['type_of_termination' => null]);
+        // $this->merge(['reasons_for_termination' => null]);
+        // $this->merge(['eligible_for_rehire' => null]);
+        // $this->merge(['last_day_worked' => null]);
         $this->prepareApprovalValidation();
+        if ($this->type === 'New Hire') {
+            // REMOVE TERMINATION EXCLUSIVE FIELDS
+            $this->merge(['type_of_termination' => null]);
+            $this->merge(['reasons_for_termination' => null]);
+            $this->merge(['eligible_for_rehire' => null]);
+            $this->merge(['last_day_worked' => null]);
+            // REMOVE TRANSFER/PROMOTION/TERMINATION FIELDS
+            $this->merge(['employee_id' => null]);
+        }
+        if ($this->type === 'Transfer') {
+            // REMOVE NEWHIRE EXCLUSIVE FIELDS
+            $this->merge(['pan_job_applicant_id' => null]);
+            $this->merge(['company_id_num' => null]);
+            $this->merge(['hire_source' => null]);
+            // REMOVE NEWHIRE/PROMOTION FIELDS
+            $this->merge(['employment_status' => null]);
+            $this->merge(['designation_position' => null]);
+            $this->merge(['salary_grades' => null]);
+            // REMOVE TERMINATION EXCLUSIVE FIELDS
+            $this->merge(['type_of_termination' => null]);
+            $this->merge(['reasons_for_termination' => null]);
+            $this->merge(['eligible_for_rehire' => null]);
+            $this->merge(['last_day_worked' => null]);
+        }
+        if ($this->type === 'Promotion') {
+            // REMOVE NEWHIRE EXCLUSIVE FIELDS
+            $this->merge(['pan_job_applicant_id' => null]);
+            $this->merge(['company_id_num' => null]);
+            $this->merge(['hire_source' => null]);
+            // REMOVE NEWHIRE/TRANSFER FIELDS
+            $this->merge(['work_location' => null]);
+            $this->merge(['section_department_id' => null]);
+            $this->merge(['projects' => null]);
+            // REMOVE TERMINATION EXCLUSIVE FIELDS
+            $this->merge(['type_of_termination' => null]);
+            $this->merge(['reasons_for_termination' => null]);
+            $this->merge(['eligible_for_rehire' => null]);
+            $this->merge(['last_day_worked' => null]);
+        }
+        if ($this->type === 'Termination') {
+            // REMOVE NEWHIRE EXCLUSIVE FIELDS
+            $this->merge(['pan_job_applicant_id' => null]);
+            $this->merge(['company_id_num' => null]);
+            $this->merge(['hire_source' => null]);
+            // REMOVE NEWHIRE/PROMOTION FIELDS
+            $this->merge(['employment_status' => null]);
+            $this->merge(['designation_position' => null]);
+            $this->merge(['salary_grades' => null]);
+            // REMOVE NEWHIRE/TRANSFER FIELDS
+            $this->merge(['work_location' => null]);
+            $this->merge(['section_department_id' => null]);
+            $this->merge(['projects' => null]);
+            // REMOVE NEWHIRE/TRANSFER/PROMOTION FIELDS
+            $this->merge(['salary_type' => null]);
+        }
+        // if ($this->type === 'Rehire') {
+        //     $this->merge(['projects' => null]);
+        // }
+        // if ($this->type === 'Memo') {
+        //     $this->merge(['projects' => null]);
+        // }
         if ($this->work_location === WorkLocation::OFFICE->value && $this->projects === []) {
             $this->merge(['projects' => null]);
         }

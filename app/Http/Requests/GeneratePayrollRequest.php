@@ -80,6 +80,11 @@ class GeneratePayrollRequest extends FormRequest
             'payroll_date' => 'required|date_format:Y-m-d',
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',
+            'advance_days' => [
+                "sometimes",
+                "integer",
+                "min:0",
+            ],
             ...$this->storeApprovals(),
             // GENERATE SPECIFIC
             'employee_ids' => 'required|array',
@@ -106,30 +111,6 @@ class GeneratePayrollRequest extends FormRequest
                 'max:999999',
                 "min:0",
                 'decimal:0,2',
-            ],
-            'chargings' => 'nullable|array',
-            'chargings.*' => [
-                "required",
-                "array",
-            ],
-            'chargings.*.name' => [
-                "required",
-                "string",
-            ],
-            'chargings.*.amount' => [
-                "required",
-                "numeric",
-                "min:0",
-                'decimal:0,2',
-            ],
-            'chargings.*.charge_id' => [
-                "required",
-                "integer",
-            ],
-            'chargings.*.type' => [
-                "required",
-                "string",
-                new Enum(PayrollDetailsDeductionType::class)
             ],
         ];
     }

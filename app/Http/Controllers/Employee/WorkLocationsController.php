@@ -10,7 +10,9 @@ use App\Http\Resources\WorkLocationMembersProjectResource;
 use App\Http\Resources\WorkLocationMembersUnassignedResource;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\InternalWorkExperience;
 use App\Models\Project;
+use Illuminate\Support\Facades\Log;
 
 class WorkLocationsController extends Controller
 {
@@ -22,7 +24,7 @@ class WorkLocationsController extends Controller
         $validated = $request->validated();
         $data = null;
         if (isset($validated["unassigned"]) && $validated["unassigned"]) {
-            $data = Employee::isActive()->get()->where("current_assignment_names", "Unassigned");
+            $data = Employee::isActive()->get()->where("current_assignment_names", "")->values()->all();
             $data = new WorkLocationMembersUnassignedResource($data);
         } else {
             if ($validated["type"] == AssignTypes::PROJECT->value) {

@@ -303,16 +303,27 @@ class Employee extends Model
     protected function fullnameLast(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->family_name . ", " . $this->first_name . " " . $this->middle_name
-                . " " . $this->name_suffix,
+            get: fn () => implode(", ", [$this->family_name, implode(" ",array_values(array_filter([$this->first_name, $this->middle_name, $this->name_suffix])))]),
         );
     }
     protected function fullnameFirst(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->first_name . " " . $this->middle_name . " " . $this->family_name
-                . " " . $this->name_suffix,
+            get: fn () => implode(" ",
+                array_values(
+                    array_filter([
+                        $this->first_name,
+                        $this->middle_name,
+                        $this->family_name,
+                        $this->name_suffix,
+                    ])
+                )
+            ),
         );
+    }
+    public function getMiddleInitialAttribute()
+    {
+        return substr($this->middle_name, 0, 1) . ".";
     }
     public function getLeaveCreditsAttribute()
     {
@@ -338,7 +349,7 @@ class Employee extends Model
     }
     public function getCurrentAssignmentNamesAttribute()
     {
-        return $this->current_employment?->position?->name ?? "Unassigned";
+        return $this->current_employment?->assignment_name ?? "Unassigned";
     }
     public function getCurrentSalarygradeAndStepAttribute()
     {

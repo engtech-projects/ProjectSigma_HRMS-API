@@ -340,9 +340,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Version 2 Optimization
     Route::prefix("v2")->group(function () {
-        Route::prefix('payroll')->group(function () {
-            Route::post('generate-payroll', [PayrollRecordController::class, 'generateV2']);
-        });
         Route::prefix('attendance')->group(function () {
             Route::get('dtr', EmployeeDtrControllerV2::class);
         });

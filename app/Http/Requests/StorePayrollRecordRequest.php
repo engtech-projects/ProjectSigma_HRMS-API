@@ -68,6 +68,11 @@ class StorePayrollRecordRequest extends FormRequest
             'payroll_date' => 'required|date_format:Y-m-d',
             'cutoff_start' => 'required|date_format:Y-m-d',
             'cutoff_end' => 'required|date_format:Y-m-d',
+            'advance_days' => [
+                "sometimes",
+                "integer",
+                "min:0",
+            ],
             ...$this->storeApprovals(),
             ...$this->payrollDetails(),
         ];
@@ -279,6 +284,7 @@ class StorePayrollRecordRequest extends FormRequest
                 "string",
                 new Enum(PayrollDetailsDeductionType::class)
             ],
+            'payroll_details.*.advance_amount' => 'present|nullable|numeric|min:0|decimal:0,2',
             'payroll_details.*.adjustments' => 'present|nullable|array',
             'payroll_details.*.adjustments.*.name' => 'required|string',
             'payroll_details.*.adjustments.*.amount' => [
