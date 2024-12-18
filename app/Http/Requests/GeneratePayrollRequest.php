@@ -83,7 +83,7 @@ class GeneratePayrollRequest extends FormRequest
             'advance_days' => [
                 "sometimes",
                 "integer",
-                "min:1",
+                "min:0",
             ],
             ...$this->storeApprovals(),
             // GENERATE SPECIFIC
