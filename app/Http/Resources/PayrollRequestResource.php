@@ -21,9 +21,12 @@ class PayrollRequestResource extends JsonResource
             "charging_name" => $this->charging_name,
             "cutoff_start_human" => $this->cutoff_start_human,
             "cutoff_end_human" => $this->cutoff_end_human,
+            "advance_days" => $this->advance_days,
             "payroll_details" => PayrollDetailsResource::collection($this->payroll_details)->sortBy("employee.fullname_last")->values()->all(),
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "next_approval" => $this->getNextPendingApproval(),
+            "created_by" => $this->created_by_user_name,
+            "created_at_human" => $this->created_at_human,
         ];
     }
 }

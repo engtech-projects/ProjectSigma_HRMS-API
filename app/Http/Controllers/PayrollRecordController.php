@@ -135,15 +135,6 @@ class PayrollRecordController extends Controller
                 if (sizeof($employeePayrollData["deductions"]) > 0) {
                     $empPayrollDetail->deductions()->createMany($this->setPayrollDetails($employeePayrollData["deductions"], $empPayrollDetail));
                 }
-                if ( $employeePayrollData["advance_amount"] > 0) {
-                    $empPayrollDetail->employee->other_deduction()->create([
-                        'otherdeduction_name' => "Payroll Advance",
-                        'terms_of_payment' => TermsOfPaymentType::MONTHLY->value,
-                        'installment_deduction' => floatval($employeePayrollData["advance_amount"]) * 5,
-                        'amount' => $employeePayrollData["advance_amount"],
-                        'deduction_date_start' => $attribute["payroll_date"],
-                    ]);
-                }
             }
             $payroll->refresh();
             if ($payroll->getNextPendingApproval()) {

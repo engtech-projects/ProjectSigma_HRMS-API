@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PostingStatusType;
 use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatusType;
+use App\Enums\TermsOfPaymentType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -33,6 +34,7 @@ class PayrollRecord extends Model
         'payroll_date',
         'cutoff_start',
         'cutoff_end',
+        'advance_days',
         'request_status',
         'approvals',
         'created_by',
@@ -124,6 +126,18 @@ class PayrollRecord extends Model
         foreach ($this->payroll_details as $employeePayroll) {
             foreach ($employeePayroll->deductions as $deductions) {
                 $deductions->deduction()->update(["posting_status" => PostingStatusType::POSTED->value]);
+            }
+            if ($this->advance_days > 0) {
+                $employee = $employeePayroll->employee;
+                $employeeDailyRate = $employee->current_employment->employee_salarygrade->dailyRate;
+                $advanceAmount =  $employeeDailyRate * $this->advance_days;
+                $employeePayroll->employee->other_deduction()->create([
+                    'otherdeduction_name' => "Payroll Advance",
+                    'terms_of_payment' => TermsOfPaymentType::MONTHLY->value,
+                    'installment_deduction' => $advanceAmount * 10,
+                    'amount' => $advanceAmount ,
+                    'deduction_date_start' => $this->payroll_date,
+                ]);
             }
         }
         $this->refresh();
