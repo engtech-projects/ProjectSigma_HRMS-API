@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EmployeeLoanType;
+use App\Enums\Reports\OtherDeductionReports;
 use App\Http\Requests\DefaultPaymentRequest;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
 use App\Http\Requests\HdmfGroupSummaryLoansRequest;
@@ -12,11 +12,16 @@ use App\Http\Requests\PagibigRemittanceSummaryRequest;
 use App\Http\Requests\PhilhealthEmployeeRemittanceRequest;
 use App\Http\Requests\PhilhealthGroupRemittanceRequest;
 use App\Http\Requests\PhilhealthRemittanceSummaryRequest;
+use App\Http\Requests\Reports\OtherDeductionPaymentsReportRequest;
 use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssGroupSummaryLoansRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
+use App\Http\Resources\Reports\OtherDeductionDefaultEmployee;
+use App\Http\Resources\Reports\OtherDeductionDefaultSummary;
+use App\Http\Resources\Reports\OtherDeductionMP2Employee;
+use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
 
@@ -82,14 +87,6 @@ class ReportController extends Controller
     {
         return new JsonResponse(ReportService::hdmfGroupSummaryLoans($request->validated()));
     }
-    public function getDefaultLoanPayments(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
-    }
-    public function getDefaultLoanPaymentsGroup(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
-    }
     public function hdmfCalamityGroupSummaryLoans(HdmfGroupSummaryLoansRequest $request)
     {
         return new JsonResponse(ReportService::hdmfCalamityGroupSummaryLoans($request->validated()));
@@ -98,8 +95,76 @@ class ReportController extends Controller
     {
         return new JsonResponse(ReportService::hdmfCalamityEmployeeLoans($request->validated()));
     }
-    public function getLoanCategoryList()
+    // LOAN REPORTS
+    public function loanCategoryList()
     {
         return new JsonResponse(ReportService::getLoanCategoryList());
     }
+    public function loanDefaultEmployee(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
+    }
+    public function loanDefaultGroup(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
+    }
+    public function loanSssEmployee(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
+    }
+    public function loanSssGroup(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
+    }
+    public function loanCoopEmployee(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
+    }
+    public function loanCoopGroup(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
+    }
+    public function loanHdmfEmployee(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
+    }
+    public function loanHdmfGroup(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
+    }
+    public function loanHdmfCalamityEmployee(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
+    }
+    public function loanHdmfCalamityGroup(DefaultPaymentRequest $request)
+    {
+        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
+    }
+    // OTHER DEDUCTION REPORTS
+    public function otherDeductionsCategoryList()
+    {
+        return new JsonResponse(ReportService::otherDeductionsCategoryList());
+    }
+    public function otherDeductionsReports(OtherDeductionPaymentsReportRequest $request)
+    {
+        $validated = $request->validated();
+        $reportData = null;
+        if ($validated['report_type'] == 'employee') {
+            $reportData = ReportService::getOtherDeductionEmployeeReport($validated);
+            if ($validated["loan_type"] == OtherDeductionReports::MP2->value) {
+                $reportData = OtherDeductionMP2Employee::collection($reportData);
+            } else {
+                $reportData = OtherDeductionDefaultEmployee::collection($reportData);
+            }
+        } elseif ($validated['report_type'] == 'summary-with-group') {
+            $reportData = ReportService::getOtherDeductionGroupReport($validated);
+            if ($validated["loan_type"] == OtherDeductionReports::MP2->value) {
+                $reportData = OtherDeductionMP2Summary::collection($reportData);
+            } else {
+                $reportData = OtherDeductionDefaultSummary::collection($reportData);
+            }
+        }
+        return new JsonResponse($reportData);
+    }
+
 }
