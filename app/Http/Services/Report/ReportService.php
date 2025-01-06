@@ -17,9 +17,11 @@ use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\SssRemittanceSummaryResource;
+use App\Http\Resources\EmployeeTenureshipResource;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
+use App\Models\Employee;
 
 class ReportService
 {
@@ -786,6 +788,16 @@ class ReportService
         })
         ->values()
         ->all();
+    }
+    public static function employeeTenureshipList()
+    {
+        $data = Employee::with("current_employment")->get();
+        return [
+            'success' => true,
+            'message' => 'Employee Tenureship List fetched successfully.',
+            'data' => EmployeeTenureshipResource::collection($data),
+            // 'data' => $data,
+        ];
     }
 }
 

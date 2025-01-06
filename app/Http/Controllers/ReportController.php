@@ -166,5 +166,8 @@ class ReportController extends Controller
         }
         return new JsonResponse($reportData);
     }
-
+    public function employeeTenureshipList()
+    {
+        return new JsonResponse(ReportService::employeeTenureshipList());
+    }
 }
