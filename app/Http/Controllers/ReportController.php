@@ -155,38 +155,6 @@ class ReportController extends Controller
             "data" => $reportData
         ]);
     }
-    public function loanSssEmployee(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
-    }
-    public function loanSssGroup(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
-    }
-    public function loanCoopEmployee(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
-    }
-    public function loanCoopGroup(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
-    }
-    public function loanHdmfEmployee(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
-    }
-    public function loanHdmfGroup(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
-    }
-    public function loanHdmfCalamityEmployee(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
-    }
-    public function loanHdmfCalamityGroup(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
-    }
     /*
     * OTHER DEDUCTION REPORTS
     */
