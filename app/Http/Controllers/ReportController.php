@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Reports\LoanReports;
 use App\Enums\Reports\OtherDeductionReports;
 use App\Http\Requests\DefaultPaymentRequest;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
@@ -12,12 +13,15 @@ use App\Http\Requests\PagibigRemittanceSummaryRequest;
 use App\Http\Requests\PhilhealthEmployeeRemittanceRequest;
 use App\Http\Requests\PhilhealthGroupRemittanceRequest;
 use App\Http\Requests\PhilhealthRemittanceSummaryRequest;
+use App\Http\Requests\Reports\LoanPaymentsReportRequest;
 use App\Http\Requests\Reports\OtherDeductionPaymentsReportRequest;
 use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssGroupSummaryLoansRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
+use App\Http\Resources\Reports\LoanDefaultEmployee;
+use App\Http\Resources\Reports\LoanDefaultSummary;
 use App\Http\Resources\Reports\OtherDeductionDefaultEmployee;
 use App\Http\Resources\Reports\OtherDeductionDefaultSummary;
 use App\Http\Resources\Reports\OtherDeductionMP2Employee;
@@ -95,18 +99,61 @@ class ReportController extends Controller
     {
         return new JsonResponse(ReportService::hdmfCalamityEmployeeLoans($request->validated()));
     }
-    // LOAN REPORTS
+    /*
+    * LOAN REPORTS
+    */
     public function loanCategoryList()
     {
         return new JsonResponse(ReportService::getLoanCategoryList());
     }
-    public function loanDefaultEmployee(DefaultPaymentRequest $request)
+    public function loanReportsGenerate(LoanPaymentsReportRequest $request)
     {
-        return new JsonResponse(ReportService::getDefaultLoanPayments($request->validated()));
-    }
-    public function loanDefaultGroup(DefaultPaymentRequest $request)
-    {
-        return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
+        $validated = $request->validated();
+        $reportData = null;
+        if ($validated['report_type'] == 'employee') {
+            $reportData = ReportService::getOtherDeductionEmployeeReport($validated);
+            switch ($validated["loan_type"]) {
+                case LoanReports::HDMF_MPL->value:
+                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    break;
+                case LoanReports::COOP->value:
+                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    break;
+                case LoanReports::SSS->value:
+                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    break;
+                case LoanReports::CALAMITY_LOAN->value:
+                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    break;
+                default:
+                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    break;
+            }
+        } elseif ($validated['report_type'] == 'summary-with-group') {
+            $reportData = ReportService::getOtherDeductionGroupReport($validated);
+            switch ($validated["loan_type"]) {
+                case LoanReports::HDMF_MPL->value:
+                    $reportData = LoanDefaultSummary::collection($reportData);
+                    break;
+                case LoanReports::COOP->value:
+                    $reportData = LoanDefaultSummary::collection($reportData);
+                    break;
+                case LoanReports::SSS->value:
+                    $reportData = LoanDefaultSummary::collection($reportData);
+                    break;
+                case LoanReports::CALAMITY_LOAN->value:
+                    $reportData = LoanDefaultSummary::collection($reportData);
+                    break;
+                default:
+                    $reportData = LoanDefaultSummary::collection($reportData);
+                    break;
+            }
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => $reportData
+        ]);
     }
     public function loanSssEmployee(DefaultPaymentRequest $request)
     {
@@ -140,7 +187,9 @@ class ReportController extends Controller
     {
         return new JsonResponse(ReportService::getDefaultLoanPaymentsGroup($request->validated()));
     }
-    // OTHER DEDUCTION REPORTS
+    /*
+    * OTHER DEDUCTION REPORTS
+    */
     public function otherDeductionsCategoryList()
     {
         return new JsonResponse(ReportService::otherDeductionsCategoryList());
@@ -151,20 +200,30 @@ class ReportController extends Controller
         $reportData = null;
         if ($validated['report_type'] == 'employee') {
             $reportData = ReportService::getOtherDeductionEmployeeReport($validated);
-            if ($validated["loan_type"] == OtherDeductionReports::MP2->value) {
-                $reportData = OtherDeductionMP2Employee::collection($reportData);
-            } else {
-                $reportData = OtherDeductionDefaultEmployee::collection($reportData);
+            switch ($validated["loan_type"]) {
+                case OtherDeductionReports::MP2->value:
+                    $reportData = OtherDeductionMP2Employee::collection($reportData);
+                    break;
+                default:
+                    $reportData = OtherDeductionDefaultEmployee::collection($reportData);
+                    break;
             }
         } elseif ($validated['report_type'] == 'summary-with-group') {
             $reportData = ReportService::getOtherDeductionGroupReport($validated);
-            if ($validated["loan_type"] == OtherDeductionReports::MP2->value) {
-                $reportData = OtherDeductionMP2Summary::collection($reportData);
-            } else {
-                $reportData = OtherDeductionDefaultSummary::collection($reportData);
+            switch ($validated["loan_type"]) {
+                case OtherDeductionReports::MP2->value:
+                    $reportData = OtherDeductionMP2Summary::collection($reportData);
+                    break;
+                default:
+                    $reportData = OtherDeductionDefaultSummary::collection($reportData);
+                    break;
             }
         }
-        return new JsonResponse($reportData);
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => $reportData
+        ]);
     }
 
 }

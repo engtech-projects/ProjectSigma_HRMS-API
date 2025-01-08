@@ -316,6 +316,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('hdmf-calamity-employee-loans', [ReportController::class, 'hdmfCalamityEmployeeLoans']);
         Route::prefix("loans")->group(function () {
             Route::get('category-list', [ReportController::class, 'loanCategoryList']);
+            Route::get("get", [ReportController::class, "loanReportsGenerate"]);
             Route::get("default-employee", [ReportController::class, "loanDefaultEmployee"]);
             Route::get("default-group", [ReportController::class, "loanDefaultGroup"]);
             Route::get("hdmf-calamity-employee", [ReportController::class, "loanHdmfCalamityEmployee"]);
