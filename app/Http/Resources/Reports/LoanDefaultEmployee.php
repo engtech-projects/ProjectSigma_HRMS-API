@@ -15,13 +15,12 @@ class LoanDefaultEmployee extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            ...parent::toArray($request),
-            "first_name" => $this['employee']['fullname_last'],
-            "middle_name" => $this['employee']['fullname_last'],
-            "last_name" => $this['employee']['fullname_last'],
-            "suffix" => $this['employee']['fullname_last'],
-            "fullname" => $this['employee']['fullname_last'],
-            "employee_name" => $this['employee']['fullname_last'],
+            // ...parent::toArray($request),
+            "first_name" => $this['first_name'],
+            "middle_name" => $this['middle_name'],
+            "last_name" => $this['last_name'],
+            "suffix" => $this['suffix'],
+            "fullname" => $this['fullname_last'],
             "loan_type" => $this["loan_type"],
             "total_payments" => $this["total_payments"],
         ];

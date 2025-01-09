@@ -122,6 +122,7 @@ class ReportController extends Controller
             $reportData = ReportService::getLoanEmployeeReport($validated);
             switch ($validated["loan_type"]) {
                 case LoanReports::HDMF_MPL->value:
+                case LoanReports::HDMF_MPL_LOAN->value:
                     $reportData = LoanMplEmployee::collection($reportData);
                     break;
                 case LoanReports::COOP->value:
@@ -130,6 +131,7 @@ class ReportController extends Controller
                 case LoanReports::SSS->value:
                     $reportData = LoanSssEmployee::collection($reportData);
                     break;
+                case LoanReports::HDMF_CALAMITY_LOAN->value:
                 case LoanReports::CALAMITY_LOAN->value:
                     $reportData = LoanCalamityEmployee::collection($reportData);
                     break;
@@ -138,22 +140,24 @@ class ReportController extends Controller
                     break;
             }
         } elseif ($validated['report_type'] == 'summary-with-group') {
-            $reportData = ReportService::getLoanGroupReport($validated);
+            $reportDataGroup = ReportService::getLoanGroupReport($validated);
             switch ($validated["loan_type"]) {
                 case LoanReports::HDMF_MPL->value:
-                    $reportData = LoanMplSummary::collection($reportData);
+                case LoanReports::HDMF_MPL_LOAN->value:
+                    $reportData = LoanMplSummary::collection($reportDataGroup);
                     break;
                 case LoanReports::COOP->value:
-                    $reportData = LoanCoopSummary::collection($reportData);
+                    $reportData = LoanCoopSummary::collection($reportDataGroup);
                     break;
                 case LoanReports::SSS->value:
-                    $reportData = LoanSssSummary::collection($reportData);
+                    $reportData = LoanSssSummary::collection($reportDataGroup);
                     break;
+                case LoanReports::HDMF_CALAMITY_LOAN->value:
                 case LoanReports::CALAMITY_LOAN->value:
-                    $reportData = LoanCalamitySummary::collection($reportData);
+                    $reportData = LoanCalamitySummary::collection($reportDataGroup);
                     break;
                 default:
-                    $reportData = LoanDefaultSummary::collection($reportData);
+                    $reportData = LoanDefaultSummary::collection($reportDataGroup);
                     break;
             }
         }

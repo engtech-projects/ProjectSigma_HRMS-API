@@ -20,6 +20,7 @@ use App\Http\Resources\SssRemittanceSummaryResource;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
+use Illuminate\Support\Facades\Log;
 
 class ReportService
 {
@@ -746,17 +747,23 @@ class ReportService
         ->sortBy('employee.fullname_last', SORT_NATURAL)
         ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
+            $totalLoanPayments = $employeeData->sum(function($detail) use($validatedData) {
+                return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+            });
             return [
                 ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
                 "first_name" => $employeeData->first()->employee->first_name,
                 "middle_name" => $employeeData->first()->employee->middle_name,
                 "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "fullname" => $employeeData->first()->employee->fullname_first,
+                "suffix" => $employeeData->first()->employee->suffix_name,
+                "fullname" => $employeeData->first()->employee->fullname_last,
                 "loan_type" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                "total_payments" => $totalLoanPayments,
+                "sss_no" => $employeeData->first()->employee->company_employments->sss_number,
+                "loan_account_no" => "",
+                "pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                "application_no" => "",
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
             ];
         })
         ->values()
@@ -764,7 +771,7 @@ class ReportService
     }
     public static function getLoanGroupReport($validatedData)
     {
-        return PayrollDetail::with(["payroll_record", "employee.company_employments"])
+        $data = PayrollDetail::with(["payroll_record", "employee.company_employments"])
         ->with([
             'loanPayments' => function($query) use($validatedData) {
                 return $query->where("name", $validatedData["loan_type"]);
@@ -780,13 +787,13 @@ class ReportService
         ->orderBy("created_at", "DESC")
         ->get()
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        // ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
             return [
-                ...$employeeData,
-                "loan_type" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])?->name,
+                ...$employeeData->toArray(),
+                "loan_type" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                // "total_payments" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                "employee_sss_id" => $employeeData->employee->company_employments->sss_number,
+                "total_payments" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
                 "payroll_record" => [
                     ...$employeeData->payroll_record->toArray(),
                     "charging_name" => $employeeData->payroll_record->charging_name,
@@ -829,17 +836,20 @@ class ReportService
         ->sortBy('employee.fullname_last', SORT_NATURAL)
         ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
+            $totalLoanPayments = $employeeData->sum(function($detail) use($validatedData) {
+                return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+            });
             return [
                 ...$employeeData->first()->toArray(),
                 "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
                 "first_name" => $employeeData->first()->employee->first_name,
                 "middle_name" => $employeeData->first()->employee->middle_name,
                 "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "fullname" => $employeeData->first()->employee->fullname_first,
+                "suffix" => $employeeData->first()->employee->name_suffix,
+                "fullname" => $employeeData->first()->employee->fullname_last,
                 "loan_type" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                "total_payments" => $totalLoanPayments,
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
             ];
         })
         ->values()
@@ -847,7 +857,7 @@ class ReportService
     }
     public static function getOtherDeductionGroupReport($validatedData)
     {
-        return PayrollDetail::with(["payroll_record", "employee.company_employments"])
+        $data = PayrollDetail::with(["payroll_record", "employee.company_employments"])
         ->with([
             'otherDeductionPayments' => function($query) use($validatedData) {
                 return $query->where("name", $validatedData["loan_type"]);
@@ -863,21 +873,21 @@ class ReportService
         ->orderBy("created_at", "DESC")
         ->get()
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        // ->groupBy("employee_id")
-        // ->map(function ($employeeData) use ($validatedData) {
-        //     return [
-        //         ...$employeeData->first()->toArray(),
-        //         "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-        //         "first_name" => $employeeData->first()->employee->first_name,
-        //         "middle_name" => $employeeData->first()->employee->middle_name,
-        //         "last_name" => $employeeData->first()->employee->family_name,
-        //         "suffix_name" => $employeeData->first()->employee->suffix_name,
-        //         "fullname" => $employeeData->first()->employee->fullname_first,
-        //         "loan_type" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])?->first()?->name,
-        //         "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-        //         "total_payments" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-        //     ];
-        // })
+        ->groupBy("employee_id")
+        ->map(function ($employeeData) use ($validatedData) {
+            return [
+                ...$employeeData->first()->toArray(),
+                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                "first_name" => $employeeData->first()->employee->first_name,
+                "middle_name" => $employeeData->first()->employee->middle_name,
+                "last_name" => $employeeData->first()->employee->family_name,
+                "suffix_name" => $employeeData->first()->employee->suffix_name,
+                "fullname" => $employeeData->first()->employee->fullname_first,
+                "loan_type" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])?->first()?->name,
+                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
+                "total_payments" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+            ];
+        })
         ->values()
         ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
