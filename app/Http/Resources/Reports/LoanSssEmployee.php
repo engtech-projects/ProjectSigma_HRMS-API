@@ -15,7 +15,7 @@ class LoanSssEmployee extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "fullname" => $this['fullname_last'],
+            "fullname" => $this['fullname'],
             "total_payments" => $this["total_payments"],
             "sss_no" => $this['sss_no'],
             "loan_account_no" => "",

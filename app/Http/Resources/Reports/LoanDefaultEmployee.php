@@ -20,7 +20,7 @@ class LoanDefaultEmployee extends JsonResource
             "middle_name" => $this['middle_name'],
             "last_name" => $this['last_name'],
             "suffix" => $this['suffix'],
-            "fullname" => $this['fullname_last'],
+            "fullname" => $this['fullname'],
             "loan_type" => $this["loan_type"],
             "total_payments" => $this["total_payments"],
         ];

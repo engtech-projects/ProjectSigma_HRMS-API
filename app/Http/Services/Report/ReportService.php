@@ -837,7 +837,7 @@ class ReportService
         ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
             $totalLoanPayments = $employeeData->sum(function($detail) use($validatedData) {
-                return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                return $detail->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum('amount');
             });
             return [
                 ...$employeeData->first()->toArray(),
