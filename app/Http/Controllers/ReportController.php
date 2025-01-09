@@ -20,8 +20,16 @@ use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssGroupSummaryLoansRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
+use App\Http\Resources\Reports\LoanCalamityEmployee;
+use App\Http\Resources\Reports\LoanCalamitySummary;
+use App\Http\Resources\Reports\LoanCoopEmployee;
+use App\Http\Resources\Reports\LoanCoopSummary;
 use App\Http\Resources\Reports\LoanDefaultEmployee;
 use App\Http\Resources\Reports\LoanDefaultSummary;
+use App\Http\Resources\Reports\LoanMplEmployee;
+use App\Http\Resources\Reports\LoanMplSummary;
+use App\Http\Resources\Reports\LoanSssEmployee;
+use App\Http\Resources\Reports\LoanSssSummary;
 use App\Http\Resources\Reports\OtherDeductionDefaultEmployee;
 use App\Http\Resources\Reports\OtherDeductionDefaultSummary;
 use App\Http\Resources\Reports\OtherDeductionMP2Employee;
@@ -111,38 +119,38 @@ class ReportController extends Controller
         $validated = $request->validated();
         $reportData = null;
         if ($validated['report_type'] == 'employee') {
-            $reportData = ReportService::getOtherDeductionEmployeeReport($validated);
+            $reportData = ReportService::getLoanEmployeeReport($validated);
             switch ($validated["loan_type"]) {
                 case LoanReports::HDMF_MPL->value:
-                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    $reportData = LoanMplEmployee::collection($reportData);
                     break;
                 case LoanReports::COOP->value:
-                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    $reportData = LoanCoopEmployee::collection($reportData);
                     break;
                 case LoanReports::SSS->value:
-                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    $reportData = LoanSssEmployee::collection($reportData);
                     break;
                 case LoanReports::CALAMITY_LOAN->value:
-                    $reportData = LoanDefaultEmployee::collection($reportData);
+                    $reportData = LoanCalamityEmployee::collection($reportData);
                     break;
                 default:
                     $reportData = LoanDefaultEmployee::collection($reportData);
                     break;
             }
         } elseif ($validated['report_type'] == 'summary-with-group') {
-            $reportData = ReportService::getOtherDeductionGroupReport($validated);
+            $reportData = ReportService::getLoanGroupReport($validated);
             switch ($validated["loan_type"]) {
                 case LoanReports::HDMF_MPL->value:
-                    $reportData = LoanDefaultSummary::collection($reportData);
+                    $reportData = LoanMplSummary::collection($reportData);
                     break;
                 case LoanReports::COOP->value:
-                    $reportData = LoanDefaultSummary::collection($reportData);
+                    $reportData = LoanCoopSummary::collection($reportData);
                     break;
                 case LoanReports::SSS->value:
-                    $reportData = LoanDefaultSummary::collection($reportData);
+                    $reportData = LoanSssSummary::collection($reportData);
                     break;
                 case LoanReports::CALAMITY_LOAN->value:
-                    $reportData = LoanDefaultSummary::collection($reportData);
+                    $reportData = LoanCalamitySummary::collection($reportData);
                     break;
                 default:
                     $reportData = LoanDefaultSummary::collection($reportData);
