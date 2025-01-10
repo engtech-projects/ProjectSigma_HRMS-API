@@ -788,11 +788,12 @@ class ReportService
         ->get()
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
         ->map(function ($employeeData) use ($validatedData) {
+
             return [
                 ...$employeeData->toArray(),
                 "loan_type" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "employee_sss_id" => $employeeData->employee->company_employments->sss_number,
+                "sss_no" => $employeeData->employee->company_employments->sss_number,
                 "total_payments" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
                 "payroll_record" => [
                     ...$employeeData->payroll_record->toArray(),
