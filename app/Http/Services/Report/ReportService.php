@@ -788,13 +788,12 @@ class ReportService
         ->get()
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
         ->map(function ($employeeData) use ($validatedData) {
-
             return [
                 ...$employeeData->toArray(),
                 "loan_type" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                "total_payments" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
                 "sss_no" => $employeeData->employee->company_employments->sss_number,
-                "total_payments" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
                 "payroll_record" => [
                     ...$employeeData->payroll_record->toArray(),
                     "charging_name" => $employeeData->payroll_record->charging_name,
@@ -874,19 +873,16 @@ class ReportService
         ->orderBy("created_at", "DESC")
         ->get()
         ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
             return [
-                ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "fullname" => $employeeData->first()->employee->fullname_first,
-                "loan_type" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])?->first()?->name,
+                ...$employeeData->toArray(),
+                "loan_type" => $employeeData->otherDeductionPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                "total_payments" => $employeeData->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                "payroll_record" => [
+                    ...$employeeData->payroll_record->toArray(),
+                    "charging_name" => $employeeData->payroll_record->charging_name,
+                ],
             ];
         })
         ->values()
