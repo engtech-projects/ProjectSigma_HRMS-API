@@ -84,7 +84,8 @@ class TravelOrder extends Model
 
     public function employees(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, TravelOrderMembers::class);
+        return $this->belongsToMany(Employee::class, TravelOrderMembers::class)
+        ->whereNull("travel_order_members.deleted_at");
     }
 
     public function department(): HasOne
