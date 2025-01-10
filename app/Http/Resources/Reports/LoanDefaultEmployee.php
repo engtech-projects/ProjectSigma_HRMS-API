@@ -5,7 +5,7 @@ namespace App\Http\Resources\Reports;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OtherDeductionDefaultEmployee extends JsonResource
+class LoanDefaultEmployee extends JsonResource
 {
     /**
      * Transform the resource into an array.

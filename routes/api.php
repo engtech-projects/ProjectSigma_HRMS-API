@@ -306,26 +306,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('pagibig-group-remittance', [ReportController::class, 'pagibigGroupRemittanceGenerate']);
         Route::get('pagibig-remittance-summary', [ReportController::class, 'pagibigRemittanceSummary']);
         Route::get('pagibig-employee-remittance', [ReportController::class, 'pagibigEmployeeRemittanceGenerate']);
+
         Route::get('sss-employee-loans', [ReportController::class, 'sssEmployeeLoans']);
-        Route::get('hdmf-employee-loans', [ReportController::class, 'hdmfEmployeeLoans']);
-        Route::get('coop-employee-loans', [ReportController::class, 'coopEmployeeLoans']);
         Route::get('sss-group-summary-loans', [ReportController::class, 'sssGroupSummaryLoans']);
+        Route::get('hdmf-employee-loans', [ReportController::class, 'hdmfEmployeeLoans']);
         Route::get('hdmf-group-summary-loans', [ReportController::class, 'hdmfGroupSummaryLoans']);
+        Route::get('coop-employee-loans', [ReportController::class, 'coopEmployeeLoans']);
         Route::get('coop-group-summary-loans', [ReportController::class, 'coopGroupSummaryLoans']);
         Route::get('hdmf-calamity-group-summary-loans', [ReportController::class, 'hdmfCalamityGroupSummaryLoans']);
         Route::get('hdmf-calamity-employee-loans', [ReportController::class, 'hdmfCalamityEmployeeLoans']);
         Route::prefix("loans")->group(function () {
             Route::get('category-list', [ReportController::class, 'loanCategoryList']);
-            Route::get("default-employee", [ReportController::class, "loanDefaultEmployee"]);
-            Route::get("default-group", [ReportController::class, "loanDefaultGroup"]);
-            Route::get("hdmf-calamity-employee", [ReportController::class, "loanHdmfCalamityEmployee"]);
-            Route::get("hdmf-calamity-group", [ReportController::class, "loanHdmfCalamityGroup"]);
-            Route::get("hdmf-employee", [ReportController::class, "loanHdmfEmployee"]);
-            Route::get("hdmf-group", [ReportController::class, "loanHdmfGroup"]);
-            Route::get("sss-employee", [ReportController::class, "loanSssEmployee"]);
-            Route::get("sss-group", [ReportController::class, "loanSssGroup"]);
-            Route::get("coop-employee", [ReportController::class, "loanCoopEmployee"]);
-            Route::get("coop-group", [ReportController::class, "loanCoopGroup"]);
+            Route::get("get", [ReportController::class, "loanReportsGenerate"]);
         });
         Route::prefix("other-deductions")->group(function () {
             Route::get('category-list', [ReportController::class, 'otherDeductionsCategoryList']);
