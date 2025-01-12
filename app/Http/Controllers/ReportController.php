@@ -24,6 +24,7 @@ use App\Http\Resources\Reports\OtherDeductionMP2Employee;
 use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
@@ -166,8 +167,12 @@ class ReportController extends Controller
         }
         return new JsonResponse($reportData);
     }
-    public function employeeTenureshipList()
+    public function employeeTenureshipList(Request $request)
     {
-        return new JsonResponse(ReportService::employeeTenureshipList());
+        $validate = $request->validate([
+            'project_id' => 'nullable|integer',
+            'department_id' => 'nullable|integer',
+        ]);
+        return new JsonResponse(ReportService::employeeTenureshipList($validate));
     }
 }

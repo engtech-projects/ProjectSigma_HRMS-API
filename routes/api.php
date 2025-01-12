@@ -297,7 +297,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // REPORTS
     Route::prefix('reports')->group(function () {
-        Route::get('employee-tenureship-list', [ReportController::class, 'employeeTenureshipList']);
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
@@ -419,3 +418,4 @@ if (config()->get('app.artisan') == 'true') {
         });
     });
 }
+Route::get('employee-tenureship-list', [ReportController::class, 'employeeTenureshipList']);

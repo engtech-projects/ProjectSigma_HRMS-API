@@ -113,7 +113,7 @@ class Employee extends Model
     public function current_employment(): HasOne
     {
         return $this->hasOne(InternalWorkExperience::class, 'employee_id')->where("status", "=", "current")
-            ->with("employee_salarygrade.salary_grade_level", "department");
+            ->with("employee_salarygrade.salary_grade_level", "department", "projects");
     }
     public function employee_internal(): HasMany
     {

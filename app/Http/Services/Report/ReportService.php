@@ -789,15 +789,29 @@ class ReportService
         ->values()
         ->all();
     }
-    public static function employeeTenureshipList()
+    public static function employeeTenureshipList($validate)
     {
-        $data = Employee::with("current_employment")->get();
-        return [
-            'success' => true,
-            'message' => 'Employee Tenureship List fetched successfully.',
-            'data' => EmployeeTenureshipResource::collection($data),
-            // 'data' => $data,
-        ];
+        if ($validate["department_id"] || $validate["project_id"]) {
+            $givenId = $validate["department_id"] ? $validate["department_id"] : $validate["project_id"];
+            $workLocation = $validate["department_id"] ? "Office" : "Project Code";
+            $data = Employee::isActive()->with("current_employment")->get();
+            $map = $data->map(function ($thisData) use ($givenId) {
+                $valid = false;
+                if ($thisData->current_employment->work_location === $workLocation) {
+                    $collect = $thisData->current_employment->department ? $thisData->current_employment->department : $thisData->current_employment->projects;
+                    $valid = collect($collect)->contains('id',$givenId);
+                }
+                if($valid){
+                    return $thisData;
+                }
+                return null;
+            })->filter();
+            return [
+                'success' => true,
+                'message' => 'Employee Tenureship List fetched successfully.',
+                'data' => EmployeeTenureshipResource::collection($map),
+            ];
+        }
+
     }
 }
-
