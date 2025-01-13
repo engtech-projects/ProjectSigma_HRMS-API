@@ -13,7 +13,7 @@ class EventsController extends Controller
      */
     public function index()
     {
-        $main = Events::paginate(15);
+        $main = Events::all();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
