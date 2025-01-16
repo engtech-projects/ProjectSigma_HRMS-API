@@ -17,6 +17,7 @@ use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssGroupSummaryLoansRequest;
+use App\Http\Requests\EmployeeTenureshipRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
 use App\Http\Resources\Reports\OtherDeductionDefaultEmployee;
 use App\Http\Resources\Reports\OtherDeductionDefaultSummary;
@@ -167,12 +168,9 @@ class ReportController extends Controller
         }
         return new JsonResponse($reportData);
     }
-    public function employeeTenureshipList(Request $request)
+    public function employeeTenureshipList(EmployeeTenureshipRequest $request)
     {
-        $validate = $request->validate([
-            'project_id' => 'nullable|integer',
-            'department_id' => 'nullable|integer',
-        ]);
+        $validate = $request->validated();
         return new JsonResponse(ReportService::employeeTenureshipList($validate));
     }
 }

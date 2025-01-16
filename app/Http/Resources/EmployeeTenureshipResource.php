@@ -21,13 +21,11 @@ class EmployeeTenureshipResource extends JsonResource
         $months = $currentDate->diffInMonths($givenDate) % 12;
 
         return [
-            // ...parent::toArray($request),
             "employee_name" => $this['fullname_last'],
             "date_hired" => $this->company_employments?->date_hired,
             "designation" => $this->current_position_name,
             "ternure_ecdc" => $this->company_employments?->date_hired ? $years." Years ". $months." Months" : 0,
             "work_location" => $this->current_employment->work_location,
-            // "project" => $this->current_employment->projects,
         ];
     }
 }

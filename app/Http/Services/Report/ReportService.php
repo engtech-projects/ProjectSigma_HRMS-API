@@ -792,24 +792,29 @@ class ReportService
     public static function employeeTenureshipList($validate)
     {
         $data = Employee::isActive()->with("current_employment")->get();
-        if (isset($array['department_id']) || isset($array['project_id'])) {
-            $givenId = $validate["department_id"] ? $validate["department_id"] : $validate["project_id"];
+        if ($validate["department_id"] || $validate["project_id"]) {
             $workLocation = $validate["department_id"] ? "Office" : "Project Code";
-            $map = $data->map(function ($thisData) use ($givenId) {
-                $valid = false;
-                if ($thisData->current_employment->work_location === $workLocation) {
-                    $collect = $thisData->current_employment->department ? $thisData->current_employment->department : $thisData->current_employment->projects;
-                    $valid = collect($collect)->contains('id',$givenId);
-                }
-                if($valid){
-                    return $thisData;
-                }
-                return null;
-            })->filter();
+            $type = $validate["department_id"] ? "department" : "projects";
+            $givenId = $validate["department_id"] ? $validate["department_id"] : $validate["project_id"];
+            $data = Employee::isActive()->with("current_employment")
+            ->whereHas("current_employment",
+                function ($query) use ($workLocation, $type, $givenId) {
+                    $query->where('work_location', $workLocation)->whereHas($type,
+                        function ($query) use ($type, $givenId) {
+                            if($type === "department"){
+                                $query->where("departments.id", $givenId);
+                            }
+                            if($type === "projects"){
+                                $query->where("projects.id", $givenId);
+                            }
+                        }
+                    );
+                })
+            ->get();
             return [
                 'success' => true,
                 'message' => 'Employee Tenureship List fetched successfully.',
-                'data' => EmployeeTenureshipResource::collection($map),
+                'data' => EmployeeTenureshipResource::collection($data),
             ];
         }
         return [
