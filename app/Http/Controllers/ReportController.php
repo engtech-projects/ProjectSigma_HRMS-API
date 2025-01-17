@@ -19,6 +19,7 @@ use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssGroupSummaryLoansRequest;
+use App\Http\Requests\EmployeeTenureshipRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
 use App\Http\Resources\Reports\LoanCalamityEmployee;
 use App\Http\Resources\Reports\LoanCalamitySummary;
@@ -36,6 +37,7 @@ use App\Http\Resources\Reports\OtherDeductionMP2Employee;
 use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
@@ -205,5 +207,20 @@ class ReportController extends Controller
             "data" => $reportData
         ]);
     }
-
+    public function employeeTenureshipList(EmployeeTenureshipRequest $request)
+    {
+        $validate = $request->validated();
+        if ($validate) {
+            return new JsonResponse([
+                "success" => true,
+                'message' => 'Employee Tenureship List fetched successfully.',
+                'data' => ReportService::employeeTenureshipList($validate)],
+                JsonResponse::HTTP_OK
+            );
+        }
+        return new JsonResponse([
+            "success" => false,
+            'message' => $e->getMessage()]
+        );
+    }
 }
