@@ -5,7 +5,7 @@ namespace App\Http\Resources\Reports;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OtherDeductionMP2Summary extends JsonResource
+class LoanSssSummary extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,12 +18,12 @@ class OtherDeductionMP2Summary extends JsonResource
         ->groupBy("employee_id")
         ->map(function ($employeeData) {
             return [
-                ...$employeeData->first(),
-                'total_payments' => $employeeData->sum("total_payments"),
+                "fullname" => $employeeData->first()['employee']['fullname_first'],
+                "total_payments" => $employeeData->sum("total_payments"),
             ];
         });
         return [
-            "data" => parent::toArray($request),
+            "data" => $dataCollection->values(),
             "summary" => [
                 "no_of_employee" => $dataCollection->count(),
                 "overall_total_payments" => $dataCollection->sum("total_payments"),
