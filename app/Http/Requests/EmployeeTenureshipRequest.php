@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\GroupType;
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Validation\Rules\Enum;
 class EmployeeTenureshipRequest extends FormRequest
 {
     /**
@@ -22,6 +23,11 @@ class EmployeeTenureshipRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'grouptype' => [
+                "required",
+                "string",
+                new Enum(GroupType::class)
+            ],
             'department_id' => "nullable|integer",
             'project_id' => "nullable|integer",
         ];

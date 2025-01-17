@@ -171,6 +171,17 @@ class ReportController extends Controller
     public function employeeTenureshipList(EmployeeTenureshipRequest $request)
     {
         $validate = $request->validated();
-        return new JsonResponse(ReportService::employeeTenureshipList($validate));
+        if ($validate) {
+            return new JsonResponse([
+                "success" => true,
+                'message' => 'Employee Tenureship List fetched successfully.',
+                'data' => ReportService::employeeTenureshipList($validate)],
+                JsonResponse::HTTP_OK
+            );
+        }
+        return new JsonResponse([
+            "success" => false,
+            'message' => $e->getMessage()]
+        );
     }
 }
