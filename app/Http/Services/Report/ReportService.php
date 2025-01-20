@@ -17,9 +17,11 @@ use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\SssRemittanceSummaryResource;
+use App\Http\Resources\EmployeeTenureshipResource;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
 
 class ReportService
@@ -890,5 +892,28 @@ class ReportService
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
         return $uniqueGroup;
     }
+    public static function employeeTenureshipList($validate)
+    {
+        $data = Employee::isActive()->with("current_employment")->get();
+        $workLocation = ($validate["grouptype"] === 'Department') ? "Office" : "Project Code";
+        $type = ($validate["grouptype"] === 'Department') ? "department" : "projects";
+        $givenId = ($validate["grouptype"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+        $data = Employee::isActive()->with("current_employment")->whereHas("current_employment",
+            function ($query) use ($workLocation, $type, $givenId) {
+                $query->where('work_location', $workLocation)->whereHas($type,
+                    function ($query) use ($type, $givenId) {
+                        if($givenId) {
+                            if($type === "department"){
+                                $query->where("departments.id", $givenId);
+                            }
+                            if($type === "projects"){
+                                $query->where("projects.id", $givenId);
+                            }
+                        }
+                    }
+                );
+            })
+        ->get();
+        return EmployeeTenureshipResource::collection($data);
+    }
 }
-
