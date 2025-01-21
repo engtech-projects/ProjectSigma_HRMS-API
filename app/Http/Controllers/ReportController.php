@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Reports\LoanReports;
+use App\Enums\Reports\AdministrativeReport;
 use App\Enums\Reports\OtherDeductionReports;
 use App\Http\Requests\DefaultPaymentRequest;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
@@ -19,7 +20,7 @@ use App\Http\Requests\SssEmployeeLoansRequest;
 use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssGroupSummaryLoansRequest;
-use App\Http\Requests\EmployeeTenureshipRequest;
+use App\Http\Requests\Reports\AdministrativeReportRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
 use App\Http\Resources\Reports\LoanCalamityEmployee;
 use App\Http\Resources\Reports\LoanCalamitySummary;
@@ -207,7 +208,8 @@ class ReportController extends Controller
             "data" => $reportData
         ]);
     }
-    public function employeeTenureshipList(EmployeeTenureshipRequest $request)
+
+    public function employeeTenureshipList(AdministrativeReportRequest $request)
     {
         $validate = $request->validated();
         if ($validate) {
@@ -222,5 +224,26 @@ class ReportController extends Controller
             "success" => false,
             'message' => $e->getMessage()]
         );
+    }
+
+    public function administrativeReportsGenerate(AdministrativeReportRequest $request)
+    {
+        $validated = $request->validated();
+        $reportData = null;
+        if ($validated) {
+            switch ($validated["report_type"]) {
+                case AdministrativeReport::EMPLOYEE_MASTERLIST->value:
+                    $reportData = ReportService::employeeMasterList($validated);
+                    break;
+                case AdministrativeReport::EMPLOYEE_TENURESHIP->value:
+                    $reportData = ReportService::employeeTenureshipList($validated);
+                    break;
+            }
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => $reportData
+        ]);
     }
 }
