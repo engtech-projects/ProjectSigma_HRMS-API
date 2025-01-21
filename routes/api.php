@@ -297,7 +297,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // REPORTS
     Route::prefix('reports')->group(function () {
-        Route::get('employee-tenureship-list', [ReportController::class, 'employeeTenureshipList']);
+        Route::get('administrative', [ReportController::class, 'administrativeReportsGenerate']);
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);

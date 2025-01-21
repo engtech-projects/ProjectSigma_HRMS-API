@@ -3,6 +3,7 @@
 namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
+use App\Enums\GroupType;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -18,6 +19,7 @@ use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\SssRemittanceSummaryResource;
 use App\Http\Resources\EmployeeTenureshipResource;
+use App\Http\Resources\EmployeeMasterListResource;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -895,25 +897,55 @@ class ReportService
     public static function employeeTenureshipList($validate)
     {
         $data = Employee::isActive()->with("current_employment")->get();
-        $workLocation = ($validate["grouptype"] === 'Department') ? "Office" : "Project Code";
-        $type = ($validate["grouptype"] === 'Department') ? "department" : "projects";
-        $givenId = ($validate["grouptype"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
-        $data = Employee::isActive()->with("current_employment")->whereHas("current_employment",
-            function ($query) use ($workLocation, $type, $givenId) {
-                $query->where('work_location', $workLocation)->whereHas($type,
-                    function ($query) use ($type, $givenId) {
-                        if($givenId) {
-                            if($type === "department"){
-                                $query->where("departments.id", $givenId);
-                            }
-                            if($type === "projects"){
-                                $query->where("projects.id", $givenId);
+        if($validate["group_type"]!==GroupType::ALL->value){
+            $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
+            $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
+            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+            $data = Employee::isActive()->with("current_employment")->whereHas("current_employment",
+                function ($query) use ($workLocation, $type, $givenId) {
+                    $query->where('work_location', $workLocation)->whereHas($type,
+                        function ($query) use ($type, $givenId) {
+                            if($givenId) {
+                                if($type === "department"){
+                                    $query->where("departments.id", $givenId);
+                                }
+                                if($type === "projects"){
+                                    $query->where("projects.id", $givenId);
+                                }
                             }
                         }
-                    }
-                );
-            })
-        ->get();
+                    );
+                })
+            ->get();
+        }
         return EmployeeTenureshipResource::collection($data);
+    }
+    public static function employeeMasterList($validate)
+    {
+        $data = Employee::isActive()->with("current_employment","present_address","permanent_address", "father", "mother", "spouse", "child",
+        "contact_person", "employee_education_elementary", "employee_education_secondary", "employee_education_college", "company_employments")->get();
+        if($validate["group_type"]!==GroupType::ALL->value){
+            $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
+            $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
+            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+            $data = Employee::isActive()->with("current_employment","present_address","permanent_address", "father", "mother", "spouse", "child",
+            "contact_person", "employee_education_elementary", "employee_education_secondary", "employee_education_college", "company_employments")->whereHas("current_employment",
+                function ($query) use ($workLocation, $type, $givenId) {
+                    $query->where('work_location', $workLocation)->whereHas($type,
+                        function ($query) use ($type, $givenId) {
+                            if($givenId) {
+                                if($type === "department"){
+                                    $query->where("departments.id", $givenId);
+                                }
+                                if($type === "projects"){
+                                    $query->where("projects.id", $givenId);
+                                }
+                            }
+                        }
+                    );
+                })
+            ->get();
+        }
+        return EmployeeMasterListResource::collection($data);
     }
 }

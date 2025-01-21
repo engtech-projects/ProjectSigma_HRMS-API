@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Reports;
 
 use App\Enums\GroupType;
+use App\Enums\Reports\AdministrativeReport;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-class EmployeeTenureshipRequest extends FormRequest
+
+class AdministrativeReportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +25,12 @@ class EmployeeTenureshipRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'grouptype' => [
+            'report_type' => [
+                "required",
+                "string",
+                new Enum(AdministrativeReport::class)
+            ],
+            'group_type' => [
                 "required",
                 "string",
                 new Enum(GroupType::class)
