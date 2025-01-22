@@ -238,6 +238,9 @@ class ReportController extends Controller
                 case AdministrativeReport::EMPLOYEE_TENURESHIP->value:
                     $reportData = ReportService::employeeTenureshipList($validated);
                     break;
+                case AdministrativeReport::EMPLOYEE_NEWLIST->value:
+                    $reportData = ReportService::employeeNewList($validated);
+                    break;
             }
         }
         return new JsonResponse([

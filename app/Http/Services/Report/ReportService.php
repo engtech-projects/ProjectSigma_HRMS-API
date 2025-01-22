@@ -18,8 +18,9 @@ use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\SssRemittanceSummaryResource;
-use App\Http\Resources\EmployeeTenureshipResource;
-use App\Http\Resources\EmployeeMasterListResource;
+use App\Http\Resources\Reports\AdministrativeEmployeeTenureship;
+use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
+use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -947,5 +948,10 @@ class ReportService
             ->get();
         }
         return EmployeeMasterListResource::collection($data);
+    }
+    public static function employeeNewList($validate)
+    {
+        $data = Employee::isActive()->with("current_employment")->get();
+        return EmployeeNewListResource::collection($data);
     }
 }
