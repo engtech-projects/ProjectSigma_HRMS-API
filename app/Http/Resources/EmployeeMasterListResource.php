@@ -16,8 +16,7 @@ class EmployeeMasterListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            // ...parent::toArray($request),
-            "employee_id" => $this->current_employment?->employee_id,
+            "employee_id" => $this->company_employments?->employeedisplay_id,
             "date_hired" => $this->company_employments?->date_hired,
             "first_name" => $this['first_name'],
             "middle_name" => $this['middle_name'],
