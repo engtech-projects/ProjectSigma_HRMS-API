@@ -951,7 +951,7 @@ class ReportService
     }
     public static function employeeNewList($validate)
     {
-        $data = Employee::isActive()->with(['current_employment' => function ($query) {
+        $data = Employee::isActive()->with(['current_employment' => function ($query) use ($validate) {
             $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
         }])->get();
         return AdministrativeEmployeeNewList::collection($data);
