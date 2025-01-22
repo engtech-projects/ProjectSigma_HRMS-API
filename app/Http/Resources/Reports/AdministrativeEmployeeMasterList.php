@@ -17,7 +17,7 @@ class AdministrativeEmployeeMasterList extends JsonResource
     {
         return [
             "employee_id" => $this->company_employments?->employeedisplay_id,
-            "date_hired" => $this->company_employments?->date_hired,
+            "date_hired" => Carbon::parse($this->company_employments?->date_hired)->format('F j, Y'),
             "first_name" => $this['first_name'],
             "middle_name" => $this['middle_name'],
             "family_name" => $this['family_name'],
