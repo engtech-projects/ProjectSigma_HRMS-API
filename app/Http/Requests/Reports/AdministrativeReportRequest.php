@@ -37,6 +37,16 @@ class AdministrativeReportRequest extends FormRequest
             ],
             'department_id' => "nullable|integer",
             'project_id' => "nullable|integer",
+            'date_from' => [
+                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_NEWHIRE->value,
+                'nullable',
+                'date'
+            ],
+            'date_to' => [
+                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_NEWHIRE->value,
+                'nullable',
+                'date'
+            ]
         ];
     }
 }

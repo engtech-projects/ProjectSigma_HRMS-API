@@ -18,8 +18,9 @@ use App\Http\Resources\SSSEmployeeRemittanceResource;
 use App\Http\Resources\SssGroupRemittanceResource;
 use App\Http\Resources\SssGroupSummaryLoansResource;
 use App\Http\Resources\SssRemittanceSummaryResource;
-use App\Http\Resources\EmployeeTenureshipResource;
-use App\Http\Resources\EmployeeMasterListResource;
+use App\Http\Resources\Reports\AdministrativeEmployeeTenureship;
+use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
+use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -918,7 +919,7 @@ class ReportService
                 })
             ->get();
         }
-        return EmployeeTenureshipResource::collection($data);
+        return AdministrativeEmployeeTenureship::collection($data);
     }
     public static function employeeMasterList($validate)
     {
@@ -946,6 +947,13 @@ class ReportService
                 })
             ->get();
         }
-        return EmployeeMasterListResource::collection($data);
+        return AdministrativeEmployeeMasterList::collection($data);
+    }
+    public static function employeeNewList($validate)
+    {
+        $data = Employee::isActive()->with(['current_employment' => function ($query) {
+            $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
+        }])->get();
+        return AdministrativeEmployeeNewList::collection($data);
     }
 }

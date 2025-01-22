@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Reports;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
 
-class EmployeeTenureshipResource extends JsonResource
+class AdministrativeEmployeeTenureship extends JsonResource
 {
     /**
      * Transform the resource into an array.

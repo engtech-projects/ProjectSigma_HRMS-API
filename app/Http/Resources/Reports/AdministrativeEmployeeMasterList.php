@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Reports;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
 
-class EmployeeMasterListResource extends JsonResource
+class AdministrativeEmployeeMasterList extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,7 @@ class EmployeeMasterListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            // ...parent::toArray($request),
-            "employee_id" => $this->current_employment?->employee_id,
+            "employee_id" => $this->company_employments?->employeedisplay_id,
             "date_hired" => $this->company_employments?->date_hired,
             "first_name" => $this['first_name'],
             "middle_name" => $this['middle_name'],
@@ -27,7 +26,7 @@ class EmployeeMasterListResource extends JsonResource
             "present_address" => $this->present_address?->complete_address,
             "permanent_address" => $this->permanent_address?->complete_address,
             "mobile_number" => $this['mobile_number'],
-            "date_of_birth" => $this['date_of_birth'],
+            "date_of_birth" => Carbon::parse($this['date_of_birth'])->format('F j, Y'),
             "place_of_birth" => $this['place_of_birth'],
             "citizenship" => $this['citizenship'],
             "blood_type" => $this['blood_type'],
@@ -36,11 +35,11 @@ class EmployeeMasterListResource extends JsonResource
             "civil_status" => $this['civil_status'],
             "height" => $this['height'],
             "weight" => $this['weight'],
-            "date_of_marriage" => $this['date_of_marriage'],
+            "date_of_marriage" => Carbon::parse($this['date_of_marriage'])->format('F j, Y'),
             "father" => $this->father?->name,
             "mother" => $this->mother?->name,
             "spouse" => $this->spouse?->name,
-            "spouse_date_of_birth" => $this->spouse?->name,
+            "spouse_date_of_birth" => Carbon::parse($this->spouse?->date_of_birth)->format('F j, Y'),
             "spouse_occupation" => $this->spouse?->name,
             "child" => $this->child,
             "contact_person" => $this->contact_person?->name,
@@ -56,6 +55,7 @@ class EmployeeMasterListResource extends JsonResource
             "tin_number" => $this->company_employments?->tin_number,
             "work_location" => $this->current_employment->work_location,
             "current_position_name" => $this->current_position_name,
+            "salary_grade" => $this->current_position_name,
         ];
     }
 }
