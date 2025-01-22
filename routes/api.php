@@ -378,6 +378,11 @@ Route::middleware("secret_api")->group(function () {
     Route::prefix('sigma')->group(function () {
         Route::get("format-approvals", [ApiServiceController::class, "formatApprovals"]);
         Route::get("user-employees", [ApiServiceController::class, "getUserEmployees"]);
+        Route::prefix('sync-list')->group(function () {
+            Route::get("employee", [ApiServiceController::class, "getEmployeeList"]);
+            Route::get("department", [ApiServiceController::class, "getDepartmentList"]);
+            Route::get("user", [ApiServiceController::class, "getUserList"]);
+        });
     });
 });
 
