@@ -919,7 +919,7 @@ class ReportService
                 })
             ->get();
         }
-        return EmployeeTenureshipResource::collection($data);
+        return AdministrativeEmployeeTenureship::collection($data);
     }
     public static function employeeMasterList($validate)
     {
@@ -947,11 +947,13 @@ class ReportService
                 })
             ->get();
         }
-        return EmployeeMasterListResource::collection($data);
+        return AdministrativeEmployeeMasterList::collection($data);
     }
     public static function employeeNewList($validate)
     {
-        $data = Employee::isActive()->with("current_employment")->get();
-        return EmployeeNewListResource::collection($data);
+        $data = Employee::isActive()->with(['current_employment' => function ($query) {
+            $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
+        }])->get();
+        return AdministrativeEmployeeNewList::collection($data);
     }
 }

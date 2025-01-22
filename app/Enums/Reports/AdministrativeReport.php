@@ -5,6 +5,6 @@ namespace App\Enums\Reports;
 enum AdministrativeReport: string
 {
     case EMPLOYEE_MASTERLIST = "EMPLOYEE MASTERLIST";
-    case EMPLOYEE_NEWLIST = "EMPLOYEE NEWHIRE";
+    case EMPLOYEE_NEWHIRE = "EMPLOYEE NEWHIRE";
     case EMPLOYEE_TENURESHIP = "EMPLOYEE TENURESHIP";
 }
