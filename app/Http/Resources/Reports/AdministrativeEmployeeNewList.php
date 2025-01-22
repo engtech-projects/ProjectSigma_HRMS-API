@@ -20,7 +20,7 @@ class AdministrativeEmployeeNewList extends JsonResource
             "fullname" => $this['fullname_last'],
             "designation" => $this->current_position_name,
             "section" => ($this->current_employment->work_location === 'Project Code') ? "Project" : "Department",
-            "date_hired" => $this->company_employments?->date_hired,
+            "date_hired" => Carbon::parse($this->company_employments?->date_hired)->format('F j, Y'),
             "current_position_name" => $this->current_position_name,
         ];
     }
