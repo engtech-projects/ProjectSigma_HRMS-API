@@ -42,6 +42,7 @@ class AdministrativeEmployeeMasterList extends JsonResource
             "spouse_date_of_birth" => Carbon::parse($this->spouse?->date_of_birth)->format('F j, Y'),
             "spouse_occupation" => $this->spouse?->name,
             "child" => $this->child,
+            "children_summary" => $this->child->pluck('name_bday')->implode(', '),
             "contact_person" => $this->contact_person?->name,
             "contact_person_address" => $this->contact_person?->address,
             "contact_person_contact_no" => $this->contact_person?->contact_no,
