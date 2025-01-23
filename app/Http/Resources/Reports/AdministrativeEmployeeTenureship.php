@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Reports;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
 
-class EmployeeTenureshipResource extends JsonResource
+class AdministrativeEmployeeTenureship extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,7 +22,7 @@ class EmployeeTenureshipResource extends JsonResource
 
         return [
             "employee_name" => $this['fullname_last'],
-            "date_hired" => $this->company_employments?->date_hired,
+            "date_hired" => Carbon::parse($this->company_employments?->date_hired)->format('F j, Y'),
             "designation" => $this->current_position_name,
             "ternure_ecdc" => $this->company_employments?->date_hired ? $years." Years ". $months." Months" : 0,
             "work_location" => $this->current_employment->work_location,
