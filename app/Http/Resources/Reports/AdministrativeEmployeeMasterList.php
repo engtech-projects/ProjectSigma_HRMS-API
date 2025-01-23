@@ -41,7 +41,6 @@ class AdministrativeEmployeeMasterList extends JsonResource
             "spouse" => $this->spouse?->name,
             "spouse_date_of_birth" => Carbon::parse($this->spouse?->date_of_birth)->format('F j, Y'),
             "spouse_occupation" => $this->spouse?->name,
-            "child" => $this->child,
             "children_summary" => $this->child->pluck('name_bday')->implode(', '),
             "contact_person" => $this->contact_person?->name,
             "contact_person_address" => $this->contact_person?->address,
@@ -56,7 +55,7 @@ class AdministrativeEmployeeMasterList extends JsonResource
             "tin_number" => $this->company_employments?->tin_number,
             "work_location" => $this->current_employment->work_location,
             "current_position_name" => $this->current_position_name,
-            "salary_grade" => $this->current_position_name,
+            "salary_grade" => $this->current_salarygrade_and_step,
         ];
     }
 }
