@@ -29,6 +29,9 @@ enum AccessibilityAccounting: string
 
     //Accounting Journal
     case ACCOUNTING_JOURNAL_ENTRY = "accounting:journal_journal entry";
+    case ACCOUNTING_JOURNAL_ENTRY_CASH_ENTRIES = "accounting:journal_journal entry_list_cash entries";
+    case ACCOUNTING_JOURNAL_ENTRY_DISBURSEMENT_ENTRIES = "accounting:journal_journal entry_list_disbursement entries";
+    case ACCOUNTING_JOURNAL_ENTRY_FOR_PAYMENT_ENTRIES = "accounting:journal_journal entry_list_for payement entries";
 
     public static function toArray(): array
     {
