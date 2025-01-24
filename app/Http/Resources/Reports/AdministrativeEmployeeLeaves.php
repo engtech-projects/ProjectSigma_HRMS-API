@@ -15,13 +15,19 @@ class AdministrativeEmployeeLeaves extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $leavesDailyDuration = collect($this->employee_leave)->map(function ($leave) {
+            return array_sum($leave['daily_date_durations']);
+        })->all();
+        $total_leave = array_sum($leavesDailyDuration);
+
         return [
             "employee_id" => $this->company_employments?->employeedisplay_id,
             "fullname" => $this['fullname_last'],
             "designation" => $this->current_position_name,
             "section" => ($this->current_employment->work_location === 'Project Code') ? "Project" : "Department",
             "current_position_name" => $this->current_position_name,
-            "total_days_leaves" => collect($this->employee_leave)->sum('number_of_days'),
+            "total_days_leaves" => $total_leave,
+            "leaves_daily_duration" => $leavesDailyDuration,
         ];
     }
 }
