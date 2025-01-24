@@ -24,28 +24,6 @@ class EmployeeRelatedperson extends Model
         'date_of_birth' => 'datetime:Y-m-d',
     ];
 
-
-    public function getAgeAttribute()
-    {
-        $a = $this->date_of_birth;
-        if ($a) {
-            return Carbon::createFromFormat("ymd", $a->format('ymd'))->age;
-        }
-        return null;
-    }
-
-    // protected function age(): Attribute
-    // {
-    //     return new Attribute(
-    //         get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
-    //     );
-    // }
-
-    protected function getAddressAttribute()
-    {
-        return implode(", ", array($this->street, $this->brgy, $this->city, $this->zip, $this->province));
-    }
-
     protected $fillable = [
         'id',
         'employee_id',
@@ -65,5 +43,22 @@ class EmployeeRelatedperson extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getAgeAttribute()
+    {
+        $a = $this->date_of_birth;
+        if ($a) {
+            return Carbon::createFromFormat("ymd", $a->format('ymd'))->age;
+        }
+        return null;
+    }
+    protected function getAddressAttribute()
+    {
+        return implode(", ", array($this->street, $this->brgy, $this->city, $this->zip, $this->province));
+    }
+    protected function getNameBdayAttribute()
+    {
+        return implode(" - ", array($this->name, $this->date_of_birth));
     }
 }
