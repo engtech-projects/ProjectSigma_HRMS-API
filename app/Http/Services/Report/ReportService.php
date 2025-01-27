@@ -961,7 +961,9 @@ class ReportService
     }
     public static function employeeLeaves($validate)
     {
-        $data = Employee::isActive()->with("current_employment", "company_employments", "employee_leave")->whereHas('employee_leave',
+        $data = Employee::isActive()->with(["current_employment", "company_employments", 'employee_leave' => function ($query) use ($validate) {
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            }])->whereHas('employee_leave',
             function ($query) use ($validate) {
                 $query->betweenDates($validate["date_from"], $validate["date_to"]);
             }

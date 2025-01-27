@@ -27,7 +27,6 @@ class AdministrativeEmployeeLeaves extends JsonResource
             "section" => ($this->current_employment->work_location === 'Project Code') ? "Project" : "Department",
             "current_position_name" => $this->current_position_name,
             "total_days_leaves" => $total_leave,
-            "leaves_daily_duration" => $leavesDailyDuration,
         ];
     }
 }
