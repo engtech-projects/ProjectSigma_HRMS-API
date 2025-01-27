@@ -963,8 +963,7 @@ class ReportService
     {
         $data = Employee::isActive()->with("current_employment", "company_employments", "employee_leave")->whereHas('employee_leave',
             function ($query) use ($validate) {
-                $query->where('date_of_absence_from', '<=', $validate["date_to"])
-                ->where('date_of_absence_to', '>=', $validate["date_from"]);
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
             }
         )->get();
 
