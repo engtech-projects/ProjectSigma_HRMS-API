@@ -100,7 +100,6 @@ class EmployeeService
                 ];
                 Log::info($grossSalaries);
                 $grossSalaries['regular']['regular'] += $advanceAmount;
-                $salary = $salary + $advanceAmount;
             }
             $grossSalaries = collect($grossSalaries);
         }
@@ -147,7 +146,7 @@ class EmployeeService
         $result["salary_deduction"] = $salaryDeductions;
         $result["hours_worked"] = $totalHoursWorked;
         $totalAdjustment =  $adjustments->sum('adjustment_amount');
-        $totalGrossPay = $salary + $totalAdjustment;
+        $totalGrossPay = $salary + $totalAdjustment + $advanceAmount;
         $totalSalaryDeduction = $this->getTotalSalaryDeduction($salaryDeductions);
         $totalNetPay = $totalGrossPay - $totalSalaryDeduction;
         $result["chargings"] = $chargings;
