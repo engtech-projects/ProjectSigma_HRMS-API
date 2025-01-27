@@ -961,13 +961,37 @@ class ReportService
     }
     public static function employeeLeaves($validate)
     {
-        $data = Employee::isActive()->with(["current_employment", "company_employments", 'employee_leave' => function ($query) use ($validate) {
+        $data = Employee::isActive()->with([
+            "company_employments",
+            "current_employment",
+            'employee_leave' => function ($query) use ($validate) {
+            $query->betweenDates($validate["date_from"], $validate["date_to"]);
+        }])->whereHas('employee_leave', function ($query) use ($validate) {
+            $query->betweenDates($validate["date_from"], $validate["date_to"]);
+        })->get();
+
+        if ($validate["group_type"] != "All") {
+            $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
+            $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
+            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+
+            $data = Employee::isActive()->with([
+                "company_employments",
+                "current_employment",
+                'employee_leave' => function ($query) use ($validate) {
+                    $query->betweenDates($validate["date_from"], $validate["date_to"]);
+                }
+            ])->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+                $query->where('work_location', $workLocation)
+                    ->whereHas($type, function ($query) use ($type, $givenId) {
+                        if ($givenId) {
+                            $query->where("{$type}.id", $givenId);
+                        }
+                    });
+            })->whereHas('employee_leave', function ($query) use ($validate) {
                 $query->betweenDates($validate["date_from"], $validate["date_to"]);
-            }])->whereHas('employee_leave',
-            function ($query) use ($validate) {
-                $query->betweenDates($validate["date_from"], $validate["date_to"]);
-            }
-        )->get();
+            })->get();
+        }
 
         return AdministrativeEmployeeLeaves::collection($data);
     }
