@@ -39,11 +39,13 @@ class AdministrativeReportRequest extends FormRequest
             'project_id' => "nullable|integer",
             'date_from' => [
                 'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_NEWHIRE->value,
+                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_LEAVES->value,
                 'nullable',
                 'date'
             ],
             'date_to' => [
                 'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_NEWHIRE->value,
+                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_LEAVES->value,
                 'nullable',
                 'date'
             ]
