@@ -21,6 +21,7 @@ use App\Http\Resources\SssRemittanceSummaryResource;
 use App\Http\Resources\Reports\AdministrativeEmployeeTenureship;
 use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
 use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
+use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -957,5 +958,17 @@ class ReportService
             }
         )->get();
         return AdministrativeEmployeeNewList::collection($data);
+    }
+    public static function employeeLeaves($validate)
+    {
+        $data = Employee::isActive()->with(["current_employment", "company_employments", 'employee_leave' => function ($query) use ($validate) {
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            }])->whereHas('employee_leave',
+            function ($query) use ($validate) {
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            }
+        )->get();
+
+        return AdministrativeEmployeeLeaves::collection($data);
     }
 }
