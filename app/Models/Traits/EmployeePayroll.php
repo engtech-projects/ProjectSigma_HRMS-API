@@ -157,15 +157,17 @@ trait EmployeePayroll
             $wtaxSalary = $salary;
         } elseif ($payrollType == PayrollType::BI_MONTHLY->value) {
             $wtaxSalary = $salary * 2;
+        } else {
+            $wtaxSalary = $salary * 4;
         }
-        $wtaxSalary = $salary * 4;
         $deduction = new WitholdingTaxContribution();
         $wht = $deduction->contribution($wtaxSalary);
         $total = 0;
         if ($wht) {
             $taxBase = $wht->tax_base;
             $taxAmount = $wht->tax_amount;
-            $excess = $wtaxSalary - $taxBase ?? 0;
+            $baseExcess = $wtaxSalary - $taxBase;
+            $excess = $baseExcess <= 0 ? 0 : $baseExcess;
             $excessTaxAmount = $excess * $wht->percent_over_base_decimal;
             $total = round($taxAmount + $excessTaxAmount, 2);
         }

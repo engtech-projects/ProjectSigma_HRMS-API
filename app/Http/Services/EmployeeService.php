@@ -81,7 +81,8 @@ class EmployeeService
         $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrValues);
         $advanceAmount = 0;
         $advanceCharging = [];
-        $fixedSalary = PayrollService::getPayrollTypeValue($filters["payroll_type"], $employee->current_employment->employee_salarygrade->monthly_salary_amount);
+        $monthlySalary = $employee->current_employment->employee_salarygrade->monthly_salary_amount;
+        $fixedSalary = PayrollService::getPayrollTypeValue($filters["payroll_type"], $monthlySalary);
         if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
             $salary = $fixedSalary;
             $grossSalaries = collect([...$this->aggregateTotalGrossPays(collect([]))]);
