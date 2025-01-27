@@ -197,7 +197,7 @@ class EmployeeService
         $pagibigExempt = self::govNumberIsValid($employee->company_employments->pagibig_number) ? $pagibig['employee_contribution'] : 0;
         $monthlyTaxExempt = $ssExempt + $philhealthExempt + $pagibigExempt;
         $taxableMonthlySalary = $monthlySalary - $monthlyTaxExempt;
-        $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
+        // $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
         $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
         $result = [
             "sss" => ($filters["deduct_sss"] && self::govNumberIsValid($employee->company_employments->sss_number)) ? $sss : [],
