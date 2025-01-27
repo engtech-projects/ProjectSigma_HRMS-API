@@ -154,11 +154,11 @@ trait EmployeePayroll
     {
         $wtaxSalary = 0;
         if ($payrollType == PayrollType::WEEKLY->value) {
-            $wtaxSalary = $payrollType;
+            $wtaxSalary = $salary;
         } elseif ($payrollType == PayrollType::BI_MONTHLY->value) {
-            $wtaxSalary = $payrollType * 2;
+            $wtaxSalary = $salary * 2;
         }
-        $wtaxSalary = $payrollType * 4;
+        $wtaxSalary = $salary * 4;
         $deduction = new WitholdingTaxContribution();
         $wht = $deduction->contribution($wtaxSalary);
         $total = 0;
