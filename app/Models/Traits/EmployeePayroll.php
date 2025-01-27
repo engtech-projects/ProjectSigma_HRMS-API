@@ -2,6 +2,7 @@
 
 namespace App\Models\Traits;
 
+use App\Enums\PayrollType;
 use App\Enums\RequestStatusType;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\CashAdvance;
@@ -151,13 +152,20 @@ trait EmployeePayroll
 
     public function with_holding_tax_deduction($salary, $payrollType)
     {
+        $wtaxSalary = 0;
+        if ($payrollType == PayrollType::WEEKLY->value) {
+            $wtaxSalary = $payrollType;
+        } elseif ($payrollType == PayrollType::BI_MONTHLY->value) {
+            $wtaxSalary = $payrollType * 2;
+        }
+        $wtaxSalary = $payrollType * 4;
         $deduction = new WitholdingTaxContribution();
-        $wht = $deduction->contribution($salary);
+        $wht = $deduction->contribution($wtaxSalary);
         $total = 0;
         if ($wht) {
             $taxBase = $wht->tax_base;
             $taxAmount = $wht->tax_amount;
-            $excess = $salary - $taxBase ?? 0;
+            $excess = $wtaxSalary - $taxBase ?? 0;
             $excessTaxAmount = $excess * $wht->percent_over_base_decimal;
             $total = round($taxAmount + $excessTaxAmount, 2);
         }
