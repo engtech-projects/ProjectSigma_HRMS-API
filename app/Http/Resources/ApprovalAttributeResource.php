@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\ApprovalStatus;
 use App\Models\Users;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,10 +18,6 @@ class ApprovalAttributeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = Users::with('employee')->where('id', $this["user_id"])->first();
-        $employee = null;
-        if ($user) {
-            $employee = $user->employee ? new EmployeeUserResource($user->employee) : null;
-        }
         return [
             "type" => $this["type"],
             "status" => $this["status"] ?? null,
@@ -31,7 +28,10 @@ class ApprovalAttributeResource extends JsonResource
             "date_approved_human" => ($this["date_approved"] ?? null) ? Carbon::parse($this["date_approved"])->format('F j, Y h:i A') : null,
             "date_denied" => $this["date_denied"] ?? null,
             "date_denied_human" => ($this["date_denied"] ?? null) ? Carbon::parse($this["date_denied"])->format('F j, Y h:i A') : null,
-            "employee" => $employee
+            "employee_name" => $user->employee->fullname_first,
+            "employee_position" => $user->employee->current_position_name,
+            "user_name" => $user->name,
+            "employee_signature" => $this["status"] === ApprovalStatus::APPROVED->value ? $user->employee->digital_signature->base64 : null
         ];
     }
 }
