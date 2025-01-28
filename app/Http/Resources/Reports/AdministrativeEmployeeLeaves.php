@@ -22,9 +22,8 @@ class AdministrativeEmployeeLeaves extends JsonResource
 
         return [
             "employee_id" => $this->company_employments?->employeedisplay_id,
-            "fullname" => $this['fullname_last'],
             "designation" => $this->current_position_name,
-            "section" => ($this->current_employment->work_location === 'Project Code') ? "Project" : "Department",
+            "section" => $this->current_employment->current_assignment_name ? $this->current_employment->current_assignment_name : $this->current_employment?->department->department_name,
             "current_position_name" => $this->current_position_name,
             "total_days_leaves" => $total_leave,
         ];
