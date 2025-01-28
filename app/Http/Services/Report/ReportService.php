@@ -984,8 +984,13 @@ class ReportService
             ])->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
                 $query->where('work_location', $workLocation)
                     ->whereHas($type, function ($query) use ($type, $givenId) {
-                        if ($givenId) {
-                            $query->where("{$type}.id", $givenId);
+                        if($givenId) {
+                            if($type === "department"){
+                                $query->where("departments.id", $givenId);
+                            }
+                            if($type === "projects"){
+                                $query->where("projects.id", $givenId);
+                            }
                         }
                     });
             })->whereHas('employee_leave', function ($query) use ($validate) {
