@@ -1008,6 +1008,27 @@ class AccessibilitiesSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
+                    'id' => 1203,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_JOURNAL_ENTRY_CASH_ENTRIES->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 1206,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_JOURNAL_ENTRY_DISBURSEMENT_ENTRIES->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 1209,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_JOURNAL_ENTRY_FOR_PAYMENT_ENTRIES->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
                     'id' => 1210,
                     'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_SETUP_PARTICULAR_GROUP->value,
                     'deleted_at' => null,
