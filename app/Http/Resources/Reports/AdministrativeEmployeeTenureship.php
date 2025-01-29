@@ -15,7 +15,7 @@ class AdministrativeEmployeeTenureship extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $givenDate = Carbon::parse($this->current_employment?->date_from);
+        $givenDate = Carbon::parse($this->company_employments?->date_hired);
         $currentDate = Carbon::now();
         $years = $currentDate->diffInYears($givenDate);
         $months = $currentDate->diffInMonths($givenDate) % 12;
