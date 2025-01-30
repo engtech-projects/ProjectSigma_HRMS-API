@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Enums\SigmaServices;
+
+use App\Enums\Traits\EnumHelper;
+
+enum AccountingPayrollParticulars: string
+{
+    use EnumHelper;
+    case SALARY_AND_WAGES_BASIC_PAY = "SALARY_AND_WAGES_BASIC_PAY";
+    case SALARY_AND_WAGES_BASIC_PAY_OFFICE = "SALARY_AND_WAGES_BASIC_PAY_OFFICE";
+    case SALARY_AND_WAGES_OT_PAY = "SALARY_AND_WAGES_OT_PAY";
+    case SALARY_AND_WAGES_OT_PAY_OFFICE = "SALARY_AND_WAGES_OT_PAY_OFFICE";
+    case PHIC_PREMIUM_PAYABLE = "PHIC_PREMIUM_PAYABLE";
+    case SSS_PREMIUM_PAYABLE = "SSS_PREMIUM_PAYABLE";
+    case HDMF_PREMIUM_PAYABLE = "HDMF_PREMIUM_PAYABLE";
+}
