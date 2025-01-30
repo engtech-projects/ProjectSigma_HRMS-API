@@ -59,6 +59,10 @@ class EmployeeRelatedperson extends Model
     }
     protected function getNameBdayAttribute()
     {
-        return implode(" - ", array($this->name, $this->date_of_birth));
+        $bday = $this->date_of_birth;
+        if($bday){
+            $bday = Carbon::parse($this->date_of_birth)->format('F j, Y');
+        }
+        return implode(" - ", array($this->name, $bday));
     }
 }
