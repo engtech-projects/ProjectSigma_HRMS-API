@@ -34,66 +34,97 @@ class AccountingSecretkeyService
             "amount" => "",
             "details" => $details->flatMap(function ($detail, $stakeholder) {
                 $datas = [];
-                $detail = $detail->toArray(new Request())['summary'];
+                $summary = $detail->toArray(new Request())['summary'];
+                $chargingType = $summary["charging_type_name"];
+                $payrollData = $detail->toArray(new Request())['data']["details"];
                 // Log::info($stakeholder);
-                // Log::info($detail);
-                $chargingType = $detail["charging_type_name"];
-                //  CA/OD/LOANS AGGREGATION
-                $employeeSss = $detail["deduct_sss_employee_contribution"] + $detail["deduct_sss_employee_compensation"] + $detail["deduct_sss_employee_wisp"];
+                // Log::info($summary);
+                // BASIC and OT Pay Aggregation
+                if ($chargingType == Project::class) {
+                    if ($summary['charging_pay_basic']) {
+                        $datas[] = [
+                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_BASIC_PAY->value,
+                            'amount' => $summary["charging_pay_basic"],
+                            'stakeholder' => $stakeholder,
+                            'stakeholder_type' => 'Project',
+                        ];
+                    }
+                    if ($summary['charging_pay_overtime']) {
+                        $datas[] = [
+                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_OT_PAY->value,
+                            'amount' => $summary["charging_pay_overtime"],
+                            'stakeholder' => $stakeholder,
+                            'stakeholder_type' => 'Project',
+                        ];
+                    }
+                } elseif ($chargingType == Department::class) {
+                    if ($summary['charging_pay_basic']) {
+                        $datas[] = [
+                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_BASIC_PAY_OFFICE->value,
+                            'amount' => $summary["charging_pay_basic"],
+                            'stakeholder' => $stakeholder,
+                            'stakeholder_type' => 'Department',
+                        ];
+                    }
+                    if ($summary['charging_pay_overtime']) {
+                        $datas[] = [
+                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_OT_PAY_OFFICE->value,
+                            'amount' => $summary["charging_pay_overtime"],
+                            'stakeholder' => $stakeholder,
+                            'stakeholder_type' => 'Department',
+                        ];
+                    }
+                }
+                //  CA/REMITTANCES AGGREGATION
+                $employeeSss = $summary["deduct_sss_employee_contribution"] + $summary["deduct_sss_employee_compensation"] + $summary["deduct_sss_employee_wisp"];
                 if ($employeeSss > 0) {
                     $datas[] = [
                         'particular' => AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value,
                         'amount' => $employeeSss,
                     ];
                 }
-                if ($detail["deduct_philhealth_employee_contribution"] > 0) {
+                if ($summary["deduct_philhealth_employee_contribution"] > 0) {
                     $datas[] = [
                         'particular' => AccountingPayrollParticulars::PHIC_PREMIUM_PAYABLE->value,
-                        'amount' => $detail["deduct_philhealth_employee_contribution"],
+                        'amount' => $summary["deduct_philhealth_employee_contribution"],
                     ];
                 }
-                if ($detail["deduct_pagibig_employee_contribution"] > 0) {
+                if ($summary["deduct_pagibig_employee_contribution"] > 0) {
                     $datas[] = [
                         'particular' => AccountingPayrollParticulars::HDMF_PREMIUM_PAYABLE->value,
-                        'amount' => $detail["deduct_pagibig_employee_contribution"],
+                        'amount' => $summary["deduct_pagibig_employee_contribution"],
                     ];
                 }
-                // BASIC and OT Pay Aggregation
-                if ($chargingType == Project::class) {
-                    if ($detail['charging_pay_basic']) {
+                if ($summary["deduct_withholdingtax"] > 0) {
+                    $datas[] = [
+                        'particular' => AccountingPayrollParticulars::EWTC->value,
+                        'amount' => $summary["deduct_withholdingtax"],
+                    ];
+                }
+                if ($summary["deduct_cashadvance"] > 0) {
+                    $datas[] = [
+                        'particular' => AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value,
+                        'amount' => $summary["deduct_cashadvance"],
+                    ];
+                }
+                // OD/LOANS AGGREGATION
+                foreach($payrollData as $pDetail) {
+                    foreach ($pDetail->otherDeductionPayments as $otherDeductionPayment) {
                         $datas[] = [
-                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_BASIC_PAY->value,
-                            'amount' => $detail["charging_pay_basic"],
-                            'stakeholder' => $stakeholder,
-                            'stakeholder_type' => 'Project',
+                            'particular' => $otherDeductionPayment->deduction->otherdeduction->otherdeduction_name,
+                            'amount' => $otherDeductionPayment->amount,
+                            "temp_type" => 'otherdeduction',
                         ];
                     }
-                    if ($detail['charging_pay_overtime']) {
+                    foreach ($pDetail->loanPayments as $loanPayment) {
                         $datas[] = [
-                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_OT_PAY->value,
-                            'amount' => $detail["charging_pay_overtime"],
-                            'stakeholder' => $stakeholder,
-                            'stakeholder_type' => 'Project',
-                        ];
-                    }
-                } elseif ($chargingType == Department::class) {
-                    if ($detail['charging_pay_basic']) {
-                        $datas[] = [
-                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_BASIC_PAY_OFFICE->value,
-                            'amount' => $detail["charging_pay_basic"],
-                            'stakeholder' => $stakeholder,
-                            'stakeholder_type' => 'Department',
-                        ];
-                    }
-                    if ($detail['charging_pay_overtime']) {
-                        $datas[] = [
-                            'particular' => AccountingPayrollParticulars::SALARY_AND_WAGES_OT_PAY_OFFICE->value,
-                            'amount' => $detail["charging_pay_overtime"],
-                            'stakeholder' => $stakeholder,
-                            'stakeholder_type' => 'Department',
+                            'particular' => $loanPayment->deduction->loan->name,
+                            'amount' => $loanPayment->amount,
+                            "temp_type" => 'loan',
                         ];
                     }
                 }
+                // Log::info($payrollData);
                 return $datas;
             }),
         ];
@@ -101,13 +132,21 @@ class AccountingSecretkeyService
         $sss = collect($payload['details'])->where('particular', AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value)->sum('amount');
         $pagibig = collect($payload['details'])->where('particular', AccountingPayrollParticulars::HDMF_PREMIUM_PAYABLE->value)->sum('amount');
         $philhealth = collect($payload['details'])->where('particular', AccountingPayrollParticulars::PHIC_PREMIUM_PAYABLE->value)->sum('amount');
+        $wtax = collect($payload['details'])->where('particular', AccountingPayrollParticulars::EWTC->value)->sum('amount');
+        $cashAdvance = collect($payload['details'])->where('particular', AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value)->sum('amount');
+        $loans = collect($payload['details'])->where('temp_type', 'loan')->values()->all();
+        $otherDeductions = collect($payload['details'])->where('temp_type', 'otherdeduction')->values()->all();
+        Log::info($loans);
+        Log::info($otherDeductions);
         // REMOVE DEDUCTIONS
         $payload["details"] = collect($payload["details"])->filter(function ($detail) {
-            return !in_array($detail['particular'], [
+            return !(in_array($detail['particular'], [
                 AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value,
                 AccountingPayrollParticulars::HDMF_PREMIUM_PAYABLE->value,
                 AccountingPayrollParticulars::PHIC_PREMIUM_PAYABLE->value,
-            ]);
+                AccountingPayrollParticulars::EWTC->value,
+                AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value,
+            ]) || in_array($detail['temp_type'] ?? null, ['loan', 'otherdeduction']));
         })->values()->all();
         // ADD DEDUCTION AGGREGATES
         if  ($sss > 0){
@@ -126,6 +165,18 @@ class AccountingSecretkeyService
             $payload["details"][] = [
                 'particular' => AccountingPayrollParticulars::PHIC_PREMIUM_PAYABLE->value,
                 'amount' => $philhealth,
+            ];
+        }
+        if ($wtax > 0) {
+            $payload["details"][] = [
+                'particular' => AccountingPayrollParticulars::EWTC->value,
+                'amount' => $wtax,
+            ];
+        }
+        if ($cashAdvance > 0) {
+            $payload["details"][] = [
+                'particular' => AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value,
+                'amount' => $cashAdvance,
             ];
         }
         Log::info($payload);
