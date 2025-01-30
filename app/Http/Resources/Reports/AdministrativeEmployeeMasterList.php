@@ -55,8 +55,8 @@ class AdministrativeEmployeeMasterList extends JsonResource
             "tin_number" => $this->company_employments?->tin_number,
             "work_location" => $this->current_employment->work_location,
             "current_position_name" => $this->current_position_name,
-            "salary_grade" => $this->current_salarygrade_and_step,
             "section" => $this->current_assignment_names,
+            "salary_grade" => $this->current_salarygrade_and_step,
         ];
     }
 }

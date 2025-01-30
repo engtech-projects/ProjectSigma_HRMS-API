@@ -416,3 +416,4 @@ if (config()->get('app.artisan') == 'true') {
         });
     });
 }
+Route::get('administrative-export', [ReportController::class, 'administrativeExportReports']);

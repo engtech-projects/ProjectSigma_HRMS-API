@@ -27,6 +27,7 @@ use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ReportService
 {
@@ -922,6 +923,7 @@ class ReportService
         }
         return AdministrativeEmployeeTenureship::collection($data);
     }
+
     public static function employeeMasterList($validate)
     {
         $data = Employee::isActive()->with("current_employment","present_address","permanent_address", "father", "mother", "spouse", "child",
@@ -950,6 +952,58 @@ class ReportService
         }
         return AdministrativeEmployeeMasterList::collection($data);
     }
+
+    public static function employeeMasterListExport($validate)
+    {
+        $reportData = ReportService::employeeMasterList($validate);
+        $formatList = [];
+        foreach ($reportData as $row) {
+            array_push($formatList, [
+                $row->company_employments?->employeedisplay_id,
+                Carbon::parse($row->company_employments?->date_hired)->format('F j, Y'),
+                $row['first_name'],
+                $row['middle_name'],
+                $row['family_name'],
+                $row['name_suffix'],
+                $row['nick_name'],
+                $row->present_address?->complete_address,
+                $row->permanent_address?->complete_address,
+                $row['mobile_number'],
+                Carbon::parse($row['date_of_birth'])->format('F j, Y'),
+                $row['place_of_birth'],
+                $row['citizenship'],
+                $row['blood_type'],
+                $row['gender'],
+                $row['religion'],
+                $row['civil_status'],
+                $row['height'],
+                $row['weight'],
+                Carbon::parse($row['date_of_marriage'])->format('F j, Y'),
+                $row->father?->name,
+                $row->mother?->name,
+                $row->spouse?->name,
+                Carbon::parse($row->spouse?->date_of_birth)->format('F j, Y'),
+                $row->spouse?->name,
+                $row->child->pluck('name_bday')->implode(', '),
+                $row->contact_person?->name,
+                $row->contact_person?->address,
+                $row->contact_person?->contact_no,
+                $row->contact_person?->relationship,
+                $row->employee_education_elementary?->education,
+                $row->employee_education_secondary?->education,
+                $row->employee_education_college?->education,
+                $row->company_employments?->sss_number,
+                $row->company_employments?->phic_number,
+                $row->company_employments?->pagibig_number,
+                $row->company_employments?->tin_number,
+                $row->current_assignment_names,
+                $row->current_position_name,
+                $row->current_salarygrade_and_step,
+            ]);
+        }
+        return $formatList;
+    }
+
     public static function employeeNewList($validate)
     {
         $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
