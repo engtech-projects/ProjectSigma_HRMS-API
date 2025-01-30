@@ -62,6 +62,8 @@ class EmployeeRelatedperson extends Model
         $bday = $this->date_of_birth;
         if($bday){
             $bday = Carbon::parse($this->date_of_birth)->format('F j, Y');
+        }else{
+            $bday = "Birthday N/A";
         }
         return implode(" - ", array($this->name, $bday));
     }
