@@ -958,9 +958,11 @@ class ReportService
         $reportData = ReportService::employeeMasterList($validate);
         $formatList = [];
         foreach ($reportData as $row) {
+            $dateBirth = $row['date_of_birth'] ? Carbon::parse($row['date_of_birth'])->format('F j, Y') : "Date Birth N/A";
+            $spouseDateBirth = $row->spouse?->date_of_birth ? Carbon::parse($row->spouse?->date_of_birth)->format('F j, Y') : "Spouse Date Birth N/A";
             array_push($formatList, [
                 $row->company_employments?->employeedisplay_id,
-                Carbon::parse($row->company_employments?->date_hired)->format('F j, Y'),
+                $row->company_employments?->employee_date_hired,
                 $row['first_name'],
                 $row['middle_name'],
                 $row['family_name'],
@@ -969,7 +971,7 @@ class ReportService
                 $row->present_address?->complete_address,
                 $row->permanent_address?->complete_address,
                 $row['mobile_number'],
-                Carbon::parse($row['date_of_birth'])->format('F j, Y'),
+                $dateBirth,
                 $row['place_of_birth'],
                 $row['citizenship'],
                 $row['blood_type'],
@@ -978,11 +980,11 @@ class ReportService
                 $row['civil_status'],
                 $row['height'],
                 $row['weight'],
-                Carbon::parse($row['date_of_marriage'])->format('F j, Y'),
+                $row->date_marriage,
                 $row->father?->name,
                 $row->mother?->name,
                 $row->spouse?->name,
-                Carbon::parse($row->spouse?->date_of_birth)->format('F j, Y'),
+                $spouseDateBirth,
                 $row->spouse?->name,
                 $row->child->pluck('name_bday')->implode(', '),
                 $row->contact_person?->name,
