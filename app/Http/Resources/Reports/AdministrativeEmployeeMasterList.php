@@ -35,7 +35,7 @@ class AdministrativeEmployeeMasterList extends JsonResource
             "civil_status" => $this['civil_status'],
             "height" => $this['height'],
             "weight" => $this['weight'],
-            "date_of_marriage" => $row->date_marriage,
+            "date_of_marriage" => $this->date_marriage,
             "father" => $this->father?->name,
             "mother" => $this->mother?->name,
             "spouse" => $this->spouse?->name,
