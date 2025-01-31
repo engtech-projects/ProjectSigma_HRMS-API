@@ -39,12 +39,12 @@ class CashAdvanceController extends Controller
         })
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate();
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
+            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
         ]);
     }
 
@@ -188,12 +188,12 @@ class CashAdvanceController extends Controller
         ->myRequests()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate();
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
+            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
         ]);
     }
 
@@ -216,7 +216,7 @@ class CashAdvanceController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
+            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
         ]);
     }
     public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)

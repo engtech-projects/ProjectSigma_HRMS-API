@@ -25,12 +25,12 @@ class CashAdvancePaymentsController extends Controller
         })
         ->with(['employee','cashadvance'])
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate();
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvancePaymentResource::collection($data)))
+            'data' => CashAdvancePaymentResource::collection($data)->response()->getData(true)
         ]);
     }
 

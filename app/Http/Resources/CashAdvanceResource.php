@@ -43,6 +43,13 @@ class CashAdvanceResource extends JsonResource
             "next_approval" => $this->getNextPendingApproval(),
             "created_by" => $this->created_by,
             "payments" => CashAdvancePaymentResource::collection($this->cashAdvancePayments),
+            "amount_formatted" => number_format($this->amount, 2),
+            "amount_requested_formatted" => number_format($this->amount_requested, 2),
+            "amount_approved_formatted" => number_format($this->amount_approved, 2),
+            "installment_deduction_formatted" => number_format($this->installment_deduction, 2),
+            "remaining_balance_formatted" => number_format($this->balance, 2),
+            "total_paid_formatted" => number_format($this->total_paid, 2),
+
         ];
     }
 }
