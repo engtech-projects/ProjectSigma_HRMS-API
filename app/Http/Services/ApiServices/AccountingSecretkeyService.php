@@ -7,6 +7,7 @@ use App\Enums\SigmaServices\AccountingPayrollParticulars;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Models\Department;
 use App\Models\Project;
+use App\Models\SigmaServices\AccountingParticular;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -37,8 +38,6 @@ class AccountingSecretkeyService
                 $summary = $detail->toArray(new Request())['summary'];
                 $chargingType = $summary["charging_type_name"];
                 $payrollData = $detail->toArray(new Request())['data']["details"];
-                // Log::info($stakeholder);
-                // Log::info($summary);
                 // BASIC and OT Pay Aggregation
                 if ($chargingType == Project::class) {
                     if ($summary['charging_pay_basic']) {
@@ -124,18 +123,49 @@ class AccountingSecretkeyService
                         ];
                     }
                 }
-                // Log::info($payrollData);
                 return $datas;
             }),
         ];
         // AGGREGATE DEDUCTION TOTALS
+        $loanParticularTerms = AccountingParticular::where('type', 'loan')->get();
+        $loanParticularTerms = $loanParticularTerms->flatMap(function ($particularTerm) {
+            return [
+                $particularTerm->local_particular_name => $particularTerm->accounting_particular_name
+            ];
+        });
+        $odParticularTerms = AccountingParticular::where('type', 'other deduction')->get();
+        $odParticularTerms = $odParticularTerms->flatMap(function ($particularTerm) {
+            return [
+                $particularTerm->local_particular_name => $particularTerm->accounting_particular_name
+            ];
+        });
         $sss = collect($payload['details'])->where('particular', AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value)->sum('amount');
         $pagibig = collect($payload['details'])->where('particular', AccountingPayrollParticulars::HDMF_PREMIUM_PAYABLE->value)->sum('amount');
         $philhealth = collect($payload['details'])->where('particular', AccountingPayrollParticulars::PHIC_PREMIUM_PAYABLE->value)->sum('amount');
         $wtax = collect($payload['details'])->where('particular', AccountingPayrollParticulars::EWTC->value)->sum('amount');
         $cashAdvance = collect($payload['details'])->where('particular', AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value)->sum('amount');
-        $loans = collect($payload['details'])->where('temp_type', 'loan')->values()->all();
-        $otherDeductions = collect($payload['details'])->where('temp_type', 'otherdeduction')->values()->all();
+        $loanProblems = [];
+        $loans = collect($payload['details'])->where('temp_type', 'loan')->map(function ($loan) use($loanParticularTerms, &$loanProblems) {
+            if (!array_key_exists($loan['particular'], $loanParticularTerms->toArray()) && !in_array($loan['particular'], $loanProblems)) {
+                $loanProblems[] = $loan['particular'];
+            }
+            return [
+                'particular' => $loanParticularTerms[$loan['particular']] ?? 'Unknown',
+                'amount' => $loan['amount'],
+            ];
+        })->values()->all();
+        $otherDeductionProblems = [];
+        $otherDeductions = collect($payload['details'])->where('temp_type', 'otherdeduction')->map(function ($otherDeduction) use($odParticularTerms, &$otherDeductionProblems) {
+            if (!array_key_exists($otherDeduction['particular'], $odParticularTerms->toArray()) && !in_array($otherDeduction['particular'], $otherDeductionProblems)) {
+                $otherDeductionProblems[] = $otherDeduction['particular'];
+            }
+            return [
+                'particular' => $odParticularTerms[$otherDeduction['particular']] ?? $otherDeduction['particular'],
+                'amount' => $otherDeduction['amount'],
+            ];
+        })->values()->all();
+        Log::info($loanProblems);
+        Log::info($otherDeductionProblems);
         Log::info($loans);
         Log::info($otherDeductions);
         // REMOVE DEDUCTIONS

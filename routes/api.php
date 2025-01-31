@@ -28,6 +28,7 @@ use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\AccessibilitiesController;
+use App\Http\Controllers\AccountingParticularController;
 use App\Http\Controllers\CompanyEmployeeController;
 use App\Http\Controllers\EmployeeAddressController;
 use App\Http\Controllers\EmployeeUploadsController;
@@ -135,6 +136,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('salary')->group(function () {
         Route::resource('resource', SalaryGradeLevelController::class)->names("setupSalary");
         Route::get('list', SalaryGradeLevelListController::class);
+    });
+    // to do: Move Setup Routes inside setups prefix
+    Route::prefix('setup')->group(function () {
+        Route::resource('payroll-particular-terms', AccountingParticularController::class)->names('payrollParticularTerms');
     });
     // APPROVALS
     Route::resource('approvals', ApprovalsController::class);

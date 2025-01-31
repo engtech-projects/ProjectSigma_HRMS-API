@@ -11,7 +11,7 @@ class UpdateAccountingParticularRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,26 @@ class UpdateAccountingParticularRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'type' => [
+                "nullable",
+                "string",
+                "max:200",
+            ],
+            'local_particular_name' => [
+                "nullable",
+                "string",
+                "max:200",
+            ],
+            'accounting_particular_name' => [
+                "nullable",
+                "string",
+                "max:200",
+            ],
+            'description' => [
+                "nullable",
+                "string",
+                "max:200",
+            ],
         ];
     }
 }

@@ -13,15 +13,11 @@ class AccountingParticularController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json([
+            'data' => AccountingParticular::paginate(),
+            'success' => true,
+            'message' => 'Successfully fetched data.'
+        ]);
     }
 
     /**
@@ -29,21 +25,19 @@ class AccountingParticularController extends Controller
      */
     public function store(StoreAccountingParticularRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+        if (AccountingParticular::create($validatedData)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Successfully save.'
+            ]);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(AccountingParticular $accountingParticular)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(AccountingParticular $accountingParticular)
+    public function show(AccountingParticular $payroll_particular_term)
     {
         //
     }
@@ -51,15 +45,23 @@ class AccountingParticularController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAccountingParticularRequest $request, AccountingParticular $accountingParticular)
+    public function update(UpdateAccountingParticularRequest $request, AccountingParticular $payroll_particular_term)
     {
-        //
+        $validatedData = $request->validated();
+        $payroll_particular_term->fill($validatedData);
+        if ($payroll_particular_term->save()) {
+            return response()->json([
+                'data' => $payroll_particular_term,
+                'success' => true,
+                'message' => 'Successfully update.'
+            ]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AccountingParticular $accountingParticular)
+    public function destroy(AccountingParticular $payroll_particular_term)
     {
         //
     }
