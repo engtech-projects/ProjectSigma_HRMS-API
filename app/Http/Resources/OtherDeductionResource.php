@@ -23,6 +23,10 @@ class OtherDeductionResource extends JsonResource
             "is_fully_paid" => $this->cashPaid(),
             "total_paid" => $this->total_paid,
             "remaining_balance" => $this->balance,
+            "amount_formatted" => number_format($this->amount, 2),
+            "total_paid_formatted" => number_format($this->total_paid, 2),
+            "remaining_balance_formatted" => number_format($this->balance, 2),
+            "installment_deduction_formatted" => number_format($this->installment_deduction, 2),
         ];
     }
 }
