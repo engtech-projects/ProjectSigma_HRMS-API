@@ -476,4 +476,15 @@ class Employee extends Model
         ])->addSelect(DB::raw('startTime as late'))->get();
     }
 
+    protected function getDateMarriageAttribute()
+    {
+        $data = $this->date_of_marriage;
+        if($data){
+            $data = Carbon::parse($this->date_of_marriage)->format('F j, Y');
+        }else{
+            $data = "Date Of Marriage N/A";
+        }
+        return $data;
+    }
+
 }

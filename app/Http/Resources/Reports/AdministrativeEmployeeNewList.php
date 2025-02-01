@@ -15,12 +15,14 @@ class AdministrativeEmployeeNewList extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+
         return [
             "employee_id" => $this->company_employments?->employeedisplay_id,
             "fullname" => $this['fullname_last'],
             "designation" => $this->current_position_name,
             "section" => $this->current_assignment_names,
-            "date_hired" => Carbon::parse($this->company_employments?->date_hired)->format('F j, Y'),
+            "date_hired" => $this->company_employments?->employee_date_hired,
             "current_position_name" => $this->current_position_name,
         ];
     }

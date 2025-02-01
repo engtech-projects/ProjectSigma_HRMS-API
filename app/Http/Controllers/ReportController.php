@@ -39,6 +39,9 @@ use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\SimpleExcel\SimpleExcelWriter;
+use Spatie\SimpleExcel\SimpleExcelReader;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
@@ -251,5 +254,75 @@ class ReportController extends Controller
             "message" => "Successfully fetched.",
             "data" => $reportData
         ]);
+    }
+
+    public function administrativeExportReports(AdministrativeReportRequest $request)
+    {
+        $validated = $request->validated();
+        $masterListHeaders = [
+            'Employee ID',
+            'Date Hired',
+            'Last Name',
+            'First Name',
+            'Middle Name',
+            'Suffix',
+            'Nickname',
+            'Present Address',
+            'Permanent Address',
+            'Cellphone',
+            'Date of Birth',
+            'Place of Birth',
+            'Citizenship',
+            'Blood Type', 'Gender',
+            'Religion',
+            'Civil Status',
+            'Height',
+            'Weight',
+            'Father\'s Name',
+            'Mother\'s Name',
+            'Name of Spouse',
+            'Spouse\'s Date of Birth',
+            'Spouse\'s Occupation',
+            'Date of Marriage',
+            'Children (Name and Birthday)',
+            'Person to Contact Name',
+            'Person to Contact Address',
+            'Person to Contact Number',
+            'Person to Contact Relationship',
+            'Primary Education',
+            'Secondary Education',
+            'Tertiary Education',
+            'SSS #',
+            'Philhealth #',
+            'Pag-ibig #',
+            'TIN',
+            'Current Work Location (Department name/ Project Code)',
+            'Current Position', 'Salary Grade'
+        ];
+        if ($validated) {
+            switch ($validated["report_type"]) {
+                case AdministrativeReport::EMPLOYEE_MASTERLIST->value:
+                    $reportData = ReportService::employeeMasterListExport($validated);
+                    $excel = SimpleExcelWriter::create("master_list.xlsx");
+                    $excel->addHeader($masterListHeaders);
+                    foreach ($reportData as $row) {
+                        $excel->addRow($row);
+                    }
+                    $excel->close();
+                    Storage::disk('public')->delete('master_list.xlsx', now()->addMinutes(5));
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => "/master_list.xlsx",
+                            'message' => "Successfully Download."
+                        ]);
+                    break;
+                default:
+                    return new JsonResponse([
+                        "success" => false,
+                        'message' => "File not found."], 400
+                    );
+            }
+        }
     }
 }
