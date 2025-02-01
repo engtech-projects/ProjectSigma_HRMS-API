@@ -271,8 +271,18 @@ class ReportController extends Controller
                     }
                     $excel->close();
                     Storage::disk('public')->delete('master_list.xlsx', now()->addMinutes(5));
-                    return response()->json(['url' => "/master_list.xlsx"]);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => "/master_list.xlsx",
+                            'message' => "Successfully Download."
+                        ]);
                     break;
+                default:
+                    return new JsonResponse([
+                        "success" => false,
+                        'message' => "File not found."], 400
+                    );
             }
         }
     }
