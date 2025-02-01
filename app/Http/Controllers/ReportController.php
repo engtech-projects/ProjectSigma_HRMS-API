@@ -40,6 +40,8 @@ use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use Spatie\SimpleExcel\SimpleExcelReader;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
@@ -261,13 +263,15 @@ class ReportController extends Controller
         if ($validated) {
             switch ($validated["report_type"]) {
                 case AdministrativeReport::EMPLOYEE_MASTERLIST->value:
-                    $pathFile = public_path('template/master_list.xlsx');
                     $reportData = ReportService::employeeMasterListExport($validated);
-                    $excel = SimpleExcelWriter::streamDownload($pathFile)->addHeader($masterListHeaders);
+                    $excel = SimpleExcelWriter::create("master_list.xlsx");
+                    $excel->addHeader($masterListHeaders);
                     foreach ($reportData as $row) {
                         $excel->addRow($row);
                     }
-                    return $excel->toBrowser();
+                    $excel->close();
+                    Storage::disk('public')->delete('master_list.xlsx', now()->addMinutes(5));
+                    return response()->json(['url' => "/master_list.xlsx"]);
                     break;
             }
         }
