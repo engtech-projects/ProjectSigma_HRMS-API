@@ -19,6 +19,7 @@ class LoanPaymentResource extends JsonResource
             "date_paid_human" => $this->date_paid_human,
             "loan" => $this->whenLoaded("loan"),
             "employee" => $this->whenLoaded("employee", new EmployeeSummaryResource($this->employee)),
+            "amount_paid_formatted" => number_format($this->amount_paid, 2),
         ];
     }
 }

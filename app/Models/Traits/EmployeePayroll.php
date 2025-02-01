@@ -2,6 +2,7 @@
 
 namespace App\Models\Traits;
 
+use App\Enums\PayrollType;
 use App\Enums\RequestStatusType;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\CashAdvance;
@@ -157,7 +158,8 @@ trait EmployeePayroll
         if ($wht) {
             $taxBase = $wht->tax_base;
             $taxAmount = $wht->tax_amount;
-            $excess = $salary - $taxBase ?? 0;
+            $baseExcess = $salary - $taxBase;
+            $excess = $baseExcess <= 0 ? 0 : $baseExcess;
             $excessTaxAmount = $excess * $wht->percent_over_base_decimal;
             $total = round($taxAmount + $excessTaxAmount, 2);
         }
