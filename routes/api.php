@@ -297,8 +297,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // REPORTS
     Route::prefix('reports')->group(function () {
-        Route::get('administrative-export', [ReportController::class, 'administrativeExportReports']);
-        Route::get('administrative', [ReportController::class, 'administrativeReportsGenerate']);
         Route::get('sss-employee-remittance', [ReportController::class, 'sssEmployeeRemittanceGenerate']);
         Route::get('sss-remittance-summary', [ReportController::class, 'sssRemittanceSummary']);
         Route::get('sss-group-remittance', [ReportController::class, 'sssGroupRemittanceGenerate']);
@@ -325,6 +323,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('category-list', [ReportController::class, 'otherDeductionsCategoryList']);
             Route::get("get", [ReportController::class, "otherDeductionsReports"]);
         });
+        Route::get('administrative', [ReportController::class, 'administrativeReportsGenerate']);
+        Route::get('administrative-export', [ReportController::class, 'administrativeExportReports']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {
