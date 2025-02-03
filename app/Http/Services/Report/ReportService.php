@@ -28,6 +28,9 @@ use App\Models\PayrollDetail;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class ReportService
 {
@@ -926,28 +929,49 @@ class ReportService
 
     public static function employeeMasterList($validate)
     {
-        $data = Employee::isActive()->with("current_employment","present_address","permanent_address", "father", "mother", "spouse", "child",
-        "contact_person", "employee_education_elementary", "employee_education_secondary", "employee_education_college", "company_employments")->get();
+        $data = Employee::isActive()->with(
+            "current_employment",
+            "present_address",
+            "permanent_address",
+             "father",
+             "mother",
+             "spouse",
+             "child",
+             "contact_person",
+             "employee_education_elementary",
+             "employee_education_secondary",
+             "employee_education_college",
+             "company_employments",
+        )->get();
         if($validate["group_type"]!==GroupType::ALL->value){
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
-            $data = Employee::isActive()->with("current_employment","present_address","permanent_address", "father", "mother", "spouse", "child",
-            "contact_person", "employee_education_elementary", "employee_education_secondary", "employee_education_college", "company_employments")->whereHas("current_employment",
-                function ($query) use ($workLocation, $type, $givenId) {
-                    $query->where('work_location', $workLocation)->whereHas($type,
-                        function ($query) use ($type, $givenId) {
-                            if($givenId) {
-                                if($type === "department"){
-                                    $query->where("departments.id", $givenId);
-                                }
-                                if($type === "projects"){
-                                    $query->where("projects.id", $givenId);
-                                }
-                            }
+            $data = Employee::isActive()->with(
+                "current_employment",
+                "present_address",
+                "permanent_address",
+                "father",
+                "mother",
+                "spouse",
+                "child",
+                "contact_person",
+                "employee_education_elementary",
+                "employee_education_secondary",
+                "employee_education_college",
+                "company_employments"
+             )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+                $query->where('work_location', $workLocation)->whereHas($type, function ($query) use ($type, $givenId) {
+                    if($givenId) {
+                        if($type === "department"){
+                            $query->where("departments.id", $givenId);
                         }
-                    );
-                })
+                        if($type === "projects"){
+                            $query->where("projects.id", $givenId);
+                        }
+                    }
+                });
+            })
             ->get();
         }
         return AdministrativeEmployeeMasterList::collection($data);
@@ -955,55 +979,58 @@ class ReportService
 
     public static function employeeMasterListExport($validate)
     {
-        $reportData = ReportService::employeeMasterList($validate);
-        $formatList = [];
+        $masterListHeaders = [
+            'Employee ID',
+            'Date Hired',
+            'Last Name',
+            'First Name',
+            'Middle Name',
+            'Suffix',
+            'Nickname',
+            'Present Address',
+            'Permanent Address',
+            'Cellphone',
+            'Date of Birth',
+            'Place of Birth',
+            'Citizenship',
+            'Blood Type', 'Gender',
+            'Religion',
+            'Civil Status',
+            'Height',
+            'Weight',
+            'Father\'s Name',
+            'Mother\'s Name',
+            'Name of Spouse',
+            'Spouse\'s Date of Birth',
+            'Spouse\'s Occupation',
+            'Date of Marriage',
+            'Children (Name and Birthday)',
+            'Person to Contact Name',
+            'Person to Contact Address',
+            'Person to Contact Number',
+            'Person to Contact Relationship',
+            'Primary Education',
+            'Secondary Education',
+            'Tertiary Education',
+            'SSS #',
+            'Philhealth #',
+            'Pag-ibig #',
+            'TIN',
+            'Current Work Location (Department name/ Project Code)',
+            'Current Employment Status',
+            'Current Position',
+            'Salary Grade'
+        ];
+        $fileName = "storage/temp-report-generations/Masterlist-". Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::employeeMasterList($validate)->resolve();
         foreach ($reportData as $row) {
-            $dateBirth = $row['date_of_birth'] ? Carbon::parse($row['date_of_birth'])->format('F j, Y') : "Date Birth N/A";
-            $spouseDateBirth = $row->spouse?->date_of_birth ? Carbon::parse($row->spouse?->date_of_birth)->format('F j, Y') : "Spouse Date Birth N/A";
-            array_push($formatList, [
-                $row->company_employments?->employeedisplay_id,
-                $row->company_employments?->employee_date_hired,
-                $row['first_name'],
-                $row['middle_name'],
-                $row['family_name'],
-                $row['name_suffix'],
-                $row['nick_name'],
-                $row->present_address?->complete_address,
-                $row->permanent_address?->complete_address,
-                $row['mobile_number'],
-                $dateBirth,
-                $row['place_of_birth'],
-                $row['citizenship'],
-                $row['blood_type'],
-                $row['gender'],
-                $row['religion'],
-                $row['civil_status'],
-                $row['height'],
-                $row['weight'],
-                $row->date_marriage,
-                $row->father?->name,
-                $row->mother?->name,
-                $row->spouse?->name,
-                $spouseDateBirth,
-                $row->spouse?->name,
-                $row->child->pluck('name_bday')->implode(', '),
-                $row->contact_person?->name,
-                $row->contact_person?->address,
-                $row->contact_person?->contact_no,
-                $row->contact_person?->relationship,
-                $row->employee_education_elementary?->education,
-                $row->employee_education_secondary?->education,
-                $row->employee_education_college?->education,
-                $row->company_employments?->sss_number,
-                $row->company_employments?->phic_number,
-                $row->company_employments?->pagibig_number,
-                $row->company_employments?->tin_number,
-                $row->current_assignment_names,
-                $row->current_position_name,
-                $row->current_salarygrade_and_step,
-            ]);
+            $excel->addRow($row);
         }
-        return $formatList;
+        $excel->close();
+        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
     }
 
     public static function employeeNewList($validate)
