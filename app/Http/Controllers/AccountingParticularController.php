@@ -29,7 +29,7 @@ class AccountingParticularController extends Controller
         if (AccountingParticular::create($validatedData)) {
             return response()->json([
                 'success' => true,
-                'message' => 'Successfully save.'
+                'message' => 'Successfully Created.'
             ]);
         }
     }
@@ -63,6 +63,10 @@ class AccountingParticularController extends Controller
      */
     public function destroy(AccountingParticular $payroll_particular_term)
     {
-        //
+        $payroll_particular_term->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully deleted.'
+        ]);
     }
 }

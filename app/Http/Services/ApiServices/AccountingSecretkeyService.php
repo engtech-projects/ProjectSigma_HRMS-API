@@ -25,12 +25,16 @@ class AccountingSecretkeyService
 
     public function submitPayrollRequest($salaryDisbursementRequest)
     {
+        $stopError = false;
+        $dataErrors = "";
         $sdr = new RequestPayrollSummaryResource($salaryDisbursementRequest);
         $sdrArray = $sdr->toArray(new Request());
         $details = $sdrArray["summary"];
         // Log::info($sdrArray);
         // Log::info($details->toArray(new Request()));
         $payload = [
+            "requested_by" => $salaryDisbursementRequest->created_by,
+            "remarks" => "payroll_summary_id=" . $salaryDisbursementRequest->id,
             "payee" => "MAYBANK",
             "amount" => "",
             "details" => $details->flatMap(function ($detail, $stakeholder) {
@@ -127,6 +131,7 @@ class AccountingSecretkeyService
             }),
         ];
         // AGGREGATE DEDUCTION TOTALS
+        $tempAllDeductionDetails = [];
         $loanParticularTerms = AccountingParticular::where('type', 'loan')->get();
         $loanParticularTerms = $loanParticularTerms->flatMap(function ($particularTerm) {
             return [
@@ -164,11 +169,29 @@ class AccountingSecretkeyService
                 'amount' => $otherDeduction['amount'],
             ];
         })->values()->all();
-        Log::info($loanProblems);
-        Log::info($otherDeductionProblems);
-        Log::info($loans);
-        Log::info($otherDeductions);
-        // REMOVE DEDUCTIONS
+        if ($loanProblems) {
+            // Create and SendNotification
+            // Log::info($loanProblems);
+            $stopError = true;
+            $dataErrors .= implode(', ', (array)$loanProblems);
+        }
+        if($otherDeductionProblems) {
+            // Create and SendNotification
+            // Log::info($otherDeductionProblems);
+            $stopError = true;
+            $dataErrors .= implode(', ', (array)$otherDeductionProblems);
+        }
+        if ($stopError) {
+            return [
+                "success"=> false,
+                "message"=> "Particulars not set: " . $dataErrors
+            ];
+        }
+        // Log::info($loanProblems);
+        // Log::info($otherDeductionProblems);
+        // Log::info($loans);
+        // Log::info($otherDeductions);
+        // REMOVE TEMP DEDUCTIONS
         $payload["details"] = collect($payload["details"])->filter(function ($detail) {
             return !(in_array($detail['particular'], [
                 AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value,
@@ -180,41 +203,52 @@ class AccountingSecretkeyService
         })->values()->all();
         // ADD DEDUCTION AGGREGATES
         if  ($sss > 0){
-            $payload["details"][] = [
+            $tempAllDeductionDetails[] = [
                 'particular' => AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value,
                 'amount' => $sss,
             ];
         }
         if ($pagibig > 0) {
-            $payload["details"][] = [
+            $tempAllDeductionDetails[] = [
                 'particular' => AccountingPayrollParticulars::HDMF_PREMIUM_PAYABLE->value,
                 'amount' => $pagibig,
             ];
         }
         if ($philhealth > 0) {
-            $payload["details"][] = [
+            $tempAllDeductionDetails[] = [
                 'particular' => AccountingPayrollParticulars::PHIC_PREMIUM_PAYABLE->value,
                 'amount' => $philhealth,
             ];
         }
         if ($wtax > 0) {
-            $payload["details"][] = [
+            $tempAllDeductionDetails[] = [
                 'particular' => AccountingPayrollParticulars::EWTC->value,
                 'amount' => $wtax,
             ];
         }
         if ($cashAdvance > 0) {
-            $payload["details"][] = [
+            $tempAllDeductionDetails[] = [
                 'particular' => AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value,
                 'amount' => $cashAdvance,
             ];
         }
-        Log::info($payload);
-        return true;
-        // $response = Http::withToken($this->authToken)
-        //     ->withBody(json_encode($sdrArray), 'application/json')
-        //     ->acceptJson()
-        //     ->post($this->apiUrl.'/api/submit-payroll-prf');
-        // return $response->successful();
+        $tempAllDeductionDetails = array_merge($tempAllDeductionDetails, $loans);
+        $tempAllDeductionDetails = array_merge($tempAllDeductionDetails, $otherDeductions);
+        // SUM LOANS AND OTHER DEDUCTIONS BASED ON PARTICULAR NAME
+        $tempAllDeductionDetails = collect($tempAllDeductionDetails)->groupBy('particular')->map(function ($group) {
+            return [
+                'particular' => $group->first()['particular'],
+                'amount' => $group->sum('amount'),
+            ];
+        })->values()->all();
+        $payload["details"] = array_merge($payload["details"], $tempAllDeductionDetails);
+        // Log::info($payload);
+        $response = Http::withToken($this->authToken)
+            ->withBody(json_encode($payload), 'application/json')
+            ->acceptJson()
+            ->post($this->apiUrl.'/api/sigma/payroll/create-request');
+        // Log::info($response);
+        return $response->successful();
+        // return true;
     }
 }

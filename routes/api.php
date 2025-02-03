@@ -225,6 +225,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-approvals', [RequestSalaryDisbursementController::class, 'myApprovals']);
         Route::get('payslip-ready', [RequestSalaryDisbursementController::class, 'payslipReady']);
         Route::get('payslip-ready/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'payslipReadyShow']);
+        Route::post('submit-to-accounting/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'submitToAccounting']);
     });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
