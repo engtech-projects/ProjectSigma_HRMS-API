@@ -64,6 +64,8 @@ class SalaryDisbursementService
             $returnData[$key] = [
                 "data" => $dataCollection,
                 "summary" => [
+                    "charge_type" => $dataCollection->first()->charge_type,
+                    "charge" => $key,
                     // SALARY
                     "charging_pay_basic" => $payBasic, // TOTAL OF REGULAR PAYS, ADJUSMENTS
                     "charging_pay_overtime" => $payOvertime, // TOTAL OF OVERTIME PAYS

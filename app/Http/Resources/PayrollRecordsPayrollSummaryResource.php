@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 class PayrollRecordsPayrollSummaryResource extends JsonResource
 {
@@ -21,6 +22,7 @@ class PayrollRecordsPayrollSummaryResource extends JsonResource
             "data" => parent::toArray($request),
             "summary" => [
                 "no_of_employee" => $dataCollection->count(),
+                "charging_type_name" => $salaries["charge_type"],
                 // SALARY
                 "pay_basic" => $dataCollection->sum("total_basic_pays"), // TOTAL OF REGULAR PAYS, ADJUSTMENTS
                 "pay_overtime" => $dataCollection->sum("total_overtime_pays"), // TOTAL OF OVERTIME PAYS

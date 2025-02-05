@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\DisbursementStatus;
 use App\Enums\RequestStatuses;
+use App\Http\Services\ApiServices\AccountingSecretkeyService;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
@@ -80,5 +81,7 @@ class RequestSalaryDisbursement extends Model
         $this->disbursement_status = DisbursementStatus::RELEASED->value;
         $this->save();
         $this->refresh();
+        $accountingService = new AccountingSecretkeyService();
+        $accountingService->submitPayrollRequest($this);
     }
 }

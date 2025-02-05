@@ -24,6 +24,7 @@ class RequestPayrollSummaryResource extends JsonResource
             "summary" => PayrollRecordsPayrollSummaryResource::collection($payrollSummaryDatas),
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "next_approval" => $this->getNextPendingApproval(),
+            "created_at_human" => $this->created_at_human,
         ];
     }
 }

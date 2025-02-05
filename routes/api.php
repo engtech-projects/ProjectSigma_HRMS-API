@@ -28,6 +28,7 @@ use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\JobApplicantsController;
 use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\AccessibilitiesController;
+use App\Http\Controllers\AccountingParticularController;
 use App\Http\Controllers\CompanyEmployeeController;
 use App\Http\Controllers\EmployeeAddressController;
 use App\Http\Controllers\EmployeeUploadsController;
@@ -136,6 +137,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', SalaryGradeLevelController::class)->names("setupSalary");
         Route::get('list', SalaryGradeLevelListController::class);
     });
+    // to do: Move Setup Routes inside setups prefix
+    Route::prefix('setup')->group(function () {
+        Route::resource('payroll-particular-terms', AccountingParticularController::class)->names('payrollParticularTerms');
+    });
     // APPROVALS
     Route::resource('approvals', ApprovalsController::class);
     Route::prefix('approvals')->group(function () {
@@ -220,6 +225,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-approvals', [RequestSalaryDisbursementController::class, 'myApprovals']);
         Route::get('payslip-ready', [RequestSalaryDisbursementController::class, 'payslipReady']);
         Route::get('payslip-ready/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'payslipReadyShow']);
+        Route::post('submit-to-accounting/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'submitToAccounting']);
     });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
