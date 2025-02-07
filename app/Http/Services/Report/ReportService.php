@@ -4,6 +4,7 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
+use App\Http\Services\Report\AttendanceReportService;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -1055,5 +1056,24 @@ class ReportService
         }
 
         return AdministrativeEmployeeLeaves::collection($data);
+    }
+
+    public static function employeeAbsenties($validate)
+    {
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $employeeDtr = AttendanceReportService::getEmployeeDtr($dateFrom, $dateTo);
+        $events = AttendanceReportService::getEvents($dateFrom, $dateTo);
+        $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events) {
+            $employeeAttendance = AttendanceReportService::employeeAttendance($employee, $dateFrom, $dateTo, $events);
+            return [
+                "employee_name" => $employee->fullname_last,
+                "employee_id" => $employee->company_employments?->employeedisplay_id,
+                "designation" => $employee->current_position_name,
+                "section" => $employee->current_assignment_names,
+                "total_absents" => $employeeAttendance["absenceCount"],
+            ];
+        });
+        return $reportData;
     }
 }

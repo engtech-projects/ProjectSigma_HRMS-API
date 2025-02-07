@@ -37,13 +37,11 @@ use App\Http\Resources\Reports\OtherDeductionDefaultSummary;
 use App\Http\Resources\Reports\OtherDeductionMP2Employee;
 use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Services\Report\ReportService;
-use App\Http\Services\Attendance\AttendanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -250,21 +248,7 @@ class ReportController extends Controller
                     $reportData = ReportService::employeeLeaves($validated);
                     break;
                 case AdministrativeReport::EMPLOYEE_ABSENTIES->value:
-                    $dateFrom = Carbon::parse($validated["date_from"]);
-                    $dateTo = Carbon::parse($validated["date_to"]);
-                    $employeeDtr = AttendanceService::getEmployeeDtr($dateFrom, $dateTo);
-                    $events = AttendanceService::getEvents($dateFrom, $dateTo);
-                    $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events) {
-                        $employeeAttendance = AttendanceService::employeeAttendance($employee, $dateFrom, $dateTo, $events);
-                        return [
-                            "employee_name" => $employee->fullname_last,
-                            "employee_id" => $employee->company_employments?->employeedisplay_id,
-                            "designation" => $employee->current_position_name,
-                            "section" => $employee->current_assignment_names,
-                            "total_absents" => $employeeAttendance["absenceCount"],
-                        ];
-                    });
-                    return $reportData;
+                    $reportData = ReportService::employeeAbsenties($validated);
                     break;
             }
         }
