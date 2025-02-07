@@ -17,6 +17,84 @@ use Illuminate\Support\Facades\Log;
 
 class AttendanceService
 {
+    public static function allowanceAttendance(Employee $employee, Carbon $cutoffStart, Carbon $cutoffEnd)
+    {
+        $employee->load(['attendance_log' => function ($query) use ($cutoffStart, $cutoffEnd) {
+            $query->whereBetween('date', [
+                $cutoffStart,
+                $cutoffEnd
+            ])
+            ->where('log_type', AttendanceLogType::TIME_IN->value);
+        }, 'attendance_log.department.schedule', 'attendance_log.project.project_schedule']);
+        return $employee ->attendance_log->groupBy("date")->count();
+    }
+
+    // Version 2 Of Generate DTR - Optimized, query all at beginning
+    public static function generateDtr($employeeId, $dateFrom, $dateTo, $payrollCharging = null)
+    {
+        $employee = Employee::with([
+            'employee_overtime' => function ($query) use ($dateFrom, $dateTo) {
+                $query->betweenDates($dateFrom, $dateTo)
+                ->with(["charging"]);
+            },
+            'employee_travel_order' => function ($query) use ($dateFrom, $dateTo) {
+                $query->betweenDates(Carbon::parse($dateFrom)->copy()->subDays(7)->format("Y-m-d"), $dateTo);
+            },
+            'attendance_log' => function ($query) use ($dateFrom, $dateTo) {
+                $query->with(["department", "project"])->betweenDates(Carbon::parse($dateFrom)->copy()->subDays(7)->format("Y-m-d"), $dateTo);
+            },
+            'employee_leave' => function ($query) use ($dateFrom, $dateTo) {
+                $query->with(['leave'])->betweenDates($dateFrom, $dateTo);
+            },
+            'employee_schedule_irregular' => function ($query) use ($dateFrom, $dateTo) {
+                $query->betweenDates($dateFrom, $dateTo);
+            },
+            'employee_schedule_regular' => function ($query) use ($dateFrom, $dateTo) {
+                $query->betweenDates($dateFrom, $dateTo);
+            },
+            'employee_internal' => function ($query) use ($dateFrom, $dateTo) {
+                $query
+                ->betweenDates($dateFrom, $dateTo)
+                ->with([
+                    "department_schedule_irregular" => function ($query) use ($dateFrom, $dateTo) {
+                        $query->betweenDates($dateFrom, $dateTo);
+                    },
+                    "department_schedule_regular" => function ($query) use ($dateFrom, $dateTo) {
+                        $query->betweenDates($dateFrom, $dateTo);
+                    },
+                    'projects' => function ($query) use ($dateFrom, $dateTo) {
+                        $query->with([
+                            "schedule_irregular" => function ($query) use ($dateFrom, $dateTo) {
+                                $query->betweenDates($dateFrom, $dateTo);
+                            },
+                            "schedule_regular" => function ($query) use ($dateFrom, $dateTo) {
+                                $query->betweenDates($dateFrom, $dateTo);
+                            },
+                        ]);
+                    },
+                ]);
+            },
+        ])->find($employeeId);
+        $employeeDatas = [
+            "employee" => $employee,
+            "internals" => $employee->employee_internal,
+            "employee_schedules_irregular" => $employee->employee_schedule_irregular,
+            "employee_schedules_regular" => $employee->employee_schedule_regular,
+            // PROJECT SCHEDULES TO BE TAKEN FROM employee->"employee_internal->projects"
+            // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_internal->department"
+            "overtimes" => $employee->employee_overtime,
+            "attendanceLogs" => $employee->attendance_log,
+            "travel_orders" => $employee->employee_travel_order,
+            "leaves" => $employee->employee_leave,
+            'events' => Events::betweenDates($dateFrom, $dateTo)->get(),
+        ];
+        $employee["dtr"] = Self::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging);
+        $employee["date_from"] = $dateFrom;
+        $employee["date_to"] = $dateTo;
+        $employee["current_position"] = $employee->current_position_name;
+        return $employee;
+    }
+
     public static function processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging = null)
     {
         $periodDates = Helpers::dateRange([
