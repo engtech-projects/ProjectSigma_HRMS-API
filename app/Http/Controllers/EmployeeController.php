@@ -138,13 +138,18 @@ class EmployeeController extends Controller
             "doctorstudies",
             "professionalstudies",
             "employee_seminartraining",
-            "employee_internal.employee_salarygrade.salary_grade_level",
-            "employee_internal.position",
-            "employee_internal.projects",
             "employee_externalwork",
             "images",
             'face_patterns',
-        )->find($id);
+        )
+        ->with("employee_internal", function ($q) {
+            $q->with("employee_salarygrade.salary_grade_level")
+                ->with("position")
+                ->with("projects")
+                ->orderBy("date_from", "desc");
+
+        })
+        ->find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
             $main["age"] = $main->age;
