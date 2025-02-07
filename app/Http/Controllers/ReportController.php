@@ -247,6 +247,9 @@ class ReportController extends Controller
                 case AdministrativeReport::EMPLOYEE_LEAVES->value:
                     $reportData = ReportService::employeeLeaves($validated);
                     break;
+                case AdministrativeReport::EMPLOYEE_ABSENTIES->value:
+                    $reportData = ReportService::employeeAbsenties($validated);
+                    break;
             }
         }
         return new JsonResponse([

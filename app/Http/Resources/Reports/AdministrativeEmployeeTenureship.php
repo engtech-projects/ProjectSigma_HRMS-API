@@ -16,7 +16,7 @@ class AdministrativeEmployeeTenureship extends JsonResource
     public function toArray(Request $request): array
     {
         $givenDate = $this->company_employments?->employee_date_hired;
-        $year = 0;
+        $years = 0;
         $months = 0;
         if(!is_string($givenDate)){
             $currentDate = Carbon::now();
