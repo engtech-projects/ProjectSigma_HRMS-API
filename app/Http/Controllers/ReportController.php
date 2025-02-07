@@ -38,7 +38,6 @@ use App\Http\Resources\Reports\OtherDeductionMP2Employee;
 use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
@@ -222,7 +221,8 @@ class ReportController extends Controller
         }
         return new JsonResponse([
             "success" => false,
-            'message' => $e->getMessage()]
+            'message' => 'Failed to fetch Employee Tenureship List.'],
+            JsonResponse::HTTP_EXPECTATION_FAILED
         );
     }
 
@@ -241,6 +241,9 @@ class ReportController extends Controller
                 case AdministrativeReport::EMPLOYEE_NEWHIRE->value:
                     $reportData = ReportService::employeeNewList($validated);
                     break;
+                case AdministrativeReport::EMPLOYEE_LEAVES->value:
+                    $reportData = ReportService::employeeLeaves($validated);
+                    break;
             }
         }
         return new JsonResponse([
@@ -248,5 +251,28 @@ class ReportController extends Controller
             "message" => "Successfully fetched.",
             "data" => $reportData
         ]);
+    }
+
+    public function administrativeExportReports(AdministrativeReportRequest $request)
+    {
+        $validated = $request->validated();
+        if ($validated) {
+            switch ($validated["report_type"]) {
+                case AdministrativeReport::EMPLOYEE_MASTERLIST->value:
+                    $downloadUrl = ReportService::employeeMasterListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]);
+                    break;
+                default:
+                    return new JsonResponse([
+                        "success" => false,
+                        'message' => "File not found."], 400
+                    );
+            }
+        }
     }
 }

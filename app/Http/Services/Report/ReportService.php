@@ -21,11 +21,16 @@ use App\Http\Resources\SssRemittanceSummaryResource;
 use App\Http\Resources\Reports\AdministrativeEmployeeTenureship;
 use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
 use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
+use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class ReportService
 {
@@ -921,34 +926,113 @@ class ReportService
         }
         return AdministrativeEmployeeTenureship::collection($data);
     }
+
     public static function employeeMasterList($validate)
     {
-        $data = Employee::isActive()->with("current_employment","present_address","permanent_address", "father", "mother", "spouse", "child",
-        "contact_person", "employee_education_elementary", "employee_education_secondary", "employee_education_college", "company_employments")->get();
+        $data = Employee::isActive()->with(
+            "current_employment",
+            "present_address",
+            "permanent_address",
+             "father",
+             "mother",
+             "spouse",
+             "child",
+             "contact_person",
+             "employee_education_elementary",
+             "employee_education_secondary",
+             "employee_education_college",
+             "company_employments",
+        )->get();
         if($validate["group_type"]!==GroupType::ALL->value){
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
-            $data = Employee::isActive()->with("current_employment","present_address","permanent_address", "father", "mother", "spouse", "child",
-            "contact_person", "employee_education_elementary", "employee_education_secondary", "employee_education_college", "company_employments")->whereHas("current_employment",
-                function ($query) use ($workLocation, $type, $givenId) {
-                    $query->where('work_location', $workLocation)->whereHas($type,
-                        function ($query) use ($type, $givenId) {
-                            if($givenId) {
-                                if($type === "department"){
-                                    $query->where("departments.id", $givenId);
-                                }
-                                if($type === "projects"){
-                                    $query->where("projects.id", $givenId);
-                                }
-                            }
+            $data = Employee::isActive()->with(
+                "current_employment",
+                "present_address",
+                "permanent_address",
+                "father",
+                "mother",
+                "spouse",
+                "child",
+                "contact_person",
+                "employee_education_elementary",
+                "employee_education_secondary",
+                "employee_education_college",
+                "company_employments"
+             )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+                $query->where('work_location', $workLocation)->whereHas($type, function ($query) use ($type, $givenId) {
+                    if($givenId) {
+                        if($type === "department"){
+                            $query->where("departments.id", $givenId);
                         }
-                    );
-                })
+                        if($type === "projects"){
+                            $query->where("projects.id", $givenId);
+                        }
+                    }
+                });
+            })
             ->get();
         }
         return AdministrativeEmployeeMasterList::collection($data);
     }
+
+    public static function employeeMasterListExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee ID',
+            'Date Hired',
+            'Last Name',
+            'First Name',
+            'Middle Name',
+            'Suffix',
+            'Nickname',
+            'Present Address',
+            'Permanent Address',
+            'Cellphone',
+            'Date of Birth',
+            'Place of Birth',
+            'Citizenship',
+            'Blood Type', 'Gender',
+            'Religion',
+            'Civil Status',
+            'Height',
+            'Weight',
+            'Father\'s Name',
+            'Mother\'s Name',
+            'Name of Spouse',
+            'Spouse\'s Date of Birth',
+            'Spouse\'s Occupation',
+            'Date of Marriage',
+            'Children (Name and Birthday)',
+            'Person to Contact Name',
+            'Person to Contact Address',
+            'Person to Contact Number',
+            'Person to Contact Relationship',
+            'Primary Education',
+            'Secondary Education',
+            'Tertiary Education',
+            'SSS #',
+            'Philhealth #',
+            'Pag-ibig #',
+            'TIN',
+            'Current Work Location (Department name/ Project Code)',
+            'Current Employment Status',
+            'Current Position',
+            'Salary Grade'
+        ];
+        $fileName = "storage/temp-report-generations/Masterlist-". Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::employeeMasterList($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeNewList($validate)
     {
         $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
@@ -957,5 +1041,46 @@ class ReportService
             }
         )->get();
         return AdministrativeEmployeeNewList::collection($data);
+    }
+    public static function employeeLeaves($validate)
+    {
+        $data = Employee::isActive()->with([
+            "company_employments",
+            "current_employment",
+            'employee_leave' => function ($query) use ($validate) {
+            $query->betweenDates($validate["date_from"], $validate["date_to"]);
+        }])->whereHas('employee_leave', function ($query) use ($validate) {
+            $query->betweenDates($validate["date_from"], $validate["date_to"]);
+        })->get();
+
+        if ($validate["group_type"] != "All") {
+            $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
+            $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
+            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+
+            $data = Employee::isActive()->with([
+                "company_employments",
+                "current_employment",
+                'employee_leave' => function ($query) use ($validate) {
+                    $query->betweenDates($validate["date_from"], $validate["date_to"]);
+                }
+            ])->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+                $query->where('work_location', $workLocation)
+                    ->whereHas($type, function ($query) use ($type, $givenId) {
+                        if($givenId) {
+                            if($type === "department"){
+                                $query->where("departments.id", $givenId);
+                            }
+                            if($type === "projects"){
+                                $query->where("projects.id", $givenId);
+                            }
+                        }
+                    });
+            })->whereHas('employee_leave', function ($query) use ($validate) {
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            })->get();
+        }
+
+        return AdministrativeEmployeeLeaves::collection($data);
     }
 }

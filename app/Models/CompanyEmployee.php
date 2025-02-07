@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class CompanyEmployee extends Model
 {
@@ -34,5 +35,16 @@ class CompanyEmployee extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    protected function getEmployeeDateHiredAttribute()
+    {
+        $data = $this->date_hired;
+        if($data){
+            $data = Carbon::parse($this->date_hired)->format('F j, Y');
+        }else{
+            $data = "Date Hired N/A";
+        }
+        return $data;
     }
 }
