@@ -20,7 +20,7 @@ class AdministrativeEmployeeTenureship extends JsonResource
             "employee_name" => $this['fullname_last'],
             "date_hired" => $this->company_employments?->employee_date_hired,
             "designation" => $this->current_position_name,
-            "ternure_ecdc" => $this->company_employments?->date_hired ? Carbon::parse($this->company_employments?->date_hired)->diffForHumans([
+            "tenure_ecdc" => $this->company_employments?->date_hired ? Carbon::parse($this->company_employments?->date_hired)->diffForHumans([
                 "syntax" => CarbonInterface::DIFF_ABSOLUTE,
                 "parts" => 2,
             ]) : 0,
