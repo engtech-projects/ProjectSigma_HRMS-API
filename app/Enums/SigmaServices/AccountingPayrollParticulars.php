@@ -16,4 +16,5 @@ enum AccountingPayrollParticulars: string
     case HDMF_PREMIUM_PAYABLE = "HDMF_PREMIUM_PAYABLE";
     case EWTC = "EWTC";
     case ADVANCES_TO_OFFICERS_AND_EMPLOYEES = "ADVANCES_TO_OFFICERS_AND_EMPLOYEES";
+    case PAYEE = "PAYROLL_PAYEE";
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Services\ApiServices;
 
 use App\Enums\GroupType;
+use App\Enums\ReleaseType;
 use App\Enums\SigmaServices\AccountingPayrollParticulars;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Models\Department;
@@ -30,19 +31,23 @@ class AccountingSecretkeyService
         $sdr = new RequestPayrollSummaryResource($salaryDisbursementRequest);
         $sdrArray = $sdr->toArray(new Request());
         $details = $sdrArray["summary"];
+        $atmRemark = $salaryDisbursementRequest->release_type == ReleaseType::ATM ? "WITH ATM" : "WITHOUT ATM";
         // Log::info($sdrArray);
         // Log::info($details->toArray(new Request()));
+        $net = 0;
         $payload = [
             "requested_by" => $salaryDisbursementRequest->created_by,
-            "remarks" => "payroll_summary_id=" . $salaryDisbursementRequest->id,
+            "remarks" => "PAYMENT FOR " . $salaryDisbursementRequest->payroll_type . " PAYROLL " . $atmRemark . " FOR THE PAYROLL PERIOD " . $salaryDisbursementRequest->payroll_date_human . ".",
+            "payroll_summary_id" => $salaryDisbursementRequest->id,
             "payee" => "MAYBANK",
             "amount" => "",
-            "details" => $details->flatMap(function ($detail, $stakeholder) {
+            "details" => $details->flatMap(function ($detail, $stakeholder) use(&$net) {
                 $datas = [];
                 $summary = $detail->toArray(new Request())['summary'];
                 $chargingType = $summary["charging_type_name"];
                 $payrollData = $detail->toArray(new Request())['data']["details"];
                 // BASIC and OT Pay Aggregation
+                $net += $summary["charging_net_pay"] ?? 0;
                 if ($chargingType == Project::class) {
                     if ($summary['charging_pay_basic']) {
                         $datas[] = [
@@ -242,6 +247,11 @@ class AccountingSecretkeyService
             ];
         })->values()->all();
         $payload["details"] = array_merge($payload["details"], $tempAllDeductionDetails);
+        $payload["amount"] = round($net, 2);
+        $payload["details"][] = [
+            'particular' => AccountingPayrollParticulars::PAYEE->value,
+            'amount' => round($net, 2),
+        ];
         // Log::info($payload);
         $response = Http::withToken($this->authToken)
             ->withBody(json_encode($payload), 'application/json')
