@@ -178,13 +178,13 @@ class AccountingSecretkeyService
             // Create and SendNotification
             // Log::info($loanProblems);
             $stopError = true;
-            $dataErrors .= implode(', ', (array)$loanProblems);
+            $dataErrors .= 'Loans not set: ' . implode(', ', (array)$loanProblems);
         }
         if($otherDeductionProblems) {
             // Create and SendNotification
             // Log::info($otherDeductionProblems);
             $stopError = true;
-            $dataErrors .= implode(', ', (array)$otherDeductionProblems);
+            $dataErrors .= 'Other Deductions not set: ' . implode(', ', (array)$otherDeductionProblems);
         }
         if ($stopError) {
             return [

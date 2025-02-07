@@ -44,11 +44,11 @@ class RequestSalaryDisbursementController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(10);
+        ->paginate(5);
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($allRequests)->response()->getData(true)
+            'data' => RequestPayrollSummaryResource::collection($allRequests)->response()->getData(true),
         ]);
     }
 
