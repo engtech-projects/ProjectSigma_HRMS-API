@@ -257,8 +257,8 @@ class AccountingSecretkeyService
             ->withBody(json_encode($payload), 'application/json')
             ->acceptJson()
             ->post($this->apiUrl.'/api/sigma/payroll/create-request');
-        // Log::info($response);
-        return $response->successful();
+        //Log::info($response);
+        return $response;
         // return true;
     }
 }
