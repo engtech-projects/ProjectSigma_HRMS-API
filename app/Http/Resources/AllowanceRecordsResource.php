@@ -23,7 +23,7 @@ class AllowanceRecordsResource extends JsonResource
                 "id" => $this->employee->id,
                 "fullname_first" => $this->employee->fullname_first,
                 "fullname_last" => $this->employee->fullname_last,
-                "position" => $this->employee->current_employment->position->name,
+                "position" => $this->employee->current_position_name,
             ],
         ];
     }

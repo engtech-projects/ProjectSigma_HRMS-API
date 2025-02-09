@@ -113,6 +113,13 @@ class InternalWorkExperience extends Model
             return $projName ?? "Unassigned";
         }
     }
+    public function getCurrentSalarygradeAndStepAttribute()
+    {
+        if (!$this->employee_salarygrade) {
+            return "No salary grade set.";
+        }
+        return "SG ". $this->employee_salarygrade?->salary_grade_level?->salary_grade_level . "- STEP ". $this->employee_salarygrade?->step_name;
+    }
     /**
     * ==================================================
     * STATIC SCOPES

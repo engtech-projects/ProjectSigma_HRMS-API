@@ -499,7 +499,8 @@ class EmployeePanRequest extends Model
         $newInterWorkExp['salary_type'] = $this->salary_type;
         $newInterWorkExp['date_to'] = null;
         $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
-        InternalWorkExperience::create($newInterWorkExp);
+        $newIWE = InternalWorkExperience::create($newInterWorkExp);
+        $newIWE->projects()->attach($interWorkExp->projects->pluck("id"));
     }
     /** Termination Employee PAN  request approved
      * to terminate proccessed.
