@@ -15,14 +15,9 @@ class AttendanceReportService
     {
 
         $attendanceLogs = collect($employee->attendance_log)->groupBy('date');
-        $overtimeDates = collect($employee->overtimes)->mapWithKeys(function($overtime) {
-            return [$overtime->overtime_date => $overtime->overtime_start_time];
-        });
-
+        $overtimes = $employee->overtimes;
         $fullDayAttendanceCount = 0;
-        $halfDayAttendanceCount = 0;
         $absenceCount = 0;
-        $countDays = 0;
         $checkedDates = [];
 
         foreach ($schedules as $date => $scheduleList) {
@@ -30,19 +25,37 @@ class AttendanceReportService
             $logOutFound = false;
             foreach ($scheduleList as $schedule) {
                 $startDate = Carbon::parse($date);
+                $startTime = Carbon::parse($schedule['start_time_human']);
+                $endTime = Carbon::parse($schedule['end_time_human']);
                 if (isset($attendanceLogs[$date])) {
                     foreach ($attendanceLogs[$date] as $log) {
                         $dateString = $startDate->toDateString();;
+                        $logTime = Carbon::parse($log['time_human']);
 
                         if (isset($checkedDates[$dateString]) || $events->contains($dateString)) {
                             continue;
                         }
 
                         if ($log["date"] == $date) {
-                            if ($log['log_type'] == 'In' && $log['time_human'] == $schedule['start_time_human']) {
+                            if ($log['log_type'] == 'In' && $logTime->between($startTime, $endTime)) {
                                 $logInFound = true;
                             }
-                            if ($log['log_type'] == 'Out' && $log['time_human'] == $schedule['end_time_human']) {
+                            if ($log['log_type'] == 'Out' && $logTime->greaterThanOrEqualTo($endTime)) {
+                                $logOutFound = true;
+                            }
+                        }
+                    }
+                }
+                if ($overtimes) {
+                    foreach ($overtimes as $overtime) {
+                        if ($overtime['overtime_date'] == $date) {
+                            $overtimeStartTime = Carbon::parse($overtime['start_time_human']);
+                            $overtimeEndTime = Carbon::parse($overtime['end_time_human']);
+
+                            if ($overtimeStartTime->between($startTime, $endTime)) {
+                                $logInFound = true;
+                            }
+                            if ($overtimeEndTime->greaterThanOrEqualTo($endTime)) {
                                 $logOutFound = true;
                             }
                         }
@@ -54,10 +67,12 @@ class AttendanceReportService
             } else {
                 $absenceCount++;
             }
+
         }
 
         return [
-            "fullDayAttendanceCount" => $fullDayAttendanceCount,
+            "lateCount" => $fullDayAttendanceCount,
+            "attendanceCount" => $fullDayAttendanceCount,
             "absenceCount" => $absenceCount,
             "schedules" => $schedules,
         ];
