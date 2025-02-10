@@ -1063,7 +1063,7 @@ class ReportService
     {
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
-        $employeeDtr = AttendanceReportService::getEmployeeDtr($dateFrom, $dateTo);
+        $employeeDtr = AttendanceReportService::getEmployeeDtr($dateFrom, $dateTo, $validate);
         $events = AttendanceReportService::getEvents($dateFrom, $dateTo);
         $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events) {
             $employeeDatas = [

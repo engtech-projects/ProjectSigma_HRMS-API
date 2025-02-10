@@ -84,9 +84,10 @@ class AttendanceReportService
         ];
     }
 
-    public static function getEmployeeDtr($dateFrom, $dateTo)
+    public static function getEmployeeDtr($dateFrom, $dateTo, $validate)
     {
         $employees = Employee::with([
+            "current_employment",
             'employee_overtime' => function ($query) use ($dateFrom, $dateTo) {
                 $query->betweenDates($dateFrom, $dateTo)
                 ->with(["charging"]);
@@ -128,9 +129,29 @@ class AttendanceReportService
                     },
                 ]);
             },
-        ])->get();
+        ]);
 
-        return $employees;
+        if ($validate["group_type"] != "All") {
+            $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
+            $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
+            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+
+            $employees->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+                $query->where('work_location', $workLocation)
+                    ->whereHas($type, function ($query) use ($type, $givenId) {
+                        if($givenId) {
+                            if($type === "department"){
+                                $query->where("departments.id", $givenId);
+                            }
+                            if($type === "projects"){
+                                $query->where("projects.id", $givenId);
+                            }
+                        }
+                    });
+            });
+        }
+
+        return $employees->get();
     }
 
     public static function getAppliedDateSchedule($employeeDatas, $date)
