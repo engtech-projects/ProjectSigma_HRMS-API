@@ -40,14 +40,14 @@ class AdministrativeReportRequest extends FormRequest
             'date_from' => [
                 'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_NEWHIRE->value,
                 'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_LEAVES->value,
-                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_ABSENTIES->value,
+                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_ABSENCES->value,
                 'nullable',
                 'date'
             ],
             'date_to' => [
                 'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_NEWHIRE->value,
                 'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_LEAVES->value,
-                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_ABSENTIES->value,
+                'required_if:report_type,==,' . AdministrativeReport::EMPLOYEE_ABSENCES->value,
                 'nullable',
                 'date'
             ]

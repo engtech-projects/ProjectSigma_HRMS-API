@@ -1059,7 +1059,7 @@ class ReportService
         return AdministrativeEmployeeLeaves::collection($data);
     }
 
-    public static function employeeAbsenties($validate)
+    public static function employeeAbsences($validate)
     {
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
