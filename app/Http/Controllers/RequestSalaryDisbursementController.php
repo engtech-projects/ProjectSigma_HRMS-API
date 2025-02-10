@@ -240,7 +240,7 @@ class RequestSalaryDisbursementController extends Controller
         if (!$submitResult["success"]) {
             return new JsonResponse([
                 'success' => false,
-                'message' => 'Failed to submit request to accounting.' . $submitResult["success"],
+                'message' => 'Failed to submit request to accounting.' . $submitResult["message"],
             ], JsonResponse::HTTP_NOT_ACCEPTABLE);
         }
         return new JsonResponse([
