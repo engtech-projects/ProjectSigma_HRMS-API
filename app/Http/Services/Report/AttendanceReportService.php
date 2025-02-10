@@ -4,42 +4,15 @@ namespace App\Http\Services\Report;
 
 use App\Models\Department;
 use App\Models\Employee;
+use App\Enums\WorkLocation;
 use App\Models\Events;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class AttendanceReportService
 {
-    public static function employeeAttendance($employee, $dateFrom, $dateTo, $events)
+    public static function employeeAttendance($employee, $dateFrom, $dateTo, $events, $schedules)
     {
-        $schedules = collect();
-        foreach ($employee->employee_internal as $key) {
-            if (isset($key)) {
-                if (isset($key->department_schedule_irregular)) {
-                    $schedules = $schedules->merge($key->department_schedule_irregular);
-                }
-                if (isset($key->department_schedule_regular)) {
-                    $schedules = $schedules->merge($key->department_schedule_regular);
-                }
-                if (isset($key->projects)) {
-                    if (isset($key->projects->schedule_irregular)) {
-                        $schedules = $schedules->merge($key->projects->schedule_irregular);
-                    }
-                    if (isset($key->projects->schedule_regular)) {
-                        $schedules = $schedules->merge($key->projects->schedule_regular);
-                    }
-                }
-            }
-            if (isset($employee->employee_schedules_irregular)) {
-                $schedules = $schedules->merge($employee->employee_schedules_irregular);
-            }
-            if (isset($employee->employee_schedules_regular)) {
-                $schedules = $schedules->merge($employee->employee_schedules_regular);
-            }
-        }
-
-        $schedules = $schedules->flatten();
-
 
         $attendanceLogs = collect($employee->attendance_log)->groupBy('date');
         $overtimeDates = collect($employee->overtimes)->mapWithKeys(function($overtime) {
@@ -51,53 +24,55 @@ class AttendanceReportService
         $absenceCount = 0;
         $checkedDates = [];
 
-        foreach ($schedules as $schedule) {
-            $startDate = Carbon::parse($schedule['startRecur']);
-            $endDate = Carbon::parse($schedule['endRecur']);
-            $daysOfWeek = $schedule['daysOfWeek'];
+        foreach ($schedules as $scheduleList) {
+            foreach ($scheduleList as $schedule) {
+                $startDate = Carbon::parse($schedule['startRecur']);
+                $endDate = Carbon::parse($schedule['endRecur']);
+                $daysOfWeek = $schedule['daysOfWeek'];
 
-            while ($startDate->lte($endDate)) {
-                if (in_array($startDate->dayOfWeekIso, $daysOfWeek)) {
-                    $dateString = $startDate->toDateString();
+                while ($startDate->lte($endDate)) {
+                    if (in_array($startDate->dayOfWeekIso, $daysOfWeek)) {
+                        $dateString = $startDate->toDateString();
 
-                    if (isset($checkedDates[$dateString]) || $events->contains($dateString)) {
-                        $startDate->addDay();
-                        continue;
-                    }
+                        if (isset($checkedDates[$dateString]) || $events->contains($dateString)) {
+                            $startDate->addDay();
+                            continue;
+                        }
 
-                    $checkedDates[$dateString] = true;
-                    $logInFound = false;
-                    $logOutFound = false;
+                        $checkedDates[$dateString] = true;
+                        $logInFound = false;
+                        $logOutFound = false;
 
-                    if ($attendanceLogs->has($dateString)) {
-                        $logsForDate = $attendanceLogs->get($dateString);
+                        if ($attendanceLogs->has($dateString)) {
+                            $logsForDate = $attendanceLogs->get($dateString);
 
-                        foreach ($logsForDate as $log) {
-                            if ($log['employee_id'] == $schedule['employee_id']) {
-                                if ($log['log_type'] == 'In') {
-                                    $logInFound = true;
-                                } elseif ($log['log_type'] == 'Out') {
-                                    $logOutFound = true;
+                            foreach ($logsForDate as $log) {
+                                if ($log['employee_id'] == $schedule['employee_id']) {
+                                    if ($log['log_type'] == 'In') {
+                                        $logInFound = true;
+                                    } elseif ($log['log_type'] == 'Out') {
+                                        $logOutFound = true;
+                                    }
                                 }
                             }
                         }
+
+                        if ($overtimeDates->has($dateString) && $overtimeDates->get($dateString) == $schedule['startTime']) {
+                            $logInFound = true;
+                            $logOutFound = true;
+                        }
+
+                        if ($logInFound && $logOutFound) {
+                            $fullDayAttendanceCount++;
+                        } elseif ($logInFound || $logOutFound) {
+                            $halfDayAttendanceCount++;
+                        } else {
+                            $absenceCount++;
+                        }
                     }
 
-                    if ($overtimeDates->has($dateString) && $overtimeDates->get($dateString) == $schedule['startTime']) {
-                        $logInFound = true;
-                        $logOutFound = true;
-                    }
-
-                    if ($logInFound && $logOutFound) {
-                        $fullDayAttendanceCount++;
-                    } elseif ($logInFound || $logOutFound) {
-                        $halfDayAttendanceCount++;
-                    } else {
-                        $absenceCount++;
-                    }
+                    $startDate->addDay();
                 }
-
-                $startDate->addDay();
             }
         }
 
@@ -156,6 +131,74 @@ class AttendanceReportService
         ])->get();
 
         return $employees;
+    }
+
+    public static function getAppliedDateSchedule($employeeDatas, $date)
+    {
+        $schedule = $employeeDatas["employee_schedules_irregular"]->where(function ($data) use ($date) {
+            return $date->eq($data->startRecur);
+        })->values();
+        if ($schedule && sizeof($schedule) > 0) {
+            return $schedule;
+        }
+        $schedule = $employeeDatas["employee_schedules_regular"]->where(function ($data) use ($date) {
+            return $date->gte($data->startRecur) &&
+            in_array((string)$date->dayOfWeek, $data->daysOfWeek ?? []) &&
+            (
+                is_null($data->endRecur) ||
+                $date->lt($data->endRecur)
+            );
+        })->values();
+        if ($schedule && sizeof($schedule) > 0) {
+            return $schedule;
+        }
+        $currentInternalOnDate = $employeeDatas["employee"]->employee_internal->where(function ($data) use ($date) {
+            return $date->gte($data->date_from) &&
+            (
+                $date->lte($data->date_to) ||
+                is_null($data->date_to)
+            );
+        })->first();
+        $currentWorkLocation = $currentInternalOnDate->work_location ?? "";
+        if ($currentWorkLocation == WorkLocation::OFFICE->value) {
+            $schedule = $currentInternalOnDate['department_schedule_irregular']->where(function ($data) use ($date) {
+                return $date->eq($data->startRecur);
+            })->values();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
+            $schedule = $currentInternalOnDate['department_schedule_regular']->where(function ($data) use ($date) {
+                return $date->gte($data->startRecur) &&
+                in_array((string)$date->dayOfWeek, $data->daysOfWeek ?? []) &&
+                (
+                    is_null($data->endRecur) ||
+                    $date->lt($data->endRecur)
+                );
+            })->values();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
+        } elseif ($currentWorkLocation == WorkLocation::PROJECT->value) {
+            $latestProject = $currentInternalOnDate->projects()->orderBy('id', 'desc')->first();
+            $schedule = $latestProject?->schedule_irregular->where(function ($data) use ($date) {
+                return $date->eq($data->startRecur);
+            })->values();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
+            $schedule = $latestProject?->schedule_regular->where(function ($data) use ($date) {
+                return $date->gte($data->startRecur) &&
+                in_array((string)$date->dayOfWeek, $data->daysOfWeek ?? []) &&
+                (
+                    is_null($data->endRecur) ||
+                    $date->lt($data->endRecur)
+                );
+            })->values();
+            if ($schedule && sizeof($schedule) > 0) {
+                return $schedule;
+            }
+        }
+        return collect([]);
     }
 
     public static function getEvents($dateFrom, $dateTo)

@@ -29,6 +29,7 @@ use App\Models\PayrollDetail;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Helpers;
 
 class ReportService
 {
@@ -1065,7 +1066,28 @@ class ReportService
         $employeeDtr = AttendanceReportService::getEmployeeDtr($dateFrom, $dateTo);
         $events = AttendanceReportService::getEvents($dateFrom, $dateTo);
         $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events) {
-            $employeeAttendance = AttendanceReportService::employeeAttendance($employee, $dateFrom, $dateTo, $events);
+            $employeeDatas = [
+                "employee" => $employee,
+                "internals" => $employee->employee_internal,
+                "employee_schedules_irregular" => $employee->employee_schedule_irregular,
+                "employee_schedules_regular" => $employee->employee_schedule_regular,
+                // PROJECT SCHEDULES TO BE TAKEN FROM employee->"employee_internal->projects"
+                // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_internal->department"
+                "overtimes" => $employee->employee_overtime,
+                "attendanceLogs" => $employee->attendance_log,
+                "travel_orders" => $employee->employee_travel_order,
+                "leaves" => $employee->employee_leave,
+                'events' => $events,
+            ];
+            $periodDates = Helpers::dateRange([
+                'period_start' => $dateFrom, 'period_end' => $dateTo
+            ]);
+            $schedules = collect($periodDates)->groupBy("date")->map(function ($val, $date) use ($employeeDatas) {
+                $carbonDate = Carbon::parse($date);
+                $appliedDateSchedule = AttendanceReportService::getAppliedDateSchedule($employeeDatas, $carbonDate);
+                return $appliedDateSchedule;
+            });
+            $employeeAttendance = AttendanceReportService::employeeAttendance($employee, $dateFrom, $dateTo, $events, $schedules);
             return [
                 "employee_name" => $employee->fullname_last,
                 "employee_id" => $employee->company_employments?->employeedisplay_id,
