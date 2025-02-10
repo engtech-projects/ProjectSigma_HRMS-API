@@ -22,63 +22,42 @@ class AttendanceReportService
         $fullDayAttendanceCount = 0;
         $halfDayAttendanceCount = 0;
         $absenceCount = 0;
+        $countDays = 0;
         $checkedDates = [];
 
-        foreach ($schedules as $scheduleList) {
+        foreach ($schedules as $date => $scheduleList) {
+            $logInFound = false;
+            $logOutFound = false;
             foreach ($scheduleList as $schedule) {
-                $startDate = Carbon::parse($schedule['startRecur']);
-                $endDate = Carbon::parse($schedule['endRecur']);
-                $daysOfWeek = $schedule['daysOfWeek'];
-
-                while ($startDate->lte($endDate)) {
-                    if (in_array($startDate->dayOfWeekIso, $daysOfWeek)) {
-                        $dateString = $startDate->toDateString();
+                $startDate = Carbon::parse($date);
+                if (isset($attendanceLogs[$date])) {
+                    foreach ($attendanceLogs[$date] as $log) {
+                        $dateString = $startDate->toDateString();;
 
                         if (isset($checkedDates[$dateString]) || $events->contains($dateString)) {
-                            $startDate->addDay();
                             continue;
                         }
 
-                        $checkedDates[$dateString] = true;
-                        $logInFound = false;
-                        $logOutFound = false;
-
-                        if ($attendanceLogs->has($dateString)) {
-                            $logsForDate = $attendanceLogs->get($dateString);
-
-                            foreach ($logsForDate as $log) {
-                                if ($log['employee_id'] == $schedule['employee_id']) {
-                                    if ($log['log_type'] == 'In') {
-                                        $logInFound = true;
-                                    } elseif ($log['log_type'] == 'Out') {
-                                        $logOutFound = true;
-                                    }
-                                }
+                        if ($log["date"] == $date) {
+                            if ($log['log_type'] == 'In' && $log['time_human'] == $schedule['start_time_human']) {
+                                $logInFound = true;
+                            }
+                            if ($log['log_type'] == 'Out' && $log['time_human'] == $schedule['end_time_human']) {
+                                $logOutFound = true;
                             }
                         }
-
-                        if ($overtimeDates->has($dateString) && $overtimeDates->get($dateString) == $schedule['startTime']) {
-                            $logInFound = true;
-                            $logOutFound = true;
-                        }
-
-                        if ($logInFound && $logOutFound) {
-                            $fullDayAttendanceCount++;
-                        } elseif ($logInFound || $logOutFound) {
-                            $halfDayAttendanceCount++;
-                        } else {
-                            $absenceCount++;
-                        }
                     }
-
-                    $startDate->addDay();
                 }
+            }
+            if ($logInFound && $logOutFound) {
+                $fullDayAttendanceCount++;
+            } else {
+                $absenceCount++;
             }
         }
 
         return [
             "fullDayAttendanceCount" => $fullDayAttendanceCount,
-            "halfDayAttendanceCount" => $halfDayAttendanceCount,
             "absenceCount" => $absenceCount,
             "schedules" => $schedules,
         ];
