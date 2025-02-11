@@ -34,16 +34,18 @@ class AttendanceReportService
                 if (isset($attendanceLogs[$date])) {
                     foreach ($attendanceLogs[$date] as $log) {
                         $dateString = $startDate->toDateString();
-                        $logTime = Carbon::parse($log['time_human']);
+                        $logTime = Carbon::parse($log['time']);
                         if ($events->contains($dateString)) {
                             continue;
                         }
                         if ($log["date"] == $date) {
-                            if ($log['log_type'] == 'In' && $logTime->between($startTime, $endTime)) {
-                                $logInFound = true;
-                            }
-                            if ($log['log_type'] == 'Out' && $logTime->greaterThanOrEqualTo($endTime)) {
-                                $logOutFound = true;
+                            if ($logTime >= $startTime && $logTime <= $endTime) {
+                                if ($log['log_type'] == 'In') {
+                                    $logInFound = true;
+                                }
+                                if ($log['log_type'] == 'Out') {
+                                    $logOutFound = true;
+                                }
                             }
                         }
                     }
@@ -64,9 +66,11 @@ class AttendanceReportService
                     }
                 }
             }
+
             if ($inSchedule) {
                 if ($logInFound && $logOutFound) {
                     $fullDayAttendanceCount++;
+                } elseif ($logInFound || $logOutFound) {
                 } else {
                     $absenceCount++;
                 }
