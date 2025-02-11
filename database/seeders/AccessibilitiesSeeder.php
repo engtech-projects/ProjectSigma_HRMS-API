@@ -975,7 +975,7 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 1160,
                     'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REQUEST_NON_PURCHASE_ORDER->value,
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
