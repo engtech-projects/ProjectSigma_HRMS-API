@@ -54,7 +54,7 @@ class AdministrativeEmployeeMasterList extends JsonResource
             "pagibig_number" => $this->company_employments?->pagibig_number,
             "tin_number" => $this->company_employments?->tin_number,
             "work_location" => $this->current_assignment_names,
-            "current_employment_status" => $this->current_employment->employment_status,
+            "current_employment_status" => $this->current_employment?->employment_status,
             "current_position_name" => $this->current_position_name,
             "salary_grade" => $this->current_salarygrade_and_step,
         ];
