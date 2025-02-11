@@ -18,24 +18,26 @@ class AttendanceReportService
         $overtimes = $employee->overtimes;
         $fullDayAttendanceCount = 0;
         $absenceCount = 0;
-        $checkedDates = [];
 
         foreach ($schedules as $date => $scheduleList) {
             $logInFound = false;
             $logOutFound = false;
+            $inSchedule = false;
+            $startDate = Carbon::parse($date);
+            $dayOfWeek = $startDate->dayOfWeekIso;
             foreach ($scheduleList as $schedule) {
-                $startDate = Carbon::parse($date);
                 $startTime = Carbon::parse($schedule['start_time_human']);
                 $endTime = Carbon::parse($schedule['end_time_human']);
+                if (in_array($dayOfWeek, $schedule['daysOfWeek'])) {
+                    $inSchedule = true;
+                }
                 if (isset($attendanceLogs[$date])) {
                     foreach ($attendanceLogs[$date] as $log) {
-                        $dateString = $startDate->toDateString();;
+                        $dateString = $startDate->toDateString();
                         $logTime = Carbon::parse($log['time_human']);
-
-                        if (isset($checkedDates[$dateString]) || $events->contains($dateString)) {
+                        if ($events->contains($dateString)) {
                             continue;
                         }
-
                         if ($log["date"] == $date) {
                             if ($log['log_type'] == 'In' && $logTime->between($startTime, $endTime)) {
                                 $logInFound = true;
@@ -62,10 +64,12 @@ class AttendanceReportService
                     }
                 }
             }
-            if ($logInFound && $logOutFound) {
-                $fullDayAttendanceCount++;
-            } else {
-                $absenceCount++;
+            if ($inSchedule) {
+                if ($logInFound && $logOutFound) {
+                    $fullDayAttendanceCount++;
+                } else {
+                    $absenceCount++;
+                }
             }
 
         }
