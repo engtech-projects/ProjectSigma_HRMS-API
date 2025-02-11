@@ -29,7 +29,6 @@ use App\Models\PayrollDetail;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-use App\Helpers;
 
 class ReportService
 {
@@ -1079,21 +1078,16 @@ class ReportService
                 "leaves" => $employee->employee_leave,
                 'events' => $events,
             ];
-            $periodDates = Helpers::dateRange([
-                'period_start' => $dateFrom, 'period_end' => $dateTo
-            ]);
-            $schedules = collect($periodDates)->groupBy("date")->map(function ($val, $date) use ($employeeDatas) {
-                $carbonDate = Carbon::parse($date);
-                $appliedDateSchedule = AttendanceReportService::getAppliedDateSchedule($employeeDatas, $carbonDate);
-                return $appliedDateSchedule;
-            });
-            $employeeAttendance = AttendanceReportService::employeeAttendance($employee, $dateFrom, $dateTo, $events, $schedules);
+            $dtr = AttendanceReportService::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo);
+            $employeeAttendance = AttendanceReportService::employeeAttendance($dtr);
             return [
                 "employee_name" => $employee->fullname_last,
                 "employee_id" => $employee->company_employments?->employeedisplay_id,
                 "designation" => $employee->current_position_name,
                 "section" => $employee->current_assignment_names,
                 "total_absents" => $employeeAttendance["absenceCount"],
+                "total_present" => $employeeAttendance["attendanceCount"],
+                // "schedules" => $dtr,
             ];
         });
         return $reportData;
