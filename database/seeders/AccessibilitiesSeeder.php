@@ -1010,7 +1010,7 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 1180,
                     'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_VOUCHER_DISBURSEMENT->value,
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
@@ -1045,7 +1045,7 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 1190,
                     'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_VOUCHER_CASH->value,
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],

@@ -28,17 +28,17 @@ enum AccessibilityAccounting: string
 
     //Accounting Voucher
     case ACCOUNTING_VOUCHER_DISBURSEMENT = "accounting:voucher_disbursement";
-    case ACCOUNTING_VOUCHER_DISBURSEMENT_ALL = "accounting:voucher_disbursement-list_all request";
-    case ACCOUNTING_VOUCHER_DISBURSEMENT_MY_REQUEST = "accounting:voucher_disbursement-list_my request";
-    case ACCOUNTING_VOUCHER_DISBURSEMENT_MY_APPROVAL = "accounting:voucher_disbursement-list_my approval";
-    case ACCOUNTING_VOUCHER_DISBURSEMENT_FOR_DISBURSEMENT_VOUCHER = "accounting:voucher_disbursement-list_for disbursement voucher";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_ALL = "accounting:voucher_disbursement_all request";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_MY_REQUEST = "accounting:voucher_disbursement_my request";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_MY_APPROVAL = "accounting:voucher_disbursement_my approval";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_FOR_DISBURSEMENT_VOUCHER = "accounting:voucher_disbursement_for disbursement voucher";
     case ACCOUNTING_VOUCHER_CASH = "accounting:voucher_cash";
-    case ACCOUNTING_VOUCHER_CASH_ALL = "accounting:voucher_cash-list_all request";
-    case ACCOUNTING_VOUCHER_CASH_MY_REQUEST = "accounting:voucher_cash-list_my request";
-    case ACCOUNTING_VOUCHER_CASH_MY_APPROVAL = "accounting:voucher_cash-list_my approval";
-    case ACCOUNTING_VOUCHER_CASH_FOR_CASH_VOUCHER = "accounting:voucher_cash-list_for cash voucher";
-    case ACCOUNTING_VOUCHER_CASH_CLEARED = "accounting:voucher_cash-list_cleared list";
-    case ACCOUNTING_VOUCHER_CASH_FOR_CLEARING = "accounting:voucher_cash-list_clearing list";
+    case ACCOUNTING_VOUCHER_CASH_ALL = "accounting:voucher_cash_all request";
+    case ACCOUNTING_VOUCHER_CASH_MY_REQUEST = "accounting:voucher_cash_my request";
+    case ACCOUNTING_VOUCHER_CASH_MY_APPROVAL = "accounting:voucher_cash_my approval";
+    case ACCOUNTING_VOUCHER_CASH_FOR_CASH_VOUCHER = "accounting:voucher_cash_for cash voucher";
+    case ACCOUNTING_VOUCHER_CASH_CLEARED = "accounting:voucher_cash_cleared list";
+    case ACCOUNTING_VOUCHER_CASH_FOR_CLEARING = "accounting:voucher_cash_clearing list";
 
     //Accounting Journal
     case ACCOUNTING_JOURNAL_ENTRY = "accounting:journal_journal entry";
