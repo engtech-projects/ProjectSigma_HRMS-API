@@ -1079,7 +1079,7 @@ class ReportService
                 'events' => $events,
             ];
             $dtr = AttendanceReportService::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo);
-            $employeeAttendance = AttendanceReportService::employeeAttendance($dtr);
+            $employeeAttendance = AttendanceReportService::employeeAttendance($dtr, $events);
             return [
                 "employee_name" => $employee->fullname_last,
                 "employee_id" => $employee->company_employments?->employeedisplay_id,

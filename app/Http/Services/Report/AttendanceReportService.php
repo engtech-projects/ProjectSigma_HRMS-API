@@ -4,6 +4,7 @@ namespace App\Http\Services\Report;
 
 use App\Models\Department;
 use App\Enums\AttendanceSettings;
+use App\Enums\EmploymentStatus;
 use App\Models\Employee;
 use App\Enums\WorkLocation;
 use App\Models\Events;
@@ -16,17 +17,22 @@ use App\Enums\EventTypes;
 
 class AttendanceReportService
 {
-    public static function employeeAttendance($dtr)
+    public static function employeeAttendance($dtr, $events)
     {
         $fullDayAttendanceCount = 0;
         $absenceCount = 0;
         foreach ($dtr as $date => $log) {
+            $startDate = Carbon::parse($date);
+            if ($events->contains($startDate->toDateString())) {
+                continue;
+            }
             $schedules = collect($log["metadata"]["summary"]["schedules"]);
             $totalWorkHours = $log["metadata"]["total"]["reg_hrs"];
             $totalLate = $log["metadata"]["total"]["late"];
             foreach ($schedules as $schedule) {
                 $startTimeAbsent = strpos($schedule["start_time_log"], "ABSENT") !== false;
                 $endTimeAbsent = strpos($schedule["end_time_log"], "ABSENT") !== false;
+
                 if ($startTimeAbsent || $endTimeAbsent) {
                     $absenceCount++;
                     break;
@@ -337,9 +343,7 @@ class AttendanceReportService
     }
     public static function getEvents($dateFrom, $dateTo)
     {
-        $events = collect(Events::betweenDates($dateFrom, $dateTo)->get())->flatMap(function($event) {
-            return Carbon::parse($event['start_date'])->daysUntil(Carbon::parse($event['end_date']));
-        })->map->toDateString();
+        $events = Events::betweenDates($dateFrom, $dateTo)->get();
         return $events;
     }
     public static function processEmployeeDtr($employeeDatas, $dateFrom, $dateTo, $payrollCharging = null)
@@ -783,5 +787,15 @@ class AttendanceReportService
         })
         ->first();
         return $holidays;
+    }
+    public static function hasAttendanceTravelOnDate($employeeDatas, $date) {
+        $date = Carbon::parse($date);
+        $attendances = $employeeDatas["attendanceLogs"]->where(function ($data) use ($date) {
+            return $date->eq($data->date);
+        })->values();
+        $travelOrders = $employeeDatas["travel_orders"]->where(function ($data) use ($date) {
+            return $date->gte($data->date_of_travel) && $date->lte($data->date_time_end);
+        })->values();
+        return sizeof($attendances) > 0 || sizeof($travelOrders) > 0;
     }
 }
