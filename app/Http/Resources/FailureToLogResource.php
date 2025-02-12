@@ -28,6 +28,8 @@ class FailureToLogResource extends JsonResource
             'charging_designation' => $this->charging_designation,
             "next_approval" => $this->getNextPendingApproval(),
             'employee' => $this->whenLoaded('employee'),
+            "created_by_user" => $this->created_by_user_name,
+            "created_at_human" => $this->created_at_human,
         ];
         //return parent::toArray($request);
     }
