@@ -112,7 +112,12 @@ class Employee extends Model
     }
     public function current_employment(): HasOne
     {
-        return $this->hasOne(InternalWorkExperience::class, 'employee_id')->where("status", "=", "current")
+        return $this->hasOne(InternalWorkExperience::class, 'employee_id')
+            ->where(function ($query) {
+                $query
+                ->currentOnDate(Carbon::now())
+                ->orWhere("status", "=", "current");
+            })
             ->with("employee_salarygrade.salary_grade_level", "department");
     }
     public function employee_internal(): HasMany
