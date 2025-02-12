@@ -4,6 +4,7 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
+use App\Http\Services\Report\AttendanceReportService;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -1082,5 +1083,40 @@ class ReportService
         }
 
         return AdministrativeEmployeeLeaves::collection($data);
+    }
+
+    public static function employeeAbsences($validate)
+    {
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $employeeDtr = AttendanceReportService::getEmployeeDtr($dateFrom, $dateTo, $validate);
+        $events = AttendanceReportService::getEvents($dateFrom, $dateTo);
+        $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events) {
+            $employeeDatas = [
+                "employee" => $employee,
+                "internals" => $employee->employee_internal,
+                "employee_schedules_irregular" => $employee->employee_schedule_irregular,
+                "employee_schedules_regular" => $employee->employee_schedule_regular,
+                // PROJECT SCHEDULES TO BE TAKEN FROM employee->"employee_internal->projects"
+                // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_internal->department"
+                "overtimes" => $employee->employee_overtime,
+                "attendanceLogs" => $employee->attendance_log,
+                "travel_orders" => $employee->employee_travel_order,
+                "leaves" => $employee->employee_leave,
+                'events' => $events,
+            ];
+            $dtr = AttendanceReportService::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo);
+            $employeeAttendance = AttendanceReportService::employeeAttendance($dtr);
+            return [
+                "employee_name" => $employee->fullname_last,
+                "employee_id" => $employee->company_employments?->employeedisplay_id,
+                "designation" => $employee->current_position_name,
+                "section" => $employee->current_assignment_names,
+                "total_absents" => $employeeAttendance["absenceCount"],
+                "total_present" => $employeeAttendance["attendanceCount"],
+                // "schedules" => $dtr,
+            ];
+        });
+        return $reportData;
     }
 }

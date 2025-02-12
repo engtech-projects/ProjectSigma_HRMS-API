@@ -5,6 +5,7 @@ namespace App\Http\Resources\Reports;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 class AdministrativeEmployeeTenureship extends JsonResource
 {
@@ -15,20 +16,14 @@ class AdministrativeEmployeeTenureship extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $givenDate = $this->company_employments?->employee_date_hired;
-        $year = 0;
-        $months = 0;
-        if(!is_string($givenDate)){
-            $currentDate = Carbon::now();
-            $years = $currentDate->diffInYears($givenDate);
-            $months = $currentDate->diffInMonths($givenDate) % 12;
-        }
-
         return [
             "employee_name" => $this['fullname_last'],
             "date_hired" => $this->company_employments?->employee_date_hired,
             "designation" => $this->current_position_name,
-            "ternure_ecdc" => $this->company_employments?->date_hired ? $years." Years ". $months." Months" : 0,
+            "tenure_ecdc" => $this->company_employments?->date_hired ? Carbon::parse($this->company_employments?->date_hired)->diffForHumans([
+                "syntax" => CarbonInterface::DIFF_ABSOLUTE,
+                "parts" => 2,
+            ]) : 0,
             "work_location" => $this->current_employment->work_location,
         ];
     }
