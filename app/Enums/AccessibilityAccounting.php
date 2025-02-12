@@ -21,11 +21,24 @@ enum AccessibilityAccounting: string
     //Accounting Request
     case ACCOUNTING_REQUEST_PURCHASE_ORDER = "accounting:request_purchase order";
     case ACCOUNTING_REQUEST_NON_PURCHASE_ORDER = "accounting:request_non purchase order";
+    case ACCOUNTING_REQUEST_NON_PURCHASE_ORDER_ALL = "accounting:request_npo_all request";
+    case ACCOUNTING_REQUEST_NON_PURCHASE_ORDER_MY_REQUEST = "accounting:request_npo_my request";
+    case ACCOUNTING_REQUEST_NON_PURCHASE_ORDER_MY_APPROVAL = "accounting:request_npo_my approval";
     case ACCOUNTING_REQUEST_PRE_PAYROLL_AUDIT = "accounting:request_pre payroll audit";
 
     //Accounting Voucher
     case ACCOUNTING_VOUCHER_DISBURSEMENT = "accounting:voucher_disbursement";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_ALL = "accounting:voucher_disbursement_all request";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_MY_REQUEST = "accounting:voucher_disbursement_my request";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_MY_APPROVAL = "accounting:voucher_disbursement_my approval";
+    case ACCOUNTING_VOUCHER_DISBURSEMENT_FOR_DISBURSEMENT_VOUCHER = "accounting:voucher_disbursement_for disbursement voucher";
     case ACCOUNTING_VOUCHER_CASH = "accounting:voucher_cash";
+    case ACCOUNTING_VOUCHER_CASH_ALL = "accounting:voucher_cash_all request";
+    case ACCOUNTING_VOUCHER_CASH_MY_REQUEST = "accounting:voucher_cash_my request";
+    case ACCOUNTING_VOUCHER_CASH_MY_APPROVAL = "accounting:voucher_cash_my approval";
+    case ACCOUNTING_VOUCHER_CASH_FOR_CASH_VOUCHER = "accounting:voucher_cash_for cash voucher";
+    case ACCOUNTING_VOUCHER_CASH_CLEARED = "accounting:voucher_cash_cleared list";
+    case ACCOUNTING_VOUCHER_CASH_FOR_CLEARING = "accounting:voucher_cash_clearing list";
 
     //Accounting Journal
     case ACCOUNTING_JOURNAL_ENTRY = "accounting:journal_journal entry";
