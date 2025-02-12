@@ -1086,8 +1086,8 @@ class ReportService
                 "designation" => $employee->current_position_name,
                 "section" => $employee->current_assignment_names,
                 "total_absents" => $employeeAttendance["absenceCount"],
-                "total_present" => $employeeAttendance["attendanceCount"],
-                // "schedules" => $dtr,
+                "total_attendance" => $employeeAttendance["attendanceCount"],
+                "total_lates" => $employeeAttendance["lateCount"],
             ];
         });
         return $reportData;
