@@ -23,6 +23,7 @@ class AttendanceReportService
         foreach ($dtr as $date => $log) {
             $schedules = collect($log["metadata"]["summary"]["schedules"]);
             $totalWorkHours = $log["metadata"]["total"]["reg_hrs"];
+            $totalLate = $log["metadata"]["total"]["late"];
             foreach ($schedules as $schedule) {
                 $startTimeAbsent = strpos($schedule["start_time_log"], "ABSENT") !== false;
                 $endTimeAbsent = strpos($schedule["end_time_log"], "ABSENT") !== false;
@@ -36,9 +37,9 @@ class AttendanceReportService
             }
         }
         return [
-            // "lateCount" => $fullDayAttendanceCount,
             "attendanceCount" => $fullDayAttendanceCount,
             "absenceCount" => $absenceCount,
+            "lateCount" => $totalLate,
         ];
     }
     public static function calculateWorkRendered($employeeDayData, $date)
