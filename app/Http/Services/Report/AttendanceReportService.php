@@ -21,6 +21,7 @@ class AttendanceReportService
     {
         $fullDayAttendanceCount = 0;
         $absenceCount = 0;
+        $totalLate = 0;
         foreach ($dtr as $date => $log) {
             $startDate = Carbon::parse($date);
             if ($events->contains($startDate->toDateString())) {
@@ -28,7 +29,7 @@ class AttendanceReportService
             }
             $schedules = collect($log["metadata"]["summary"]["schedules"]);
             $totalWorkHours = $log["metadata"]["total"]["reg_hrs"];
-            $totalLate = $log["metadata"]["total"]["late"];
+            $totalLate += $log["metadata"]["total"]["late"];
             foreach ($schedules as $schedule) {
                 $startTimeAbsent = strpos($schedule["start_time_log"], "ABSENT") !== false;
                 $endTimeAbsent = strpos($schedule["end_time_log"], "ABSENT") !== false;
