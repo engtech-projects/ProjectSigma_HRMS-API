@@ -80,12 +80,12 @@ class Loans extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->amount - $this->totalPaid;
+        return round($this->amount - $this->totalPaid, 2);
     }
 
     public function getTotalPaidAttribute()
     {
-        return $this->loanPayments()->sum("amount_paid");
+        return round($this->loanPayments()->sum("amount_paid"), 2);
     }
 
     public function loanPaid()

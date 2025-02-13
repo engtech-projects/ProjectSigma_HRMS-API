@@ -88,12 +88,12 @@ class CashAdvance extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->amount - $this->totalPaid;
+        return round($this->amount - $this->totalPaid, 2);
     }
 
     public function getTotalPaidAttribute()
     {
-        return $this->cashAdvancePaymentsPosted()->sum("amount_paid");
+        return round($this->cashAdvancePaymentsPosted()->sum("amount_paid"), 2);
     }
 
     public function cashPaid()
