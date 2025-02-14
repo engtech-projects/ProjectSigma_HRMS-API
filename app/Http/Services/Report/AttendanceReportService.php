@@ -21,9 +21,9 @@ class AttendanceReportService
     {
         $fullDayAttendanceCount = 0;
         $absenceCount = 0;
+        $late = 0;
         $lateCount = 0;
         $lateDays = [];
-        $attendanceCheck = [];
         foreach ($dtr as $date => $log) {
             $startDate = Carbon::parse($date);
             if ($events->contains($startDate->toDateString())) {
@@ -31,8 +31,7 @@ class AttendanceReportService
             }
             $schedules = collect($log["metadata"]["summary"]["schedules"]);
             $totalWorkHours = $log["metadata"]["total"]["reg_hrs"];
-            $attendanceLogs = $log["attendance_logs"];
-            $mainSchedules = $log["schedules"];
+            $late = $log["metadata"]["total"]["late"];
             foreach ($schedules as $schedule) {
                 $startTimeAbsent = strpos($schedule["start_time_log"], "ABSENT") !== false;
                 $endTimeAbsent = strpos($schedule["end_time_log"], "ABSENT") !== false;
@@ -43,32 +42,15 @@ class AttendanceReportService
                 }
             }
 
+            if ($late > 0 && !in_array($date, $lateDays)) {
+                $lateCount++;
+                $lateDays[] = $date;
+            }
+
             if ($totalWorkHours > 0) {
                 $fullDayAttendanceCount++;
             }
 
-            foreach ($attendanceLogs as $mainLog) {
-                foreach ($mainSchedules as $schedule) {
-                    $logDate = $mainLog["date"];
-                    $logTime = strtotime($mainLog["time"]);
-                    $logDayOfWeek = date('N', strtotime($logDate));
-                    if (in_array($logDayOfWeek, $schedule["daysOfWeek"])) {
-                        $scheduleStartTime = strtotime($schedule["startTime"]);
-                        if (!in_array($logDate, $attendanceCheck)) {
-                            if ($logTime <= $scheduleStartTime) {
-                                $attendanceCheck[] = $logDate;
-                                continue;
-                            }
-
-                            if ($logTime > $scheduleStartTime && !in_array($logDate, $lateDays)) {
-                                $lateCount++;
-                                $lateDays[] = $logDate;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
         }
         return [
             "attendanceCount" => $fullDayAttendanceCount,
