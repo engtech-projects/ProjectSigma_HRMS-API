@@ -4,6 +4,7 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
+use App\Http\Services\Report\AttendanceReportService;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -1040,6 +1041,31 @@ class ReportService
                 $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
             }
         )->get();
+        if ($validate["group_type"] != "All") {
+            $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
+            $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
+            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+
+            $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
+                function ($query) use ($validate) {
+                    $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
+                }
+            )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+                $query->where('work_location', $workLocation)
+                    ->whereHas($type, function ($query) use ($type, $givenId) {
+                        if($givenId) {
+                            if($type === "department"){
+                                $query->where("departments.id", $givenId);
+                            }
+                            if($type === "projects"){
+                                $query->where("projects.id", $givenId);
+                            }
+                        }
+                    });
+            })->whereHas('employee_leave', function ($query) use ($validate) {
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            })->get();
+        }
         return AdministrativeEmployeeNewList::collection($data);
     }
     public static function employeeLeaves($validate)
@@ -1082,5 +1108,40 @@ class ReportService
         }
 
         return AdministrativeEmployeeLeaves::collection($data);
+    }
+
+    public static function employeeAbsences($validate)
+    {
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $employeeDtr = AttendanceReportService::getEmployeeDtr($dateFrom, $dateTo, $validate);
+        $events = AttendanceReportService::getEvents($dateFrom, $dateTo);
+        $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events) {
+            $employeeDatas = [
+                "employee" => $employee,
+                "internals" => $employee->employee_internal,
+                "employee_schedules_irregular" => $employee->employee_schedule_irregular,
+                "employee_schedules_regular" => $employee->employee_schedule_regular,
+                // PROJECT SCHEDULES TO BE TAKEN FROM employee->"employee_internal->projects"
+                // DEPARTMENT SCHEDULE TO BE TAKEN FROM employee->"employee_internal->department"
+                "overtimes" => $employee->employee_overtime,
+                "attendanceLogs" => $employee->attendance_log,
+                "travel_orders" => $employee->employee_travel_order,
+                "leaves" => $employee->employee_leave,
+                'events' => $events,
+            ];
+            $dtr = AttendanceReportService::processEmployeeDtr($employeeDatas, $dateFrom, $dateTo);
+            $employeeAttendance = AttendanceReportService::employeeAttendance($dtr, $events);
+            return [
+                "employee_name" => $employee->fullname_last,
+                "employee_id" => $employee->company_employments?->employeedisplay_id,
+                "designation" => $employee->current_position_name,
+                "section" => $employee->current_assignment_names,
+                "total_absents" => $employeeAttendance["absenceCount"],
+                "total_attendance" => $employeeAttendance["attendanceCount"],
+                "total_lates" => $employeeAttendance["lateCount"],
+            ];
+        });
+        return $reportData;
     }
 }

@@ -13,6 +13,7 @@ use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
 use App\Http\Resources\PayslipReadyListResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
+use App\Http\Services\ApiServices\AccountingSecretkeyService;
 use App\Http\Services\Payroll\SalaryDisbursementService;
 use App\Models\PayrollDetail;
 use App\Models\PayrollRecord;
@@ -43,11 +44,11 @@ class RequestSalaryDisbursementController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(10);
+        ->paginate(5);
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($allRequests)->response()->getData(true)
+            'data' => RequestPayrollSummaryResource::collection($allRequests)->response()->getData(true),
         ]);
     }
 
@@ -226,6 +227,25 @@ class RequestSalaryDisbursementController extends Controller
             'success' => true,
             'message' => 'Request fetched.',
             'data' => PayslipReadyListResource::collection($payrollDetails),
+        ]);
+    }
+
+    public function submitToAccounting(RequestSalaryDisbursement $requestSalaryDisbursement)
+    {
+        $requestSalaryDisbursement->update([
+            "disbursement_status" => DisbursementStatus::PROCESSING
+        ]);
+        $accountingService = new AccountingSecretkeyService();
+        $submitResult = $accountingService->submitPayrollRequest($requestSalaryDisbursement);
+        if (!$submitResult["success"]) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Failed to submit request to accounting.' . $submitResult["message"],
+            ], JsonResponse::HTTP_NOT_ACCEPTABLE);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Request submitted to accounting.',
         ]);
     }
 }
