@@ -23,6 +23,7 @@ class AttendanceLogResource extends JsonResource
             "attendance_type" => $this->attendance_type,
             "assignment" => $this->charging_designation,
             "employee" => new EmployeeSummaryResource($this->employee),
+            "attendance_portal" => $this->portal,
         ];
     }
 }
