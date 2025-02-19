@@ -286,7 +286,7 @@ class EmployeePanRequest extends Model
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $jobApplicant["nick_name"] = $jobApplicant->nickname;
         $jobApplicant["name_suffix"] = $jobApplicant->name_suffix;
-        $jobApplicant["nick_name"] = $jobApplicant->contact_info;
+        $jobApplicant["mobile_number"] = $jobApplicant->contact_info;
         $jobApplicant["blood_type"] = $jobApplicant->blood_type;
         $jobApplicant["gender"] = $jobApplicant->gender;
         $jobApplicant["civil_status"] = $jobApplicant->civil_status;
@@ -434,7 +434,7 @@ class EmployeePanRequest extends Model
                 "province" => $jobApplicant->icoe_province ?? null,
                 "relationship" => $jobApplicant->icoe_relationship ?? null,
                 "contact_no" => $jobApplicant->telephone_icoe ?? null,
-                "occupation" => $jobApplicant->telephone_icoe ?? null,
+                "occupation" => $jobApplicant->icoe_occupation ?? null,
                 "type" => EmployeeRelatedPersonType::CONTACT_PERSON
             ]);
         }
