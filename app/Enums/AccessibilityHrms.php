@@ -27,6 +27,11 @@ enum AccessibilityHrms: string
     case HRMS_SETUP_SSS = "hrms:setup_sss";
     case HRMS_SETUP_WITHHOLDINGTAX = "hrms:setup_withholding tax";
     case HRMS_SETUP_LEAVES = "hrms:setup_leaves";
+    case HRMS_SETUP_POSITION = "hrms:setup_position";
+    case HRMS_SETUP_ALLOWANCE = "hrms:setup_allowance";
+    case HRMS_SETUP_SETTINGS = "hrms:setup_settings";
+    case HRMS_SETUP_SALARY_GRADE = "hrms:setup_salary grade";
+    case HRMS_SETUP_PAYROLLPARTICULARS = "hrms:setup_payroll particular terms";
     // case HRMS_ = "";
     // case HRMS_ = "";
     case HRMS_PAYROLL_SALARY_GENERATEPAYROLL = "hrms:payroll_salary_generate payroll_form and my requests";
@@ -56,10 +61,6 @@ enum AccessibilityHrms: string
     case HRMS_LOCATION_EMPLOYEES = "hrms:location employees";
     // case HRMS_ = "";
     // case HRMS_ = "";
-    case HRMS_SETUP_POSITION = "hrms:setup_position";
-    case HRMS_SETUP_ALLOWANCE = "hrms:setup_allowance";
-    case HRMS_SETUP_SETTINGS = "hrms:setup_settings";
-    case HRMS_SETUP_SALARY_GRADE = "hrms:setup_salary grade";
     // case HRMS_ = "";
     // case HRMS_ = "";
     // case HRMS_ = "";
