@@ -126,6 +126,12 @@ class StoreJobApplicantsRequest extends FormRequest
                 "min:11",
                 "max:11",
             ],
+            'atm' => [
+                "nullable",
+                "string",
+                "min:10",
+                "max:16",
+            ],
             'email' => [
                 "nullable",
                 "string",
@@ -186,6 +192,14 @@ class StoreJobApplicantsRequest extends FormRequest
             'icoe_relationship' => [
                 "required",
                 "string",
+            ],
+            'icoe_occupation' => [
+                "required",
+                "string",
+            ],
+            'icoe_date_of_birth' => [
+                "required",
+                "date",
             ],
             'telephone_icoe' => [
                 "required",
