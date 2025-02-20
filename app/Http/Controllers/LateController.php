@@ -23,7 +23,13 @@ class LateController extends Controller
             $attendance = AttendanceLog::whereBetween('date', [
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->lastOfMonth()
-            ])->where('log_type', AttendanceLogType::TIME_IN->value)->with(['department.schedule', 'project.project_schedule'])->get();
+            ])
+            ->where('log_type', AttendanceLogType::TIME_IN->value)
+            ->with(['department.schedule', 'project.project_schedule', 'employee.company_employments'])
+            ->whereHas('employee', function ($query) {
+                return $query->isActive();
+            })
+            ->get();
 
             return array_values($attendance->where(function ($attendance) use ($lateAllowance) {
                 if ($attendance->department_id != null) {

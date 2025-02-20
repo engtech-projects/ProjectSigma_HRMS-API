@@ -32,14 +32,21 @@ class AbsentController extends Controller
                 ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_MONTHLY->value)
                 ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_WEEKLY->value);
         })
-        ->with(['attendance_log' => function ($query) use ($sundayDays) {
-            $query->whereBetween('date', [
-                Carbon::now()->startOfMonth(),
-                Carbon::now()->endOfMonth()
-            ])
-            ->whereNotIn('date', $sundayDays)
-            ->where('log_type', AttendanceLogType::TIME_IN->value);
-        }, 'attendance_log.department.schedule', 'attendance_log.project.project_schedule'])
+        ->isActive()
+        ->with([
+            'attendance_log' => function ($query) use ($sundayDays) {
+                $query->whereBetween('date', [
+                    Carbon::now()->startOfMonth(),
+                    Carbon::now()->endOfMonth()
+                ])
+                ->whereNotIn('date', $sundayDays)
+                ->where('log_type', AttendanceLogType::TIME_IN->value);
+            },
+            'attendance_log.department.schedule',
+            'attendance_log.project.project_schedule',
+            'company_employments'
+
+        ])
         ->get();
 
         return $attendance->map(function ($employee) use ($workDaysCount) {
