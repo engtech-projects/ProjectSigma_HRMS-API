@@ -804,6 +804,13 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 999,
+                    'accessibilities_name' => AccessibilityHrms::SUPERADMIN->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
@@ -1408,7 +1415,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 3002,
-                    'accessibilities_name' => "project_monitoring:projects",
+                    'accessibilities_name' => "project monitoring:projects",
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
