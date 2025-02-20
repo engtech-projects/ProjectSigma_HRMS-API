@@ -7,23 +7,31 @@ use App\Enums\UserTypes;
 use App\Models\Accessibilities;
 use App\Http\Requests\StoreAccessibilitiesRequest;
 use App\Http\Requests\UpdateAccessibilitiesRequest;
+use App\Http\Traits\CheckAccessibility;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class AccessibilitiesController extends Controller
 {
+    use CheckAccessibility;
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        $showSuperAdmin = $this->checkUserAccess([]);
         $showSetupSalary = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.salary_grade_setter'));
         $showEdit201 = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.201_editor'));
         $access = Accessibilities::when(!$showSetupSalary, function (Builder $builder) {
             $builder->where("accessibilities_name", "!=", AccessibilityHrms::HRMS_SETUP_SALARY_GRADE->value);
-        })->when(!$showEdit201, function (Builder $builder) {
+        })
+        ->when(!$showEdit201, function (Builder $builder) {
             $builder->where("accessibilities_name", "!=", AccessibilityHrms::HRMS_EMPLOYEE_201_EDIT->value);
-        })->orderBy("accessibilities_name")->get();
+        })
+        ->when(!$showSuperAdmin, function (Builder $builder) {
+            $builder->where("accessibilities_name", "!=", AccessibilityHrms::SUPERADMIN->value);
+        })
+        ->orderBy("accessibilities_name")->get();
         return response()->json([
             "data" => $access,
             "message" => "Success Get Accessibilities List",
