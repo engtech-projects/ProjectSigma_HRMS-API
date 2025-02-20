@@ -40,7 +40,7 @@ class AttendanceLogService
         if ($request->attendance_type && $request->attendance_type != AttendanceType::ALL->value) {
             $query->where('attendance_type', $request->attendance_type);
         }
-        return $query->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->paginate(10);
+        return $query->with(['project', 'department', 'employee', 'portal'])->orderBy('created_at', 'DESC')->paginate(10);
     }
     public function get(AttendanceLog $log)
     {

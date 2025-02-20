@@ -28,6 +28,7 @@ class AttendanceLog extends Model
         'project_id',
         'department_id',
         'employee_id',
+        'portal_id',
     ];
 
     protected $cast = [
@@ -38,6 +39,7 @@ class AttendanceLog extends Model
         'project_id' => 'integer',
         'department_id' => 'integer',
         'employee_id' => 'integer',
+        'portal_id' => 'integer',
     ];
 
     protected $appends = [
@@ -116,6 +118,10 @@ class AttendanceLog extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+    public function portal(): BelongsTo
+    {
+        return $this->belongsTo(AttendancePortal::class)->withTrashed();
     }
     public function charging()
     {
