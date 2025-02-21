@@ -9,9 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use App\Models\EmployeePanRequest;
-use App\Enums\UserTypes;
-use App\Enums\EmployeeCompanyEmploymentsStatus;
 
 class AuthController extends Controller
 {
@@ -27,18 +24,11 @@ class AuthController extends Controller
             return response()->json([ 'message' => 'Invalid login details'  ], 401);
         }
 
-        if ($check_user->type === UserTypes::EMPLOYEE->value && $check_user->employee->company_employments->status === EmployeeCompanyEmploymentsStatus::INACTIVE->value) {
-            $panTermination = EmployeePanRequest::where([
-                ["type", "=", "Termination"],
-                ["employee_id", "=", $check_user->employee->id],
-                ["request_status", "=", "Approved"],
-            ])->latest('created_at')->first();
-
-            if ($panTermination) {
-                $dateTerminateApproved = $panTermination->updated_at ?? $panTermination->created_at;
-                $daysDifference = Carbon::now()->diffInDays(Carbon::parse($dateTerminateApproved));
-
-                if ($daysDifference > 30) {
+        if ($check_user->employee && $check_user->employee->current_employment) {
+            if ($check_user->employee->current_employment->date_to) {
+                $dateTo = Carbon::parse($check_user->employee->current_employment->date_to);
+                $today = Carbon::now();
+                if ($today > $dateTo) {
                     return new JsonResponse([
                         "success" => false,
                         "message" => "Failed to log in. Employee Terminated",
