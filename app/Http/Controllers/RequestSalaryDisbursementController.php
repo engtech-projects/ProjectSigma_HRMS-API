@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateRequestSalaryDisbursementRequest;
 use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\PayrollRecordsPayrollSummaryResource;
 use App\Http\Resources\PayslipReadyListResource;
+use App\Http\Resources\RequestPayrollSummaryListResource;
 use App\Http\Resources\RequestPayrollSummaryResource;
 use App\Http\Services\ApiServices\AccountingSecretkeyService;
 use App\Http\Services\Payroll\SalaryDisbursementService;
@@ -44,11 +45,11 @@ class RequestSalaryDisbursementController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(5);
+        ->paginate();
         return new JsonResponse([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($allRequests)->response()->getData(true),
+            'data' => RequestPayrollSummaryListResource::collection($allRequests)->response()->getData(true),
         ]);
     }
 
@@ -152,7 +153,7 @@ class RequestSalaryDisbursementController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($myRequests)->response()->getData(true),
+            'data' => RequestPayrollSummaryListResource::collection($myRequests)->response()->getData(true),
         ]);
     }
 
@@ -182,7 +183,7 @@ class RequestSalaryDisbursementController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($myApproval)->response()->getData(true),
+            'data' => RequestPayrollSummaryListResource::collection($myApproval)->response()->getData(true),
         ]);
     }
 
@@ -204,7 +205,7 @@ class RequestSalaryDisbursementController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Request fetched.',
-            'data' => RequestPayrollSummaryResource::collection($payslipReady)->response()->getData(true),
+            'data' => RequestPayrollSummaryListResource::collection($payslipReady)->response()->getData(true),
         ]);
     }
     /**
