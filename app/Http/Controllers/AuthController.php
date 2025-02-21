@@ -7,6 +7,11 @@ use App\Http\Resources\UserEmployeeCphotoResource;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
+use App\Models\EmployeePanRequest;
+use App\Enums\UserTypes;
+use App\Enums\EmployeeCompanyEmploymentsStatus;
 
 class AuthController extends Controller
 {
@@ -20,6 +25,26 @@ class AuthController extends Controller
 
         if (!$check_user || !password_verify($creds["password"], $check_user->password)) {
             return response()->json([ 'message' => 'Invalid login details'  ], 401);
+        }
+
+        if ($check_user->type === UserTypes::EMPLOYEE->value && $check_user->employee->company_employments->status === EmployeeCompanyEmploymentsStatus::INACTIVE->value) {
+            $panTermination = EmployeePanRequest::where([
+                ["type", "=", "Termination"],
+                ["employee_id", "=", $check_user->employee->id],
+                ["request_status", "=", "Approved"],
+            ])->latest('created_at')->first();
+
+            if ($panTermination) {
+                $dateTerminateApproved = $panTermination->updated_at ?? $panTermination->created_at;
+                $daysDifference = Carbon::now()->diffInDays(Carbon::parse($dateTerminateApproved));
+
+                if ($daysDifference > 30) {
+                    return new JsonResponse([
+                        "success" => false,
+                        "message" => "Failed to log in. Employee Terminated",
+                    ], JsonResponse::HTTP_UNAUTHORIZED);
+                }
+            }
         }
 
         $token = $check_user->createToken('auth_token:' . $check_user->id)->plainTextToken;
