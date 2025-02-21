@@ -24,7 +24,7 @@ class AuthController extends Controller
             return response()->json([ 'message' => 'Invalid login details'  ], 401);
         }
 
-        if ($check_user->employee && $check_user->employee->current_employment) {
+        if ($check_user->employee && !$check_user->employee->current_employment) {
             return new JsonResponse([
                 "success" => false,
                 "message" => "Failed to log in. Employee Terminated",
