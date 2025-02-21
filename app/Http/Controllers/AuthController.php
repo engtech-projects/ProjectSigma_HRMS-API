@@ -25,16 +25,10 @@ class AuthController extends Controller
         }
 
         if ($check_user->employee && $check_user->employee->current_employment) {
-            if ($check_user->employee->current_employment->date_to) {
-                $dateTo = Carbon::parse($check_user->employee->current_employment->date_to);
-                $today = Carbon::now();
-                if ($today > $dateTo) {
-                    return new JsonResponse([
-                        "success" => false,
-                        "message" => "Failed to log in. Employee Terminated",
-                    ], JsonResponse::HTTP_UNAUTHORIZED);
-                }
-            }
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Failed to log in. Employee Terminated",
+            ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         $token = $check_user->createToken('auth_token:' . $check_user->id)->plainTextToken;
