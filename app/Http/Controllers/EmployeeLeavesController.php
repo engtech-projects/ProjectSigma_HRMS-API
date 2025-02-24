@@ -74,6 +74,7 @@ class EmployeeLeavesController extends Controller
             $main->created_by = collect($createdBy)->only(['id', 'fullname_last', 'fullname_first']);
             $data->message = "Successfully save.";
             $data->success = true;
+            $main = $main->refresh();
             $data->data = new EmployeeLeaveResource($main);
             return response()->json($data, 200);
         }
