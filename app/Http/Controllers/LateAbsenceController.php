@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
+use App\Models\AttendanceLog;
+use App\Models\Schedule;
 
 class LateAbsenceController extends Controller
 {
