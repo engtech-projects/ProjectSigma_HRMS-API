@@ -32,6 +32,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use App\Http\Resources\CompressedImageResource;
 
 class ReportService
 {
@@ -1134,12 +1135,14 @@ class ReportService
             $employeeAttendance = AttendanceReportService::employeeAttendance($dtr, $events);
             return [
                 "employee_name" => $employee->fullname_last,
+                "fullname_first" => $employee->fullname_first,
                 "employee_id" => $employee->company_employments?->employeedisplay_id,
                 "designation" => $employee->current_position_name,
                 "section" => $employee->current_assignment_names,
                 "total_absents" => $employeeAttendance["absenceCount"],
                 "total_attendance" => $employeeAttendance["attendanceCount"],
                 "total_lates" => $employeeAttendance["lateCount"],
+                "profile_photo" => $employee->profile_photo ? new CompressedImageResource($employee->profile_photo) : null,
             ];
         });
         return $reportData;
