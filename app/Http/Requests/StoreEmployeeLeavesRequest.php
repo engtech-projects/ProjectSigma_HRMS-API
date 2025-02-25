@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\RequestStatusType;
 use App\Http\Requests\Traits\PayrollLockValidationTrait;
 use App\Models\Employee;
 use App\Models\Leave;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Traits\HasApprovalValidation;
+use App\Models\EmployeeLeaves;
 
 class StoreEmployeeLeavesRequest extends FormRequest
 {
@@ -37,6 +39,12 @@ class StoreEmployeeLeavesRequest extends FormRequest
                 "required",
                 "integer",
                 "exists:employees,id",
+                function ($attribute, $value, $fail) {
+                    if ($this->hasConflictedLeaveRequest($value)) {
+                        $employeeName = $this->getEmployeeName($value);
+                        $fail("LEAVE CONFLICT ERROR:" . $employeeName . 'already has a pending/approved leave request conflicting dates from '.$this->date_of_absence_from. ' to ' .$this->date_of_absence_to);
+                    }
+                },
             ],
             "charging" => [
                 "string",
@@ -125,5 +133,15 @@ class StoreEmployeeLeavesRequest extends FormRequest
     protected function getLeaveRequestType()
     {
         return Leave::where('id', $this->leave_id)->pluck('leave_name')->first();
+    }
+    protected function hasConflictedLeaveRequest($employeeId)
+    {
+        return EmployeeLeaves::where('employee_id')
+        ->where(function ($query) {
+            $query->where('date_of_absence_from', '<=', $this->date_of_absence_to)
+                ->where('date_of_absence_to', '>=', $this->date_of_absence_from);
+        })
+        ->whereIn('request_status', [RequestStatusType::PENDING->value, RequestStatusType::APPROVED->value])
+        ->exists();
     }
 }
