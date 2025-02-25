@@ -117,6 +117,11 @@ class StoreEmployeeLeavesRequest extends FormRequest
         ];
         return array_merge($rules, $this->storeApprovals());
     }
+    protected function getEmployeeName($employeeId)
+    {
+        $employee = Employee::find($employeeId);
+        return $employee ? $employee->fullname_first : 'Unknown';
+    }
     protected function exceedsLeaveBalance()
     {
         $employee = Employee::find($this->employee_id);
