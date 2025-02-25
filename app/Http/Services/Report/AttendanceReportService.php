@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Helpers;
 use App\Enums\AttendanceLogType;
+use App\Enums\SalaryRequestType;
 use App\Enums\EventTypes;
 
 class AttendanceReportService
@@ -329,6 +330,14 @@ class AttendanceReportService
                 ]);
             },
         ]);
+
+        if (array_key_exists("lates-absence", $validate)) {
+            $employees->isActive()->whereHas("current_employment", function ($employment) {
+                return $employment->where("salary_type", SalaryRequestType::SALARY_TYPE_NON_FIXED->value)
+                    ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_MONTHLY->value)
+                    ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_WEEKLY->value);
+            });
+        }
 
         if ($validate["group_type"] != "All") {
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
