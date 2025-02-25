@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class LateAbsenceController extends Controller
 {
@@ -19,11 +20,18 @@ class LateAbsenceController extends Controller
             "date_from" => $startOfMonth,
             "date_to" => $endOfMonth,
         ];
-        $reportData = ReportService::employeeAbsences($filter);
+
+        $cacheKey = 'employee_late_absences_' . $startOfMonth->format('Y_m') . '_' . $endOfMonth->format('Y_m');
+
+        $reportData = Cache::remember($cacheKey, 1440, function() use ($filter) {
+            return ReportService::employeeAbsences($filter);
+        });
+
         $newData = [
             'lates' => collect(),
             'absence' => collect()
         ];
+
         $reportData->each(function($data) use (&$newData) {
             if ($data["total_lates"] > 0) {
                 $newData["lates"]->push($data);
@@ -32,6 +40,7 @@ class LateAbsenceController extends Controller
                 $newData["absence"]->push($data);
             }
         });
+
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",
