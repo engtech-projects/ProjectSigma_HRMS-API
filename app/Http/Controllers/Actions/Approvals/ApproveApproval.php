@@ -38,64 +38,34 @@ class ApproveApproval extends Controller
         $nextApproval = $model->getNextPendingApproval();
         if ($nextApproval) {
             $nextApprovalUser = $nextApproval["user_id"];
-            switch ($modelType) {
-                case ApprovalModels::LeaveEmployeeRequest->name:
-                    Users::find($nextApprovalUser)->notify(new LeaveRequestForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::TravelOrder->name:
-                    Users::find($nextApprovalUser)->notify(new TravelRequestForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::CashAdvance->name:
-                    Users::find($nextApprovalUser)->notify(new CashAdvanceForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::FailureToLog->name:
-                    Users::find($nextApprovalUser)->notify(new FailureToLogRequestForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::ManpowerRequest->name:
-                    Users::find($nextApprovalUser)->notify(new ManpowerRequestForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::Overtime->name:
-                    Users::find($nextApprovalUser)->notify(new OvertimeRequestForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::EmployeePanRequest->name:
-                    Users::find($nextApprovalUser)->notify(new PanRequestForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::GenerateAllowance->name:
-                    Users::find($nextApprovalUser)->notify(new AllowanceRequestForApproval($model)); // Notify the next Approval
-                    break;
-                case ApprovalModels::GeneratePayroll->name:
-                    Users::find($nextApprovalUser)->notify(new PayrollRequestForApproval($model)); // Notify the next Approval
-                    break;
+            $notificationMap = [
+                ApprovalModels::LeaveEmployeeRequest->name => LeaveRequestForApproval::class,
+                ApprovalModels::TravelOrder->name => TravelRequestForApproval::class,
+                ApprovalModels::CashAdvance->name => CashAdvanceForApproval::class,
+                ApprovalModels::FailureToLog->name => FailureToLogRequestForApproval::class,
+                ApprovalModels::ManpowerRequest->name => ManpowerRequestForApproval::class,
+                ApprovalModels::Overtime->name => OvertimeRequestForApproval::class,
+                ApprovalModels::EmployeePanRequest->name => PanRequestForApproval::class,
+                ApprovalModels::GenerateAllowance->name => AllowanceRequestForApproval::class,
+                ApprovalModels::GeneratePayroll->name => PayrollRequestForApproval::class,
+            ];
+            if (isset($notificationMap[$modelType])) {
+                Users::find($nextApprovalUser)->notify(new $notificationMap[$modelType]($model));
             }
         } else {
-            switch ($modelType) {
-                case ApprovalModels::LeaveEmployeeRequest->name:
-                    Users::find($model->created_by)->notify(new LeaveRequestApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::TravelOrder->name:
-                    Users::find($model->created_by)->notify(new TravelRequestApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::CashAdvance->name:
-                    Users::find($model->created_by)->notify(new CashAdvanceApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::FailureToLog->name:
-                    Users::find($model->created_by)->notify(new FailureToLogRequestApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::ManpowerRequest->name:
-                    Users::find($model->created_by)->notify(new ManpowerRequestApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::Overtime->name:
-                    Users::find($model->created_by)->notify(new OvertimeRequestApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::EmployeePanRequest->name:
-                    Users::find($model->created_by)->notify(new PanRequestApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::GenerateAllowance->name:
-                    Users::find($model->created_by)->notify(new AllowanceRequestApproved($model)); // Notify the requestor
-                    break;
-                case ApprovalModels::GeneratePayroll->name:
-                    Users::find($model->created_by)->notify(new PayrollRequestApproved($model)); // Notify the requestor
-                    break;
+            $notificationMap = [
+                ApprovalModels::LeaveEmployeeRequest->name => LeaveRequestApproved::class,
+                ApprovalModels::TravelOrder->name => TravelRequestApproved::class,
+                ApprovalModels::CashAdvance->name => CashAdvanceApproved::class,
+                ApprovalModels::FailureToLog->name => FailureToLogRequestApproved::class,
+                ApprovalModels::ManpowerRequest->name => ManpowerRequestApproved::class,
+                ApprovalModels::Overtime->name => OvertimeRequestApproved::class,
+                ApprovalModels::EmployeePanRequest->name => PanRequestApproved::class,
+                ApprovalModels::GenerateAllowance->name => AllowanceRequestApproved::class,
+                ApprovalModels::GeneratePayroll->name => PayrollRequestApproved::class,
+            ];
+            if (isset($notificationMap[$modelType])) {
+                Users::find($model->created_by)->notify(new $notificationMap[$modelType]($model));
             }
         }
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);

@@ -144,9 +144,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // APPROVALS
     Route::resource('approvals', ApprovalsController::class);
-    Route::prefix('approvals')->group(function () {
-        Route::post('approve/{modelName}/{model}', ApproveApproval::class)->middleware('auth:sanctum', 'throttle:1,5');
-        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class)->middleware('auth:sanctum', 'throttle:1,5');
+    Route::middleware(['auth:sanctum', 'throttle:1,5'])->prefix('approvals')->group(function () {
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
     // HRMS REQUESTS/TRANSACTIONS WITH APPROVALS

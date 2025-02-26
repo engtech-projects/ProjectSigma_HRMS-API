@@ -2,16 +2,20 @@
 
 namespace App\Traits;
 
+use App\Enums\AccessibilityHrms;
 use Illuminate\Support\Carbon;
 use App\Enums\RequestStatuses;
+use App\Http\Traits\CheckAccessibility;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 trait HasApproval
 {
+    use CheckAccessibility;
     /**
      * ==================================================
      * MODEL RELATIONSHIPS
@@ -132,6 +136,9 @@ trait HasApproval
                 $approval["status"] = RequestStatuses::APPROVED;
                 $approval["date_approved"] = Carbon::now()->format('F j, Y h:i A');
             }
+            if ($this->checkUserAccess([AccessibilityHrms::SUPERADMIN->value])) {
+                $approval["remarks"] = "Approved by Super Admin";
+            }
             return $approval;
         });
         $this->save();
@@ -178,7 +185,7 @@ trait HasApproval
         }
         $currentApproval = $this->getNextPendingApproval();
         // CHECK IF THERE IS A CURRENT APPROVAL AND IF IS FOR THE LOGGED IN USER
-        if (!empty($currentApproval) && $currentApproval['user_id'] != auth()->user()->id) {
+        if (empty($currentApproval) || ($currentApproval['user_id'] != auth()->user()->id && !$this->checkUserAccess([AccessibilityHrms::SUPERADMIN]))) {
             return [
                 "approvals" => $this->approvals,
                 'success' => false,
