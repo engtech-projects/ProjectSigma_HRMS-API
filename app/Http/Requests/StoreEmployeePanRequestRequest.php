@@ -25,27 +25,27 @@ class StoreEmployeePanRequestRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        // REMOVE GENERAL FIELDS
+        // GENERAL FIELDS
         // $this->merge(['date_of_effictivity' => null]);
         // $this->merge(['type' => null]);
         // $this->merge(['comments' => null]);
-        // // REMOVE NEWHIRE EXCLUSIVE FIELDS
+        // NEWHIRE EXCLUSIVE FIELDS
         // $this->merge(['pan_job_applicant_id' => null]);
         // $this->merge(['company_id_num' => null]);
         // $this->merge(['hire_source' => null]);
-        // // REMOVE NEWHIRE/PROMOTION FIELDS
+        // NEWHIRE/PROMOTION FIELDS
         // $this->merge(['employment_status' => null]);
-        // $this->merge(['designation_position' => null]);
         // $this->merge(['salary_grades' => null]);
-        // // REMOVE NEWHIRE/TRANSFER FIELDS
+        // NEWHIRE/TRANSFER FIELDS
         // $this->merge(['work_location' => null]);
         // $this->merge(['section_department_id' => null]);
         // $this->merge(['projects' => null]);
-        // // REMOVE NEWHIRE/TRANSFER/PROMOTION FIELDS
+        // NEWHIRE/TRANSFER/PROMOTION FIELDS
         // $this->merge(['salary_type' => null]);
-        // // REMOVE TRANSFER/PROMOTION/TERMINATION FIELDS
+        // $this->merge(['designation_position' => null]);
+        // TRANSFER/PROMOTION/TERMINATION FIELDS
         // $this->merge(['employee_id' => null]);
-        // // REMOVE TERMINATION EXCLUSIVE FIELDS
+        // TERMINATION EXCLUSIVE FIELDS
         // $this->merge(['type_of_termination' => null]);
         // $this->merge(['reasons_for_termination' => null]);
         // $this->merge(['eligible_for_rehire' => null]);
@@ -67,7 +67,6 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['hire_source' => null]);
             // REMOVE NEWHIRE/PROMOTION FIELDS
             $this->merge(['employment_status' => null]);
-            $this->merge(['designation_position' => null]);
             $this->merge(['salary_grades' => null]);
             // REMOVE TERMINATION EXCLUSIVE FIELDS
             $this->merge(['type_of_termination' => null]);
@@ -97,7 +96,6 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['hire_source' => null]);
             // REMOVE NEWHIRE/PROMOTION FIELDS
             $this->merge(['employment_status' => null]);
-            $this->merge(['designation_position' => null]);
             $this->merge(['salary_grades' => null]);
             // REMOVE NEWHIRE/TRANSFER FIELDS
             $this->merge(['work_location' => null]);
@@ -105,6 +103,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['projects' => null]);
             // REMOVE NEWHIRE/TRANSFER/PROMOTION FIELDS
             $this->merge(['salary_type' => null]);
+            $this->merge(['designation_position' => null]);
         }
         // if ($this->type === 'Rehire') {
         //     $this->merge(['projects' => null]);
@@ -149,7 +148,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                'required_if:type,==,Termination,Transfer,Promotion',
+                'required_if:type,==,Transfer,Promotion,Termination',
                 function ($attribute, $value, $fail) {
                     if ($this->pendingEmployee($value)) {
                         $fail("This EMPLOYEE has a pending PAN request");
@@ -170,25 +169,26 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'employment_status' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire',
+                'required_if:type,==,New Hire,Promotion',
                 new Enum(EmploymentStatus::class)
             ],
             'salary_type' => [
                 "nullable",
                 "string",
+                'required_if:type,==,New Hire,Transfer,Promotion',
                 new Enum(SalaryRequestType::class)
             ],
             'designation_position' => [
                 "nullable",
                 "integer",
                 "exists:positions,id",
-                'required_if:type,==,New Hire',
+                'required_if:type,==,New Hire,Transfer,Promotion',
             ],
             'salary_grades' => [
                 "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
-                'required_if:type,==,New Hire',
+                'required_if:type,==,New Hire,Promotion',
             ],
             'work_location' => [
                 "nullable",

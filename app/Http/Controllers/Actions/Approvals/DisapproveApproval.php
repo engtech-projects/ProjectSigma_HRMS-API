@@ -18,6 +18,8 @@ use App\Notifications\AllowanceRequestDenied;
 use App\Notifications\LeaveRequestDenied;
 use App\Notifications\PayrollRequestDenied;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class DisapproveApproval extends Controller
 {
@@ -26,38 +28,32 @@ class DisapproveApproval extends Controller
      */
     public function __invoke($modelType, $model, DisapproveApprovalRequest $request)
     {
+        $cacheKey = "disapprove" . $modelType . $model->id . '-'. Auth::user()->id;
+        if (Cache::has($cacheKey)) {
+            return new JsonResponse(["success" => false, "message" => "Too Many Attempts"], 429);
+        }
+        return Cache::remember($cacheKey, 5, function () use ($modelType, $model, $request) {
+            return $this->disapprove($modelType, $model, $request);
+        });
+
+    }
+    public function disapprove($modelType, $model, DisapproveApprovalRequest $request)
+    {
         $attribute = $request->validated();
         $result = collect($model->updateApproval(['status' => RequestApprovalStatus::DENIED, 'remarks' => $attribute['remarks'], "date_denied" => Carbon::now()]));
-        switch ($modelType) {
-            case ApprovalModels::LeaveEmployeeRequest->name:
-                Users::find($model->created_by)->notify(new LeaveRequestDenied($model)); // Notify Request Creator Request DENIED (leave & cashadvance)
-                break;
-            case ApprovalModels::TravelOrder->name:
-                Users::find($model->created_by)->notify(new TravelRequestDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            case ApprovalModels::CashAdvance->name:
-                Users::find($model->created_by)->notify(new CashAdvanceDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            case ApprovalModels::FailureToLog->name:
-                Users::find($model->created_by)->notify(new FailureToLogRequestDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            case ApprovalModels::ManpowerRequest->name:
-                Users::find($model->created_by)->notify(new ManpowerRequestDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            case ApprovalModels::Overtime->name:
-                Users::find($model->created_by)->notify(new OvertimeRequestDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            case ApprovalModels::EmployeePanRequest->name:
-                Users::find($model->created_by)->notify(new PanRequestDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            case ApprovalModels::GenerateAllowance->name:
-                Users::find($model->created_by)->notify(new AllowanceRequestDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            case ApprovalModels::GeneratePayroll->name:
-                Users::find($model->created_by)->notify(new PayrollRequestDenied($model)); // Notify Request Creator Request DENIED
-                break;
-            default:
-                break;
+        $notificationMap = [
+            ApprovalModels::LeaveEmployeeRequest->name => LeaveRequestDenied::class,
+            ApprovalModels::TravelOrder->name => TravelRequestDenied::class,
+            ApprovalModels::CashAdvance->name => CashAdvanceDenied::class,
+            ApprovalModels::FailureToLog->name => FailureToLogRequestDenied::class,
+            ApprovalModels::ManpowerRequest->name => ManpowerRequestDenied::class,
+            ApprovalModels::Overtime->name => OvertimeRequestDenied::class,
+            ApprovalModels::EmployeePanRequest->name => PanRequestDenied::class,
+            ApprovalModels::GenerateAllowance->name => AllowanceRequestDenied::class,
+            ApprovalModels::GeneratePayroll->name => PayrollRequestDenied::class,
+        ];
+        if (isset($notificationMap[$modelType])) {
+            Users::find($model->created_by)->notify(new $notificationMap[$modelType]($model));
         }
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_OK);
     }

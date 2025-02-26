@@ -17,6 +17,7 @@ enum AccessibilityAccounting: string
     case ACCOUNTING_SETUP_STAKEHOLDERS = "accounting:setup_stakeholders";
     case ACCOUNTING_SETUP_SYNCHRONIZATION = "accounting:setup_synchronization";
     case ACCOUNTING_SETUP_PARTICULAR_GROUP = "accounting:setup_particular group";
+    case ACCOUNTING_SETUP_WITHHOLDING_TAX  = "accounting:setup_withholding tax";
     case ACCOUNTING_SETUP_TERMS = "accounting:setup_terms";
     //Accounting Request
     case ACCOUNTING_REQUEST_PURCHASE_ORDER = "accounting:request_purchase order";
@@ -46,6 +47,16 @@ enum AccessibilityAccounting: string
     case ACCOUNTING_JOURNAL_ENTRY_DISBURSEMENT_ENTRIES = "accounting:journal_list_journal entry disbursement entries";
     case ACCOUNTING_JOURNAL_ENTRY_FOR_PAYMENT_ENTRIES = "accounting:journal_list_journal entry for payement entries";
 
+    //Accounting Report
+    case ACCOUNTING_REPORTS_BALANCE_SHEET = "accounting:reports_balance sheet";
+    case ACCOUNTING_REPORTS_BOOK_BALANCE = "accounting:reports_book balance";
+    case ACCOUNTING_REPORTS_EXPENSES_FOR_THE_MONTH = "accounting:reports_expenses for the month";
+    case ACCOUNTING_REPORTS_INCOME_STATEMENT = "accounting:reports_income statement";
+    case ACCOUNTING_REPORTS_MONTHLY_PROJECT_EXPENSES = "accounting:reports_monthly project expenses";
+    case ACCOUNTING_REPORTS_MONTHLY_UNLIQUIDATED_CASH_ADVANCES = "accounting:reports_monthly unliquidated cash advances";
+    case ACCOUNTING_REPORTS_STATEMENT_OF_CASH_FLOW = "accounting:reports_statement of cash flow";
+    case ACCOUNTING_REPORTS_OFFICE_CODE = "accounting:reports_office code";
+    case ACCOUNTING_REPORTS_OFFICE_HUMAN_RESOURCE = "accounting:reports_office human resource";
     public static function toArray(): array
     {
         $array = [];

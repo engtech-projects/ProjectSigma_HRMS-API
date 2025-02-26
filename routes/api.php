@@ -36,6 +36,7 @@ use App\Http\Controllers\ManpowerRequestController;
 use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\SalaryGradeLevelController;
 use App\Http\Controllers\EmployeeEducationController;
+use App\Http\Controllers\LateAbsenceController;
 use App\Http\Controllers\EmployeeBulkUploadController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\EmployeeAffiliationController;
@@ -269,6 +270,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('birthdays', MonthlyBirthdaysController::class);
             Route::get('lates', [LateController::class, 'getLateThisMonth']);
             Route::get('absences', [AbsentController::class, 'getAbsenceThisMonth']);
+            Route::get('lates-absence', [LateAbsenceController::class, 'getLateAbsenceThisMonth']);
             Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
         });
     });

@@ -7,6 +7,8 @@ use App\Http\Resources\UserEmployeeCphotoResource;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 
 class AuthController extends Controller
 {
@@ -20,6 +22,13 @@ class AuthController extends Controller
 
         if (!$check_user || !password_verify($creds["password"], $check_user->password)) {
             return response()->json([ 'message' => 'Invalid login details'  ], 401);
+        }
+
+        if ($check_user->employee && !$check_user->employee->current_employment) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Failed to log in. Employee Terminated",
+            ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         $token = $check_user->createToken('auth_token:' . $check_user->id)->plainTextToken;

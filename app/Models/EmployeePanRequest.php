@@ -286,7 +286,7 @@ class EmployeePanRequest extends Model
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $jobApplicant["nick_name"] = $jobApplicant->nickname;
         $jobApplicant["name_suffix"] = $jobApplicant->name_suffix;
-        $jobApplicant["nick_name"] = $jobApplicant->contact_info;
+        $jobApplicant["mobile_number"] = $jobApplicant->contact_info;
         $jobApplicant["blood_type"] = $jobApplicant->blood_type;
         $jobApplicant["gender"] = $jobApplicant->gender;
         $jobApplicant["civil_status"] = $jobApplicant->civil_status;
@@ -434,7 +434,7 @@ class EmployeePanRequest extends Model
                 "province" => $jobApplicant->icoe_province ?? null,
                 "relationship" => $jobApplicant->icoe_relationship ?? null,
                 "contact_no" => $jobApplicant->telephone_icoe ?? null,
-                "occupation" => $jobApplicant->telephone_icoe ?? null,
+                "occupation" => $jobApplicant->icoe_occupation ?? null,
                 "type" => EmployeeRelatedPersonType::CONTACT_PERSON
             ]);
         }
@@ -464,12 +464,14 @@ class EmployeePanRequest extends Model
         if ($newInterWorkExp['work_location'] === WorkLocation::OFFICE->value) {
             $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
         }
+        $newInterWorkExp['position_id'] = $this->designation_position ?? $interWorkExp->position_id;
         $newInterWorkExp['date_from'] = $this->date_of_effictivity;
         $newInterWorkExp['salary_type'] = $this->salary_type;
         $newInterWorkExp['date_to'] = null;
         $newInterWorkExp['status'] = EmployeeInternalWorkExperiencesStatus::CURRENT;
         $newWorkExp = InternalWorkExperience::create($newInterWorkExp);
         if ($this->work_location === WorkLocation::PROJECT->value) {
+            unset($newInterWorkExp['department_id']);
             $newWorkExp->projects()->attach($this->project_ids);
         }
     }
