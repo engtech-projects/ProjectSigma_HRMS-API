@@ -22,12 +22,15 @@ class LateAbsenceController extends Controller
         ];
         $cacheKey = 'employee_late_absences_' . $startOfMonth->format('Y_m') . '_' . $endOfMonth->format('Y_m');
 
-        $reportData = Cache::remember($cacheKey, 1440, function() use ($filter) {
-            return ReportService::employeeAbsences($filter);
-        });
+        $reportData = null;
+
         if ($request->has('reload') && $request->input('reload') === "true") {
             $reportData = ReportService::employeeAbsences($filter);
             Cache::put($cacheKey, $reportData, 1440);
+        } else {
+            $reportData = Cache::remember($cacheKey, 1440, function() use ($filter) {
+                return ReportService::employeeAbsences($filter);
+            });
         }
 
         $newData = [
