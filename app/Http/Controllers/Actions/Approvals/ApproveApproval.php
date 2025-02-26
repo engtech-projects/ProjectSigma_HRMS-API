@@ -26,6 +26,8 @@ use App\Notifications\LeaveRequestForApproval;
 use App\Notifications\PayrollRequestApproved;
 use App\Notifications\PayrollRequestForApproval;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class ApproveApproval extends Controller
 {
@@ -34,6 +36,17 @@ class ApproveApproval extends Controller
      */
     public function __invoke($modelType, $model)
     {
+        $cacheKey = "approve" . $modelType . $model->id . '-'. Auth::user()->id;
+        if (Cache::has($cacheKey)) {
+            return new JsonResponse(["success" => false, "message" => "Too Many Attempts"], 429);
+        }
+        return Cache::remember($cacheKey, 5, function () use ($modelType, $model) {
+            return $this->approve($modelType, $model);
+        });
+    }
+    function approve($modelType, $model)
+    {
+
         $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED, "date_approved" => Carbon::now()]);
         $nextApproval = $model->getNextPendingApproval();
         if ($nextApproval) {

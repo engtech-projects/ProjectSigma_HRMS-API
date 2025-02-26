@@ -144,7 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // APPROVALS
     Route::resource('approvals', ApprovalsController::class);
-    Route::middleware(['auth:sanctum', 'throttle:1,5'])->prefix('approvals')->group(function () {
+    Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
