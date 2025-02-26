@@ -158,7 +158,7 @@ trait HasApproval
     }
     public function updateApproval(?array $data)
     {
-        // CHECK IF MANPOWER REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA
+        // CHECK IF REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA
         if ($this->requestStatusEnded()) {
             return [
                 "approvals" => $this->approvals,
@@ -167,7 +167,7 @@ trait HasApproval
                 "message" => "The request was already ended.",
             ];
         }
-        // CHECK IF MANPOWER REQUEST ALREADY COMPLETED AND SET RESPONSE DATA
+        // CHECK IF REQUEST ALREADY COMPLETED AND SET RESPONSE DATA
         if ($this->requestStatusCompleted()) {
             return [
                 "approvals" => $this->approvals,
