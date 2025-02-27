@@ -51,6 +51,9 @@ class VoidRequestAction extends Controller
         }
         $attribute = $request->validated();
         $approvals = Approvals::where("form", "Void Requests")->first();
+        $approvalModels = ApprovalModels::toArray();
+        $attribute["request_type"] = $approvalModels[$modelType];
+        $attribute["request_id"] = $model->id;
         $attribute["approvals"] = $approvals;
         $attribute["created_by"] = Auth::user()->id;
         $createData = RequestVoid::create($attribute);

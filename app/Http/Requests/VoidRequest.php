@@ -22,7 +22,7 @@ class VoidRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "remarks" => "required|string"
+            "reason_for_void" => "required|string|max:255"
         ];
     }
 }

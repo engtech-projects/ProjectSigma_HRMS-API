@@ -4,9 +4,10 @@ namespace App\Enums;
 
 enum RequestStatuses: string
 {
-    case APPROVED = 'Approved';
     case PENDING = "Pending";
+    case APPROVED = 'Approved';
     case DENIED = "Denied";
+    case VOID = "Voided";
 
     public static function toArray(): array
     {
