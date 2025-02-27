@@ -61,17 +61,13 @@ use App\Http\Controllers\Actions\Attendance\{
     EmployeeDtrController,
     EmployeeDtrControllerV2,
 };
-use App\Http\Controllers\Actions\ProjectMember\{
-    AttachProjectEmployee,
-    ProjectEmployeeList,
-    ProjectMemberList
-};
 use App\Http\Controllers\Actions\Employee\{
     CountEmployeeDepartmentController,
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
 use App\Http\Controllers\Actions\Project\ProjectListController;
+use App\Http\Controllers\Actions\VoidRequestAction;
 use App\Http\Controllers\AllowanceRequestController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\ApiSyncController;
@@ -148,6 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
+    Route::post('void/{modelName}/{model}', VoidRequestAction::class);
     Route::get('get-form-requests/{formname}', [ApprovalsController::class, 'get']);
     // HRMS REQUESTS/TRANSACTIONS WITH APPROVALS
     Route::prefix('manpower')->group(function () {
