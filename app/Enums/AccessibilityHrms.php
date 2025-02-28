@@ -35,6 +35,7 @@ enum AccessibilityHrms: string
     case HRMS_SETUP_PAYROLLPARTICULARS = "hrms:setup_payroll particular terms";
     // case HRMS_ = "";
     // case HRMS_ = "";
+    case HRMS_PAYROLL_SALARY_GENERATE_PAYROLL_CHANGE_OF_CHARGING = "hrms:payroll_salary_generate payroll_change of charging";
     case HRMS_PAYROLL_SALARY_GENERATEPAYROLL = "hrms:payroll_salary_generate payroll_form and my requests";
     case HRMS_PAYROLL_SALARY_GENERATEPAYROLL_ALLREQUESTS = "hrms:payroll_salary_generate payroll_all requests";
     case HRMS_PAYROLL_SALARY_GENERATEPAYROLL_MYAPPROVALS = "hrms:payroll_salary_generate payroll_my approvals";
