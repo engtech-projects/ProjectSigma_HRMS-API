@@ -2,28 +2,15 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\EnumHelper;
+
 enum RequestStatuses: string
 {
+    use EnumHelper;
+
     case PENDING = "Pending";
     case APPROVED = 'Approved';
     case DENIED = "Denied";
     case VOID = "Voided";
 
-    public static function toArray(): array
-    {
-        $array = [];
-        foreach (self::cases() as $case) {
-            $array[$case->name] = $case->value;
-        }
-        return $array;
-    }
-
-    public static function toArraySwapped(): array
-    {
-        $array = [];
-        foreach (self::cases() as $case) {
-            $array[$case->value] = $case->name;
-        }
-        return $array;
-    }
 }

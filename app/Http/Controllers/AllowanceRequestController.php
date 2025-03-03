@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\AllowanceRequestGenerateDraftRequest;
 use App\Models\AllowanceRequest;
 use App\Http\Requests\StoreAllowanceRequestRequest;
@@ -100,7 +100,7 @@ class AllowanceRequestController extends Controller
     public function store(StoreAllowanceRequestRequest $request)
     {
         $valData = $request->validated();
-        $valData["request_status"] = RequestStatusType::PENDING;
+        $valData["request_status"] = RequestStatuses::PENDING;
         $valData["created_by"] = auth()->user()->id;
         if ($valData["charging_type"] == AssignTypes::DEPARTMENT->value) {
             $valData["charge_assignment_id"] = $valData["department_id"];

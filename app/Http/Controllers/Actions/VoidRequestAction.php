@@ -12,7 +12,6 @@ use App\Notifications\TravelRequestDenied;
 use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatuses;
-use App\Enums\RequestStatusType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoidRequest;
 use App\Models\Approvals;

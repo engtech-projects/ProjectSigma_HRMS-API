@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PayrollDetailsDeductionType;
-use App\Enums\RequestStatusType;
 use App\Enums\PostingStatusType;
 use App\Enums\LoanPaymentsType;
 use App\Enums\RequestStatuses;
-use App\Enums\TermsOfPaymentType;
 use App\Helpers;
 use App\Models\Employee;
 use App\Models\PayrollRecord;
@@ -122,7 +120,7 @@ class PayrollRecordController extends Controller
     public function store(StorePayrollRecordRequest $request)
     {
         $attribute = $request->validated();
-        $attribute['request_status'] = RequestStatusType::PENDING->value;
+        $attribute['request_status'] = RequestStatuses::PENDING->value;
         $attribute['created_by'] = auth()->user()->id;
         $attribute["charging_type"] = $attribute["group_type"];
         // try {

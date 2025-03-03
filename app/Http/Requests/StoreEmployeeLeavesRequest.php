@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\Traits\PayrollLockValidationTrait;
 use App\Models\Employee;
 use App\Models\Leave;
@@ -146,7 +146,7 @@ class StoreEmployeeLeavesRequest extends FormRequest
             $query->where('date_of_absence_from', '<=', $this->date_of_absence_to)
                 ->where('date_of_absence_to', '>=', $this->date_of_absence_from);
         })
-        ->whereIn('request_status', [RequestStatusType::PENDING->value, RequestStatusType::APPROVED->value])
+        ->whereIn('request_status', [RequestStatuses::PENDING->value, RequestStatuses::APPROVED->value])
         ->exists();
     }
 }
