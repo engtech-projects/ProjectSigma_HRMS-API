@@ -57,6 +57,13 @@ enum AccessibilityAccounting: string
     case ACCOUNTING_REPORTS_STATEMENT_OF_CASH_FLOW = "accounting:reports_statement of cash flow";
     case ACCOUNTING_REPORTS_OFFICE_CODE = "accounting:reports_office code";
     case ACCOUNTING_REPORTS_OFFICE_HUMAN_RESOURCE = "accounting:reports_office human resource";
+    case ACCOUNTING_REPORTS_LIQUIDATION_FORM = "accounting:reports_liquidation form";
+    case ACCOUNTING_REPORTS_REPLENISHMENT_SUMMARY = "accounting:reports_replenishment summary";
+    case ACCOUNTING_REPORTS_CASH_ADVANCE_SUMMARY = "accounting:reports_cash advance summary";
+    case ACCOUNTING_REPORTS_MEMORANDUM_OF_DEPOSIT = "accounting:reports_memorandum of deposit";
+    case ACCOUNTING_REPORTS_PROVISIONAL_RECEIPT = "accounting:reports_provisional receipt";
+    case ACCOUNTING_REPORTS_CASH_RETURN_SLIP = "accounting:reports_cash return slip";
+    case ACCOUNTING_REPORTS_PAYROLL_LIQUIDATIONS = "accounting:reports_payroll liquidations";
     public static function toArray(): array
     {
         $array = [];
