@@ -1424,5 +1424,18 @@ class AccessibilitiesSeeder extends Seeder
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
         );
+        DB::table('accessibilities')->upsert(
+            [
+                [
+                    'id' => 3003,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_PAYROLL_SALARY_GENERATE_PAYROLL_CHANGE_OF_CHARGING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
+            ],
+            [ "id" ],
+            [ "accessibilities_name", "deleted_at"]
+        );
     }
 }

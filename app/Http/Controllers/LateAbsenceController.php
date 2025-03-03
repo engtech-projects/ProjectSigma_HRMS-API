@@ -7,6 +7,8 @@ use Illuminate\Support\Carbon;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
+use App\Jobs\GenerateLatesAbsencesDashboardReport;
 
 class LateAbsenceController extends Controller
 {
@@ -23,14 +25,16 @@ class LateAbsenceController extends Controller
         $cacheKey = 'employee_late_absences_' . $startOfMonth->format('Y_m') . '_' . $endOfMonth->format('Y_m');
 
         $reportData = null;
+        if(!Cache::has($cacheKey) || ($request->has('reload') && $request->input('reload') === "true")) {
 
-        if ($request->has('reload') && $request->input('reload') === "true") {
-            $reportData = ReportService::employeeAbsences($filter);
-            Cache::put($cacheKey, $reportData, 1440);
+            GenerateLatesAbsencesDashboardReport::dispatch();
+
+            return new JsonResponse([
+                "success" => true,
+                "message" => "Generating Data in background. Please try again later.",
+            ]);
         } else {
-            $reportData = Cache::remember($cacheKey, 1440, function() use ($filter) {
-                return ReportService::employeeAbsences($filter);
-            });
+            $reportData = Cache::get($cacheKey);
         }
 
         $newData = [

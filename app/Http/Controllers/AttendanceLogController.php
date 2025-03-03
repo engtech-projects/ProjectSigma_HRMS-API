@@ -104,6 +104,7 @@ class AttendanceLogController extends Controller
             $mainsave = new AttendanceLog();
             $mainsave->fill($val);
             $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
+            $mainsave->portal_id = $main->id;
             $type = $val["assignment_type"];
             $portalDepartmentId = $main->departments()->first()?->id;
             $portalProjectId = $main->projects()->first()?->id;
