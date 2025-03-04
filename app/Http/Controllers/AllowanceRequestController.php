@@ -27,7 +27,7 @@ class AllowanceRequestController extends Controller
      */
     public function index()
     {
-        $main = AllowanceRequest::all();
+        $main = AllowanceRequest::orderBy('created_at', 'desc')->get();
         if (!is_null($main)) {
             return new JsonResponse([
                 'success' => true,
@@ -160,6 +160,7 @@ class AllowanceRequestController extends Controller
     {
         $myRequest = AllowanceRequest::with(['employee_allowances','charge_assignment'])
             ->myRequests()
+            ->orderBy("created_at", "DESC")
             ->get();
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
@@ -181,6 +182,7 @@ class AllowanceRequestController extends Controller
     {
         $result = AllowanceRequest::with(['employee_allowances', 'charge_assignment'])
             ->myApprovals()
+            ->orderBy("created_at", "DESC")
             ->get();
         if ($result->isEmpty()) {
             return new JsonResponse([
