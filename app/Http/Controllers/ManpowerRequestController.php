@@ -91,6 +91,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
+                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
