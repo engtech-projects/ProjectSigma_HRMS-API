@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Enums\StringRequestApprovalStatus;
 use App\Http\Requests\Traits\PayrollLockValidationTrait;
 use App\Http\Traits\HasApprovalValidation;
@@ -122,7 +122,7 @@ class StoreOvertimeRequest extends FormRequest
                         ->where('overtime_end_time', '>', $this->overtime_start_time);
                 });
         })
-        ->whereIn('request_status', [RequestStatusType::PENDING->value, RequestStatusType::APPROVED->value])
+        ->whereIn('request_status', [RequestStatuses::PENDING->value, RequestStatuses::APPROVED->value])
         ->exists();
     }
 

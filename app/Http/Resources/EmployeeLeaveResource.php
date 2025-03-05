@@ -18,7 +18,7 @@ class EmployeeLeaveResource extends JsonResource
             "id" => $this->id,
             "employee_id" => $this->employee_id,
             "project_id" => $this->project_id,
-            "type" => $this->type,
+            "type" => $this->leave->leave_name,
             "number_of_days" => $this->number_of_days,
             "leave" => $this->leave->leave_name,
             "other_absence" => $this->other_absence,

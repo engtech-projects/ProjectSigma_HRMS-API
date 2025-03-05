@@ -61,17 +61,13 @@ use App\Http\Controllers\Actions\Attendance\{
     EmployeeDtrController,
     EmployeeDtrControllerV2,
 };
-use App\Http\Controllers\Actions\ProjectMember\{
-    AttachProjectEmployee,
-    ProjectEmployeeList,
-    ProjectMemberList
-};
 use App\Http\Controllers\Actions\Employee\{
     CountEmployeeDepartmentController,
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
 use App\Http\Controllers\Actions\Project\ProjectListController;
+use App\Http\Controllers\Actions\VoidRequestAction;
 use App\Http\Controllers\AllowanceRequestController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\ApiSyncController;
@@ -92,6 +88,7 @@ use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use App\Http\Controllers\RequestSalaryDisbursementController;
+use App\Http\Controllers\RequestVoidController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -227,6 +224,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('payslip-ready', [RequestSalaryDisbursementController::class, 'payslipReady']);
         Route::get('payslip-ready/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'payslipReadyShow']);
         Route::post('submit-to-accounting/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'submitToAccounting']);
+    });
+    Route::prefix('request-voids')->group(function () {
+        Route::post('void/{modelName}/{model}', VoidRequestAction::class);
+        Route::resource('resource', RequestVoidController::class)->names("requestVoids");
+        Route::get('my-requests', [RequestVoidController::class, 'myRequests']);
+        Route::get('my-approvals', [RequestVoidController::class, 'myApprovals']);
     });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
