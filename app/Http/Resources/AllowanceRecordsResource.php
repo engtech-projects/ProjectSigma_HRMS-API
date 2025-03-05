@@ -16,8 +16,10 @@ class AllowanceRecordsResource extends JsonResource
     {
         return [
             "allowance_amount" => $this->allowance_amount,
+            "allowance_amount_formatted" => number_format($this->allowance_amount, 2),
             "allowance_days" => $this->allowance_days,
             "allowance_rate" => $this->allowance_rate,
+            "allowance_rate_formatted" => number_format($this->allowance_rate, 2),
             "allowance_request" => $this->allowance_request,
             "employee" => [
                 "id" => $this->employee->id,

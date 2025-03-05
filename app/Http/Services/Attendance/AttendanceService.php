@@ -465,20 +465,18 @@ class AttendanceService
                 ];
                 array_push($chargingNames, $otAsLogIn->charging_name);
             }
-            if (!$timeIn) {
-                // is On Travel Order
-                $travelOrderAsLogIn = $employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeIn) {
-                    return $trOrd->datetimeIsApplicable($scheduleDateTimeIn);
-                })->first();
-                if (!$timeIn && $travelOrderAsLogIn) {
-                    $timeIn = $schedule->startTime;
-                    $scheduleMetaData["start_time_log"] = "ON TRAVEL ORDER";
-                    $charge = [
-                        "class" => $travelOrderAsLogIn->charge_type,
-                        "id" => $travelOrderAsLogIn->charge_id,
-                    ];
-                    array_push($chargingNames, $travelOrderAsLogIn->charging_designation);
-                }
+            // is On Travel Order
+            $travelOrderAsLogIn = $employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeIn) {
+                return $trOrd->datetimeIsApplicable($scheduleDateTimeIn);
+            })->first();
+            if ($travelOrderAsLogIn) {
+                $timeIn = $schedule->startTime;
+                $scheduleMetaData["start_time_log"] = "ON TRAVEL ORDER";
+                $charge = [
+                    "class" => $travelOrderAsLogIn->charge_type,
+                    "id" => $travelOrderAsLogIn->charge_id,
+                ];
+                array_push($chargingNames, $travelOrderAsLogIn->charging_designation);
             }
             // PREPARE TIME OUTS
             $scheduleDateTimeOut = $date->copy()->setTimeFromTimeString($schedule->endTime->format("H:i:s"));
@@ -506,15 +504,13 @@ class AttendanceService
                 $timeOut = $schedule->endTime;
                 $scheduleMetaData["end_time_log"] = "ON OVERTIME";
             }
-            if (!$timeOut) {
-                // is On Travel Order
-                $travelOrderAsLogOut = $employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeOut) {
-                    return $trOrd->datetimeIsApplicable($scheduleDateTimeOut);
-                })->first();
-                if (!$timeOut && $travelOrderAsLogOut) {
-                    $timeOut = $schedule->endTime;
-                    $scheduleMetaData["end_time_log"] = "ON TRAVEL ORDER";
-                }
+            // is On Travel Order
+            $travelOrderAsLogOut = $employeeDayData["travel_orders"]->filter(function ($trOrd) use ($scheduleDateTimeOut) {
+                return $trOrd->datetimeIsApplicable($scheduleDateTimeOut);
+            })->first();
+            if ($travelOrderAsLogOut) {
+                $timeOut = $schedule->endTime;
+                $scheduleMetaData["end_time_log"] = "ON TRAVEL ORDER";
             }
             if (!$timeIn || !$timeOut) {
                 // Is On Leave
