@@ -24,6 +24,7 @@ use App\Notifications\VoidRequestForApproval;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class VoidRequestAction extends Controller
 {
@@ -45,7 +46,7 @@ class VoidRequestAction extends Controller
 
     public function createVoid($modelType, $model, VoidRequest $request)
     {
-        if ($model->request_status != RequestStatuses::APPROVED) {
+        if ($model->request_status != RequestStatuses::APPROVED->value) {
             return new JsonResponse(["success" => false, "message" => "Cannot Void Request that is not Approved."], JsonResponse::HTTP_BAD_REQUEST);
         }
         $attribute = $request->validated();
@@ -53,7 +54,13 @@ class VoidRequestAction extends Controller
         $approvalModels = ApprovalModels::toArray();
         $attribute["request_type"] = $approvalModels[$modelType];
         $attribute["request_id"] = $model->id;
-        $attribute["approvals"] = $approvals;
+        $attribute["approvals"] = collect($approvals->approvals)->map(function($approval) {
+            return [
+                "type" => $approval['type'],
+                "user_id" => $approval['user_id'],
+                "status" => RequestApprovalStatus::PENDING,
+            ];
+        })->values()->toArray();
         $attribute["created_by"] = Auth::user()->id;
         $createData = RequestVoid::create($attribute);
         if (!$createData) {

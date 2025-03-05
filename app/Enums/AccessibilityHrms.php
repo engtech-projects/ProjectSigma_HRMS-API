@@ -61,11 +61,9 @@ enum AccessibilityHrms: string
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";
     case HRMS_LOCATION_EMPLOYEES = "hrms:location employees";
     // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
+    case HRMS_REQUEST_VOID_CREATEREQUEST = "hrms:request void_my requests and create request";
+    case HRMS_REQUEST_VOID_ALLREQUEST = "hrms:request void_all requests";
+    case HRMS_REQUEST_VOID_MYAPPROVALS = "hrms:request void_my approvals";
     // case HRMS_ = "";
     // case HRMS_ = "";
     // case HRMS_ = "";
