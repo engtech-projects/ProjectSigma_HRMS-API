@@ -6,9 +6,11 @@ use App\Enums\RequestStatuses;
 use App\Enums\VoidRequestModels;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class RequestVoid extends Model
@@ -69,10 +71,15 @@ class RequestVoid extends Model
      */
     public function completeRequestStatus()
     {
+        DB::beginTransaction();
         $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
+        if($this->request->request_status != RequestStatuses::APPROVED->value) {
+            throw new Exception("Void Request Not Approved");
+        }
         $this->request->voidRequestStatus();
         $this->refresh();
+        DB::commit();
     }
 
 }
