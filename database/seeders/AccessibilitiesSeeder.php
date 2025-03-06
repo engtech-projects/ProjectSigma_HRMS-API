@@ -611,14 +611,14 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 86,
                     'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_MEMO->value,
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(), // TEMPORARY DELETE READY FOR WHEN IMPLEMENTED
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 87,
                     'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_BULKTRANSFER->value,
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(), // TEMPORARY DELETE READY FOR WHEN IMPLEMENTED
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
