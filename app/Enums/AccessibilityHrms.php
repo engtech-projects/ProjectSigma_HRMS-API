@@ -82,10 +82,15 @@ enum AccessibilityHrms: string
     case HRMS_EMPLOYEE_201_STAFFINFOSHEET = "hrms:employee_201_staff information sheet";
     case HRMS_EMPLOYEE_201_DOCUMENTSMEMO = "hrms:employee_201_documents and memos";
     case HRMS_EMPLOYEE_201_ID = "hrms:employee_201_id";
-    case HRMS_EMPLOYEE_PAN_FORM = "hrms:employee_pan_form";
+    case HRMS_EMPLOYEE_PAN_FORM_NEWHIRE = "hrms:employee_pan_form_new hire";
+    case HRMS_EMPLOYEE_PAN_FORM_TRANSFER = "hrms:employee_pan_form_transfer";
+    case HRMS_EMPLOYEE_PAN_FORM_PROMOTION = "hrms:employee_pan_form_promotion";
+    case HRMS_EMPLOYEE_PAN_FORM_TERMINATION = "hrms:employee_pan_form_termination";
+    case HRMS_EMPLOYEE_PAN_FORM_BULKTRANSFER = "hrms:employee_pan_form_bulk transfer";
+    case HRMS_EMPLOYEE_PAN_FORM_MEMO = "hrms:employee_pan_form_memo";
+    // case HRMS_EMPLOYEE_PAN_MYREQUESTS = "hrms:employee_pan_my request";
     case HRMS_EMPLOYEE_PAN_ALLREQUESTS = "hrms:employee_pan_all request";
     case HRMS_EMPLOYEE_PAN_MYAPPROVALS = "hrms:employee_pan_approval";
-    case HRMS_EMPLOYEE_PAN_MYREQUESTS = "hrms:employee_pan_my request";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_FORM = "hrms:employee_manpower request_form";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_ALLREQUESTS = "hrms:employee_manpower request_all request";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_MYAPPROVALS = "hrms:employee_manpower request_approval";
