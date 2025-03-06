@@ -55,7 +55,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
@@ -73,7 +73,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
@@ -93,7 +93,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
