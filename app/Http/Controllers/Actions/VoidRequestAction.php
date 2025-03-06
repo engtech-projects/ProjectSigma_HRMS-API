@@ -52,6 +52,9 @@ class VoidRequestAction extends Controller
         $attribute = $request->validated();
         $approvals = Approvals::where("form", "Void Requests")->first();
         $approvalModels = ApprovalModels::toArray();
+        if (RequestVoid::where("request_id", $model->id)->where("request_type", $approvalModels[$modelType])->whereIn("request_status", [RequestStatuses::APPROVED, RequestStatuses::PENDING])->exists()){
+            return new JsonResponse(["success" => false, "message" => "Void Request already exists."], JsonResponse::HTTP_BAD_REQUEST);
+        }
         $attribute["request_type"] = $approvalModels[$modelType];
         $attribute["request_id"] = $model->id;
         $attribute["approvals"] = collect($approvals->approvals)->map(function($approval) {
