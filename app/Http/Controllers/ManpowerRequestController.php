@@ -61,7 +61,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => []
+            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
         ]);
     }
 
@@ -79,7 +79,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => []
+            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
         ]);
     }
 
@@ -99,7 +99,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => []
+            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
         ]);
     }
 
