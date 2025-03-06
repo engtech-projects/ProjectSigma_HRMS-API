@@ -55,13 +55,13 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
+            'data' => [PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())]
         ]);
     }
 
@@ -73,13 +73,13 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
+            'data' => []
         ]);
     }
 
@@ -93,13 +93,13 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
+            'data' => []
         ]);
     }
 
