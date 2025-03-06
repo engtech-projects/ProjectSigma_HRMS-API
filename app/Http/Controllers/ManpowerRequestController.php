@@ -99,7 +99,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => ManpowerRequestResource::collection($myApproval)
+            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
         ]);
     }
 
