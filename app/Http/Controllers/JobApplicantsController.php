@@ -9,9 +9,12 @@ use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantStatus;
 use Carbon\Carbon;
+use App\Http\Resources\AllJobApplicantResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
 
 class JobApplicantsController extends Controller
 {
@@ -23,12 +26,12 @@ class JobApplicantsController extends Controller
      */
     public function index()
     {
-        $main = JobApplicants::paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $main = JobApplicants::with("manpower.position")->get();
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cash Advance Request fetched.',
+            'data' => PaginateResourceCollection::paginate(collect(AllJobApplicantResource::collection($main)))
+        ]);
     }
 
     /**
