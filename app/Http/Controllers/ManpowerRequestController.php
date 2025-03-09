@@ -13,6 +13,8 @@ use App\Http\Resources\ManpowerRequestResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use App\Http\Requests\FillStatusesRequest;
+use App\Enums\FillStatuses;
 
 class ManpowerRequestController extends Controller
 {
@@ -43,6 +45,27 @@ class ManpowerRequestController extends Controller
             'message' => 'Manpower Request fetched.',
             'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
         ]);
+    }
+
+    public function fetchFillStatuses(FillStatusesRequest $request)
+    {
+        $validated = $request->validated();
+        $data = null;
+        if ($validated) {
+            // 'Pending','Open','Filled','Cancelled','Hold'
+            $data = $this->manpowerService->getFillRequest($validated["fill_status"]);
+            $collection = collect(ManpowerRequestResource::collection($data->load('user.employee')));
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Manpower Request fetched.',
+                'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
+            ]);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'No data found.',
+        ], JsonResponse::HTTP_OK);
+
     }
     /**
      * Show List Manpower requests that have status “For Hiring“ = Approve

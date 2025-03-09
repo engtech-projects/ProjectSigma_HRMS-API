@@ -43,6 +43,7 @@ class ManpowerRequest extends Model
         'approvals',
         'remarks',
         'request_status',
+        'fill_status',
         'charged_to',
         'breakdown_details',
         'created_by',

@@ -149,6 +149,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // HRMS REQUESTS/TRANSACTIONS WITH APPROVALS
     Route::prefix('manpower')->group(function () {
         Route::resource('resource', ManpowerRequestController::class)->names("requestManpower");
+        Route::get('get-fill-statuses', [ManpowerRequestController::class, 'fetchFillStatuses']);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);

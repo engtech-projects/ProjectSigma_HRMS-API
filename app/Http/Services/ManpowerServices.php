@@ -68,4 +68,8 @@ class ManpowerServices
             return $query;
         }
     }
+    public function getFillRequest($type)
+    {
+        return $this->manpowerRequest->with(["position"])->where('fill_status', $type)->orderBy('created_at', 'desc')->get();
+    }
 }
