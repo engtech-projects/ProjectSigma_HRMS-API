@@ -7,6 +7,7 @@ use App\Http\Traits\UploadFileTrait;
 use App\Models\ManpowerRequest;
 use App\Models\Users;
 use App\Notifications\ManpowerRequestForApproval;
+use App\Enums\FillStatuses;
 
 class ManpowerServices
 {
@@ -68,8 +69,16 @@ class ManpowerServices
             return $query;
         }
     }
-    public function getFillRequest($type)
+    public function getOpenPositions()
     {
-        return $this->manpowerRequest->with(["position"])->where('fill_status', $type)->orderBy('created_at', 'desc')->get();
+        return $this->manpowerRequest->with(["position"])->where('fill_status', FillStatuses::OPEN->value)->orderBy('created_at', 'desc')->get();
+    }
+    public function getFilledPositions()
+    {
+        return $this->manpowerRequest->with(["position"])->where('fill_status', FillStatuses::FILLED->value)->orderBy('created_at', 'desc')->get();
+    }
+    public function getOnHoldPositions()
+    {
+        return $this->manpowerRequest->with(["position"])->where('fill_status', FillStatuses::HOLD->value)->orderBy('created_at', 'desc')->get();
     }
 }
