@@ -85,22 +85,22 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 10,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_REQUEST_VOID_CREATEREQUEST,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 11,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_REQUEST_VOID_ALLREQUEST,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 12,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_REQUEST_VOID_MYAPPROVALS,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
@@ -519,7 +519,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 73,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM->value,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_NEWHIRE->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -540,7 +540,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 76,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_MYREQUESTS->value,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_TRANSFER->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -596,35 +596,35 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 84,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_FORMS->value,
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_PROMOTION->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 85,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_ALLREQUESTS->value,
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_TERMINATION->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 86,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_PAYMENTS->value,
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_MEMO->value,
+                    'deleted_at' => Carbon::now(), // TEMPORARY DELETE READY FOR WHEN IMPLEMENTED
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 87,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_FORMS->value,
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_BULKTRANSFER->value,
+                    'deleted_at' => Carbon::now(), // TEMPORARY DELETE READY FOR WHEN IMPLEMENTED
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 88,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALLREQUESTS->value,
+                    'accessibilities_name' => "",
                     'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -1210,6 +1210,55 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 2251,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REPORTS_LIQUIDATION_FORM->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2252,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REPORTS_REPLENISHMENT_SUMMARY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2253,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REPORTS_CASH_ADVANCE_SUMMARY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2254,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REPORTS_MEMORANDUM_OF_DEPOSIT->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2255,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REPORTS_PROVISIONAL_RECEIPT->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2256,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REPORTS_CASH_RETURN_SLIP->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2257,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REPORTS_PAYROLL_LIQUIDATIONS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
@@ -1420,6 +1469,19 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+            ],
+            [ "id" ],
+            [ "accessibilities_name", "deleted_at"]
+        );
+        DB::table('accessibilities')->upsert(
+            [
+                [
+                    'id' => 3003,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_PAYROLL_SALARY_GENERATE_PAYROLL_CHANGE_OF_CHARGING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]

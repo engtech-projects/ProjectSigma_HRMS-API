@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\PostingStatusType;
 use App\Enums\RequestApprovalStatus;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Enums\TermsOfPaymentType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -111,12 +111,12 @@ class PayrollRecord extends Model
 
     public function scopeRequestStatusPending(Builder $query): void
     {
-        $query->where('request_status', RequestStatusType::PENDING);
+        $query->where('request_status', RequestStatuses::PENDING);
     }
 
     public function scopeRequestStatusApproved(Builder $query): void
     {
-        $query->where('request_status', RequestStatusType::APPROVED);
+        $query->where('request_status', RequestStatuses::APPROVED);
     }
 
     public function completeRequestStatus()

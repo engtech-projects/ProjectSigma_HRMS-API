@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RequestStatuses;
 use App\Models\Employee;
 use App\Enums\SearchTypes;
 use App\Http\Requests\FilterDateRequest;
@@ -254,7 +255,7 @@ class EmployeeController extends Controller
                         if (in_array($val->current_employment->employment_status, $type)) {
                             $count = EmployeeLeaves::where([
                                 ["leave_id", $key->id],
-                                ["request_status", "Approved"],
+                                ["request_status", RequestStatuses::APPROVED->value],
                             ])->max('number_of_days');
                             $leave = Leave::find($key->id);
                             if ($leave) {

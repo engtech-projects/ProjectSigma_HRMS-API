@@ -208,4 +208,9 @@ trait HasApproval
             "message" => $data['status'] === RequestStatuses::APPROVED->value ? "Successfully approved." : "Successfully denied.",
         ];
     }
+    public function voidRequestStatus()
+    {
+        $this->request_status = RequestStatuses::VOID;
+        $this->save();
+    }
 }

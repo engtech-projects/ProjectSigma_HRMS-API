@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\AllLeaveRequestRequest;
 use App\Http\Requests\ApprovalLeaveRequest;
 use App\Http\Requests\MyLeaveRequest;
@@ -59,7 +59,7 @@ class EmployeeLeavesController extends Controller
         if ($valData) {
             $main->fill($valData);
             $main->created_by = Auth::user()->id;
-            $main->request_status = RequestStatusType::PENDING;
+            $main->request_status = RequestStatuses::PENDING;
 
             if (!$main->save()) {
                 $data->message = "Save failed.";
