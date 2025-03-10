@@ -30,9 +30,8 @@ class ManpowerRequestController extends Controller
     public function index()
     {
         $manpowerRequests = $this->manpowerService->getAll();
-        $collection = collect(ManpowerRequestResource::collection($manpowerRequests->load('user.employee')));
-
-        if ($collection->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($manpowerRequests)->response()->getData(true);
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
@@ -41,17 +40,16 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
+            'data' => $collection
         ]);
     }
 
     public function openPositions()
     {
-        $data = null;
-        $data = $this->manpowerService->getOpenPositions($validated["fill_status"]);
-        $collection = collect(ManpowerRequestResource::collection($data->load('user.employee')));
+        $data = $this->manpowerService->getOpenPositions();
+        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
 
-        if ($collection->isEmpty()) {
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
@@ -61,16 +59,16 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
+            'data' => $collection
         ]);
     }
 
     public function filledPositions()
     {
-        $data = $this->manpowerService->getFilledPositions($validated["fill_status"]);
-        $collection = collect(ManpowerRequestResource::collection($data->load('user.employee')));
+        $data = $this->manpowerService->getFilledPositions();
+        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
 
-        if ($collection->isEmpty()) {
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
@@ -80,16 +78,16 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
+            'data' => $collection
         ]);
     }
 
     public function onHoldPositions()
     {
-        $data = $this->manpowerService->getOnHoldPositions($validated["fill_status"]);
-        $collection = collect(ManpowerRequestResource::collection($data->load('user.employee')));
+        $data = $this->manpowerService->getOnHoldPositions();
+        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
 
-        if ($collection->isEmpty()) {
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
@@ -99,7 +97,7 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
+            'data' => $collection
         ]);
     }
     /**
@@ -108,18 +106,19 @@ class ManpowerRequestController extends Controller
     public function forHiring()
     {
         $manpowerRequest = $this->manpowerService->getAllForHiring();
-        $manpowerRequest->load(['job_applicants', 'user.employee']);
-        if ($manpowerRequest->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($manpowerRequest)->response()->getData(true);
+
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
             ], JsonResponse::HTTP_OK);
         }
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
+            'data' => $collection
         ]);
     }
 
@@ -127,17 +126,19 @@ class ManpowerRequestController extends Controller
     public function myRequest()
     {
         $myRequest = $this->manpowerService->getMyRequest();
-        if ($myRequest->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($myRequest)->response()->getData(true);
+
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
             ], JsonResponse::HTTP_OK);
         }
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
+            'data' => $collection
         ]);
     }
 
@@ -147,17 +148,19 @@ class ManpowerRequestController extends Controller
     public function myApproval()
     {
         $myApproval = $this->manpowerService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($myApproval)->response()->getData(true);
+
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
-                'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
             ], JsonResponse::HTTP_OK);
         }
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
+            'data' => $collection
         ]);
     }
 

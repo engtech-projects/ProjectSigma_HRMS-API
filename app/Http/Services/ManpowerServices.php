@@ -24,11 +24,11 @@ class ManpowerServices
     }
     public function getAll()
     {
-        return $this->manpowerRequest->with(["position"])->orderBy('created_at', 'desc')->get();
+        return $this->manpowerRequest->with("position", "user.employee")->orderBy('created_at', 'desc')->paginate();
     }
     public function getAllForHiring()
     {
-        return $this->manpowerRequest->forHiring()->orderBy('created_at', 'DESC')->get();
+        return $this->manpowerRequest->with('job_applicants', 'user.employee')->forHiring()->orderBy('created_at', 'DESC')->paginate();
     }
     public function getAllManpowerRequest()
     {
@@ -42,16 +42,22 @@ class ManpowerServices
     }
     public function getMyRequest()
     {
-        return ManpowerRequest::with('user.employee')->myRequests()->get();
+        return ManpowerRequest::with('user.employee')->myRequests()->paginate();
     }
     public function getMyApprovals()
     {
         $userId = auth()->user()->id;
-        $result = $this->getAllManpowerRequest();
-        return $result->filter(function ($item) use ($userId) {
-            $nextPendingApproval = $item->getNextPendingApproval();
-            return  ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        });
+        return ManpowerRequest::requestStatusPending()
+            ->with(['user.employee', "position"])
+            ->whereJsonLength('approvals', '>', 0)
+            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
+            ->orderBy('created_at', 'desc')->myApprovals()->paginate();
+
+        // $result = $this->getAllManpowerRequest();
+        // return $result->filter(function ($item) use ($userId) {
+        //     $nextPendingApproval = $item->getNextPendingApproval();
+        //     return  ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
+        // });
     }
     public function createManpowerRequest(array $attributes)
     {
@@ -71,14 +77,14 @@ class ManpowerServices
     }
     public function getOpenPositions()
     {
-        return $this->manpowerRequest->with(["position"])->where('fill_status', FillStatuses::OPEN->value)->orderBy('created_at', 'desc')->get();
+        return $this->manpowerRequest->with("position", "user.employee")->where('fill_status', FillStatuses::OPEN->value)->orderBy('created_at', 'desc')->paginate();
     }
     public function getFilledPositions()
     {
-        return $this->manpowerRequest->with(["position"])->where('fill_status', FillStatuses::FILLED->value)->orderBy('created_at', 'desc')->get();
+        return $this->manpowerRequest->with("position", "user.employee")->where('fill_status', FillStatuses::FILLED->value)->orderBy('created_at', 'desc')->paginate();
     }
     public function getOnHoldPositions()
     {
-        return $this->manpowerRequest->with(["position"])->where('fill_status', FillStatuses::HOLD->value)->orderBy('created_at', 'desc')->get();
+        return $this->manpowerRequest->with("position", "user.employee")->where('fill_status', FillStatuses::HOLD->value)->orderBy('created_at', 'desc')->paginate();
     }
 }

@@ -93,8 +93,8 @@ enum AccessibilityHrms: string
 
     case HRMS_EMPLOYEE_MANPOWERREQUEST_FORM_REQUESTS = "hrms:employee_manpower request_form and my requests";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_OPEN_POSITIONS = "hrms:employee_manpower request_open positions";
-    case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICATION_FORM = "hrms:employee_job applicants: application form";
-    case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICANTS_JOB = "hrms:employee_job applicants: job applicants";
+    case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICATION_FORM = "hrms:employee_job applicants_application form";
+    case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICANTS_JOB = "hrms:employee_job applicants_job applicants";
     // case HRMS_LOANSANDADVANCES_CASHADVANCE = "hrms:loans and advances_cash advance";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_FORM = "hrms:loans and advances_cash advance_forms and my requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_ALLREQUESTS = "hrms:loans and advances_cash advance_all requests";
