@@ -87,7 +87,7 @@ class ManpowerRequest extends Model
 
     public function job_applicants()
     {
-        return $this->hasMany(JobApplicants::class, 'manpowerrequests_id', 'id');
+        return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'job_applicants_id');
     }
 
     public function position()

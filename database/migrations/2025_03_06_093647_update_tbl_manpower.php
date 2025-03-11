@@ -54,7 +54,7 @@ return new class extends Migration
         DB::table('manpower_requests')->where('request_status', FillStatuses::HOLD->value)->update(['fill_status' => FillStatuses::HOLD->value]);
 
         DB::table('manpower_requests')->where('request_status', FillStatuses::PENDING->value)->update(['request_status' => RequestStatuses::PENDING->value]);
-        DB::table('manpower_requests')->where('request_status', FillStatuses::APPROVED->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
+        DB::table('manpower_requests')->where('request_status', RequestStatuses::APPROVED->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
         DB::table('manpower_requests')->where('request_status', FillStatuses::FILLED->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
         DB::table('manpower_requests')->where('request_status', FillStatuses::CANCELLED->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
         DB::table('manpower_requests')->where('request_status', FillStatuses::HOLD->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
@@ -81,7 +81,7 @@ return new class extends Migration
         });
 
         DB::table('manpower_requests')->where('fill_status', FillStatuses::PENDING->value)->update(['request_status' => FillStatuses::PENDING->value]);
-        DB::table('manpower_requests')->where('fill_status', FillStatuses::APPROVED->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
+        DB::table('manpower_requests')->where('fill_status', RequestStatuses::APPROVED->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
         DB::table('manpower_requests')->where('fill_status', FillStatuses::FILLED->value)->update(['request_status' => FillStatuses::FILLED->value]);
         DB::table('manpower_requests')->where('fill_status', FillStatuses::CANCELLED->value)->update(['request_status' => FillStatuses::CANCELLED->value]);
         DB::table('manpower_requests')->where('fill_status', FillStatuses::HOLD->value)->update(['request_status' => FillStatuses::HOLD->value]);

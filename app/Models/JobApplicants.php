@@ -20,7 +20,7 @@ class JobApplicants extends Model
 
     protected $fillable = [
         /*         'id', */
-        'manpowerrequests_id',
+        // 'manpowerrequests_id',
         'application_letter_attachment',
         'resume_attachment',
         'firstname',
@@ -97,7 +97,7 @@ class JobApplicants extends Model
 
     public function manpower(): BelongsTo
     {
-        return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');
+        return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'manpowerrequests_id');
     }
 
     protected function getFullnameLastAttribute()
