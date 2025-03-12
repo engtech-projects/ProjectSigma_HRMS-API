@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JobApplicationStatusEnums;
-use App\Http\Requests\SearchEmployeeRequest;
 use App\Models\JobApplicants;
+use App\Http\Requests\JobApplicantRequest;
+use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantStatus;
-use Carbon\Carbon;
 use App\Http\Resources\AllJobApplicantResource;
+use App\Http\Resources\JobApplicantResource;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Utils\PaginateResourceCollection;
-use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 class JobApplicantsController extends Controller
 {
@@ -26,11 +28,13 @@ class JobApplicantsController extends Controller
      */
     public function index()
     {
-        $main = JobApplicants::with("manpower.position")->get();
+        $main = JobApplicants::with("manpower.position")->paginate();
+        $collection = JobApplicantResource::collection($main)->response()->getData(true);
+
         return new JsonResponse([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(AllJobApplicantResource::collection($main)))
+            'message' => 'Job Applicant fetched.',
+            'data' => $collection
         ]);
     }
 
@@ -59,6 +63,38 @@ class JobApplicantsController extends Controller
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
+    }
+
+    public function getAllApplicant(JobApplicantRequest $request)
+    {
+        $valid = $request->validated();
+
+        $main = JobApplicants::with("manpower.position");
+        if (isset($valid["status"])) {
+            $main = $main->whereHas('manpower', function ($query) use ($valid) {
+                $query->where('manpower_request_job_applicants.hiring_status', $valid["status"]);
+            });
+        }
+
+        if (isset($valid["name"])) {
+            $searchKey = $valid["name"];
+            $main = $main->where(function ($q) use ($searchKey) {
+                $q->orWhere('firstname', 'like', "%{$searchKey}%")
+                    ->orWhere('firstname', 'like', "%{$searchKey}%")
+                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
+                    ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
+            });
+        }
+
+        $main = $main->orderBy('lastname')->paginate();
+
+        $collection = JobApplicantResource::collection($main)->response()->getData(true);
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Job Applicant fetched.',
+            'data' => $collection
+        ]);
     }
 
     /**

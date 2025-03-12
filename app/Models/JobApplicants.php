@@ -6,6 +6,7 @@ use App\Enums\EmployeeEducationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -20,7 +21,6 @@ class JobApplicants extends Model
 
     protected $fillable = [
         /*         'id', */
-        // 'manpowerrequests_id',
         'application_letter_attachment',
         'resume_attachment',
         'firstname',
@@ -95,9 +95,9 @@ class JobApplicants extends Model
         'fullname_first',
     ];
 
-    public function manpower(): BelongsTo
+    public function manpower(): BelongsToMany
     {
-        return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'manpowerrequests_id');
+        return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'job_applicants_id', 'manpowerrequests_id')->withPivot("hiring_status");
     }
 
     protected function getFullnameLastAttribute()

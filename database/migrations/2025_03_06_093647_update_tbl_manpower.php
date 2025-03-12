@@ -2,6 +2,7 @@
 
 use App\Enums\RequestStatuses;
 use App\Enums\FillStatuses;
+use App\Enums\HiringStatuses;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,9 @@ return new class extends Migration
             $table->foreign('job_applicants_id')->references('id')->on('job_applicants');
             $table->unsignedBigInteger('manpowerrequests_id');
             $table->foreign('manpowerrequests_id')->references('id')->on('manpower_requests');
+            $table->string("remarks")->nullable();
+            $table->json('processing_checklist')->nullable();
+            $table->enum('hiring_status', HiringStatuses::toArray());
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,9 +33,14 @@ return new class extends Migration
         DB::table('job_applicants')->orderBy('id')->chunk(100, function ($applicants) {
             foreach ($applicants as $applicant) {
                 if (!is_null($applicant->manpowerrequests_id)) {
+                    $status = HiringStatuses::REJECTED->value;
+                    if(in_array($applicant->status, HiringStatuses::toArray())){
+                        $status = $applicant->status;
+                    }
                     DB::table('manpower_request_job_applicants')->insert([
                         'job_applicants_id' => $applicant->id,
                         'manpowerrequests_id' => $applicant->manpowerrequests_id,
+                        'hiring_status' => $status,
                         'created_at' => $applicant->created_at,
                         'updated_at' => $applicant->updated_at,
                     ]);
@@ -94,6 +103,8 @@ return new class extends Migration
         Schema::table('manpower_requests', function (Blueprint $table) {
             $table->enum('request_status', ['Approved', 'Disapproved', 'Pending', 'Cancelled', 'Filled', 'Hold'])->change();
         });
+
+        Schema::dropIfExists('manpower_request_job_applicants');
 
         Schema::useNativeSchemaOperationsIfPossible(false);
     }

@@ -24,6 +24,9 @@ class ManpowerRequestJobApplicants extends Model
         'id',
         'job_applicants_id',
         'manpowerrequests_id',
+        'remarks',
+        'processing_checklist',
+        'hiring_status',
     ];
 
 
