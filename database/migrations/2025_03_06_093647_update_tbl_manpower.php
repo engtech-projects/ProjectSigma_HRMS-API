@@ -61,6 +61,7 @@ return new class extends Migration
         DB::table('manpower_requests')->where('request_status', FillStatuses::CANCELLED->value)->update(['fill_status' => FillStatuses::CANCELLED->value]);
         DB::table('manpower_requests')->where('request_status', FillStatuses::FILLED->value)->update(['fill_status' => FillStatuses::FILLED->value]);
         DB::table('manpower_requests')->where('request_status', FillStatuses::HOLD->value)->update(['fill_status' => FillStatuses::HOLD->value]);
+        DB::table('manpower_requests')->where('request_status', FillStatuses::OPEN->value)->update(['fill_status' => FillStatuses::OPEN->value]);
 
         DB::table('manpower_requests')->where('request_status', FillStatuses::PENDING->value)->update(['request_status' => RequestStatuses::PENDING->value]);
         DB::table('manpower_requests')->where('request_status', RequestStatuses::APPROVED->value)->update(['request_status' => RequestStatuses::APPROVED->value]);
@@ -95,6 +96,7 @@ return new class extends Migration
         DB::table('manpower_requests')->where('fill_status', FillStatuses::CANCELLED->value)->update(['request_status' => FillStatuses::CANCELLED->value]);
         DB::table('manpower_requests')->where('fill_status', FillStatuses::HOLD->value)->update(['request_status' => FillStatuses::HOLD->value]);
         DB::table('manpower_requests')->where('request_status', RequestStatuses::DENIED->value)->update(['request_status' => 'Disapproved']);
+        DB::table('manpower_requests')->where('fill_status', FillStatuses::OPEN->value)->update(['fill_status' => RequestStatuses::APPROVED->value]);
 
         Schema::table('manpower_requests', function (Blueprint $table) {
             $table->dropColumn('fill_status');

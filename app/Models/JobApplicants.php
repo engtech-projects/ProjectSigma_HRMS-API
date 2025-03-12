@@ -20,7 +20,6 @@ class JobApplicants extends Model
 
 
     protected $fillable = [
-        /*         'id', */
         'application_letter_attachment',
         'resume_attachment',
         'firstname',

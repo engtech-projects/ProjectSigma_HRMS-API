@@ -52,12 +52,6 @@ class ManpowerServices
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->orderBy('created_at', 'desc')->myApprovals()->paginate();
-
-        // $result = $this->getAllManpowerRequest();
-        // return $result->filter(function ($item) use ($userId) {
-        //     $nextPendingApproval = $item->getNextPendingApproval();
-        //     return  ($nextPendingApproval && $userId === $nextPendingApproval['user_id']);
-        // });
     }
     public function createManpowerRequest(array $attributes)
     {
