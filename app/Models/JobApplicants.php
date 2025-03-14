@@ -96,7 +96,7 @@ class JobApplicants extends Model
 
     public function manpower(): BelongsToMany
     {
-        return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'job_applicants_id', 'manpowerrequests_id')->withPivot("hiring_status");
+        return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'job_applicants_id', 'manpowerrequests_id')->withPivot("hiring_status", "processing_checklist", "remarks");
     }
 
     protected function getFullnameLastAttribute()

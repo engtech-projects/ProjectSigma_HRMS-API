@@ -46,14 +46,16 @@ class JobApplicantsController extends Controller
     {
         $validatedData = $request->validated();
         $searchKey = $validatedData["key"];
-        $main = JobApplicants::select("id", "firstname", "middlename", "lastname")
+        $main = JobApplicants::with("manpower")->select("id", "firstname", "middlename", "lastname")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('firstname', 'like', "%{$searchKey}%")
                     ->orWhere('firstname', 'like', "%{$searchKey}%")
                     ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
                     ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
             })
-            ->where("status", JobApplicationStatusEnums::FOR_HIRING)
+            ->whereHas('manpower', function ($query) {
+                $query->where('manpower_request_job_applicants.hiring_status', JobApplicationStatusEnums::FOR_HIRING);
+            })
             ->limit(25)
             ->orderBy('lastname')
             ->get()
@@ -86,15 +88,24 @@ class JobApplicantsController extends Controller
             });
         }
 
-        $main = $main->orderBy('lastname')->paginate();
+        if (isset($valid["paginated"])) {
+            $main = $main->orderBy('lastname')->paginate();
+            $collection = JobApplicantResource::collection($main)->response()->getData(true);
 
-        $collection = JobApplicantResource::collection($main)->response()->getData(true);
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Job Applicant fetched.',
+                'data' => $collection
+            ]);
+        } else {
+            $main = $main->orderBy('lastname')->get();
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Job Applicant fetched.',
+                'data' => $main
+            ]);
+        }
 
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Job Applicant fetched.',
-            'data' => $collection
-        ]);
     }
 
     /**

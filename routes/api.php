@@ -155,6 +155,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
+        Route::post('save-applicant', [ManpowerRequestController::class, 'storeApplicant']);
     });
     Route::prefix('pan')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class)->names("requestPan");

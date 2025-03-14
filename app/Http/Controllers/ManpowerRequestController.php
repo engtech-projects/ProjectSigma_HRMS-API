@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ManpowerRequest;
+use App\Models\ManpowerRequestJobApplicants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ManpowerServices;
@@ -13,6 +14,7 @@ use App\Http\Resources\ManpowerRequestResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use App\Http\Requests\StoreApplicantRequest;
 
 class ManpowerRequestController extends Controller
 {
@@ -139,7 +141,7 @@ class ManpowerRequestController extends Controller
             'success' => true,
             'message' => 'Manpower Request fetched.',
             'data' => $collection
-        ]);
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -182,6 +184,46 @@ class ManpowerRequestController extends Controller
             "success" => true,
             "message" => "Successfully created.",
         ], JsonResponse::HTTP_CREATED);
+    }
+
+    public function storeApplicant(StoreApplicantRequest $request)
+    {
+        $valid = $request->validated();
+        $dbTransactionFailed = false;
+        if ($valid) {
+            $valid["processing_checklist"] = [
+                "Interviewed" => false,
+                "Tested" => false,
+                "Reference_Checked" => false,
+                "Medical_Examination" => false,
+                "Contact_Extended" => false,
+                "Contract_Signed" => false,
+            ];
+            $valid["hiring_status"] = "Processing";
+            try {
+                DB::transaction(function() use ($valid) {
+                    foreach ($valid["data"] as $data) {
+                        $valid["job_applicants_id"] = $data;
+                        $model = new ManpowerRequestJobApplicants();
+                        $model->fill($valid);
+                        $model->save();
+                    }
+                });
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Successfully save.",
+                ], JsonResponse::HTTP_OK);
+            } catch (Exception $e) {
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Failed to save.",
+                ], JsonResponse::HTTP_OK);
+            }
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Failed to save.",
+        ], JsonResponse::HTTP_OK);
     }
 
     /**

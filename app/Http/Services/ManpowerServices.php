@@ -42,7 +42,7 @@ class ManpowerServices
     }
     public function getMyRequest()
     {
-        return ManpowerRequest::with('user.employee')->myRequests()->paginate();
+        return ManpowerRequest::myRequests()->with('user.employee')->paginate();
     }
     public function getMyApprovals()
     {

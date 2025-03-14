@@ -29,5 +29,8 @@ class ManpowerRequestJobApplicants extends Model
         'hiring_status',
     ];
 
+    protected $casts = [
+        'processing_checklist' => 'array'
+    ];
 
 }

@@ -87,7 +87,7 @@ class ManpowerRequest extends Model
 
     public function job_applicants()
     {
-        return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'manpowerrequests_id', 'job_applicants_id');
+        return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'manpowerrequests_id', 'job_applicants_id')->withPivot("hiring_status", "processing_checklist", "remarks");
     }
 
     public function position()
@@ -124,7 +124,6 @@ class ManpowerRequest extends Model
     }
     public function denyRequestStatus()
     {
-
         $this->request_status = ManpowerRequestStatus::DISAPPROVED;
         $this->save();
         $this->refresh();
