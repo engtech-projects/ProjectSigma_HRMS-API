@@ -24,6 +24,11 @@ class UpdateJobApplicantStatus extends FormRequest
     public function rules(): array
     {
         return [
+            'manpowerrequests_id' => [
+                "required",
+                "integer",
+                "exists:manpower_requests,id",
+            ],
             'status' => [
                 "nullable",
                 "string",
@@ -32,6 +37,10 @@ class UpdateJobApplicantStatus extends FormRequest
             'remarks' => [
                 "nullable",
                 "string",
+            ],
+            'processing_checklist' => [
+                "nullable",
+                "array",
             ],
         ];
     }

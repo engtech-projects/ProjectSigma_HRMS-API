@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ManpowerRequest;
 use App\Models\ManpowerRequestJobApplicants;
+use App\Models\JobApplicants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ManpowerServices;
@@ -15,6 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Http\Requests\StoreApplicantRequest;
+use App\Enums\HiringStatuses;
 
 class ManpowerRequestController extends Controller
 {
@@ -199,14 +201,24 @@ class ManpowerRequestController extends Controller
                 "Contact_Extended" => false,
                 "Contract_Signed" => false,
             ];
-            $valid["hiring_status"] = "Processing";
+            $valid["hiring_status"] = HiringStatuses::PROCESSING->value;
             try {
                 DB::transaction(function() use ($valid) {
                     foreach ($valid["data"] as $data) {
                         $valid["job_applicants_id"] = $data;
-                        $model = new ManpowerRequestJobApplicants();
-                        $model->fill($valid);
+                        $record = ManpowerRequestJobApplicants::where('job_applicants_id', $valid["job_applicants_id"])
+                        ->where('manpowerrequests_id', $valid["manpowerrequests_id"])->where("hiring_status", "Rejected")->first();
+
+                        if (!$record) {
+                            $model = new ManpowerRequestJobApplicants();
+                            $model->fill($valid);
+                            $model->save();
+                        }
+
+                        $model = JobApplicants::find($valid["job_applicants_id"]);
+                        $model->status = "Processing";
                         $model->save();
+
                     }
                 });
                 return new JsonResponse([

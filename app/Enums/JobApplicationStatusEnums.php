@@ -6,6 +6,8 @@ enum JobApplicationStatusEnums: string
 {
     case CONTACT_EXTENDED = "Contact Extended";
     case PENDING = "Pending";
+    case AVAILABLE = "Available";
+    case PROCESSING = "Processing";
     case INTERVIEWED = "Interviewed";
     case REJECTED = "Rejected";
     case FOR_HIRING = "For Hiring";

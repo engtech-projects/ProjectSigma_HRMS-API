@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JobApplicationStatusEnums;
+use App\Enums\HiringStatuses;
 use App\Models\JobApplicants;
+use App\Models\ManpowerRequestJobApplicants;
 use App\Http\Requests\JobApplicantRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\StoreJobApplicantsRequest;
@@ -71,7 +73,7 @@ class JobApplicantsController extends Controller
     {
         $valid = $request->validated();
 
-        $main = JobApplicants::with("manpower.position");
+        $main = JobApplicants::with("manpower.position")->where("status", JobApplicationStatusEnums::AVAILABLE->value);
         if (isset($valid["status"])) {
             $main = $main->whereHas('manpower', function ($query) use ($valid) {
                 $query->where('manpower_request_job_applicants.hiring_status', $valid["status"]);
@@ -121,29 +123,42 @@ class JobApplicantsController extends Controller
         return response()->json($data);
     }
 
-    /**
-     *  Update Job Applicants status and remarks
-     */
     public function updateApplicant(UpdateJobApplicantStatus $request, $id)
     {
-        $main = JobApplicants::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $main->fill($request->validated());
-            if ($main->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Update failed.";
-            $data->success = false;
-            return response()->json($data, 400);
-        }
+        try {
+            $valid = $request->validated();
+            if ($valid) {
+                DB::transaction(function() use ($valid, $id) {
+                    $main = JobApplicants::find($id);
+                    $record = ManpowerRequestJobApplicants::where('job_applicants_id', $main->id)
+                    ->where('manpowerrequests_id', $valid["manpowerrequests_id"])->first();
 
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404);
+                    $jobApplicantStatus = JobApplicationStatusEnums::AVAILABLE->value;
+                    $manPowerRequestJobApplciantStatus = HiringStatuses::REJECTED->value;
+
+                    if ($valid["status"] === HiringStatuses::FOR_HIRING->value) {
+                        $jobApplicantStatus = JobApplicationStatusEnums::PROCESSING->value;
+                        $manPowerRequestJobApplciantStatus = HiringStatuses::FOR_HIRING->value;
+                    }
+
+                    $valid["status"] = $jobApplicantStatus;
+                    $record->hiring_status = $manPowerRequestJobApplciantStatus;
+                    $record->processing_checklist = $valid["processing_checklist"];
+                    $main->fill($valid);
+                    $record->save();
+                    $main->save();
+                });
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Successfully save.",
+                ], JsonResponse::HTTP_OK);
+            }
+        } catch (Exception $e) {
+            return new JsonResponse([
+                "success" => true,
+                "message" => "Failed to save.",
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
