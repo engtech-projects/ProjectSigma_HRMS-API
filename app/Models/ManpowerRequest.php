@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ManpowerRequestStatus;
+use App\Enums\FillStatuses;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Builder;
@@ -119,6 +120,7 @@ class ManpowerRequest extends Model
     public function completeRequestStatus()
     {
         $this->request_status = ManpowerRequestStatus::APPROVED;
+        $this->fill_status = FillStatuses::OPEN;
         $this->save();
         $this->refresh();
     }

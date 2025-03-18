@@ -55,12 +55,17 @@ class ManpowerServices
     }
     public function createManpowerRequest(array $attributes)
     {
+
         $main = $this->manpowerRequest->fill($attributes);
         $main->job_description_attachment = $this->uploadFile($attributes['job_description_attachment'], ManpowerRequest::JDA_DIR);
-        $main->save();
-        if ($main->getNextPendingApproval()) {
-            Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
+
+        if($main->save()){
+            if ($main->getNextPendingApproval()) {
+                Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
+            }
+            return true;
         }
+        return false;
     }
     public function update($request, $query)
     {

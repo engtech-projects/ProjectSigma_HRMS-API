@@ -73,7 +73,47 @@ class JobApplicantsController extends Controller
     {
         $valid = $request->validated();
 
+        $main = JobApplicants::with("manpower.position");
+        if (isset($valid["status"])) {
+            $main = $main->where("status", $valid["status"]);
+        }
+
+        if (isset($valid["name"])) {
+            $searchKey = $valid["name"];
+            $main = $main->where(function ($q) use ($searchKey) {
+                $q->orWhere('firstname', 'like', "%{$searchKey}%")
+                    ->orWhere('firstname', 'like', "%{$searchKey}%")
+                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
+                    ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
+            });
+        }
+
+        if (isset($valid["paginated"])) {
+            $main = $main->orderBy('lastname')->paginate();
+            $collection = JobApplicantResource::collection($main)->response()->getData(true);
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Job Applicant fetched.',
+                'data' => $collection
+            ]);
+        } else {
+            $main = $main->orderBy('lastname')->get();
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Job Applicant fetched.',
+                'data' => $main
+            ]);
+        }
+
+    }
+
+    public function getAllAvailableApplicant(JobApplicantRequest $request)
+    {
+        $valid = $request->validated();
+
         $main = JobApplicants::with("manpower.position")->where("status", JobApplicationStatusEnums::AVAILABLE->value);
+
         if (isset($valid["status"])) {
             $main = $main->whereHas('manpower', function ($query) use ($valid) {
                 $query->where('manpower_request_job_applicants.hiring_status', $valid["status"]);

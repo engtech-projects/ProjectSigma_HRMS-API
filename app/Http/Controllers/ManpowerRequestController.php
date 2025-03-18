@@ -17,6 +17,7 @@ use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Http\Requests\StoreApplicantRequest;
 use App\Enums\HiringStatuses;
+use App\Enums\ManpowerRequestStatus;
 
 class ManpowerRequestController extends Controller
 {
@@ -176,16 +177,26 @@ class ManpowerRequestController extends Controller
     {
         $attributes = $request->validated();
         $attributes["created_by"] = auth()->user()->id;
+        $attributes["request_status"] = ManpowerRequestStatus::PENDING;
         try {
-            $this->manpowerService->createManpowerRequest($attributes);
+            $checkSave = $this->manpowerService->createManpowerRequest($attributes);
+            if ($checkSave) {
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Successfully created.",
+                ], JsonResponse::HTTP_CREATED);
+            }
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Failed to save.",
+            ], JsonResponse::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
-            throw new TransactionFailedException("Create transaction failed.", 400, $e);
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Failed to save.",
+            ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully created.",
-        ], JsonResponse::HTTP_CREATED);
     }
 
     public function storeApplicant(StoreApplicantRequest $request)

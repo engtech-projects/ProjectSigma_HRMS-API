@@ -15,11 +15,18 @@ class JobApplicantResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $positions = collect($this->manpower)
+        ->map(function ($manpower) {
+            return [
+                'name' => $manpower->position->name,
+            ];
+        });
+
         return [
             ...parent::toArray($request),
             "remarks" => $this->remarks ?? "",
             "created_at" => $this->created_at ? Carbon::parse($this->created_at)->format('F j, Y') : null,
-            "position" => $this->manpower ? $this->manpower[0]->position->name : "",
+            "position" => $this->manpower ? $positions : "",
         ];
     }
 }

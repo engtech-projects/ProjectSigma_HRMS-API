@@ -11,6 +11,7 @@ enum JobApplicationStatusEnums: string
     case INTERVIEWED = "Interviewed";
     case REJECTED = "Rejected";
     case FOR_HIRING = "For Hiring";
+    case NOT_AVAILABLE = "Not Available";
     case HIRED = "Hired";
     case TESTED = "Test";
     case REFERENCE_CHECK = "Reference Checking";
