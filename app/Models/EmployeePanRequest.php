@@ -461,10 +461,11 @@ class EmployeePanRequest extends Model
         $newInterWorkExp = $interWorkExp->toArray();
         unset($newInterWorkExp["id"]);
         $newInterWorkExp['work_location'] = $this->work_location ?? $interWorkExp->work_location;
-        if ($newInterWorkExp['work_location'] === WorkLocation::OFFICE->value) {
+        if ($newInterWorkExp['work_location'] === WorkLocation::OFFICE->value) { // OFFICE
             $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
-        } else {
+        } else { // PROJECT
             unset($newInterWorkExp['department_id']);
+            // SETTING OF PROJECT ADDED AFTER CREATION OF INTERNAL WORK EXPERIENCE
         }
         $newInterWorkExp['position_id'] = $this->designation_position ?? $interWorkExp->position_id;
         $newInterWorkExp['date_from'] = $this->date_of_effictivity;

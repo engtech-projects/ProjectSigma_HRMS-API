@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Utils\PaginateResourceCollection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NotificationsController extends Controller
 {
@@ -36,7 +37,7 @@ class NotificationsController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
-    public function getUnreadNotificationsStream()
+    public function getUnreadNotificationsStreamBackup()
     {
         ini_set('max_execution_time', '999999');
         return response()->stream(function () {
@@ -78,6 +79,24 @@ class NotificationsController extends Controller
             "Connection" => "keep-alive",
             'X-Accel-Buffering' => 'no',
         ]);
+    }
+
+    public function getUnreadNotificationsStream()
+    {
+
+        $response = new StreamedResponse();
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $broadcastCount = 0;
+        $response->setCallback(function () use (&$broadcastCount) {
+            // Send notifications to the client using SSE
+            $notification = NotificationResource::collection(Users::find(Auth::user()->id)->unreadNotifications);
+            echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notification) . "\n\n";
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
+            flush();
+        });
+        return $response;
     }
 
     public function readAllNotifications()
