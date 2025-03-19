@@ -14,23 +14,25 @@ return new class extends Migration
     {
         Schema::useNativeSchemaOperationsIfPossible();
 
-        Schema::table('job_applicants', function (Blueprint $table) {
-            $table->enum('status', ['Available', 'Processing', 'Not Available', 'Contact Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
-        });
+        DB::transaction(function () {
+            Schema::table('job_applicants', function (Blueprint $table) {
+                $table->enum('status', ['Available', 'Processing', 'Not Available', 'Contact Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
+            });
 
-        DB::table('job_applicants')->where('status', "Contact Extended")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
-        DB::table('job_applicants')->where('status', "Interviewed")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
-        DB::table('job_applicants')->where('status', "For Hiring")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
-        DB::table('job_applicants')->where('status', "Interviewed")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
-        DB::table('job_applicants')->where('status', "Reference Checking")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
-        DB::table('job_applicants')->where('status', "Medical Examination")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
-        DB::table('job_applicants')->where('status', "Contract Signed")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
-        DB::table('job_applicants')->where('status', "Rejected")->update(['status' => JobApplicationStatusEnums::AVAILABLE->value]);
-        DB::table('job_applicants')->where('status', "Pending")->update(['status' => JobApplicationStatusEnums::AVAILABLE->value]);
-        DB::table('job_applicants')->where('status', "Hired")->update(['status' => JobApplicationStatusEnums::HIRED->value]);
+            DB::table('job_applicants')->where('status', "Contact Extended")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
+            DB::table('job_applicants')->where('status', "Interviewed")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
+            DB::table('job_applicants')->where('status', "For Hiring")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
+            DB::table('job_applicants')->where('status', "Interviewed")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
+            DB::table('job_applicants')->where('status', "Reference Checking")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
+            DB::table('job_applicants')->where('status', "Medical Examination")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
+            DB::table('job_applicants')->where('status', "Contract Signed")->update(['status' => JobApplicationStatusEnums::PROCESSING->value]);
+            DB::table('job_applicants')->where('status', "Rejected")->update(['status' => JobApplicationStatusEnums::AVAILABLE->value]);
+            DB::table('job_applicants')->where('status', "Pending")->update(['status' => JobApplicationStatusEnums::AVAILABLE->value]);
+            DB::table('job_applicants')->where('status', "Hired")->update(['status' => JobApplicationStatusEnums::HIRED->value]);
 
-        Schema::table('job_applicants', function (Blueprint $table) {
-            $table->enum('status', ['Available', 'Processing', 'Not Available', 'Hired'])->change();
+            Schema::table('job_applicants', function (Blueprint $table) {
+                $table->enum('status', ['Available', 'Processing', 'Not Available', 'Hired'])->change();
+            });
         });
 
         Schema::useNativeSchemaOperationsIfPossible(false);

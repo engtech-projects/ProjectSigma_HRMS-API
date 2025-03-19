@@ -37,11 +37,6 @@ class StoreJobApplicantsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'manpowerrequests_id' => [
-                "required",
-                "integer",
-                "exists:manpower_requests,id",
-            ],
             'application_letter_attachment' => [
                 "required",
                 "max:10000",
