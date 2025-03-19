@@ -257,7 +257,7 @@ class JobApplicantsController extends Controller
         $main->education = $validatedData['education'];
         $main->workexperience = $validatedData['workexperience'];
         $main->children = $validatedData['children'];
-        $main->status = FillStatuses::PENDING;
+        $main->status = JobApplicationStatusEnums::AVAILABLE;
         $main->date_of_application = Carbon::now();
         if (!$main->save()) {
             $data->message = "Save failed.";
