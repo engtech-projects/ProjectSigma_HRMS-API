@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::useNativeSchemaOperationsIfPossible();
 
         DB::transaction(function () {
+
             Schema::table('job_applicants', function (Blueprint $table) {
                 $table->enum('status', ['Available', 'Processing', 'Not Available', 'Contact Extended','Pending','Interviewed','Rejected','Hired','For Hiring','Test,Interview','Reference Checking','Medical Examination','Contract Signed'])->change();
             });
@@ -32,6 +33,8 @@ return new class extends Migration
 
             Schema::table('job_applicants', function (Blueprint $table) {
                 $table->enum('status', ['Available', 'Processing', 'Not Available', 'Hired'])->change();
+                $table->dropForeign(['manpowerrequests_id']);
+                $table->dropColumn('manpowerrequests_id');
             });
         });
 

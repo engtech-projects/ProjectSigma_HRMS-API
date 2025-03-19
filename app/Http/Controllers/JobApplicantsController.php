@@ -199,7 +199,7 @@ class JobApplicantsController extends Controller
                     $jobApplicantStatus = JobApplicationStatusEnums::AVAILABLE->value;
                     $manPowerRequestJobApplciantStatus = HiringStatuses::REJECTED->value;
 
-                    if ($valid["status"] === HiringStatuses::FOR_HIRING->value) {
+                    if ($valid["hiring_status"] === HiringStatuses::FOR_HIRING->value) {
                         $jobApplicantStatus = JobApplicationStatusEnums::PROCESSING->value;
                         $manPowerRequestJobApplciantStatus = HiringStatuses::FOR_HIRING->value;
                     }

@@ -70,11 +70,6 @@ return new class extends Migration
                 }
             });
 
-            Schema::table('job_applicants', function (Blueprint $table) {
-                $table->dropForeign(['manpowerrequests_id']);
-                $table->dropColumn('manpowerrequests_id');
-            });
-
             Schema::table('manpower_requests', function (Blueprint $table) {
                 $table->enum('request_status', ['Approved', 'Disapproved', 'Pending', 'Cancelled', 'Filled', 'Hold', 'Voided', 'Denied'])->after('breakdown_details')->change();
                 $table->enum('fill_status', FillStatuses::toArray())->after('breakdown_details')->default(FillStatuses::PENDING->value);
@@ -95,6 +90,7 @@ return new class extends Migration
             Schema::table('manpower_requests', function (Blueprint $table) {
                 $table->enum('request_status', RequestStatuses::toArray())->after('breakdown_details')->change();
             });
+
         });
 
         Schema::useNativeSchemaOperationsIfPossible(false);
