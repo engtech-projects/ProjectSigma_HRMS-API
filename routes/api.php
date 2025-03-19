@@ -149,9 +149,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // HRMS REQUESTS/TRANSACTIONS WITH APPROVALS
     Route::prefix('manpower')->group(function () {
         Route::resource('resource', ManpowerRequestController::class)->names("requestManpower");
+        Route::get('get-open-positions', [ManpowerRequestController::class, 'openPositions']);
+        Route::get('get-filled-positions', [ManpowerRequestController::class, 'filledPositions']);
+        Route::get('get-onhold-positions', [ManpowerRequestController::class, 'onHoldPositions']);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
+        Route::post('save-applicant', [ManpowerRequestController::class, 'storeApplicant']);
     });
     Route::prefix('pan')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class)->names("requestPan");
@@ -239,7 +243,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::resource('job-applicants', JobApplicantsController::class);
-    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
+    Route::get('get-applicant', [JobApplicantsController::class, 'getApplicant']);
+    Route::get('get-available-applicant', [JobApplicantsController::class, 'getAvailableApplicant']);
+
     Route::resource('schedule', ScheduleController::class);
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);
     // EMPLOYEE DETAILS AND OTHERS

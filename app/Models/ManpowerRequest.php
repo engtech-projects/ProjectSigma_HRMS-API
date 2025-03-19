@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ManpowerRequestStatus;
+use App\Enums\FillStatuses;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,6 +44,7 @@ class ManpowerRequest extends Model
         'approvals',
         'remarks',
         'request_status',
+        'fill_status',
         'charged_to',
         'breakdown_details',
         'created_by',
@@ -86,7 +88,7 @@ class ManpowerRequest extends Model
 
     public function job_applicants()
     {
-        return $this->hasMany(JobApplicants::class, 'manpowerrequests_id', 'id');
+        return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'manpowerrequests_id', 'job_applicants_id')->withPivot("hiring_status", "processing_checklist", "remarks");
     }
 
     public function position()
@@ -118,12 +120,12 @@ class ManpowerRequest extends Model
     public function completeRequestStatus()
     {
         $this->request_status = ManpowerRequestStatus::APPROVED;
+        $this->fill_status = FillStatuses::OPEN;
         $this->save();
         $this->refresh();
     }
     public function denyRequestStatus()
     {
-
         $this->request_status = ManpowerRequestStatus::DISAPPROVED;
         $this->save();
         $this->refresh();

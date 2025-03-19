@@ -393,7 +393,7 @@ class EmployeePanRequest extends Model
         }
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
-        $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
+        $this->jobapplicantonly->manpower()->update(["fill_status" => ManpowerRequestStatus::FILLED]);
     }
 
     private function employeeRelatedPersonDetails(): array
