@@ -70,7 +70,7 @@ class JobApplicantsController extends Controller
         return response()->json($data);
     }
 
-    public function getAllApplicant(JobApplicantRequest $request)
+    public function getApplicant(JobApplicantRequest $request)
     {
         $valid = $request->validated();
 
