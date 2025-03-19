@@ -61,7 +61,7 @@ return new class extends Migration
                         'job_applicants_id' => $applicant->id,
                         'manpowerrequests_id' => $applicant->manpowerrequests_id,
                         'hiring_status' => $status,
-                        'processing_checklist' => $defaultProcessingChecklist,
+                        'processing_checklist' => json_encode($defaultProcessingChecklist),
                         'created_at' => $applicant->created_at,
                         'updated_at' => $applicant->updated_at,
                     ]);
