@@ -117,6 +117,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
 
@@ -137,6 +138,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
 
@@ -159,6 +161,7 @@ class ManpowerRequestController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
+                'data' => []
             ], JsonResponse::HTTP_OK);
         }
 
