@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\JobApplicationStatusEnums;
 use App\Enums\HiringStatuses;
+use App\Enums\FillStatuses;
 use App\Models\JobApplicants;
 use App\Models\ManpowerRequestJobApplicants;
 use App\Http\Requests\JobApplicantRequest;
@@ -56,7 +57,7 @@ class JobApplicantsController extends Controller
                     ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
             })
             ->whereHas('manpower', function ($query) {
-                $query->where('manpower_request_job_applicants.hiring_status', JobApplicationStatusEnums::FOR_HIRING);
+                $query->where('manpower_request_job_applicants.hiring_status', HiringStatuses::FOR_HIRING);
             })
             ->limit(25)
             ->orderBy('lastname')
@@ -108,15 +109,15 @@ class JobApplicantsController extends Controller
 
     }
 
-    public function getAllAvailableApplicant(JobApplicantRequest $request)
+    public function getAvailableApplicant(JobApplicantRequest $request)
     {
         $valid = $request->validated();
 
         $main = JobApplicants::with("manpower.position")->where("status", JobApplicationStatusEnums::AVAILABLE->value);
 
-        if (isset($valid["status"])) {
+        if (isset($valid["hiring_status"])) {
             $main = $main->whereHas('manpower', function ($query) use ($valid) {
-                $query->where('manpower_request_job_applicants.hiring_status', $valid["status"]);
+                $query->where('manpower_request_job_applicants.hiring_status', $valid["hiring_status"]);
             });
         }
 
@@ -164,6 +165,28 @@ class JobApplicantsController extends Controller
     }
 
     public function updateApplicant(UpdateJobApplicantStatus $request, $id)
+    {
+        $main = JobApplicants::find($id);
+        $data = json_decode('{}');
+        if (!is_null($main)) {
+            $main->fill($request->validated());
+            if ($main->save()) {
+                $data->message = "Successfully update.";
+                $data->success = true;
+                $data->data = $main;
+                return response()->json($data);
+            }
+            $data->message = "Update failed.";
+            $data->success = false;
+            return response()->json($data, 400);
+        }
+
+        $data->message = "Failed update.";
+        $data->success = false;
+        return response()->json($data, 404);
+    }
+
+    public function updateManpowerRequestJobApplicant(UpdateJobApplicantStatus $request, $id)
     {
         try {
             $valid = $request->validated();
@@ -234,7 +257,7 @@ class JobApplicantsController extends Controller
         $main->education = $validatedData['education'];
         $main->workexperience = $validatedData['workexperience'];
         $main->children = $validatedData['children'];
-        $main->status = JobApplicationStatusEnums::PENDING;
+        $main->status = FillStatuses::PENDING;
         $main->date_of_application = Carbon::now();
         if (!$main->save()) {
             $data->message = "Save failed.";

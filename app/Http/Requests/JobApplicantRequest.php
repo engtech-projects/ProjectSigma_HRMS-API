@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\JobApplicationStatusEnums;
+use App\Enums\HiringStatuses;
 
 class JobApplicantRequest extends FormRequest
 {
@@ -28,6 +29,11 @@ class JobApplicantRequest extends FormRequest
                 "nullable",
                 "string",
                 new Enum(JobApplicationStatusEnums::class)
+            ],
+            'hiring_status' => [
+                "nullable",
+                "string",
+                new Enum(HiringStatuses::class)
             ],
             'name' => [
                 "nullable",

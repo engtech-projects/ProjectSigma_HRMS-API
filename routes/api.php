@@ -243,9 +243,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
     Route::resource('job-applicants', JobApplicantsController::class);
-    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
     Route::get('get-all-applicant', [JobApplicantsController::class, 'getAllApplicant']);
-    Route::get('get-all-available-applicant', [JobApplicantsController::class, 'getAllAvailableApplicant']);
+    Route::get('get-all-available-applicant', [JobApplicantsController::class, 'getAvailableApplicant']);
 
     Route::resource('schedule', ScheduleController::class);
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);

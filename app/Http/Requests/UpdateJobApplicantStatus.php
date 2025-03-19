@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\JobApplicationStatusEnums;
+use App\Enums\HiringStatuses;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -33,6 +34,11 @@ class UpdateJobApplicantStatus extends FormRequest
                 "nullable",
                 "string",
                 new Enum(JobApplicationStatusEnums::class),
+            ],
+            'hiring_status' => [
+                "nullable",
+                "string",
+                new Enum(HiringStatuses::class),
             ],
             'remarks' => [
                 "nullable",

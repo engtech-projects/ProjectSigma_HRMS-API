@@ -35,8 +35,6 @@ class ManpowerServices
         $userId = auth()->user()->id;
         return ManpowerRequest::requestStatusPending()
             ->with(['user.employee', "position"])
-            ->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -49,8 +47,6 @@ class ManpowerServices
         $userId = auth()->user()->id;
         return ManpowerRequest::requestStatusPending()
             ->with(['user.employee', "position"])
-            ->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->orderBy('created_at', 'desc')->myApprovals()->paginate();
     }
     public function createManpowerRequest(array $attributes)
