@@ -88,7 +88,7 @@ class ManpowerRequest extends Model
 
     public function job_applicants()
     {
-        return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'manpowerrequests_id', 'job_applicants_id')->withPivot("hiring_status", "processing_checklist", "remarks");
+        return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'manpowerrequests_id', 'job_applicants_id')->withPivot("id", "hiring_status", "processing_checklist", "remarks");
     }
 
     public function position()
