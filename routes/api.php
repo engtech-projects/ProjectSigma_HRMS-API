@@ -241,11 +241,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', HMOController::class)->names("setupHmo");
         Route::resource('members', HMOMembersController::class);
     });
-    Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
-    Route::resource('job-applicants', JobApplicantsController::class);
-    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
-    Route::get('get-applicant', [JobApplicantsController::class, 'getApplicant']);
-    Route::get('get-available-applicant', [JobApplicantsController::class, 'getAvailableApplicant']);
+    Route::prefix('job-applicants')->group(function () { // ADDING NEW JOB APPLICANT / GETTING LIST OF JOB APPLICANTS
+        Route::resource('resource', JobApplicantsController::class)->names("jobApplicants");
+        Route::prefix("hiring")->group(function () {
+            Route::get('available', [JobApplicantsController::class, 'getAvailableApplicant']);
+            Route::post('for-pan', [JobApplicantsController::class, 'get_for_hiring']);
+        });
+        Route::get('get-applicant', [JobApplicantsController::class, 'getApplicant']);
+        Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
+    });
 
     Route::resource('schedule', ScheduleController::class);
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);
