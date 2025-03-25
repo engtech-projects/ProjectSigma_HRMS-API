@@ -40,8 +40,8 @@ class JobApplicantsController extends Controller
             $query->where(function ($q) use ($valid) {
                 $q->orWhere('firstname', 'like', "%{$valid["name"]}%")
                     ->orWhere('lastname', 'like', "%{$valid["name"]}%")
-                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $valid["name"] . "%")
-                    ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
+                    ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
             });
         })
         ->orderByRaw("DATE(created_at) DESC")
@@ -66,8 +66,8 @@ class JobApplicantsController extends Controller
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('firstname', 'like', "%{$searchKey}%")
                     ->orWhere('lastname', 'like', "%{$searchKey}%")
-                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
-                    ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
+                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
+                    ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
             })
             ->where('status', HiringStatuses::FOR_HIRING)
             ->limit(25)
@@ -93,8 +93,8 @@ class JobApplicantsController extends Controller
                 $query->where(function ($q) use ($valid) {
                     $q->orWhere('firstname', 'like', "%{$valid["name"]}%")
                         ->orWhere('lastname', 'like', "%{$valid["name"]}%")
-                        ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $valid["name"] . "%")
-                        ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+                        ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
+                        ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
                 });
             })
             ->get();
