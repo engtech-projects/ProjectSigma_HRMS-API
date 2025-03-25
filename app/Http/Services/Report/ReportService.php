@@ -5,6 +5,7 @@ namespace App\Http\Services\Report;
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
 use App\Http\Services\Report\AttendanceReportService;
+use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -23,10 +24,13 @@ use App\Http\Resources\Reports\AdministrativeEmployeeTenureship;
 use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
 use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
 use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
+use App\Http\Resources\Reports\PortalMonitoringOvertime;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
+use App\Models\Users;
 use App\Models\Employee;
+use App\Models\Overtime;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -1035,6 +1039,32 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function overtimeListExport($validate)
+    {
+        $masterListHeaders = [
+            'NO',
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Date of Overtime',
+            'Prepared By',
+            'Request Status',
+            'No. of days delayed filling',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/Masterlist-". Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::employeeMasterList($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeNewList($validate)
     {
         $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
@@ -1147,4 +1177,61 @@ class ReportService
         });
         return $reportData;
     }
+
+    public static function overtimeMonitoring($validate)
+    {
+        $allData = [];
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $main = Overtime::with([
+            "employees" => function ($query) {
+                $query->isActive()->with(
+                    "company_employments",
+                    "current_employment"
+                );
+            }
+        ])->whereBetween('overtime_date', [$dateFrom, $dateTo])->chunk(100, function ($overtimeRequests) use (&$allData){
+            $allData = collect($overtimeRequests)->flatMap(function ($request) {
+                $createdAt = Carbon::parse($request->created_at);
+                $overtimeDate = Carbon::parse($request->overtime_date);
+                $daysDelayedFilling =  $createdAt->diffInDays($overtimeDate) > 0 ? $createdAt->diffInDays($overtimeDate) : 0;
+                $preparedBy = Overtime::find($request["id"])->created_by_full_name;
+                $approvals = ApprovalAttributeResource::collection($request["approvals"]);
+                $dateApproved = collect($approvals)
+                ->whereNotNull('date_approved')
+                ->pluck('date_approved')
+                ->sortDesc()
+                ->first();
+
+                $updateApprovals = collect($approvals)->map(function ($item) use ($dateApproved) {
+                    $updateDateApproved = $dateApproved ? Carbon::parse($dateApproved) : null;
+                    $item['no_of_days_approved_from_the_date_filled'] = null;
+
+                    if (!is_null($item['date_approved']) && $updateDateApproved) {
+                        $item['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($item['date_approved']);
+                    }
+
+                    return $item;
+                })->toArray();
+
+                return collect($request['employees'])->map(function ($employee) use ($request, $daysDelayedFilling, $dateApproved, $updateApprovals, $preparedBy) {
+                    return [
+                        'id' => $employee['id'],
+                        'employee_id' => $employee['id'],
+                        'employee_name' => $employee['fullname_last'],
+                        'designation' => $employee->current_position_name,
+                        'section' => $employee->current_assignment_names,
+                        'date_of_overtime' => $request['overtime_date'] ? Carbon::parse($request['overtime_date'])->format('F j, Y') : null,
+                        'prepared_by' => $preparedBy,
+                        'request_status' => $request['request_status'],
+                        'days_delayed_filling' => $daysDelayedFilling,
+                        'date_approved' => $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null,
+                        'approvals' => $updateApprovals,
+                    ];
+                });
+            })->toArray();
+        });
+        return $allData;
+    }
+
 }

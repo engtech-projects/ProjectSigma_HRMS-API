@@ -90,6 +90,11 @@ class Overtime extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function getCreatedByFullNameAttribute()
+    {
+        return Users::find($this->created_by)->employee->fullname_last;
+    }
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
