@@ -247,7 +247,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('available', [JobApplicantsController::class, 'getAvailableApplicant']);
             Route::post('for-pan', [JobApplicantsController::class, 'get_for_hiring']);
         });
-        Route::get('get-applicant', [JobApplicantsController::class, 'getApplicant']);
         Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
     });
 
