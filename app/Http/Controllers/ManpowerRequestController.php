@@ -18,6 +18,7 @@ use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Http\Requests\StoreApplicantRequest;
 use App\Enums\HiringStatuses;
 use App\Enums\ManpowerRequestStatus;
+use App\Http\Requests\ApprovedPositionsFilter;
 
 class ManpowerRequestController extends Controller
 {
@@ -68,9 +69,10 @@ class ManpowerRequestController extends Controller
         ]);
     }
 
-    public function filledPositions()
+    public function approvedPositions(ApprovedPositionsFilter $request)
     {
-        $data = $this->manpowerService->getFilledPositions();
+        $validatedData = $request->validated();
+        $data = $this->manpowerService->getApprovedPositions($validatedData);
         $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
 
         if (empty($collection['data'])) {
@@ -87,24 +89,6 @@ class ManpowerRequestController extends Controller
         ]);
     }
 
-    public function onHoldPositions()
-    {
-        $data = $this->manpowerService->getOnHoldPositions();
-        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
-
-        if (empty($collection['data'])) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $collection
-        ]);
-    }
     /**
      * Show List Manpower requests that have status “For Hiring“ = Approve
      */

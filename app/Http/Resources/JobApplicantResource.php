@@ -18,15 +18,15 @@ class JobApplicantResource extends JsonResource
         $positions = collect($this->manpower)
         ->map(function ($manpower) {
             return [
-                'name' => $manpower->position->name,
+                'name' =>  $manpower->position->name . " - ". $manpower->pivot->hiring_status,
             ];
-        });
+        })->pluck("name")->implode(', ');
 
         return [
             ...parent::toArray($request),
             "remarks" => $this->remarks ?? "",
             "created_at" => $this->created_at ? Carbon::parse($this->created_at)->format('F j, Y') : null,
-            "position" => $this->manpower ? $positions : "",
+            "position" => $positions
         ];
     }
 }

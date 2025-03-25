@@ -150,8 +150,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('manpower')->group(function () {
         Route::resource('resource', ManpowerRequestController::class)->names("requestManpower");
         Route::get('get-open-positions', [ManpowerRequestController::class, 'openPositions']);
-        Route::get('get-filled-positions', [ManpowerRequestController::class, 'filledPositions']);
-        Route::get('get-onhold-positions', [ManpowerRequestController::class, 'onHoldPositions']);
+        Route::get('get-approved-positions', [ManpowerRequestController::class, 'approvedPositions']);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
