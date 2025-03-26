@@ -60,14 +60,15 @@ class JobApplicantsController extends Controller
      */
     public function get_for_hiring(SearchEmployeeRequest $request)
     {
-        $validatedData = $request->validated();
-        $searchKey = $validatedData["key"];
+        $valid = $request->validated();
         $main = JobApplicants::with("manpower")->select("id", "firstname", "middlename", "lastname")
-            ->where(function ($q) use ($searchKey) {
-                $q->orWhere('firstname', 'like', "%{$searchKey}%")
-                    ->orWhere('lastname', 'like', "%{$searchKey}%")
-                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
-                    ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+            ->when(isset($valid["name"]), function ($query) use ($valid) {
+                $query->where(function ($q) use ($valid) {
+                    $q->orWhere('firstname', 'like', "%{$valid["name"]}%")
+                        ->orWhere('lastname', 'like', "%{$valid["name"]}%")
+                        ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
+                        ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+                });
             })
             ->whereHas('manpower', function ($query) {
                 $query->where('manpower_request_job_applicants.hiring_status', HiringStatuses::FOR_HIRING);
