@@ -37,7 +37,7 @@ class NotificationsController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
-    public function getUnreadNotificationsStreamBackup()
+    public function getUnreadNotificationsStream()
     {
         ini_set('max_execution_time', '999999');
         return response()->stream(function () {
@@ -47,13 +47,17 @@ class NotificationsController extends Controller
             while (true) {
                 // Users:find to get UPDATED user data
                 $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
-                $notification = NotificationResource::collection($unreadNotifications->take(100));
-                $newLength = sizeof($notification);
+                $newLength = sizeof($unreadNotifications);
+                $notification = NotificationResource::collection($unreadNotifications->take(10)); // Show 10 at a time
                 $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
                 $notificationsJsonData = json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+                $notifications = json_encode([
+                    "notifications" => $notificationsJsonData,
+                    "total_notifications" => $newLength,
+                ]);
                 if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
                     $lastLength = $newLength;
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . $notificationsJsonData . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . $notifications . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -63,7 +67,7 @@ class NotificationsController extends Controller
                     if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
                         continue;
                     }
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . $notificationsJsonData . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . $notifications . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -84,25 +88,30 @@ class NotificationsController extends Controller
         ]);
     }
 
-    public function getUnreadNotificationsStream()
+    public function getUnreadNotificationsStreamV2() // Unused most likely will have same problem
     {
-
-        $response = new StreamedResponse();
-        $response->headers->set('Content-Type', 'text/event-stream');
         $broadcastCount = 0;
-        $response->setCallback(function () use (&$broadcastCount) {
-            // Send notifications to the client using SSE
-            $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
-            $notification = NotificationResource::collection($unreadNotifications->take(100));
-            $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
-            $notificationsJsonData = json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
-            echo "id: " . (++$broadcastCount) . "\ndata: " . $notificationsJsonData . "\n\n";
-            if (ob_get_level() > 0) {
-                ob_flush();
-            }
-            flush();
-        });
-        return $response;
+        return new StreamedResponse(
+            function () use (&$broadcastCount) {
+                // Send notifications to the client using SSE
+                $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
+                $notification = NotificationResource::collection($unreadNotifications->take(10)); // Show 10 at a time
+                $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
+                $notificationsJsonData = json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+                echo "id: " . (++$broadcastCount) . "\ndata: " . $notificationsJsonData . "\n\n";
+                if (ob_get_level() > 0) {
+                    ob_flush();
+                }
+                flush();
+            },
+            200,
+            [
+                "Content-Type" => "text/event-stream",
+                "Cache-Control" => "no-cache",
+                "Connection" => "keep-alive",
+                'X-Accel-Buffering' => 'no',
+            ]
+        );
     }
 
     public function readAllNotifications()
