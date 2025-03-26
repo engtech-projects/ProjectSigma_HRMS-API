@@ -69,7 +69,9 @@ class JobApplicantsController extends Controller
                     ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
                     ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
             })
-            ->where('status', HiringStatuses::FOR_HIRING)
+            ->whereHas('manpower', function ($query) {
+                $query->where('manpower_request_job_applicants.hiring_status', HiringStatuses::FOR_HIRING);
+            })
             ->limit(25)
             ->orderBy('lastname')
             ->get()
