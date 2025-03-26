@@ -150,8 +150,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('manpower')->group(function () {
         Route::resource('resource', ManpowerRequestController::class)->names("requestManpower");
         Route::get('get-open-positions', [ManpowerRequestController::class, 'openPositions']);
-        Route::get('get-filled-positions', [ManpowerRequestController::class, 'filledPositions']);
-        Route::get('get-onhold-positions', [ManpowerRequestController::class, 'onHoldPositions']);
+        Route::get('get-approved-positions', [ManpowerRequestController::class, 'approvedPositions']);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
@@ -241,11 +240,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', HMOController::class)->names("setupHmo");
         Route::resource('members', HMOMembersController::class);
     });
-    Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
-    Route::resource('job-applicants', JobApplicantsController::class);
-    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
-    Route::get('get-applicant', [JobApplicantsController::class, 'getApplicant']);
-    Route::get('get-available-applicant', [JobApplicantsController::class, 'getAvailableApplicant']);
+    Route::prefix('job-applicants')->group(function () { // ADDING NEW JOB APPLICANT / GETTING LIST OF JOB APPLICANTS
+        Route::resource('resource', JobApplicantsController::class)->names("jobApplicants");
+        Route::prefix("hiring")->group(function () {
+            Route::get('available', [JobApplicantsController::class, 'getAvailableApplicant']);
+            Route::post('for-pan', [JobApplicantsController::class, 'get_for_hiring']);
+        });
+        Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
+    });
 
     Route::resource('schedule', ScheduleController::class);
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);
@@ -354,7 +356,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // NOTIFICATIONS
     Route::prefix('notifications')->group(function () {
         Route::get('unread', [NotificationsController::class, "getUnreadNotifications"]);
-        Route::get('unread-stream', [NotificationsController::class, "getUnreadNotificationsStream"]);
+        Route::get('unread-stream', [NotificationsController::class, "getUnreadNotificationsStreamBackup"]);
         Route::get('all', [NotificationsController::class, "getNotifications"]);
         Route::put('read/{notif}', [NotificationsController::class, "readNotification"]);
         Route::put('read-all', [NotificationsController::class, "readAllNotifications"]);

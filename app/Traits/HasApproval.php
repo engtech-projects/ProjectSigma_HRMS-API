@@ -93,12 +93,14 @@ trait HasApproval
      */
     public function completeRequestStatus()
     {
+        // DEFAULT PROCESS WHEN FULLY APPROVING REQUEST
         $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
         $this->refresh();
     }
     public function denyRequestStatus()
     {
+        // DEFAULT PROCESS WHEN DENYING REQUEST
         $this->request_status = RequestStatuses::DENIED->value;
         $this->save();
         $this->refresh();
@@ -112,6 +114,19 @@ trait HasApproval
     }
     public function requestStatusEnded(): bool
     {
+        // DEFAULT IDENTIFIER IF REQUEST STATUS HAS ALREADY ENDED
+        if (
+            in_array(
+                $this->request_status,
+                [
+                    RequestStatuses::APPROVED,
+                    RequestStatuses::VOID,
+                    RequestStatuses::DENIED,
+                ]
+            )
+        ) {
+            return true;
+        }
         return false;
     }
     public function getUserPendingApproval($userId)
