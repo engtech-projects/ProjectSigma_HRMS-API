@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ManpowerRequest;
+use App\Models\ManpowerRequestJobApplicants;
+use App\Models\JobApplicants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ManpowerServices;
@@ -13,6 +15,10 @@ use App\Http\Resources\ManpowerRequestResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
+use App\Http\Requests\StoreApplicantRequest;
+use App\Enums\HiringStatuses;
+use App\Enums\ManpowerRequestStatus;
+use App\Http\Requests\ApprovedPositionsFilter;
 
 class ManpowerRequestController extends Controller
 {
@@ -30,9 +36,8 @@ class ManpowerRequestController extends Controller
     public function index()
     {
         $manpowerRequests = $this->manpowerService->getAll();
-        $collection = collect(ManpowerRequestResource::collection($manpowerRequests->load('user.employee')));
-
-        if ($collection->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($manpowerRequests)->response()->getData(true);
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
@@ -41,27 +46,69 @@ class ManpowerRequestController extends Controller
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => new JsonResource(PaginateResourceCollection::paginate($collection))
+            'data' => $collection
         ]);
     }
+
+    public function openPositions()
+    {
+        $data = $this->manpowerService->getOpenPositions();
+        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
+
+        if (empty($collection['data'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $collection
+        ]);
+    }
+
+    public function approvedPositions(ApprovedPositionsFilter $request)
+    {
+        $validatedData = $request->validated();
+        $data = $this->manpowerService->getApprovedPositions($validatedData);
+        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
+
+        if (empty($collection['data'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No data found.',
+            ], JsonResponse::HTTP_OK);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Manpower Request fetched.',
+            'data' => $collection
+        ]);
+    }
+
     /**
      * Show List Manpower requests that have status “For Hiring“ = Approve
      */
     public function forHiring()
     {
         $manpowerRequest = $this->manpowerService->getAllForHiring();
-        $manpowerRequest->load(['job_applicants', 'user.employee']);
-        if ($manpowerRequest->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($manpowerRequest)->response()->getData(true);
+
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
                 'data' => []
             ], JsonResponse::HTTP_OK);
         }
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($manpowerRequest->load('user.employee'))->collect())
+            'data' => $collection
         ]);
     }
 
@@ -69,18 +116,21 @@ class ManpowerRequestController extends Controller
     public function myRequest()
     {
         $myRequest = $this->manpowerService->getMyRequest();
-        if ($myRequest->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($myRequest)->response()->getData(true);
+
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
                 'data' => []
             ], JsonResponse::HTTP_OK);
         }
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myRequest)->collect())
-        ]);
+            'data' => $collection
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -89,17 +139,20 @@ class ManpowerRequestController extends Controller
     public function myApproval()
     {
         $myApproval = $this->manpowerService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
+        $collection = ManpowerRequestResource::collection($myApproval)->response()->getData(true);
+
+        if (empty($collection['data'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
                 'data' => []
             ], JsonResponse::HTTP_OK);
         }
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(ManpowerRequestResource::collection($myApproval)->collect())
+            'data' => $collection
         ]);
     }
 
@@ -111,16 +164,76 @@ class ManpowerRequestController extends Controller
     {
         $attributes = $request->validated();
         $attributes["created_by"] = auth()->user()->id;
+        $attributes["request_status"] = ManpowerRequestStatus::PENDING;
         try {
-            $this->manpowerService->createManpowerRequest($attributes);
+            $checkSave = $this->manpowerService->createManpowerRequest($attributes);
+            if ($checkSave) {
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Successfully created.",
+                ], JsonResponse::HTTP_CREATED);
+            }
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Failed to save.",
+            ], JsonResponse::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
-            throw new TransactionFailedException("Create transaction failed.", 400, $e);
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Failed to save.",
+            ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
+    }
+
+    public function storeApplicant(StoreApplicantRequest $request)
+    {
+        $valid = $request->validated();
+        $dbTransactionFailed = false;
+        if ($valid) {
+            $valid["processing_checklist"] = [
+                "Interviewed" => false,
+                "Tested" => false,
+                "Reference_Checked" => false,
+                "Medical_Examination" => false,
+                "Contact_Extended" => false,
+                "Contract_Signed" => false,
+            ];
+            $valid["hiring_status"] = HiringStatuses::PROCESSING->value;
+            try {
+                DB::transaction(function() use ($valid) {
+                    foreach ($valid["data"] as $data) {
+                        $valid["job_applicants_id"] = $data;
+                        $record = ManpowerRequestJobApplicants::where('job_applicants_id', $valid["job_applicants_id"])
+                        ->where('manpowerrequests_id', $valid["manpowerrequests_id"])->where("hiring_status", "Rejected")->first();
+
+                        if (!$record) {
+                            $model = new ManpowerRequestJobApplicants();
+                            $model->fill($valid);
+                            $model->save();
+                        }
+
+                        $model = JobApplicants::find($valid["job_applicants_id"]);
+                        $model->status = "Processing";
+                        $model->save();
+
+                    }
+                });
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Successfully save.",
+                ], JsonResponse::HTTP_OK);
+            } catch (Exception $e) {
+                return new JsonResponse([
+                    "success" => true,
+                    "message" => "Failed to save.",
+                ], JsonResponse::HTTP_OK);
+            }
+        }
         return new JsonResponse([
             "success" => true,
-            "message" => "Successfully created.",
-        ], JsonResponse::HTTP_CREATED);
+            "message" => "Failed to save.",
+        ], JsonResponse::HTTP_OK);
     }
 
     /**

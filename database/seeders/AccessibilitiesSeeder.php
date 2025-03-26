@@ -1486,5 +1486,39 @@ class AccessibilitiesSeeder extends Seeder
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
         );
+        DB::table('accessibilities')->upsert(
+            [
+                [
+                    'id' => 3004,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_MANPOWERREQUEST_FORM_REQUESTS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3005,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_MANPOWERREQUEST_OPEN_POSITIONS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3006,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICATION_FORM->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3007,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICANTS_JOB->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
+            ],
+            [ "id" ],
+            [ "accessibilities_name", "deleted_at"]
+        );
     }
 }

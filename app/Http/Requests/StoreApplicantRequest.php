@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\JobApplicationStatusEnums;
-use App\Enums\HiringStatuses;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\HiringStatuses;
 
-class UpdateJobApplicantStatus extends FormRequest
+class StoreApplicantRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,29 +24,15 @@ class UpdateJobApplicantStatus extends FormRequest
     public function rules(): array
     {
         return [
+            'data' => [
+                "required",
+                "array",
+            ],
             'manpowerrequests_id' => [
                 "required",
                 "integer",
                 "exists:manpower_requests,id",
-            ],
-            'status' => [
-                "nullable",
-                "string",
-                new Enum(JobApplicationStatusEnums::class),
-            ],
-            'hiring_status' => [
-                "nullable",
-                "string",
-                new Enum(HiringStatuses::class),
-            ],
-            'remarks' => [
-                "nullable",
-                "string",
-            ],
-            'processing_checklist' => [
-                "nullable",
-                "array",
-            ],
+            ]
         ];
     }
 }

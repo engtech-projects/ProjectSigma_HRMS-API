@@ -7,9 +7,8 @@ use App\Enums\Traits\EnumHelper;
 enum RequestStatuses: string
 {
     use EnumHelper;
-
+    case APPROVED = "Approved";
     case PENDING = "Pending";
-    case APPROVED = 'Approved';
     case DENIED = "Denied";
     case VOID = "Voided";
 
