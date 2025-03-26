@@ -50,9 +50,10 @@ class NotificationsController extends Controller
                 $notification = NotificationResource::collection($unreadNotifications->take(100));
                 $newLength = sizeof($notification);
                 $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
+                $notificationsJsonData = json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
                 if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
                     $lastLength = $newLength;
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notification) . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . $notificationsJsonData . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -62,7 +63,7 @@ class NotificationsController extends Controller
                     if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
                         continue;
                     }
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notification) . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . $notificationsJsonData . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
