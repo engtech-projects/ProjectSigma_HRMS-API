@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -97,6 +98,12 @@ class JobApplicants extends Model
     public function manpower(): BelongsToMany
     {
         return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'job_applicants_id', 'manpowerrequests_id')->withPivot("hiring_status", "processing_checklist", "remarks");
+    }
+
+
+    public function manpowerRequestJobApplicants(): HasMany
+    {
+        return $this->hasMany(ManpowerRequestJobApplicants::class, 'job_applicants_id', 'id');
     }
 
     protected function getFullnameLastAttribute()

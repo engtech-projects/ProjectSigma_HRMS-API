@@ -246,7 +246,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('available', [JobApplicantsController::class, 'getAvailableApplicant']);
             Route::post('for-pan', [JobApplicantsController::class, 'get_for_hiring']);
         });
-        Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
+        Route::put('update-applicant-processing/{applicantProcessing}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
     });
 
     Route::resource('schedule', ScheduleController::class);

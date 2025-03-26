@@ -17,6 +17,16 @@ class UpdateJobApplicantStatus extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (gettype($this->processing_checklist) == "string") {
+            $this->merge([
+                "processing_checklist" => json_decode($this->processing_checklist, true)
+            ]);
+        }
+    }
+
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,16 +35,6 @@ class UpdateJobApplicantStatus extends FormRequest
     public function rules(): array
     {
         return [
-            'manpowerrequests_id' => [
-                "required",
-                "integer",
-                "exists:manpower_requests,id",
-            ],
-            'status' => [
-                "nullable",
-                "string",
-                new Enum(JobApplicationStatusEnums::class),
-            ],
             'hiring_status' => [
                 "nullable",
                 "string",

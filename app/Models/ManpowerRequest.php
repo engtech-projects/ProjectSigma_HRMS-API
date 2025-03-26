@@ -102,6 +102,10 @@ class ManpowerRequest extends Model
         return $this->belongsTo(Department::class, "requesting_department", "id");
     }
 
+    public function manpowerRequestJobApplicants()
+    {
+        return $this->hasMany(ManpowerRequestJobApplicants::class, 'manpowerrequests_id', 'id');
+    }
 
     /**
      * MODEL

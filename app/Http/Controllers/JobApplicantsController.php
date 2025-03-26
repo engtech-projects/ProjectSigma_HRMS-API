@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class JobApplicantsController extends Controller
 {
@@ -143,42 +144,48 @@ class JobApplicantsController extends Controller
         return response()->json($data, 404);
     }
 
-    public function updateManpowerRequestJobApplicant(UpdateJobApplicantStatus $request, $id)
+    public function updateManpowerRequestJobApplicant(UpdateJobApplicantStatus $request, ManpowerRequestJobApplicants $applicantProcessing)
     {
+        $valid = $request->validated();
         try {
-            $valid = $request->validated();
-            if ($valid) {
-                DB::transaction(function() use ($valid, $id) {
-                    $main = JobApplicants::find($id);
-                    $record = ManpowerRequestJobApplicants::where('job_applicants_id', $main->id)
-                    ->where('manpowerrequests_id', $valid["manpowerrequests_id"])->first();
+            DB::transaction(function() use ($valid, &$applicantProcessing) {
+                if ($applicantProcessing->hiring_status === HiringStatuses::REJECTED->value) {
+                    //  MUST VERIFY IF NOT PROCESSING IN OTHER MANPOWER REQUEST
+                    $notRejectedDatas = $applicantProcessing->jobApplicant->manpowerRequestJobApplicants()
+                        ->where('hiring_status', '!=', HiringStatuses::REJECTED->value)
+                        ->get();
+                    Log::info($notRejectedDatas);
+                    $notRejected = $applicantProcessing->jobApplicant->manpowerRequestJobApplicants()
+                        ->where('hiring_status', '!=', HiringStatuses::REJECTED->value)
+                        ->exists();
 
-                    $jobApplicantStatus = JobApplicationStatusEnums::AVAILABLE->value;
-                    $manPowerRequestJobApplciantStatus = HiringStatuses::REJECTED->value;
-
-                    if ($valid["hiring_status"] === HiringStatuses::FOR_HIRING->value) {
-                        $jobApplicantStatus = JobApplicationStatusEnums::PROCESSING->value;
-                        $manPowerRequestJobApplciantStatus = HiringStatuses::FOR_HIRING->value;
+                    if ($notRejected) {
+                        throw new \Exception("Applicant is still in process of hiring in another Manpower Request.");
                     }
-
-                    $valid["status"] = $jobApplicantStatus;
-                    $record->hiring_status = $manPowerRequestJobApplciantStatus;
-                    $record->processing_checklist = $valid["processing_checklist"];
-                    $main->fill($valid);
-                    $record->save();
-                    $main->save();
-                });
-                return new JsonResponse([
-                    "success" => true,
-                    "message" => "Successfully save.",
-                ], JsonResponse::HTTP_OK);
-            }
-        } catch (Exception $e) {
+                }
+                $applicantProcessing->fill($valid);
+                $applicantProcessing->save();
+                if ( $valid["hiring_status"] === HiringStatuses::PROCESSING->value) {
+                    $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::PROCESSING->value]);
+                }
+                if ( $valid["hiring_status"] === HiringStatuses::FOR_HIRING->value) {
+                    $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::PROCESSING->value]);
+                }
+                if ( $valid["hiring_status"] === HiringStatuses::REJECTED->value) {
+                    $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::AVAILABLE->value]);
+                }
+            });
+        }
+        catch (\Exception $e) {
             return new JsonResponse([
-                "success" => true,
-                "message" => "Failed to save.",
+                "success" => false,
+                "message" => $e->getMessage(),
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully saved.",
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
