@@ -94,7 +94,8 @@ class NotificationsController extends Controller
             $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
             $notification = NotificationResource::collection($unreadNotifications->take(100));
             $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
-            echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notification) . "\n\n";
+            $notificationsJsonData = json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+            echo "id: " . (++$broadcastCount) . "\ndata: " . $notificationsJsonData . "\n\n";
             if (ob_get_level() > 0) {
                 ob_flush();
             }
