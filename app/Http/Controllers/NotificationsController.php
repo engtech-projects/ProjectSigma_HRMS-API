@@ -46,11 +46,13 @@ class NotificationsController extends Controller
             $broadcastCount = 0;
             while (true) {
                 // Users:find to get UPDATED user data
-                $notifs = NotificationResource::collection(Users::find(Auth::user()->id)->unreadNotifications);
-                $newLength = sizeof($notifs);
+                $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
+                $notification = NotificationResource::collection($unreadNotifications->take(100));
+                $newLength = sizeof($notification);
+                $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
                 if ($newLength != $lastLength) { // Notif Changes Submit directly new updates to Notifs
                     $lastLength = $newLength;
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notifs) . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notification) . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -60,7 +62,7 @@ class NotificationsController extends Controller
                     if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
                         continue;
                     }
-                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notifs) . "\n\n";
+                    echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notification) . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
@@ -89,7 +91,9 @@ class NotificationsController extends Controller
         $broadcastCount = 0;
         $response->setCallback(function () use (&$broadcastCount) {
             // Send notifications to the client using SSE
-            $notification = NotificationResource::collection(Users::find(Auth::user()->id)->unreadNotifications);
+            $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
+            $notification = NotificationResource::collection($unreadNotifications->take(100));
+            $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
             echo "id: " . (++$broadcastCount) . "\ndata: " . json_encode($notification) . "\n\n";
             if (ob_get_level() > 0) {
                 ob_flush();
