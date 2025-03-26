@@ -1056,7 +1056,7 @@ class ReportService
         $fileName = "storage/temp-report-generations/Masterlist-". Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
-        $reportData = ReportService::employeeMasterList($validate)->resolve();
+        $reportData = ReportService::overtimeMonitoring($validate)->resolve();
         foreach ($reportData as $row) {
             $excel->addRow($row);
         }
@@ -1184,11 +1184,33 @@ class ReportService
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
         $main = Overtime::with([
-            "employees" => function ($query) {
-                $query->isActive()->with(
-                    "company_employments",
-                    "current_employment"
-                );
+            "employees" => function ($query) use ($validate) {
+                if ($validate["group_type"] != "All") {
+                    $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
+                    $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
+                    $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+                    $query->isActive()->with(
+                        "company_employments",
+                        "current_employment"
+                    )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+                        $query->where('work_location', $workLocation)
+                            ->whereHas($type, function ($query) use ($type, $givenId) {
+                                if($givenId) {
+                                    if($type === "department"){
+                                        $query->where("departments.id", $givenId);
+                                    }
+                                    if($type === "projects"){
+                                        $query->where("projects.id", $givenId);
+                                    }
+                                }
+                            });
+                    });
+                } else {
+                    $query->isActive()->with(
+                        "company_employments",
+                        "current_employment"
+                    );
+                }
             }
         ])->whereBetween('overtime_date', [$dateFrom, $dateTo])->chunk(100, function ($overtimeRequests) use (&$allData){
             $allData = collect($overtimeRequests)->flatMap(function ($request) {
@@ -1196,21 +1218,20 @@ class ReportService
                 $overtimeDate = Carbon::parse($request->overtime_date);
                 $daysDelayedFilling =  $createdAt->diffInDays($overtimeDate) > 0 ? $createdAt->diffInDays($overtimeDate) : 0;
                 $preparedBy = Overtime::find($request["id"])->created_by_full_name;
-                $approvals = ApprovalAttributeResource::collection($request["approvals"]);
-                $dateApproved = collect($approvals)
+                $dateApproved = collect($request["approvals"])
                 ->whereNotNull('date_approved')
                 ->pluck('date_approved')
                 ->sortDesc()
                 ->first();
 
-                $updateApprovals = collect($approvals)->map(function ($item) use ($dateApproved) {
+                $updateApprovals = collect($request["approvals"])->map(function ($item) use ($dateApproved) {
                     $updateDateApproved = $dateApproved ? Carbon::parse($dateApproved) : null;
                     $item['no_of_days_approved_from_the_date_filled'] = null;
-
+                    $user = Users::with('employee')->find($item['user_id']);
+                    $item['employee_name'] = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
                     if (!is_null($item['date_approved']) && $updateDateApproved) {
                         $item['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($item['date_approved']);
                     }
-
                     return $item;
                 })->toArray();
 

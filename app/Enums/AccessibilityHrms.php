@@ -57,6 +57,7 @@ enum AccessibilityHrms: string
     case HRMS_REPORTS_PHILHEALTHREMITTANCESUMMARY = "hrms:reports_philhealth remittance summary";
     case HRMS_REPORTS_LOAN = "hrms:reports_loan reports";
     case HRMS_REPORTS_ADMINISTRATIVE = "hrms:reports_administrative reports";
+    case HRMS_REPORTS_PORTAL_MONITORING_OVERTIME = "hrms:reports_portal monitoring_overtime monitoring";
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";
