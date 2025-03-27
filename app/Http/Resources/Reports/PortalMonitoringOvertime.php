@@ -31,7 +31,8 @@ class PortalMonitoringOvertime extends JsonResource
                 $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($approval['date_approved']);
             }
             $user = Users::with('employee')->find($approval['user_id']);
-            return $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR" . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
+            $employee = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
+            return  $employee . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
         })->implode(", ");
 
         $main = collect($this['employees'])->map(function ($employee) use ($approvals) {
