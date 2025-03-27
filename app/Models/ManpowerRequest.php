@@ -63,8 +63,9 @@ class ManpowerRequest extends Model
     {
         parent::boot();
         static::deleted(function ($model) {
-            $attachment = explode("/", $model->job_description_attachment);
-            Storage::deleteDirectory("public/" . $attachment[0] . "/" . $attachment[1]);
+            $oldfileUniqueFolder = explode("/", $model->job_description_attachment);
+            array_pop($oldfileUniqueFolder);
+            Storage::deleteDirectory("public/" . implode("/", $oldfileUniqueFolder)); // DELETE FILE
         });
     }
 
