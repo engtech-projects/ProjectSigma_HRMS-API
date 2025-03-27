@@ -16,16 +16,24 @@ trait UploadFileTrait
         return $fileLocation . $hashname . "/" . $originalName;
     }
 
+    public function uploadFileStoragedisk($file, $fileLocation, $filename)
+    {
+        $hashmake = Hash::make('secret');
+        $hashname = substr(hash('sha256', $hashmake), 0, 20);
+        $outputFile = $fileLocation . $hashname . "/" . $filename;
+        Storage::disk('public')->put($outputFile, $file);
+        return $outputFile;
+    }
+
     public function replaceUploadFile($oldFile, $file, $fileLocation)
     {
-        $oldAttachment = explode("/", $oldFile);
+        $oldfileUniqueFolder = explode("/", $oldFile);
+        array_pop($oldfileUniqueFolder);
+        Storage::deleteDirectory("public/" . implode("/", $oldfileUniqueFolder)); // DELETE OLD FILE
         $hashmake = Hash::make('secret');
         $hashname = substr(hash('sha256', $hashmake), 0, 20);
         $originalName = $file->getClientOriginalName();
         $file->storePubliclyAs($fileLocation . $hashname, $originalName, 'public');
-        // FILE LOCATION MUST FOLLOW THE SAME STRUCTURE OF public/*/*/*hashedname/*originalname
-        // NOT TESTED MIGHT DELETE ANOTHER FILE
-        Storage::deleteDirectory("public/" . $oldAttachment[0] . "/" . $oldAttachment[1] . "/" . $oldAttachment[2]);
         return $fileLocation . $hashname . "/" . $originalName;
     }
 }
