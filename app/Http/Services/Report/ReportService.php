@@ -1053,7 +1053,7 @@ class ReportService
             'Date Approved',
             'Approvals',
         ];
-        $fileName = "storage/temp-report-generations/Masterlist-". Str::random(10);
+        $fileName = "storage/temp-report-generations/PortalMonitoringOvertimeList-". Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
         $reportData = ReportService::overtimeMonitoring($validate)->resolve();
@@ -1252,7 +1252,7 @@ class ReportService
                 });
             })->toArray();
         });
-        return $allData;
+        return PortalMonitoringOvertime::collection($allData);
     }
 
 }
