@@ -12,8 +12,9 @@ trait UploadFileTrait
         $hashmake = Hash::make('secret');
         $hashname = substr(hash('sha256', $hashmake), 0, 20);
         $originalName = $newName ?? $file->getClientOriginalName();
-        $file->storePubliclyAs($fileLocation . $originalName, 'public');
-        return $fileLocation . $hashname . "/" . $originalName;
+        $fileStored = $fileLocation . $hashname . "/" . $originalName;
+        $file->storePubliclyAs($fileStored, 'public');
+        return $$fileStored;
     }
 
     public function uploadFileStoragedisk($file, $fileLocation, $filename)
