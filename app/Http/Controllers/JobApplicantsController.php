@@ -261,28 +261,29 @@ class JobApplicantsController extends Controller
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
+            $a1 = explode("/", $main->application_letter_attachment);
+            $a2 = explode("/", $main->resume_attachment);
+
+            $main->fill($request->validated());
             $hashmake = Hash::make('secret');
             $hashname = hash('sha256', $hashmake);
             if ($request->hasFile("application_letter_attachment")) {
-                $appLetterUniqueFolder = explode("/", $main->application_letter_attachment);
-                array_pop($appLetterUniqueFolder);
-                Storage::deleteDirectory("public/" . implode("/", $appLetterUniqueFolder)); // DELETE OLD APPLICATION LETTER
+                $check = JobApplicants::find($id);
                 $file = $request->file('application_letter_attachment');
                 $name = $file->getClientOriginalName();
                 $file->storePubliclyAs(JobApplicantsController::ALADIR . $hashname, $name, 'public');
+                Storage::deleteDirectory("public/" . $a1[0] . "/" . $a1[1]);
                 $main->application_letter_attachment = JobApplicantsController::ALADIR . $hashname . "/" . $name;
             }
 
             if ($request->hasFile("resume_attachment")) {
-                $resumeUniqueFolder = explode("/", $main->resume_attachment);
-                array_pop($resumeUniqueFolder);
-                Storage::deleteDirectory("public/" . implode("/", $resumeUniqueFolder)); // DELETE OLD APPLICATION LETTER
+                $check = JobApplicants::find($id);
                 $file = $request->file('resume_attachment');
                 $name = $file->getClientOriginalName();
                 $file->storePubliclyAs(JobApplicantsController::RADIR . $hashname, $name, 'public');
+                Storage::deleteDirectory("public/" . $a2[0] . "/" . $a2[1]);
                 $main->resume_attachment = JobApplicantsController::RADIR . $hashname . "/" . $name;
             }
-            $main->fill($request->validated());
 
             if ($main->save()) {
                 $data->message = "Successfully update.";
@@ -310,12 +311,8 @@ class JobApplicantsController extends Controller
         if (!is_null($main)) {
             $a = explode("/", $main->application_letter_attachment);
             if ($main->delete()) {
-                $appLetterUniqueFolder = explode("/", $main->application_letter_attachment);
-                array_pop($appLetterUniqueFolder);
-                Storage::deleteDirectory("public/" . implode("/", $appLetterUniqueFolder)); // DELETE APPLICATION LETTER
-                $resumeUniqueFolder = explode("/", $main->resume_attachment);
-                array_pop($resumeUniqueFolder);
-                Storage::deleteDirectory("public/" . implode("/", $resumeUniqueFolder)); // DELETE RESUME
+                Storage::deleteDirectory("public/" . JobApplicantsController::ALADIR . "/" . $a[0] . "/" . $a[1]);
+                Storage::deleteDirectory("public/" . JobApplicantsController::RADIR . "/" . $a[0] . "/" . $a[1]);
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;

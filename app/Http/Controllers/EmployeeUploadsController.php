@@ -112,10 +112,9 @@ class EmployeeUploadsController extends Controller
         $main = EmployeeUploads::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
+            $a = explode("/", $main->file_location);
             if ($main->delete()) {
-                $folders = explode("/", $main->file_location);
-                array_pop($folders);
-                Storage::deleteDirectory("public/" . implode("/", $folders));
+                Storage::deleteDirectory("public/" . EmployeeUploadsController::EMPLOYEEDIR . "/" . $a[0] . "/" . $a[1]);
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;

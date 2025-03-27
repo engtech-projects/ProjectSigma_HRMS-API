@@ -318,8 +318,9 @@ class EmployeePanRequest extends Model
         ]);
         try {
             $pdf = Pdf::loadView('reports.docs.application_form', ['application' => $jobApplicant]);
-            $filePath = EmployeeUploads::DOCS_DIR . 'application_form/';
-            $this->uploadFileStoragedisk($pdf->output(), $filePath, "application_form.pdf");
+            $filePath = EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf';
+            Storage::disk('public')->put(EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf', $pdf->output());
+
             $employee->fileuploads()->create([
                 "employee_uploads" => "Application Form",
                 "upload_type" => "Documents",
