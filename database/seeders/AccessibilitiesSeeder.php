@@ -1518,7 +1518,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 3008,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_REPORTS_PORTAL_MONITORING_OVERTIME->value,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_REPORTS_PORTALMONITORING_OVERTIMEMONITORING->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
