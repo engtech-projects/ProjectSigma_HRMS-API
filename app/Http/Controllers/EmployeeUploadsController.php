@@ -76,15 +76,16 @@ class EmployeeUploadsController extends Controller
         $main = EmployeeUploads::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
-            $a = explode("/", $main->file_location);
             $main->fill($request->validated());
             $hashmake = Hash::make('secret');
             $hashname = hash('sha256', $hashmake);
             if ($request->hasFile("file")) {
+                $folders = explode("/", $main->file_location);
+                array_pop($folders);
+                Storage::deleteDirectory("public/" . implode("/", $folders));
                 $file = $request->file('resume_attachment');
                 $name = $file->getClientOriginalName();
                 $file->storePubliclyAs(EmployeeUploadsController::EMPLOYEEDIR . $hashname, $name, 'public');
-                Storage::deleteDirectory("public/" . $a[0] . "/" . $a[1]);
                 $main->file_location = EmployeeUploadsController::EMPLOYEEDIR . $hashname . "/" . $name;
             }
 
