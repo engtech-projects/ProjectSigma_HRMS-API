@@ -354,7 +354,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // NOTIFICATIONS
     Route::prefix('notifications')->group(function () {
         Route::get('unread', [NotificationsController::class, "getUnreadNotifications"]);
-        Route::get('unread-stream', [NotificationsController::class, "getUnreadNotificationsStreamBackup"]);
+        Route::get('unread-stream', [NotificationsController::class, "getUnreadNotificationsStream"]);
         Route::get('all', [NotificationsController::class, "getNotifications"]);
         Route::put('read/{notif}', [NotificationsController::class, "readNotification"]);
         Route::put('read-all', [NotificationsController::class, "readAllNotifications"]);
