@@ -95,6 +95,22 @@ class Overtime extends Model
         return Users::find($this->created_by)->employee->fullname_last;
     }
 
+    public function getDaysDelayedFillingAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $overtimeDate = Carbon::parse($this->overtime_date);
+        return $createdAt->diffInDays($overtimeDate) > 0 ? $createdAt->diffInDays($overtimeDate) : 0;
+    }
+
+    public function scopeSetDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('overtime_date', [$startDate, $endDate]);
+    }
+    public function scopeSetSection($query, $groupType, $id)
+    {
+        return $query->where($groupType, $id);
+    }
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);

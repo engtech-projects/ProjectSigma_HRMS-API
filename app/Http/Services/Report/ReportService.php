@@ -28,7 +28,6 @@ use App\Http\Resources\Reports\PortalMonitoringOvertime;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
-use App\Models\Users;
 use App\Models\Employee;
 use App\Models\Overtime;
 use Illuminate\Support\Facades\Log;
@@ -1183,76 +1182,16 @@ class ReportService
         $allData = [];
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
-        $main = Overtime::with([
-            "employees" => function ($query) use ($validate) {
-                if ($validate["group_type"] != "All") {
-                    $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
-                    $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
-                    $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
-                    $query->isActive()->with(
-                        "company_employments",
-                        "current_employment"
-                    )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
-                        $query->where('work_location', $workLocation)
-                            ->whereHas($type, function ($query) use ($type, $givenId) {
-                                if($givenId) {
-                                    if($type === "department"){
-                                        $query->where("departments.id", $givenId);
-                                    }
-                                    if($type === "projects"){
-                                        $query->where("projects.id", $givenId);
-                                    }
-                                }
-                            });
-                    });
-                } else {
-                    $query->isActive()->with(
-                        "company_employments",
-                        "current_employment"
-                    );
-                }
-            }
-        ])->whereBetween('overtime_date', [$dateFrom, $dateTo])->chunk(100, function ($overtimeRequests) use (&$allData){
-            $allData = collect($overtimeRequests)->flatMap(function ($request) {
-                $createdAt = Carbon::parse($request->created_at);
-                $overtimeDate = Carbon::parse($request->overtime_date);
-                $daysDelayedFilling =  $createdAt->diffInDays($overtimeDate) > 0 ? $createdAt->diffInDays($overtimeDate) : 0;
-                $preparedBy = Overtime::find($request["id"])->created_by_full_name;
-                $dateApproved = collect($request["approvals"])
-                ->whereNotNull('date_approved')
-                ->pluck('date_approved')
-                ->sortDesc()
-                ->first();
+        $main = Overtime::setDateRange($dateFrom, $dateTo);
 
-                $updateApprovals = collect($request["approvals"])->map(function ($item) use ($dateApproved) {
-                    $updateDateApproved = $dateApproved ? Carbon::parse($dateApproved) : null;
-                    $item['no_of_days_approved_from_the_date_filled'] = null;
-                    $user = Users::with('employee')->find($item['user_id']);
-                    $item['employee_name'] = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
-                    if (!is_null($item['date_approved']) && $updateDateApproved) {
-                        $item['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($item['date_approved']);
-                    }
-                    return $item;
-                })->toArray();
+        if ($validate["group_type"] != "All") {
+            $type = ($validate["group_type"] === 'Department') ? "department_id" : "project_id";
+            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
+            $main = $main->setSection($type, $givenId);
+        }
 
-                return collect($request['employees'])->map(function ($employee) use ($request, $daysDelayedFilling, $dateApproved, $updateApprovals, $preparedBy) {
-                    return [
-                        'id' => $employee['id'],
-                        'employee_id' => $employee['id'],
-                        'employee_name' => $employee['fullname_last'],
-                        'designation' => $employee->current_position_name,
-                        'section' => $employee->current_assignment_names,
-                        'date_of_overtime' => $request['overtime_date'] ? Carbon::parse($request['overtime_date'])->format('F j, Y') : null,
-                        'prepared_by' => $preparedBy,
-                        'request_status' => $request['request_status'],
-                        'days_delayed_filling' => $daysDelayedFilling,
-                        'date_approved' => $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null,
-                        'approvals' => $updateApprovals,
-                    ];
-                });
-            })->toArray();
-        });
-        return PortalMonitoringOvertime::collection($allData);
+        $main = $main->with("employees")->get();
+        return PortalMonitoringOvertime::collection($main);
     }
 
 }
