@@ -11,10 +11,9 @@ trait UploadFileTrait
     {
         $hashmake = Hash::make('secret');
         $hashname = substr(hash('sha256', $hashmake), 0, 20);
-        $originalName = $newName ?? $file->getClientOriginalName();
-        $fileStored = $fileLocation . $hashname . "/" . $originalName;
-        $file->storePubliclyAs($fileStored, 'public');
-        return $$fileStored;
+        $outputFileName = $newName ?? $file->getClientOriginalName();
+        $file->storePubliclyAs($fileLocation . $hashname, $outputFileName, 'public');
+        return $fileLocation . $hashname . "/" . $outputFileName;
     }
 
     public function uploadFileStoragedisk($file, $fileLocation, $filename)
@@ -33,8 +32,8 @@ trait UploadFileTrait
         Storage::deleteDirectory("public/" . implode("/", $oldfileUniqueFolder)); // DELETE OLD FILE
         $hashmake = Hash::make('secret');
         $hashname = substr(hash('sha256', $hashmake), 0, 20);
-        $originalName = $file->getClientOriginalName();
-        $file->storePubliclyAs($fileLocation . $hashname, $originalName, 'public');
-        return $fileLocation . $hashname . "/" . $originalName;
+        $outputFileName = $file->getClientOriginalName();
+        $file->storePubliclyAs($fileLocation . $hashname, $outputFileName, 'public');
+        return $fileLocation . $hashname . "/" . $outputFileName;
     }
 }
