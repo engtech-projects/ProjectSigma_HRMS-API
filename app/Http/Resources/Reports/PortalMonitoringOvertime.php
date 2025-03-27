@@ -53,8 +53,8 @@ class PortalMonitoringOvertime extends JsonResource
                 'prepared_by' => $this->created_by_full_name,
                 'request_status' => $this['request_status'],
                 'days_delayed_filling' => $this->days_delayed_filling,
-                'approvals' => $approvals,
                 'date_approved' => $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null,
+                'approvals' => $approvals,
             ];
         }
     }
