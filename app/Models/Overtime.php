@@ -102,10 +102,6 @@ class Overtime extends Model
         return $createdAt->diffInDays($overtimeDate) > 0 ? $createdAt->diffInDays($overtimeDate) : 0;
     }
 
-    public function scopeSetDateRange($query, $startDate, $endDate)
-    {
-        return $query->whereBetween('overtime_date', [$startDate, $endDate]);
-    }
     public function scopeSetSection($query, $groupType, $id)
     {
         return $query->where($groupType, $id);

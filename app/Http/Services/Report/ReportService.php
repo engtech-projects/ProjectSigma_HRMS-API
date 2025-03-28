@@ -1182,7 +1182,7 @@ class ReportService
         $allData = [];
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
-        $main = Overtime::setDateRange($dateFrom, $dateTo);
+        $main = Overtime::betweenDates($dateFrom, $dateTo);
 
         if ($validate["group_type"] != "All") {
             $type = ($validate["group_type"] === 'Department') ? "department_id" : "project_id";
