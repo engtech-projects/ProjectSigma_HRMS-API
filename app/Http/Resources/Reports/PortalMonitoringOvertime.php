@@ -17,7 +17,7 @@ class PortalMonitoringOvertime extends JsonResource
     public function toArray(Request $request): array
     {
         $approvals = collect($this['approvals'])->map(function ($approval) {
-            $updateDateApproved = $this->date_approved_date ? Carbon::parse($this->date_approved_date) : null;
+            $updateDateApproved = $this->date_approved_date_human ? Carbon::parse($this->date_approved_date_human) : null;
             $approval['no_of_days_approved_from_the_date_filled'] = null;
             if ($updateDateApproved) {
                 $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($this->created_at);
@@ -44,7 +44,7 @@ class PortalMonitoringOvertime extends JsonResource
                 'prepared_by' => $this->created_by_full_name,
                 'request_status' => $this['request_status'],
                 'days_delayed_filling' => $this->days_delayed_filling,
-                'date_approved' => $this->date_approved_date,
+                'date_approved' => $this->date_approved_date_human,
                 'approvals' => $approvals,
             ];
         }
