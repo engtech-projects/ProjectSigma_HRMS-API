@@ -16,19 +16,11 @@ class PortalMonitoringOvertime extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $dateApproved = collect($request["approvals"])
-        ->whereNotNull('date_approved')
-        ->pluck('date_approved')
-        ->sortDesc()
-        ->first();
-
-        $request["date_approved"] = $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null;
-
-        $approvals = collect($this['approvals'])->map(function ($approval) use ($dateApproved) {
-            $updateDateApproved = $dateApproved ? Carbon::parse($dateApproved) : null;
+        $approvals = collect($this['approvals'])->map(function ($approval) {
+            $updateDateApproved = $this->date_approved_date ? Carbon::parse($this->date_approved_date) : null;
             $approval['no_of_days_approved_from_the_date_filled'] = null;
-            if (!is_null($approval['date_approved']) && $updateDateApproved) {
-                $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($approval['date_approved']);
+            if ($updateDateApproved) {
+                $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($this->created_at);
             }
             $user = Users::with('employee')->find($approval['user_id']);
             $employee = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
@@ -48,12 +40,12 @@ class PortalMonitoringOvertime extends JsonResource
                 'id' => $this['id'],
                 'employee_name' => $data['employee_name'],
                 'designation' => $data['designation'],
-                'section' => $data['section'],
-                'date_of_overtime' => $request['overtime_date'] ? Carbon::parse($request['overtime_date'])->format('F j, Y') : null,
+                'section' => $this->section_name,
+                'date_of_overtime' => $this->overtime_date_human,
                 'prepared_by' => $this->created_by_full_name,
                 'request_status' => $this['request_status'],
                 'days_delayed_filling' => $this->days_delayed_filling,
-                'date_approved' => $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null,
+                'date_approved' => $this->date_approved_date,
                 'approvals' => $approvals,
             ];
         }

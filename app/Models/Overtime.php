@@ -192,4 +192,30 @@ class Overtime extends Model
             ->get();
     }
 
+    public function getOvertimeDateHumanAttribute()
+    {
+        return $this->overtime_date ? Carbon::parse($this->overtime_date)->format("F j, Y") : null;
+    }
+
+    public function getDateApprovedDateHumanAttribute()
+    {
+        $dateApproved = collect($this->approvals)
+        ->whereNotNull('date_approved')
+        ->pluck('date_approved')
+        ->sortDesc()
+        ->first();
+
+        return $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null;
+    }
+
+    public function getSectionNameAttribute()
+    {
+        if ($this->project_id) {
+            return $this->project->project_code;
+        }
+        if ($this->department_id) {
+            return $this->department->department_name;
+        }
+        return 'No Section found.';
+    }
 }
