@@ -31,7 +31,6 @@ class PortalMonitoringOvertime extends JsonResource
             return [
                 'employee_name' => $employee['fullname_last'],
                 'designation' => $employee->current_position_name,
-                'section' => $employee->current_assignment_names,
             ];
         });
 
