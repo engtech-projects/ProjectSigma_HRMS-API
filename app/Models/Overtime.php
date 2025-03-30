@@ -197,17 +197,6 @@ class Overtime extends Model
         return $this->overtime_date ? Carbon::parse($this->overtime_date)->format("F j, Y") : null;
     }
 
-    public function getDateApprovedDateHumanAttribute()
-    {
-        $dateApproved = collect($this->approvals)
-        ->whereNotNull('date_approved')
-        ->pluck('date_approved')
-        ->sortDesc()
-        ->first();
-
-        return $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null;
-    }
-
     public function getSectionNameAttribute()
     {
         if ($this->project_id) {

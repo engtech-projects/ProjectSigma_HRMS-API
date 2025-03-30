@@ -36,6 +36,27 @@ trait HasApproval
         return $this->created_by_user->employee?->fullname_first ?? ($this->created_by_user?->name ?? 'USER NOT FOUND');
     }
 
+    public function getDateApprovedDateHumanAttribute()
+    {
+        $dateApproved = collect($this->approvals)->last()['status'];
+        return $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null;
+    }
+
+
+    public function getSummaryApprovalsAttribute()
+    {
+        return collect($this->approvals)->map(function ($approval) {
+            $updateDateApproved = $this->date_approved_date_human ? Carbon::parse($this->date_approved_date_human) : null;
+            $approval['no_of_days_approved_from_the_date_filled'] = null;
+            if ($updateDateApproved) {
+                $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($this->created_at);
+            }
+            $user = Users::with('employee')->find($approval['user_id']);
+            $employee = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
+            return  $employee . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
+        })->implode(", ");
+    }
+
     /**
      * ==================================================
      * STATIC SCOPES

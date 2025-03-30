@@ -16,17 +16,7 @@ class PortalMonitoringOvertime extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $approvals = collect($this['approvals'])->map(function ($approval) {
-            $updateDateApproved = $this->date_approved_date_human ? Carbon::parse($this->date_approved_date_human) : null;
-            $approval['no_of_days_approved_from_the_date_filled'] = null;
-            if ($updateDateApproved) {
-                $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($this->created_at);
-            }
-            $user = Users::with('employee')->find($approval['user_id']);
-            $employee = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
-            return  $employee . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
-        })->implode(", ");
-
+        $approvals = $this->summary_approvals;
         $main = collect($this['employees'])->map(function ($employee) use ($approvals) {
             return [
                 'employee_name' => $employee['fullname_last'],
@@ -34,8 +24,9 @@ class PortalMonitoringOvertime extends JsonResource
             ];
         });
 
+        $returnData = [];
         foreach ($main as $data) {
-            return [
+            $returnData[] = [
                 'id' => $this['id'],
                 'employee_name' => $data['employee_name'],
                 'designation' => $data['designation'],
@@ -48,5 +39,6 @@ class PortalMonitoringOvertime extends JsonResource
                 'approvals' => $approvals,
             ];
         }
+        return $returnData;
     }
 }

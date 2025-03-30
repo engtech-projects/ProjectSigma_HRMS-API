@@ -1182,15 +1182,18 @@ class ReportService
         $allData = [];
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
-        $main = Overtime::betweenDates($dateFrom, $dateTo);
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = Overtime::with("employees")
+        ->betweenDates($dateFrom, $dateTo)
+        ->when($withDepartment, function ($query) use ($validate) {
+            return $query->where('department_id', $validate['department_id']);
+        })
+        ->when($withProject, function ($query) use ($validate) {
+            return $query->where('project_id', $validate['project_id']);
+        });
 
-        if ($validate["group_type"] != "All") {
-            $type = ($validate["group_type"] === 'Department') ? "department_id" : "project_id";
-            $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
-            $main = $main->setSection($type, $givenId);
-        }
-
-        $main = $main->with("employees")->get();
+        $main = $main->get();
         return PortalMonitoringOvertime::collection($main);
     }
 
