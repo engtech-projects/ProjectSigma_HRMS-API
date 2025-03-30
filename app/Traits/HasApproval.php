@@ -38,7 +38,7 @@ trait HasApproval
 
     public function getDateApprovedDateHumanAttribute()
     {
-        $dateApproved = collect($this->approvals)->last()['status'];
+        $dateApproved = collect($this->approvals)->last()['date_approved'];
         return $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null;
     }
 
@@ -51,7 +51,7 @@ trait HasApproval
             if ($updateDateApproved) {
                 $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($this->created_at);
             }
-            $user = Users::with('employee')->find($approval['user_id']);
+            $user = User::with('employee')->find($approval['user_id']);
             $employee = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
             return  $employee . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
         })->implode(", ");
