@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\Reports\AdministrativeReport;
+use App\Enums\Reports\PortalMonitoringReport;
 use App\Enums\Reports\OtherDeductionReports;
 use App\Http\Requests\DefaultPaymentRequest;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
@@ -21,6 +22,7 @@ use App\Http\Requests\SssEmployeeRemittanceRequest;
 use App\Http\Requests\SssGroupRemittanceRequest;
 use App\Http\Requests\SssGroupSummaryLoansRequest;
 use App\Http\Requests\Reports\AdministrativeReportRequest;
+use App\Http\Requests\Reports\PortalMonitoringReportRequest;
 use App\Http\Requests\sssRemittanceSummaryRequest;
 use App\Http\Resources\Reports\LoanCalamityEmployee;
 use App\Http\Resources\Reports\LoanCalamitySummary;
@@ -269,6 +271,47 @@ class ReportController extends Controller
             switch ($validated["report_type"]) {
                 case AdministrativeReport::EMPLOYEE_MASTERLIST->value:
                     $downloadUrl = ReportService::employeeMasterListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]);
+                    break;
+                default:
+                    return new JsonResponse([
+                        "success" => false,
+                        'message' => "File not found."], 400
+                    );
+            }
+        }
+    }
+
+    public function portalMonitoringReportsGenerate(PortalMonitoringReportRequest $request)
+    {
+        $validated = $request->validated();
+        $reportData = null;
+        if ($validated) {
+            switch ($validated["report_type"]) {
+                case PortalMonitoringReport::OVERTIME_MONITORING->value:
+                    $reportData = ReportService::overtimeMonitoring($validated);
+                    break;
+            }
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetched.",
+            "data" => $reportData
+        ]);
+    }
+
+    public function portalMonitoringExportReports(PortalMonitoringReportRequest $request)
+    {
+        $validated = $request->validated();
+        if ($validated) {
+            switch ($validated["report_type"]) {
+                case PortalMonitoringReport::OVERTIME_MONITORING->value:
+                    $downloadUrl = ReportService::overtimeListExport($validated);
                     return response()->json(
                         [
                             "success" => true,
