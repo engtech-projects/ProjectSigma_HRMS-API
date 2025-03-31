@@ -147,7 +147,7 @@ class EmployeeController extends Controller
             $q->with("employee_salarygrade.salary_grade_level")
                 ->with("position")
                 ->with("projects")
-                ->orderBy("date_from", "desc");
+                ->orderBy("id", "desc");
 
         })
         ->find($id);
