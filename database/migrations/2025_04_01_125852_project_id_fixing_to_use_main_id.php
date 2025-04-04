@@ -110,21 +110,21 @@ return new class extends Migration
                     ]);
                 // CODE BELOW IS REDUNDANT FROM FOREIGN CASCADE
                 // BUT STILL APPLIED TO PREVENT FOREIGN KEY CONSTRAINT FAIL
-                DB::table('attendance_logs')
-                    ->where('project_id', $project->id)
-                    ->update([
-                        'project_id' => $project->project_monitoring_id,
-                    ]);
-                DB::table('cash_advances')
-                    ->where('project_id', $project->id)
-                    ->update([
-                        'project_id' => $project->project_monitoring_id,
-                    ]);
-                DB::table('employee_leaves')
-                    ->where('project_id', $project->id)
-                    ->update([
-                        'project_id' => $project->project_monitoring_id,
-                    ]);
+                // DB::table('attendance_logs')
+                //     ->where('project_id', $project->id)
+                //     ->update([
+                //         'project_id' => $project->project_monitoring_id,
+                //     ]);
+                // DB::table('cash_advances')
+                //     ->where('project_id', $project->id)
+                //     ->update([
+                //         'project_id' => $project->project_monitoring_id,
+                //     ]);
+                // DB::table('employee_leaves')
+                //     ->where('project_id', $project->id)
+                //     ->update([
+                //         'project_id' => $project->project_monitoring_id,
+                //     ]);
                 DB::table('employee_pan_request_projects')
                     ->where('project_id', $project->id)
                     ->update([
@@ -135,26 +135,26 @@ return new class extends Migration
                     ->update([
                         'project_id' => $project->project_monitoring_id,
                     ]);
-                DB::table('overtime')
-                    ->where('project_id', $project->id)
-                    ->update([
-                        'project_id' => $project->project_monitoring_id,
-                    ]);
+                // DB::table('overtime')
+                //     ->where('project_id', $project->id)
+                //     ->update([
+                //         'project_id' => $project->project_monitoring_id,
+                //     ]);
                 DB::table('payroll_records')
                     ->where('project_id', $project->id)
                     ->update([
                         'project_id' => $project->project_monitoring_id,
                     ]);
-                DB::table('project_employees')
-                    ->where('project_id', $project->id)
-                    ->update([
-                        'project_id' => $project->project_monitoring_id,
-                    ]);
-                DB::table('schedules')
-                    ->where('project_id', $project->id)
-                    ->update([
-                        'project_id' => $project->project_monitoring_id,
-                    ]);
+                // DB::table('project_employees')
+                //     ->where('project_id', $project->id)
+                //     ->update([
+                //         'project_id' => $project->project_monitoring_id,
+                //     ]);
+                // DB::table('schedules')
+                //     ->where('project_id', $project->id)
+                //     ->update([
+                //         'project_id' => $project->project_monitoring_id,
+                //     ]);
 
                 DB::table('projects')
                     ->where('id', $project->id)
