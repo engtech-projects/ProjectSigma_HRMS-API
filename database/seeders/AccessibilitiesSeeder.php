@@ -1310,14 +1310,14 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 4030,
-                    'accessibilities_name' => AccessibilityInventory::INVENTORY_MATERIALSRECEIVING_FORM->value,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_MATERIALSRECEIVING_FORM->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 4040,
-                    'accessibilities_name' => AccessibilityInventory::INVENTORY_MATERIALSRECEIVING_ALLREQUESTS->value,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_MATERIALSRECEIVING_ALLREQUESTS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
