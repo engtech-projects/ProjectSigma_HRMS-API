@@ -1436,14 +1436,14 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 4030,
-                    'accessibilities_name' => AccessibilityInventory::INVENTORY_MATERIALSRECEIVING_FORM->value,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_MATERIALSRECEIVING_FORM->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 4040,
-                    'accessibilities_name' => AccessibilityInventory::INVENTORY_MATERIALSRECEIVING_ALLREQUESTS->value,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_MATERIALSRECEIVING_ALLREQUESTS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -1534,6 +1534,13 @@ class AccessibilitiesSeeder extends Seeder
                 [
                     'id' => 3007,
                     'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICANTS_JOB->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3008,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_REPORTS_PORTALMONITORING_OVERTIMEMONITORING->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

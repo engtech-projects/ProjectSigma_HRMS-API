@@ -90,6 +90,23 @@ class Overtime extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function getCreatedByFullNameAttribute()
+    {
+        return Users::find($this->created_by)->employee->fullname_last;
+    }
+
+    public function getDaysDelayedFillingAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $overtimeDate = Carbon::parse($this->overtime_date);
+        return $createdAt->diffInDays($overtimeDate) > 0 ? $createdAt->diffInDays($overtimeDate) : 0;
+    }
+
+    public function scopeSetSection($query, $groupType, $id)
+    {
+        return $query->where($groupType, $id);
+    }
+
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
@@ -175,4 +192,19 @@ class Overtime extends Model
             ->get();
     }
 
+    public function getOvertimeDateHumanAttribute()
+    {
+        return $this->overtime_date ? Carbon::parse($this->overtime_date)->format("F j, Y") : null;
+    }
+
+    public function getSectionNameAttribute()
+    {
+        if ($this->project_id) {
+            return $this->project->project_code;
+        }
+        if ($this->department_id) {
+            return $this->department->department_name;
+        }
+        return 'No Section found.';
+    }
 }
