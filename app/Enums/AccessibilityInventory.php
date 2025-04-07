@@ -29,8 +29,7 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENTSUPPLIERS_EDIT = "inventory:procurement_suppliers_edit";
     case INVENTORY_REQUESTSTOCKS_FORM = "inventory:request stock_form and my requests";
     case INVENTORY_REQUESTSTOCKS_ALLREQUESTS = "inventory:request stock_all requests";
-    case INVENTORY_REQUESTSTOCKS_MYAPPROVALS = "inventory:request stock_my approvals";    case INVENTORY_MATERIALSRECEIVING_ALLREQUESTS = "inventory:materials receiving_all requests";
-
+    case INVENTORY_REQUESTSTOCKS_MYAPPROVALS = "inventory:request stock_my approvals";
     public static function toArray(): array
     {
         $array = [];
