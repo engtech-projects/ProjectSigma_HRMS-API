@@ -16,6 +16,8 @@ enum AccessibilityInventory: string
     case INVENTORY_ITEMPROFILE_NEW_FORM = "inventory:item profile_new profile_forms and my requests";
     case INVENTORY_WAREHOUSE_VIEWONLY = "inventory:warehouse_overview_view only";
     case INVENTORY_WAREHOUSE_PSSMANAGER = "inventory:warehouse_overview_pss manager";
+    case INVENTORY_WAREHOUSE_MATERIALSRECEIVING_FORM = "inventory:warehouse_materials receiving_form and my requests";
+    case INVENTORY_WAREHOUSE_MATERIALSRECEIVING_ALLREQUESTS = "inventory:warehouse_materials receiving_all requests";
     case INVENTORY_BOM_FORM = "inventory:bom_form and my requests";
     case INVENTORY_BOM_ALLREQUESTS = "inventory:bom_all requests";
     case INVENTORY_BOM_MYAPPROVALS = "inventory:bom_my approvals";
@@ -28,9 +30,6 @@ enum AccessibilityInventory: string
     case INVENTORY_REQUESTSTOCKS_FORM = "inventory:request stock_form and my requests";
     case INVENTORY_REQUESTSTOCKS_ALLREQUESTS = "inventory:request stock_all requests";
     case INVENTORY_REQUESTSTOCKS_MYAPPROVALS = "inventory:request stock_my approvals";
-    case INVENTORY_MATERIALSRECEIVING_FORM = "inventory:materials receiving_form and my requests";
-    case INVENTORY_MATERIALSRECEIVING_ALLREQUESTS = "inventory:materials receiving_all requests";
-
     public static function toArray(): array
     {
         $array = [];
