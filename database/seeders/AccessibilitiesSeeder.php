@@ -1491,6 +1491,27 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 3003,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3004,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3005,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_SETUP->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
