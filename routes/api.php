@@ -345,6 +345,8 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::get('administrative', [ReportController::class, 'administrativeReportsGenerate']);
         Route::get('administrative-export', [ReportController::class, 'administrativeExportReports']);
+        Route::get('portal-monitoring', [ReportController::class, 'portalMonitoringReportsGenerate']);
+        Route::get('portal-monitoring-export', [ReportController::class, 'portalMonitoringExportReports']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {

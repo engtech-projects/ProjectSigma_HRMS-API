@@ -5,6 +5,7 @@ namespace App\Http\Services\Report;
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
 use App\Http\Services\Report\AttendanceReportService;
+use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -23,10 +24,12 @@ use App\Http\Resources\Reports\AdministrativeEmployeeTenureship;
 use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
 use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
 use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
+use App\Http\Resources\Reports\PortalMonitoringOvertime;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
 use App\Models\Employee;
+use App\Models\Overtime;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -1035,6 +1038,32 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function overtimeListExport($validate)
+    {
+        $masterListHeaders = [
+            'NO',
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Date of Overtime',
+            'Prepared By',
+            'Request Status',
+            'No. of days delayed filling',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringOvertimeList-". Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::overtimeMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeNewList($validate)
     {
         $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
@@ -1147,4 +1176,25 @@ class ReportService
         });
         return $reportData;
     }
+
+    public static function overtimeMonitoring($validate)
+    {
+        $allData = [];
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = Overtime::with("employees")
+        ->betweenDates($dateFrom, $dateTo)
+        ->when($withDepartment, function ($query) use ($validate) {
+            return $query->where('department_id', $validate['department_id']);
+        })
+        ->when($withProject, function ($query) use ($validate) {
+            return $query->where('project_id', $validate['project_id']);
+        });
+
+        $main = $main->get();
+        return PortalMonitoringOvertime::collection($main);
+    }
+
 }
