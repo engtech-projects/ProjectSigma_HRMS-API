@@ -4,6 +4,7 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
+use App\Enums\RequestStatuses;
 use App\Http\Services\Report\AttendanceReportService;
 use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\DefaultReportPaymentResource;
@@ -25,17 +26,21 @@ use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
 use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
 use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
 use App\Http\Resources\Reports\PortalMonitoringOvertime;
+use App\Http\Resources\Reports\PortalMonitoringSalary;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
 use App\Models\Employee;
 use App\Models\Overtime;
+use App\Models\PayrollRecord;
+use App\Models\AllowanceRequest;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Resources\CompressedImageResource;
+use App\Http\Services\Payroll\SalaryMonitoringReportService;
 
 class ReportService
 {
@@ -1064,6 +1069,37 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+
+    public static function salaryListExport($validate)
+    {
+        $masterListHeaders = [
+            'Project Name',
+            'Project Identifier',
+            'Basic Pay',
+            'Number Of Personnel (Basic Pay Charged)',
+            'Overtime Pay',
+            'Number Of Personnel (Overtime Pay Charged)',
+            'Sunday Pay',
+            'Number Of Personnel (Sunday Pay Charged)',
+            'Allowance',
+            'Number Of Personnel (Allowance Charged)',
+            'Special Holiday',
+            'Number Of Personnel (Special Holiday Pay Charged)',
+            'Regular Holiday',
+            'Number Of Personnel (Regular Holiday Pay Charged)',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringSalaryList-". Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::overtimeMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeNewList($validate)
     {
         $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
@@ -1197,4 +1233,25 @@ class ReportService
         return PortalMonitoringOvertime::collection($main);
     }
 
+    public static function salaryMonitoring($validate)
+    {
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $payrollRecords = PayrollRecord::isApproved()->betweenDates($dateFrom, $dateTo)->get();
+        $allowanceRequest =  AllowanceRequest::isApproved()
+        ->with("employee_allowances")
+        ->betweenDates($dateFrom, $dateTo)
+        ->when($withDepartment, function ($query) {
+            return $query->where('charge_assignment_type', SalaryMonitoringReportService::DEPARTMENT);
+        })
+        ->when($withProject, function ($query) {
+            return $query->where('charge_assignment_type', SalaryMonitoringReportService::PROJECT);
+        })->get();
+        $payrollRecordsIds = $payrollRecords->pluck("id");
+        $payrollSummaryDatas = SalaryMonitoringReportService::getPayrollSummary($payrollRecordsIds, $allowanceRequest, $withDepartment, $withProject);
+
+        return PortalMonitoringSalary::collection($payrollSummaryDatas);
+    }
 }

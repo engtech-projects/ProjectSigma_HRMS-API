@@ -122,10 +122,32 @@ class PayrollDetail extends Model
     {
         return $this->adjustments()->sum('amount');
     }
+    public function getTotalSundayPaysAttribute()
+    {
+        return $this->regular_pay +
+        $this->rest_ot_pay +
+        $this->total_adjustment;
+    }
+    public function getTotalRegularHolidayPaysAttribute()
+    {
+        return $this->regular_holiday_pay +
+            $this->regular_holiday_ot_pay +
+            $this->total_adjustment;
+    }
+    public function getTotalSpecialHolidayPaysAttribute()
+    {
+        return $this->special_holiday_pay +
+            $this->special_holiday_ot_pay +
+            $this->total_adjustment;
+    }
     public function getTotalBasicPaysAttribute()
     {
         return $this->regular_pay +
             $this->total_adjustment;
+    }
+    public function getTotalAllowanceAttribute()
+    {
+        return EmployeeAllowances::where("employee_id", $this->employee_id)->sum("allowance_amount");
     }
     public function getTotalOvertimePaysAttribute()
     {
