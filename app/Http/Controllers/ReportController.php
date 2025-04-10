@@ -296,6 +296,9 @@ class ReportController extends Controller
                 case PortalMonitoringReport::OVERTIME_MONITORING->value:
                     $reportData = ReportService::overtimeMonitoring($validated);
                     break;
+                case PortalMonitoringReport::SALARY_MONITORING->value:
+                    $reportData = ReportService::salaryMonitoring($validated);
+                    break;
             }
         }
         return new JsonResponse([
@@ -312,6 +315,15 @@ class ReportController extends Controller
             switch ($validated["report_type"]) {
                 case PortalMonitoringReport::OVERTIME_MONITORING->value:
                     $downloadUrl = ReportService::overtimeListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]);
+                    break;
+                case PortalMonitoringReport::SALARY_MONITORING->value:
+                    $downloadUrl = ReportService::salaryListExport($validated);
                     return response()->json(
                         [
                             "success" => true,
