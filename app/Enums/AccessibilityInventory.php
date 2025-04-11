@@ -17,6 +17,10 @@ enum AccessibilityInventory: string
     case INVENTORY_WAREHOUSE_VIEWONLY = "inventory:warehouse_overview_view only";
     case INVENTORY_WAREHOUSE_PSSMANAGER = "inventory:warehouse_overview_pss manager";
     case INVENTORY_WAREHOUSE_MATERIALSRECEIVING_REQUESTPROCESSING = "inventory:warehouse_materials receiving_request processing";
+    case INVENTORY_WAREHOUSE_WITHDRAWAL_FORM = "inventory:warehouse_withdrawal_form and my requests";
+    case INVENTORY_WAREHOUSE_WITHDRAWAL_ALLREQUESTS = "inventory:warehouse_withdrawal_all requests";
+    case INVENTORY_WAREHOUSE_WITHDRAWAL_MYAPPROVALS = "inventory:warehouse_withdrawal_my approvals";
+    case INVENTORY_WAREHOUSE_MATERIALSRECEIVING_FORM = "inventory:warehouse_materials receiving_form and my requests";
     case INVENTORY_WAREHOUSE_MATERIALSRECEIVING_ALLREQUESTS = "inventory:warehouse_materials receiving_all requests";
     case INVENTORY_BOM_FORM = "inventory:bom_form and my requests";
     case INVENTORY_BOM_ALLREQUESTS = "inventory:bom_all requests";

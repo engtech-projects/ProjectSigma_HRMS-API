@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Enums\EmployeeStudiesType;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Enums\WorkLocation;
 use App\Http\Traits\Attendance;
 use Illuminate\Notifications\Notifiable;
@@ -270,7 +270,7 @@ class Employee extends Model
     public function employee_leave(): HasMany
     {
         return $this->hasMany(EmployeeLeaves::class, 'employee_id')
-            ->where("request_status", RequestStatusType::APPROVED);
+            ->where("request_status", RequestStatuses::APPROVED);
     }
     public function face_patterns(): HasMany
     {

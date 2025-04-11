@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceSettings;
+use App\Enums\SalaryRequestType;
 use App\Http\Resources\CompressedImageResource;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
@@ -23,7 +24,18 @@ class LateController extends Controller
             $attendance = AttendanceLog::whereBetween('date', [
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->lastOfMonth()
-            ])->where('log_type', AttendanceLogType::TIME_IN->value)->with(['department.schedule', 'project.project_schedule'])->get();
+            ])
+            ->where('log_type', AttendanceLogType::TIME_IN->value)
+            ->with(['department.schedule', 'project.project_schedule', 'employee.company_employments'])
+            ->whereHas('employee', function ($query) {
+                return $query->isActive()
+                ->whereHas("current_employment", function ($employment) {
+                    return $employment->where("salary_type", SalaryRequestType::SALARY_TYPE_NON_FIXED->value)
+                        ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_MONTHLY->value)
+                        ->orWhere("salary_type", SalaryRequestType::SALARY_TYPE_WEEKLY->value);
+                });
+            })
+            ->get();
 
             return array_values($attendance->where(function ($attendance) use ($lateAllowance) {
                 if ($attendance->department_id != null) {

@@ -286,7 +286,7 @@ class EmployeePanRequest extends Model
         $jobApplicant["family_name"] = $jobApplicant->lastname;
         $jobApplicant["nick_name"] = $jobApplicant->nickname;
         $jobApplicant["name_suffix"] = $jobApplicant->name_suffix;
-        $jobApplicant["nick_name"] = $jobApplicant->contact_info;
+        $jobApplicant["mobile_number"] = $jobApplicant->contact_info;
         $jobApplicant["blood_type"] = $jobApplicant->blood_type;
         $jobApplicant["gender"] = $jobApplicant->gender;
         $jobApplicant["civil_status"] = $jobApplicant->civil_status;
@@ -318,9 +318,8 @@ class EmployeePanRequest extends Model
         ]);
         try {
             $pdf = Pdf::loadView('reports.docs.application_form', ['application' => $jobApplicant]);
-            $filePath = EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf';
-            Storage::disk('public')->put(EmployeeUploads::DOCS_DIR . 'pdfs/application_form.pdf', $pdf->output());
-
+            $filePath = EmployeeUploads::DOCS_DIR . 'application_form/';
+            $this->uploadFileStoragedisk($pdf->output(), $filePath, "application_form.pdf");
             $employee->fileuploads()->create([
                 "employee_uploads" => "Application Form",
                 "upload_type" => "Documents",
@@ -393,7 +392,11 @@ class EmployeePanRequest extends Model
         }
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
-        $this->jobapplicantonly->manpower()->update(["request_status" => ManpowerRequestStatus::FILLED]);
+        $this->jobapplicantonly->manpower()->update(["fill_status" => ManpowerRequestStatus::FILLED]);
+        $jobApplicantId = $jobApplicant["id"];
+        $manpowerRequestJobApplicants = ManpowerRequestJobApplicants::where("job_applicants_id", $jobApplicantId)->where("hiring_status", "For Hiring")->first();
+        $manpowerRequestJobApplicants->hiring_status = "Hired";
+        $manpowerRequestJobApplicants->save();
     }
 
     private function employeeRelatedPersonDetails(): array
@@ -434,7 +437,7 @@ class EmployeePanRequest extends Model
                 "province" => $jobApplicant->icoe_province ?? null,
                 "relationship" => $jobApplicant->icoe_relationship ?? null,
                 "contact_no" => $jobApplicant->telephone_icoe ?? null,
-                "occupation" => $jobApplicant->telephone_icoe ?? null,
+                "occupation" => $jobApplicant->icoe_occupation ?? null,
                 "type" => EmployeeRelatedPersonType::CONTACT_PERSON
             ]);
         }
@@ -461,9 +464,13 @@ class EmployeePanRequest extends Model
         $newInterWorkExp = $interWorkExp->toArray();
         unset($newInterWorkExp["id"]);
         $newInterWorkExp['work_location'] = $this->work_location ?? $interWorkExp->work_location;
-        if ($newInterWorkExp['work_location'] === WorkLocation::OFFICE->value) {
+        if ($newInterWorkExp['work_location'] === WorkLocation::OFFICE->value) { // OFFICE
             $newInterWorkExp['department_id'] = $this->section_department_id ?? $interWorkExp->department_id;
+        } else { // PROJECT
+            unset($newInterWorkExp['department_id']);
+            // SETTING OF PROJECT ADDED AFTER CREATION OF INTERNAL WORK EXPERIENCE
         }
+        $newInterWorkExp['position_id'] = $this->designation_position ?? $interWorkExp->position_id;
         $newInterWorkExp['date_from'] = $this->date_of_effictivity;
         $newInterWorkExp['salary_type'] = $this->salary_type;
         $newInterWorkExp['date_to'] = null;

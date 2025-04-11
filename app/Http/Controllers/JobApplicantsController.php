@@ -3,15 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JobApplicationStatusEnums;
-use App\Http\Requests\SearchEmployeeRequest;
+use App\Enums\HiringStatuses;
+use App\Enums\FillStatuses;
 use App\Models\JobApplicants;
+use App\Models\ManpowerRequestJobApplicants;
+use App\Http\Requests\JobApplicantRequest;
+use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantStatus;
-use Carbon\Carbon;
+use App\Http\Resources\AllJobApplicantResource;
+use App\Http\Resources\JobApplicantResource;
+use App\Utils\PaginateResourceCollection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class JobApplicantsController extends Controller
 {
@@ -21,14 +30,29 @@ class JobApplicantsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(JobApplicantRequest $request)
     {
-        $main = JobApplicants::paginate(15);
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $valid = $request->validated();
+        $main = JobApplicants::with("manpower.position")
+        ->when(isset($valid["status"]), function ($query) use ($valid) {
+            $query->where("status", $valid["status"]);
+        })
+        ->when(isset($valid["name"]), function ($query) use ($valid) {
+            $query->where(function ($q) use ($valid) {
+                $q->orWhere('firstname', 'like', "%{$valid["name"]}%")
+                    ->orWhere('lastname', 'like', "%{$valid["name"]}%")
+                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
+                    ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+            });
+        })
+        ->orderByRaw("DATE(created_at) DESC")
+        ->orderBy('lastname')
+        ->paginate();
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Job Applicant fetched.',
+            'data' => JobApplicantResource::collection($main)->response()->getData(true)
+        ]);
     }
 
     /**
@@ -37,16 +61,19 @@ class JobApplicantsController extends Controller
      */
     public function get_for_hiring(SearchEmployeeRequest $request)
     {
-        $validatedData = $request->validated();
-        $searchKey = $validatedData["key"];
-        $main = JobApplicants::select("id", "firstname", "middlename", "lastname")
-            ->where(function ($q) use ($searchKey) {
-                $q->orWhere('firstname', 'like', "%{$searchKey}%")
-                    ->orWhere('firstname', 'like', "%{$searchKey}%")
-                    ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', middlename)"), 'LIKE', $searchKey . "%")
-                    ->orWhere(DB::raw("CONCAT(firstname, ', ', middlename, ', ', lastname)"), 'LIKE', $searchKey . "%");
+        $valid = $request->validated();
+        $main = JobApplicants::with("manpower")->select("id", "firstname", "middlename", "lastname")
+            ->when(isset($valid["name"]), function ($query) use ($valid) {
+                $query->where(function ($q) use ($valid) {
+                    $q->orWhere('firstname', 'like', "%{$valid["name"]}%")
+                        ->orWhere('lastname', 'like', "%{$valid["name"]}%")
+                        ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
+                        ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+                });
             })
-            ->where("status", JobApplicationStatusEnums::FOR_HIRING)
+            ->whereHas('manpower', function ($query) {
+                $query->where('manpower_request_job_applicants.hiring_status', HiringStatuses::FOR_HIRING);
+            })
             ->limit(25)
             ->orderBy('lastname')
             ->get()
@@ -56,6 +83,30 @@ class JobApplicantsController extends Controller
         $data->success = true;
         $data->data = $main;
         return response()->json($data);
+    }
+
+    public function getAvailableApplicant(JobApplicantRequest $request)
+    {
+        $valid = $request->validated();
+        $main = JobApplicants::with("manpower.position")
+            ->where("status", JobApplicationStatusEnums::AVAILABLE->value)
+            ->when(isset($valid["hiring_status"]), function ($query) use ($valid) {
+                $query->where("status", $valid["hiring_status"]);
+            })
+            ->when(isset($valid["name"]), function ($query) use ($valid) {
+                $query->where(function ($q) use ($valid) {
+                    $q->orWhere('firstname', 'like', "%{$valid["name"]}%")
+                        ->orWhere('lastname', 'like', "%{$valid["name"]}%")
+                        ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
+                        ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+                });
+            })
+            ->get();
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Job Applicant fetched.',
+            'data' => JobApplicantResource::collection($main)
+        ]);
     }
 
     /**
@@ -71,9 +122,6 @@ class JobApplicantsController extends Controller
         return response()->json($data);
     }
 
-    /**
-     *  Update Job Applicants status and remarks
-     */
     public function updateApplicant(UpdateJobApplicantStatus $request, $id)
     {
         $main = JobApplicants::find($id);
@@ -94,6 +142,50 @@ class JobApplicantsController extends Controller
         $data->message = "Failed update.";
         $data->success = false;
         return response()->json($data, 404);
+    }
+
+    public function updateManpowerRequestJobApplicant(UpdateJobApplicantStatus $request, ManpowerRequestJobApplicants $applicantProcessing)
+    {
+        $valid = $request->validated();
+        try {
+            DB::transaction(function() use ($valid, &$applicantProcessing) {
+                if ($applicantProcessing->hiring_status === HiringStatuses::REJECTED->value) {
+                    //  MUST VERIFY IF NOT PROCESSING IN OTHER MANPOWER REQUEST
+                    $notRejectedDatas = $applicantProcessing->jobApplicant->manpowerRequestJobApplicants()
+                        ->where('hiring_status', '!=', HiringStatuses::REJECTED->value)
+                        ->get();
+                    Log::info($notRejectedDatas);
+                    $notRejected = $applicantProcessing->jobApplicant->manpowerRequestJobApplicants()
+                        ->where('hiring_status', '!=', HiringStatuses::REJECTED->value)
+                        ->exists();
+
+                    if ($notRejected) {
+                        throw new \Exception("Applicant is still in process of hiring in another Manpower Request.");
+                    }
+                }
+                $applicantProcessing->fill($valid);
+                $applicantProcessing->save();
+                if ( $valid["hiring_status"] === HiringStatuses::PROCESSING->value) {
+                    $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::PROCESSING->value]);
+                }
+                if ( $valid["hiring_status"] === HiringStatuses::FOR_HIRING->value) {
+                    $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::PROCESSING->value]);
+                }
+                if ( $valid["hiring_status"] === HiringStatuses::REJECTED->value) {
+                    $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::AVAILABLE->value]);
+                }
+            });
+        }
+        catch (\Exception $e) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully saved.",
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -129,7 +221,7 @@ class JobApplicantsController extends Controller
         $main->education = $validatedData['education'];
         $main->workexperience = $validatedData['workexperience'];
         $main->children = $validatedData['children'];
-        $main->status = JobApplicationStatusEnums::PENDING;
+        $main->status = JobApplicationStatusEnums::AVAILABLE;
         $main->date_of_application = Carbon::now();
         if (!$main->save()) {
             $data->message = "Save failed.";
@@ -169,29 +261,28 @@ class JobApplicantsController extends Controller
         $main = JobApplicants::find($id);
         $data = json_decode('{}');
         if (!is_null($main)) {
-            $a1 = explode("/", $main->application_letter_attachment);
-            $a2 = explode("/", $main->resume_attachment);
-
-            $main->fill($request->validated());
             $hashmake = Hash::make('secret');
             $hashname = hash('sha256', $hashmake);
             if ($request->hasFile("application_letter_attachment")) {
-                $check = JobApplicants::find($id);
+                $appLetterUniqueFolder = explode("/", $main->application_letter_attachment);
+                array_pop($appLetterUniqueFolder);
+                Storage::deleteDirectory("public/" . implode("/", $appLetterUniqueFolder)); // DELETE OLD APPLICATION LETTER
                 $file = $request->file('application_letter_attachment');
                 $name = $file->getClientOriginalName();
                 $file->storePubliclyAs(JobApplicantsController::ALADIR . $hashname, $name, 'public');
-                Storage::deleteDirectory("public/" . $a1[0] . "/" . $a1[1]);
                 $main->application_letter_attachment = JobApplicantsController::ALADIR . $hashname . "/" . $name;
             }
 
             if ($request->hasFile("resume_attachment")) {
-                $check = JobApplicants::find($id);
+                $resumeUniqueFolder = explode("/", $main->resume_attachment);
+                array_pop($resumeUniqueFolder);
+                Storage::deleteDirectory("public/" . implode("/", $resumeUniqueFolder)); // DELETE OLD APPLICATION LETTER
                 $file = $request->file('resume_attachment');
                 $name = $file->getClientOriginalName();
                 $file->storePubliclyAs(JobApplicantsController::RADIR . $hashname, $name, 'public');
-                Storage::deleteDirectory("public/" . $a2[0] . "/" . $a2[1]);
                 $main->resume_attachment = JobApplicantsController::RADIR . $hashname . "/" . $name;
             }
+            $main->fill($request->validated());
 
             if ($main->save()) {
                 $data->message = "Successfully update.";
@@ -219,8 +310,12 @@ class JobApplicantsController extends Controller
         if (!is_null($main)) {
             $a = explode("/", $main->application_letter_attachment);
             if ($main->delete()) {
-                Storage::deleteDirectory("public/" . JobApplicantsController::ALADIR . "/" . $a[0] . "/" . $a[1]);
-                Storage::deleteDirectory("public/" . JobApplicantsController::RADIR . "/" . $a[0] . "/" . $a[1]);
+                $appLetterUniqueFolder = explode("/", $main->application_letter_attachment);
+                array_pop($appLetterUniqueFolder);
+                Storage::deleteDirectory("public/" . implode("/", $appLetterUniqueFolder)); // DELETE APPLICATION LETTER
+                $resumeUniqueFolder = explode("/", $main->resume_attachment);
+                array_pop($resumeUniqueFolder);
+                Storage::deleteDirectory("public/" . implode("/", $resumeUniqueFolder)); // DELETE RESUME
                 $data->message = "Successfully delete.";
                 $data->success = true;
                 $data->data = $main;

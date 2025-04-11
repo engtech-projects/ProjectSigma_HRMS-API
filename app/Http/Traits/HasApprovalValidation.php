@@ -32,8 +32,14 @@ trait HasApprovalValidation
                 "required",
                 "integer",
                 "exists:users,id",
+                // Possible fix, but probable issue is this will not work for approvals with set users
+                // function ($attribute, $value, $fail) {
+                //     if (auth()->user()->id == $value) {
+                //         $fail("Can't set yourself as an approver.");
+                //     }
+                // },
             ],
-            'approvals.*.status' => [
+            'approvals.*.status' => [ // SHOULD BE NOT REQUIRED AND DEFAULTED TO PENDING
                 "required",
                 "string",
             ],

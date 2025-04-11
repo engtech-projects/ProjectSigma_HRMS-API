@@ -36,6 +36,7 @@ use App\Http\Controllers\ManpowerRequestController;
 use App\Http\Controllers\SSSContributionController;
 use App\Http\Controllers\SalaryGradeLevelController;
 use App\Http\Controllers\EmployeeEducationController;
+use App\Http\Controllers\LateAbsenceController;
 use App\Http\Controllers\EmployeeBulkUploadController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\EmployeeAffiliationController;
@@ -60,17 +61,13 @@ use App\Http\Controllers\Actions\Attendance\{
     EmployeeDtrController,
     EmployeeDtrControllerV2,
 };
-use App\Http\Controllers\Actions\ProjectMember\{
-    AttachProjectEmployee,
-    ProjectEmployeeList,
-    ProjectMemberList
-};
 use App\Http\Controllers\Actions\Employee\{
     CountEmployeeDepartmentController,
     CountEmployeeGenderController,
     MonthlyBirthdaysController
 };
 use App\Http\Controllers\Actions\Project\ProjectListController;
+use App\Http\Controllers\Actions\VoidRequestAction;
 use App\Http\Controllers\AllowanceRequestController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\ApiSyncController;
@@ -91,6 +88,7 @@ use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use App\Http\Controllers\RequestSalaryDisbursementController;
+use App\Http\Controllers\RequestVoidController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -151,9 +149,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // HRMS REQUESTS/TRANSACTIONS WITH APPROVALS
     Route::prefix('manpower')->group(function () {
         Route::resource('resource', ManpowerRequestController::class)->names("requestManpower");
+        Route::get('get-open-positions', [ManpowerRequestController::class, 'openPositions']);
+        Route::get('get-approved-positions', [ManpowerRequestController::class, 'approvedPositions']);
         Route::get('my-requests', [ManpowerRequestController::class, 'myRequest']);
         Route::get('my-approvals', [ManpowerRequestController::class, 'myApproval']);
         Route::get('for-hiring', [ManpowerRequestController::class, 'forHiring']);
+        Route::post('save-applicant', [ManpowerRequestController::class, 'storeApplicant']);
     });
     Route::prefix('pan')->group(function () {
         Route::resource('resource', PersonnelActionNoticeRequestController::class)->names("requestPan");
@@ -227,15 +228,27 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('payslip-ready/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'payslipReadyShow']);
         Route::post('submit-to-accounting/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'submitToAccounting']);
     });
+    Route::prefix('request-voids')->group(function () {
+        Route::post('void/{modelName}/{model}', VoidRequestAction::class);
+        Route::resource('resource', RequestVoidController::class)->names("requestVoids");
+        Route::get('my-requests', [RequestVoidController::class, 'myRequests']);
+        Route::get('my-approvals', [RequestVoidController::class, 'myApprovals']);
+    });
     // NON APPROVAL TRANSACTIONS/FUNCTIONS
     Route::resource('announcement', AnnouncementsController::class);
     Route::prefix("hmo")->group(function () {
         Route::resource('resource', HMOController::class)->names("setupHmo");
         Route::resource('members', HMOMembersController::class);
     });
-    Route::post('get-for-hiring', [JobApplicantsController::class, 'get_for_hiring']);
-    Route::resource('job-applicants', JobApplicantsController::class);
-    Route::put('update-applicant/{id}', [JobApplicantsController::class, 'updateApplicant']);
+    Route::prefix('job-applicants')->group(function () { // ADDING NEW JOB APPLICANT / GETTING LIST OF JOB APPLICANTS
+        Route::resource('resource', JobApplicantsController::class)->names("jobApplicants");
+        Route::prefix("hiring")->group(function () {
+            Route::get('available', [JobApplicantsController::class, 'getAvailableApplicant']);
+            Route::post('for-pan', [JobApplicantsController::class, 'get_for_hiring']);
+        });
+        Route::put('update-applicant-processing/{applicantProcessing}', [JobApplicantsController::class, 'updateManpowerRequestJobApplicant']);
+    });
+
     Route::resource('schedule', ScheduleController::class);
     Route::get('schedules', [ScheduleController::class, 'getGroupType']);
     // EMPLOYEE DETAILS AND OTHERS
@@ -269,6 +282,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('birthdays', MonthlyBirthdaysController::class);
             Route::get('lates', [LateController::class, 'getLateThisMonth']);
             Route::get('absences', [AbsentController::class, 'getAbsenceThisMonth']);
+            Route::get('lates-absence', [LateAbsenceController::class, 'getLateAbsenceThisMonth']);
             Route::post('get-late-filter', [EmployeeController::class, 'getFilterLate']);
         });
     });
@@ -331,6 +345,8 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::get('administrative', [ReportController::class, 'administrativeReportsGenerate']);
         Route::get('administrative-export', [ReportController::class, 'administrativeExportReports']);
+        Route::get('portal-monitoring', [ReportController::class, 'portalMonitoringReportsGenerate']);
+        Route::get('portal-monitoring-export', [ReportController::class, 'portalMonitoringExportReports']);
     });
     // PROJECT
     Route::prefix('project-monitoring')->group(function () {

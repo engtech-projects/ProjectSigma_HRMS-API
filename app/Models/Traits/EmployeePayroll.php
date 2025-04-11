@@ -3,7 +3,7 @@
 namespace App\Models\Traits;
 
 use App\Enums\PayrollType;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\CashAdvance;
 use App\Models\PagibigContribution;
@@ -19,7 +19,7 @@ trait EmployeePayroll
 {
     public function cash_advance_payroll(): HasMany
     {
-        return $this->hasMany(CashAdvance::class)->where('request_status', RequestStatusType::APPROVED->value);
+        return $this->hasMany(CashAdvance::class)->where('request_status', RequestStatuses::APPROVED->value);
     }
     public function salary_grade_payroll(): HasOne
     {

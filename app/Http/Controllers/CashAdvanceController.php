@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LoanPaymentsType;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\CashAdvanceAllRequest;
 use App\Http\Requests\OngoingCashAdvanceRequest;
 use App\Http\Requests\PaidCashAdvanceRequest;
@@ -55,7 +55,7 @@ class CashAdvanceController extends Controller
     {
         $main = new CashAdvance();
         $main->fill($request->validated());
-        $main->request_status = RequestStatusType::PENDING;
+        $main->request_status = RequestStatuses::PENDING;
         $main->created_by = Auth::user()->id;
         $data = json_decode('{}');
 

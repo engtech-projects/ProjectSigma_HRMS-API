@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\ManpowerRequestStatus;
+use App\Enums\FillStatuses;
+use App\Enums\RequestStatuses;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,6 +45,7 @@ class ManpowerRequest extends Model
         'approvals',
         'remarks',
         'request_status',
+        'fill_status',
         'charged_to',
         'breakdown_details',
         'created_by',
@@ -60,8 +63,9 @@ class ManpowerRequest extends Model
     {
         parent::boot();
         static::deleted(function ($model) {
-            $attachment = explode("/", $model->job_description_attachment);
-            Storage::deleteDirectory("public/" . $attachment[0] . "/" . $attachment[1]);
+            $oldfileUniqueFolder = explode("/", $model->job_description_attachment);
+            array_pop($oldfileUniqueFolder);
+            Storage::deleteDirectory("public/" . implode("/", $oldfileUniqueFolder)); // DELETE FILE
         });
     }
 
@@ -86,7 +90,7 @@ class ManpowerRequest extends Model
 
     public function job_applicants()
     {
-        return $this->hasMany(JobApplicants::class, 'manpowerrequests_id', 'id');
+        return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'manpowerrequests_id', 'job_applicants_id')->withPivot("id", "hiring_status", "processing_checklist", "remarks");
     }
 
     public function position()
@@ -99,6 +103,10 @@ class ManpowerRequest extends Model
         return $this->belongsTo(Department::class, "requesting_department", "id");
     }
 
+    public function manpowerRequestJobApplicants()
+    {
+        return $this->hasMany(ManpowerRequestJobApplicants::class, 'manpowerrequests_id', 'id');
+    }
 
     /**
      * MODEL
@@ -112,26 +120,26 @@ class ManpowerRequest extends Model
 
     public function scopeForHiring(Builder $query): void
     {
-        $query->where('request_status', ManpowerRequestStatus::APPROVED);
+        $query->where('request_status', RequestStatuses::APPROVED);
     }
 
     public function completeRequestStatus()
     {
-        $this->request_status = ManpowerRequestStatus::APPROVED;
+        $this->request_status = RequestStatuses::APPROVED;
+        $this->fill_status = FillStatuses::OPEN;
         $this->save();
         $this->refresh();
     }
     public function denyRequestStatus()
     {
-
-        $this->request_status = ManpowerRequestStatus::DISAPPROVED;
+        $this->request_status = RequestStatuses::DENIED;
         $this->save();
         $this->refresh();
     }
 
     public function requestStatusCompleted(): bool
     {
-        if ($this->request_status == ManpowerRequestStatus::APPROVED) {
+        if ($this->request_status == RequestStatuses::APPROVED) {
             return true;
         }
         return false;
@@ -143,10 +151,9 @@ class ManpowerRequest extends Model
             in_array(
                 $this->request_status,
                 [
-                    ManpowerRequestStatus::DISAPPROVED,
-                    ManpowerRequestStatus::FILLED,
-                    ManpowerRequestStatus::HOLD,
-                    ManpowerRequestStatus::CANCELLED,
+                    RequestStatuses::APPROVED,
+                    RequestStatuses::VOID,
+                    RequestStatuses::DENIED,
                 ]
             )
         ) {

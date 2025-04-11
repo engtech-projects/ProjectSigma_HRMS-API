@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\AllLeaveRequestRequest;
 use App\Http\Requests\ApprovalLeaveRequest;
 use App\Http\Requests\MyLeaveRequest;
@@ -57,10 +57,9 @@ class EmployeeLeavesController extends Controller
         $data = json_decode('{}');
 
         if ($valData) {
-            $main->created_by = Auth::user()->id;
-            $createdBy = Employee::find(Auth::user()->id);
             $main->fill($valData);
-            $main->request_status = RequestStatusType::PENDING;
+            $main->created_by = Auth::user()->id;
+            $main->request_status = RequestStatuses::PENDING;
 
             if (!$main->save()) {
                 $data->message = "Save failed.";
@@ -71,9 +70,9 @@ class EmployeeLeavesController extends Controller
             if ($main->getNextPendingApproval()) {
                 Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
             }
-            $main->created_by = collect($createdBy)->only(['id', 'fullname_last', 'fullname_first']);
             $data->message = "Successfully save.";
             $data->success = true;
+            $main = $main->refresh();
             $data->data = new EmployeeLeaveResource($main);
             return response()->json($data, 200);
         }

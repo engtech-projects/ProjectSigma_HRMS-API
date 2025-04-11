@@ -35,6 +35,7 @@ class ManpowerRequestResource extends JsonResource
             "next_approval" => $this->getNextPendingApproval(),
             "remarks" => $this->remarks,
             "request_status" => $this->request_status,
+            "fill_status" => $this->fill_status,
             "charged_to" => $this->charged_to,
             "breakdown_details" => $this->breakdown_details,
             "requested_by_user" => $this->created_by_user,

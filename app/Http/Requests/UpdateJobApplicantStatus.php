@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\JobApplicationStatusEnums;
+use App\Enums\HiringStatuses;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -16,6 +17,16 @@ class UpdateJobApplicantStatus extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (gettype($this->processing_checklist) == "string") {
+            $this->merge([
+                "processing_checklist" => json_decode($this->processing_checklist, true)
+            ]);
+        }
+    }
+
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,14 +35,18 @@ class UpdateJobApplicantStatus extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => [
+            'hiring_status' => [
                 "nullable",
                 "string",
-                new Enum(JobApplicationStatusEnums::class),
+                new Enum(HiringStatuses::class),
             ],
             'remarks' => [
                 "nullable",
                 "string",
+            ],
+            'processing_checklist' => [
+                "nullable",
+                "array",
             ],
         ];
     }

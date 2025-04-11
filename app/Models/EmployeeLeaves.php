@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonelAccessForm;
+use App\Enums\RequestStatuses;
 use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
@@ -57,14 +58,7 @@ class EmployeeLeaves extends Model
 
     public function scopeRequestStatusPending(Builder $query): void
     {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-
-    public function denyRequestStatus()
-    {
-        $this->request_status = PersonelAccessForm::REQUESTSTATUS_DISAPPROVED;
-        $this->save();
-        $this->refresh();
+        $query->where('request_status', RequestStatuses::PENDING->value);
     }
 
     public function scopeApproval($query)

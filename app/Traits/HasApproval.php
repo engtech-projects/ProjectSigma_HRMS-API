@@ -2,16 +2,20 @@
 
 namespace App\Traits;
 
+use App\Enums\AccessibilityHrms;
 use Illuminate\Support\Carbon;
 use App\Enums\RequestStatuses;
+use App\Http\Traits\CheckAccessibility;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 trait HasApproval
 {
+    use CheckAccessibility;
     /**
      * ==================================================
      * MODEL RELATIONSHIPS
@@ -29,7 +33,28 @@ trait HasApproval
      */
     public function getCreatedByUserNameAttribute()
     {
-        return $this->created_by_user->employee?->fullname_first ?? $this->created_by_user->name;
+        return $this->created_by_user->employee?->fullname_first ?? ($this->created_by_user?->name ?? 'USER NOT FOUND');
+    }
+
+    public function getDateApprovedDateHumanAttribute()
+    {
+        $dateApproved = collect($this->approvals)->last()['date_approved'];
+        return $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null;
+    }
+
+
+    public function getSummaryApprovalsAttribute()
+    {
+        return collect($this->approvals)->map(function ($approval) {
+            $updateDateApproved = $this->date_approved_date_human ? Carbon::parse($this->date_approved_date_human) : null;
+            $approval['no_of_days_approved_from_the_date_filled'] = null;
+            if ($updateDateApproved) {
+                $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($this->created_at);
+            }
+            $user = User::with('employee')->find($approval['user_id']);
+            $employee = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";
+            return  $employee . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
+        })->implode(", ");
     }
 
     /**
@@ -89,12 +114,14 @@ trait HasApproval
      */
     public function completeRequestStatus()
     {
+        // DEFAULT PROCESS WHEN FULLY APPROVING REQUEST
         $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
         $this->refresh();
     }
     public function denyRequestStatus()
     {
+        // DEFAULT PROCESS WHEN DENYING REQUEST
         $this->request_status = RequestStatuses::DENIED->value;
         $this->save();
         $this->refresh();
@@ -108,6 +135,19 @@ trait HasApproval
     }
     public function requestStatusEnded(): bool
     {
+        // DEFAULT IDENTIFIER IF REQUEST STATUS HAS ALREADY ENDED
+        if (
+            in_array(
+                $this->request_status,
+                [
+                    RequestStatuses::APPROVED,
+                    RequestStatuses::VOID,
+                    RequestStatuses::DENIED,
+                ]
+            )
+        ) {
+            return true;
+        }
         return false;
     }
     public function getUserPendingApproval($userId)
@@ -131,6 +171,9 @@ trait HasApproval
             if ($index === $currentApprovalIndex) {
                 $approval["status"] = RequestStatuses::APPROVED;
                 $approval["date_approved"] = Carbon::now()->format('F j, Y h:i A');
+            }
+            if ($this->checkUserAccess([AccessibilityHrms::SUPERADMIN->value])) {
+                $approval["remarks"] = "Approved by Super Admin";
             }
             return $approval;
         });
@@ -158,7 +201,7 @@ trait HasApproval
     }
     public function updateApproval(?array $data)
     {
-        // CHECK IF MANPOWER REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA
+        // CHECK IF REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA
         if ($this->requestStatusEnded()) {
             return [
                 "approvals" => $this->approvals,
@@ -167,7 +210,7 @@ trait HasApproval
                 "message" => "The request was already ended.",
             ];
         }
-        // CHECK IF MANPOWER REQUEST ALREADY COMPLETED AND SET RESPONSE DATA
+        // CHECK IF REQUEST ALREADY COMPLETED AND SET RESPONSE DATA
         if ($this->requestStatusCompleted()) {
             return [
                 "approvals" => $this->approvals,
@@ -178,7 +221,7 @@ trait HasApproval
         }
         $currentApproval = $this->getNextPendingApproval();
         // CHECK IF THERE IS A CURRENT APPROVAL AND IF IS FOR THE LOGGED IN USER
-        if (!empty($currentApproval) && $currentApproval['user_id'] != auth()->user()->id) {
+        if (empty($currentApproval) || ($currentApproval['user_id'] != auth()->user()->id && !$this->checkUserAccess([AccessibilityHrms::SUPERADMIN]))) {
             return [
                 "approvals" => $this->approvals,
                 'success' => false,
@@ -200,5 +243,10 @@ trait HasApproval
             "status_code" => JsonResponse::HTTP_OK,
             "message" => $data['status'] === RequestStatuses::APPROVED->value ? "Successfully approved." : "Successfully denied.",
         ];
+    }
+    public function voidRequestStatus()
+    {
+        $this->request_status = RequestStatuses::VOID;
+        $this->save();
     }
 }

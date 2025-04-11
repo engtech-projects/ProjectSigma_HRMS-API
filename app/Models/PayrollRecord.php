@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\PostingStatusType;
 use App\Enums\RequestApprovalStatus;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Enums\TermsOfPaymentType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -93,6 +93,17 @@ class PayrollRecord extends Model
         return 'No charging found.';
     }
 
+    public function getProjectIdentifierNameAttribute()
+    {
+        if ($this->project_id) {
+            return $this->project->employeeInternalWorks->first()?->work_location ? $this->project->employeeInternalWorks->first()?->work_location : 'No work location found.';
+        }
+        if ($this->department_id) {
+            return "Office";
+        }
+        return 'No work location found.';
+    }
+
     public function getPayrollDateHumanAttribute()
     {
         return Carbon::parse($this->payroll_date)->format("F j, Y");
@@ -111,12 +122,17 @@ class PayrollRecord extends Model
 
     public function scopeRequestStatusPending(Builder $query): void
     {
-        $query->where('request_status', RequestStatusType::PENDING);
+        $query->where('request_status', RequestStatuses::PENDING);
     }
 
     public function scopeRequestStatusApproved(Builder $query): void
     {
-        $query->where('request_status', RequestStatusType::APPROVED);
+        $query->where('request_status', RequestStatuses::APPROVED);
+    }
+
+    public function scopeBetweenDates($query, $dateFrom, $dateTo)
+    {
+        $query->whereBetween('payroll_date', [$dateFrom, $dateTo]);
     }
 
     public function completeRequestStatus()
@@ -142,5 +158,5 @@ class PayrollRecord extends Model
         }
         $this->refresh();
     }
-
 }
+

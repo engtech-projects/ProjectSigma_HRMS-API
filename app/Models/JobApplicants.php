@@ -6,6 +6,8 @@ use App\Enums\EmployeeEducationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,8 +21,6 @@ class JobApplicants extends Model
 
 
     protected $fillable = [
-        /*         'id', */
-        'manpowerrequests_id',
         'application_letter_attachment',
         'resume_attachment',
         'firstname',
@@ -53,6 +53,8 @@ class JobApplicants extends Model
         'icoe_name',
         'icoe_address',
         'icoe_relationship',
+        'icoe_occupation',
+        'icoe_date_of_birth',
         'telephone_icoe',
         'workexperience',
         'education',
@@ -63,6 +65,7 @@ class JobApplicants extends Model
         'philhealth',
         'pagibig',
         'tin',
+        'atm',
         'citizenship',
         'religion',
         'height',
@@ -92,9 +95,15 @@ class JobApplicants extends Model
         'fullname_first',
     ];
 
-    public function manpower(): BelongsTo
+    public function manpower(): BelongsToMany
     {
-        return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');
+        return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'job_applicants_id', 'manpowerrequests_id')->withPivot("hiring_status", "processing_checklist", "remarks");
+    }
+
+
+    public function manpowerRequestJobApplicants(): HasMany
+    {
+        return $this->hasMany(ManpowerRequestJobApplicants::class, 'job_applicants_id', 'id');
     }
 
     protected function getFullnameLastAttribute()

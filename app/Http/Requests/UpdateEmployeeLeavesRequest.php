@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\LeaveRequestStatusType;
+use App\Enums\RequestStatuses;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use App\Http\Traits\HasApprovalValidation;
@@ -70,7 +70,7 @@ class UpdateEmployeeLeavesRequest extends FormRequest
             'request_status' => [
                 "nullable",
                 "string",
-                new Enum(LeaveRequestStatusType::class)
+                new Enum(RequestStatuses::class)
             ],
             'number_of_days' => [
                 "nullable",

@@ -67,4 +67,8 @@ class PayrollDetailsCharging extends Model
         return 'No charging found.';
     }
 
+    public function getProjectIdentifierNameAttribute()
+    {
+        return PayrollRecord::find($this->payroll_details->payroll_record_id)->project_identifier_name;
+    }
 }

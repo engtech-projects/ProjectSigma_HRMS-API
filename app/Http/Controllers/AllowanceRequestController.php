@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
-use App\Enums\RequestStatusType;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\AllowanceRequestGenerateDraftRequest;
 use App\Models\AllowanceRequest;
 use App\Http\Requests\StoreAllowanceRequestRequest;
@@ -27,7 +27,7 @@ class AllowanceRequestController extends Controller
      */
     public function index()
     {
-        $main = AllowanceRequest::all();
+        $main = AllowanceRequest::orderBy('created_at', 'desc')->get();
         if (!is_null($main)) {
             return new JsonResponse([
                 'success' => true,
@@ -100,7 +100,7 @@ class AllowanceRequestController extends Controller
     public function store(StoreAllowanceRequestRequest $request)
     {
         $valData = $request->validated();
-        $valData["request_status"] = RequestStatusType::PENDING;
+        $valData["request_status"] = RequestStatuses::PENDING;
         $valData["created_by"] = auth()->user()->id;
         if ($valData["charging_type"] == AssignTypes::DEPARTMENT->value) {
             $valData["charge_assignment_id"] = $valData["department_id"];
@@ -160,6 +160,7 @@ class AllowanceRequestController extends Controller
     {
         $myRequest = AllowanceRequest::with(['employee_allowances','charge_assignment'])
             ->myRequests()
+            ->orderBy("created_at", "DESC")
             ->get();
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
@@ -181,6 +182,7 @@ class AllowanceRequestController extends Controller
     {
         $result = AllowanceRequest::with(['employee_allowances', 'charge_assignment'])
             ->myApprovals()
+            ->orderBy("created_at", "DESC")
             ->get();
         if ($result->isEmpty()) {
             return new JsonResponse([

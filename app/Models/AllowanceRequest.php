@@ -21,6 +21,9 @@ class AllowanceRequest extends Model
     use HasApproval;
     use ModelHelpers;
 
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
+
     protected $table = 'allowance_request';
 
     protected $casts = [
@@ -43,6 +46,8 @@ class AllowanceRequest extends Model
         'approvals',
         'created_by',
     ];
+
+    protected $appends = ['charging_name'];
 
     public function charge_assignment(): MorphTo
     {
@@ -84,5 +89,42 @@ class AllowanceRequest extends Model
     public function getAllowanceDateHumanAttribute()
     {
         return Carbon::parse($this->allowance_date)->format("F j, Y");
+    }
+
+    public function scopeBetweenDates($query, $dateFrom, $dateTo)
+    {
+        $query->whereBetween('allowance_date', [$dateFrom, $dateTo]);
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, "charge_assignment_id");
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, "charge_assignment_id");
+    }
+
+    public function getChargingNameAttribute()
+    {
+        if ($this->charge_assignment_type === AllowanceRequest::PROJECT) {
+            return $this->project->project_code;
+        }
+        if ($this->charge_assignment_type === AllowanceRequest::DEPARTMENT) {
+            return $this->department->department_name;
+        }
+        return 'No charging found.';
+    }
+
+    public function getProjectIdentifierNameAttribute()
+    {
+        if ($this->charge_assignment_type === AllowanceRequest::PROJECT) {
+            return $this->project->employeeInternalWorks->first()?->work_location ? $this->project->employeeInternalWorks->first()?->work_location : 'No work location found.';
+        }
+        if ($this->charge_assignment_type === AllowanceRequest::DEPARTMENT ) {
+            return "Office";
+        }
+        return 'No work location found.';
     }
 }
