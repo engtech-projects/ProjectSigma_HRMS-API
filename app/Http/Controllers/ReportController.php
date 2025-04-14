@@ -301,6 +301,14 @@ class ReportController extends Controller
                     break;
             }
         }
+
+        if ($reportData->isEmpty()) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "No data found.",
+            ]);
+        }
+
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully fetched.",

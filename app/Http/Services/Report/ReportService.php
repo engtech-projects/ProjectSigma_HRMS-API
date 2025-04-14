@@ -1227,10 +1227,10 @@ class ReportService
         })
         ->when($withProject, function ($query) use ($validate) {
             return $query->where('project_id', $validate['project_id']);
-        });
+        })->get();
 
-        $main = $main->get();
-        return PortalMonitoringOvertime::collection($main);
+        $returnData = PortalMonitoringOvertime::collection($main);
+        return $returnData;
     }
 
     public static function salaryMonitoring($validate)

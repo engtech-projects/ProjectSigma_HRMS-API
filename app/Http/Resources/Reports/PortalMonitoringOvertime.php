@@ -39,6 +39,7 @@ class PortalMonitoringOvertime extends JsonResource
                 'approvals' => $approvals,
             ];
         }
-        return $returnData;
+        $flattenedData = collect($returnData)->flatMap(fn ($group) => collect($group))->all();
+        return $flattenedData;
     }
 }
