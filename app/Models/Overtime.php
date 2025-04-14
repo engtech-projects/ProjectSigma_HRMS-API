@@ -92,7 +92,7 @@ class Overtime extends Model
 
     public function getCreatedByFullNameAttribute()
     {
-        return Users::find($this->created_by)->employee->fullname_last;
+        return Users::find($this->created_by)?->employee->fullname_last ?? 'USER NOT FOUND';
     }
 
     public function getDaysDelayedFillingAttribute()
