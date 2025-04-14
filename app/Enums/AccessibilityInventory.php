@@ -22,6 +22,8 @@ enum AccessibilityInventory: string
     case INVENTORY_WAREHOUSE_WITHDRAWAL_MYAPPROVALS = "inventory:warehouse_withdrawal_my approvals";
     case INVENTORY_WAREHOUSE_MATERIALSRECEIVING_FORM = "inventory:warehouse_materials receiving_form and my requests";
     case INVENTORY_WAREHOUSE_MATERIALSRECEIVING_ALLREQUESTS = "inventory:warehouse_materials receiving_all requests";
+    case INVENTORY_WAREHOUSE_STOCKTRANSFER_REQUESTPROCESSING = "inventory:warehouse_stock transfer_request processing";
+    case INVENTORY_WAREHOUSE_STOCKTRANSFER_ALLREQUESTS = "inventory:warehouse_stock transfer_all requests";
     case INVENTORY_BOM_FORM = "inventory:bom_form and my requests";
     case INVENTORY_BOM_ALLREQUESTS = "inventory:bom_all requests";
     case INVENTORY_BOM_MYAPPROVALS = "inventory:bom_my approvals";

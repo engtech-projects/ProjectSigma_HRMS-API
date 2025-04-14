@@ -1469,6 +1469,20 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 4080,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_STOCKTRANSFER_REQUESTPROCESSING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 4090,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_STOCKTRANSFER_ALLREQUESTS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
 
             ],
             [ "id" ],
