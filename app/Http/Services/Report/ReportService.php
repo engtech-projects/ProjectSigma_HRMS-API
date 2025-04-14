@@ -1110,7 +1110,7 @@ class ReportService
         ]);
         $excel->addRow([
             "Grand Total Amount",
-            ...array_fill(0, 13, "")
+            ...array_fill(0, 13, ""),
             $grandTotal
         ]);
         $excel->close();
