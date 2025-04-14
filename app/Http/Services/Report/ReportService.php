@@ -1046,7 +1046,6 @@ class ReportService
     public static function overtimeListExport($validate)
     {
         $masterListHeaders = [
-            'NO',
             'Employee Name',
             'Designation',
             'Section',
@@ -1091,10 +1090,29 @@ class ReportService
         $fileName = "storage/temp-report-generations/PortalMonitoringSalaryList-". Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
-        $reportData = ReportService::overtimeMonitoring($validate)->resolve();
+        $reportData = ReportService::salaryMonitoring($validate)->resolve();
+        $totalBasic = $totalOvertime = $totalSunday = $totalAllowance = $totalRegularHoliday = $totalSpecialHoliday = 0;
         foreach ($reportData as $row) {
             $excel->addRow($row);
+            $totalBasic += $row["pay_basic"];
+            $totalOvertime += $row["pay_overtime"];
+            $totalSunday += $row["pay_sunday"];
+            $totalAllowance += $row["pay_allowance"];
+            $totalRegularHoliday += $row["pay_regular_holiday_pay"];
+            $totalSpecialHoliday += $row["pay_special_holiday"];
         }
+        $grandTotal = $totalBasic + $totalOvertime + $totalSunday + $totalAllowance + $totalRegularHoliday + $totalSpecialHoliday;
+        $excel->addRow([]);
+        $excel->addRow([
+            "Total Amount",
+            "", "", $totalBasic, "", $totalOvertime, "", $totalSunday, "",
+            $totalAllowance, "", $totalSpecialHoliday, "", $totalRegularHoliday
+        ]);
+        $excel->addRow([
+            "Grand Total Amount",
+            ...array_fill(0, 13, "")
+            $grandTotal
+        ]);
         $excel->close();
         Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';

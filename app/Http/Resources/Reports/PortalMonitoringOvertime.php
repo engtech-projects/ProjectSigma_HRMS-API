@@ -27,7 +27,6 @@ class PortalMonitoringOvertime extends JsonResource
         $returnData = [];
         foreach ($main as $data) {
             $returnData[] = [
-                'id' => $this['id'],
                 'employee_name' => $data['employee_name'],
                 'designation' => $data['designation'],
                 'section' => $this->section_name,
