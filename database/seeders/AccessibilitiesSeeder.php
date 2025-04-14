@@ -1452,48 +1452,6 @@ class AccessibilitiesSeeder extends Seeder
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
         );
-        // PROJECT MONITORING
-        DB::table('accessibilities')->upsert(
-            [
-                [
-                    'id' => 3001,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_DASHBOARD->value,
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-                [
-                    'id' => 3002,
-                    'accessibilities_name' => "project monitoring:projects",
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-                [
-                    'id' => 3003,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING->value,
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-                [
-                    'id' => 3004,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS->value,
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-                [
-                    'id' => 3005,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_SETUP->value,
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-            ],
-            [ "id" ],
-            [ "accessibilities_name", "deleted_at"]
-        );
         DB::table('accessibilities')->upsert(
             [
                 [
@@ -1544,6 +1502,62 @@ class AccessibilitiesSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]
+            ],
+            [ "id" ],
+            [ "accessibilities_name", "deleted_at"]
+        );
+        // PROJECT MONITORING
+        DB::table('accessibilities')->upsert(
+            [
+                [
+                    'id' => 3001,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_DASHBOARD->value,
+                    'deleted_at' => Carbon::now(),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3002,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_PROJECT->value,
+                    'deleted_at' => Carbon::now(),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 5010,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_DASHBOARD->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 5020,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_PROJECT->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 5030,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 5040,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 5050,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_SETUP->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]
