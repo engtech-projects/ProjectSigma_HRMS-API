@@ -299,6 +299,9 @@ class ReportController extends Controller
                 case PortalMonitoringReport::SALARY_MONITORING->value:
                     $reportData = ReportService::salaryMonitoring($validated);
                     break;
+                case PortalMonitoringReport::OVERTIME_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::overtimeSummaryMonitoring($validated);
+                    break;
             }
         }
 
@@ -332,6 +335,15 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::SALARY_MONITORING->value:
                     $downloadUrl = ReportService::salaryListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]);
+                    break;
+                case PortalMonitoringReport::OVERTIME_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::overtimeSummaryListExport($validated);
                     return response()->json(
                         [
                             "success" => true,
