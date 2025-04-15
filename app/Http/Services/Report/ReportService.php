@@ -1046,7 +1046,6 @@ class ReportService
     public static function overtimeListExport($validate)
     {
         $masterListHeaders = [
-            'NO',
             'Employee Name',
             'Designation',
             'Section',
@@ -1091,10 +1090,29 @@ class ReportService
         $fileName = "storage/temp-report-generations/PortalMonitoringSalaryList-". Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
-        $reportData = ReportService::overtimeMonitoring($validate)->resolve();
-        foreach ($reportData as $row) {
+        $reportData = ReportService::salaryMonitoring($validate)->resolve();
+        foreach ($reportData as $index => $row) {
             $excel->addRow($row);
         }
+        $lastIndex = count($reportData);
+        $excel->addRow([]);
+        $lastIndex += 1;
+        $excel->addRow([
+            "Total Amount",
+            "",
+            "=SUM(C2:C{$lastIndex})", "",
+            "=SUM(E2:E{$lastIndex})", "",
+            "=SUM(G2:G{$lastIndex})", "",
+            "=SUM(I2:I{$lastIndex})", "",
+            "=SUM(K2:K{$lastIndex})", "",
+            "=SUM(M2:M{$lastIndex})", ""
+        ]);
+        $lastIndex = $lastIndex + 2;
+        $excel->addRow([
+            "Grand Total Amount",
+            ...array_fill(0, 13, ""),
+            "=SUM(C{$lastIndex}:N{$lastIndex})"
+        ]);
         $excel->close();
         Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
