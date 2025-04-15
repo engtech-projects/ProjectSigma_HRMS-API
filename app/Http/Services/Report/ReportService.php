@@ -1091,27 +1091,27 @@ class ReportService
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
         $reportData = ReportService::salaryMonitoring($validate)->resolve();
-        $totalBasic = $totalOvertime = $totalSunday = $totalAllowance = $totalRegularHoliday = $totalSpecialHoliday = 0;
-        foreach ($reportData as $row) {
+        foreach ($reportData as $index => $row) {
             $excel->addRow($row);
-            $totalBasic += $row["pay_basic"];
-            $totalOvertime += $row["pay_overtime"];
-            $totalSunday += $row["pay_sunday"];
-            $totalAllowance += $row["pay_allowance"];
-            $totalRegularHoliday += $row["pay_regular_holiday_pay"];
-            $totalSpecialHoliday += $row["pay_special_holiday"];
         }
-        $grandTotal = $totalBasic + $totalOvertime + $totalSunday + $totalAllowance + $totalRegularHoliday + $totalSpecialHoliday;
+        $lastIndex = count($reportData);
         $excel->addRow([]);
+        $lastIndex += 1;
         $excel->addRow([
             "Total Amount",
-            "", "", $totalBasic, "", $totalOvertime, "", $totalSunday, "",
-            $totalAllowance, "", $totalSpecialHoliday, "", $totalRegularHoliday
+            "",
+            "=SUM(C2:C{$lastIndex})", "",
+            "=SUM(E2:E{$lastIndex})", "",
+            "=SUM(G2:G{$lastIndex})", "",
+            "=SUM(I2:I{$lastIndex})", "",
+            "=SUM(K2:K{$lastIndex})", "",
+            "=SUM(M2:M{$lastIndex})", ""
         ]);
+        $lastIndex = $lastIndex + 2;
         $excel->addRow([
             "Grand Total Amount",
             ...array_fill(0, 13, ""),
-            $grandTotal
+            "=SUM(C{$lastIndex}:N{$lastIndex})"
         ]);
         $excel->close();
         Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
