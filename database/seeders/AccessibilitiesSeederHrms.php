@@ -849,6 +849,13 @@ class AccessibilitiesSeederHrms extends Seeder
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 280,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_REPORTS_PORTALMONITORING_OVERTIMEMONITORINGSUMMARY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]
             ],
             [ "id" ],

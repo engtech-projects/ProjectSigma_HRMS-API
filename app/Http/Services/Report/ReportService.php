@@ -26,6 +26,7 @@ use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
 use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
 use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
 use App\Http\Resources\Reports\PortalMonitoringOvertime;
+use App\Http\Resources\Reports\PortalMonitoringOvertimeSummary;
 use App\Http\Resources\Reports\PortalMonitoringSalary;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -1100,6 +1101,24 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function overtimeSummaryListExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Total Number of Overtime Filled',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringOvertimeSummaryList-". Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::overtimeSummaryMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeNewList($validate)
     {
         $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
@@ -1253,5 +1272,34 @@ class ReportService
         $payrollSummaryDatas = SalaryMonitoringReportService::getPayrollSummary($payrollRecordsIds, $allowanceRequest, $withDepartment, $withProject);
 
         return PortalMonitoringSalary::collection($payrollSummaryDatas);
+    }
+
+    public static function overtimeSummaryMonitoring($validate)
+    {
+        $allData = [];
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = Employee::isActive()->with("employee_overtime")
+        ->whereHas('employee_overtime', function ($query) use ($validate, $withDepartment, $withProject) {
+            $query->isApproved()
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->where('department_id', $validate['department_id']);
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->where('project_id', $validate['project_id']);
+            });
+        })->get();
+
+        $formatData = collect($main)->map(function ($item) {
+            $uniqueOvertimeIds = collect($item['employee_overtime'])->pluck('id')->unique();
+            $item['total_filled_overtime'] = $uniqueOvertimeIds->count();
+            return $item;
+        });
+
+        $returnData = PortalMonitoringOvertimeSummary::collection($formatData);
+        return $returnData;
     }
 }
