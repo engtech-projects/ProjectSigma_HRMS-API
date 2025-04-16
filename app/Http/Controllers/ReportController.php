@@ -302,14 +302,22 @@ class ReportController extends Controller
                 case PortalMonitoringReport::OVERTIME_MONITORING_SUMMARY->value:
                     $reportData = ReportService::overtimeSummaryMonitoring($validated);
                     break;
+                case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING->value:
+                    $reportData = ReportService::failureToLogMonitoring($validated);
+                    break;
+                default:
+                    return new JsonResponse([
+                        "success" => false,
+                        'message' => "No data found."], 400
+                    );
             }
         }
 
         if ($reportData->isEmpty()) {
             return new JsonResponse([
                 "success" => false,
-                "message" => "No data found.",
-            ]);
+                "message" => "No data found."
+            ], 400);
         }
 
         return new JsonResponse([
@@ -344,6 +352,15 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::OVERTIME_MONITORING_SUMMARY->value:
                     $downloadUrl = ReportService::overtimeSummaryListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]);
+                    break;
+                case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING->value:
+                    $downloadUrl = ReportService::failureToLogListExport($validated);
                     return response()->json(
                         [
                             "success" => true,
