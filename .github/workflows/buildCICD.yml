@@ -57,6 +57,7 @@ jobs:
               php artisan key:generate
               php artisan migrate
               php artisan db:seed
+              ./vendor/bin/pint --test
               rm -rf .env
               rm -rf .git
               rm -rf .gitignore
@@ -98,6 +99,7 @@ jobs:
               php artisan key:generate
               php artisan migrate
               php artisan db:seed
+              ./vendor/bin/pint --test
               rm -rf .env
               rm -rf .git
               rm -rf .gitignore
