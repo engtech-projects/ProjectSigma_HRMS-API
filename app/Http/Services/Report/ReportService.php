@@ -1085,7 +1085,7 @@ class ReportService
             'Date Approved',
             'Approvals',
         ];
-        $fileName = "storage/temp-report-generations/PortalMonitoringOvertimeList-". Str::random(10);
+        $fileName = "storage/temp-report-generations/PortalMonitoringFailureToLogList-". Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
         $reportData = ReportService::failureToLogMonitoring($validate)->resolve();
