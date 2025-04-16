@@ -114,7 +114,7 @@ class AttendanceLogController extends Controller
             switch ($type) {
                 case AssignTypes::DEPARTMENT->value:
                     $type = AssignTypes::DEPARTMENT->value;
-                    $latest_project = $employee->current_employment?->projects()->orderBy('id', 'desc')->first();;
+                    $latest_project = $employee->current_employment?->projects()->orderBy('id', 'desc')->first();
                     if ($employee->current_employment?->work_location == WorkLocation::OFFICE->value) {
                         $mainsave->department_id = $employee->current_employment->department_id;
                     } elseif ($employee->current_employment?->work_location == WorkLocation::PROJECT->value && $latest_project?->id) {

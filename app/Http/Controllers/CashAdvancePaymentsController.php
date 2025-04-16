@@ -7,7 +7,6 @@ use App\Http\Resources\CashAdvancePaymentResource;
 use App\Models\CashAdvancePayments;
 use App\Http\Requests\StoreCashAdvancePaymentsRequest;
 use App\Http\Requests\UpdateCashAdvancePaymentsRequest;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 
 class CashAdvancePaymentsController extends Controller

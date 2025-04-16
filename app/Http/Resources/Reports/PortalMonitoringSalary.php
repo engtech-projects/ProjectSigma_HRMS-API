@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Reports;
 
-use App\Http\Services\Payroll\SalaryMonitoringReportService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

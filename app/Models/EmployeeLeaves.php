@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\PersonelAccessForm;
 use App\Enums\RequestStatuses;
 use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;

@@ -8,8 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -34,7 +33,7 @@ return new class extends Migration
             foreach ($applicants as $applicant) {
                 if (!is_null($applicant->manpowerrequests_id)) {
                     $status = HiringStatuses::REJECTED->value;
-                    if(in_array($applicant->status, HiringStatuses::toArray())){
+                    if (in_array($applicant->status, HiringStatuses::toArray())) {
                         $status = $applicant->status;
                     }
                     $defaultProcessingChecklist = [

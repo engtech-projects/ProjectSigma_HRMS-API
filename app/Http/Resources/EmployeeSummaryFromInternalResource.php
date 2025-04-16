@@ -28,4 +28,3 @@ class EmployeeSummaryFromInternalResource extends JsonResource
         ];
     }
 }
-

@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Artisan;
 use App\Jobs\GenerateLatesAbsencesDashboardReport;
 
 class LateAbsenceController extends Controller
@@ -25,7 +23,7 @@ class LateAbsenceController extends Controller
         $cacheKey = 'employee_late_absences_' . $startOfMonth->format('Y_m') . '_' . $endOfMonth->format('Y_m');
 
         $reportData = null;
-        if(!Cache::has($cacheKey) || ($request->has('reload') && $request->input('reload') === "true")) {
+        if (!Cache::has($cacheKey) || ($request->has('reload') && $request->input('reload') === "true")) {
 
             GenerateLatesAbsencesDashboardReport::dispatch();
 
@@ -43,7 +41,7 @@ class LateAbsenceController extends Controller
         ];
 
         if (count($reportData) > 0) {
-            $reportData->each(function($data) use (&$newData) {
+            $reportData->each(function ($data) use (&$newData) {
                 if ($data["total_lates"] > 0) {
                     $newData["lates"]->push($data);
                 }

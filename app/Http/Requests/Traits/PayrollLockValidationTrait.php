@@ -6,13 +6,12 @@ use App\Enums\AttendanceSettings;
 use App\Http\Traits\CheckAccessibility;
 use App\Models\Settings;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 trait PayrollLockValidationTrait
 {
     use CheckAccessibility;
     // RETURNS TRUE IF PAYROLL IS LOCKED
-    public function isPayrollLocked($dateCheck) : bool
+    public function isPayrollLocked($dateCheck): bool
     {
         if ($this->checkUserAccess(["ADMIN ONLY"])) { // CHECK FOR ADMIN BYPASS
             return false; // FALSE TO ALLOW ADMIN BYPASS

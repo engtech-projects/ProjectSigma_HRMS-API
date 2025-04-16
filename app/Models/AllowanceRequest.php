@@ -122,7 +122,7 @@ class AllowanceRequest extends Model
         if ($this->charge_assignment_type === AllowanceRequest::PROJECT) {
             return $this->project->employeeInternalWorks->first()?->work_location ? $this->project->employeeInternalWorks->first()?->work_location : 'No work location found.';
         }
-        if ($this->charge_assignment_type === AllowanceRequest::DEPARTMENT ) {
+        if ($this->charge_assignment_type === AllowanceRequest::DEPARTMENT) {
             return "Office";
         }
         return 'No work location found.';

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Services\Payroll\SalaryDisbursementService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

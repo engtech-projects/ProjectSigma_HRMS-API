@@ -8,7 +8,6 @@ use App\Http\Requests\FormatSingleApprovalRequest;
 use App\Http\Requests\FormatUserEmployeesRequest;
 use App\Http\Resources\EmployeeDetailedEnumResource;
 use App\Http\Resources\HrmsServiceApprovalAttributeResource;
-use App\Http\Resources\UserEmployeeResource;
 use App\Http\Resources\UserEmployeeSummaryResource;
 use App\Models\Department;
 use App\Models\Employee;
@@ -45,7 +44,8 @@ class ApiServiceController extends Controller
             "success" => true,
         ]);
     }
-    public function getEmployeeList(){
+    public function getEmployeeList()
+    {
         $employeeList = Employee::orderBy('family_name')->get();
 
         return new JsonResponse([
@@ -54,7 +54,8 @@ class ApiServiceController extends Controller
             'data' => EmployeeDetailedEnumResource::collection($employeeList),
         ]);
     }
-    public function getDepartmentList(){
+    public function getDepartmentList()
+    {
         $main = Department::get();
         return response()->json([
             "message" => "Successfully fetched users.",
@@ -62,7 +63,8 @@ class ApiServiceController extends Controller
             "success" => true,
         ]);
     }
-    public function getUserList(){
+    public function getUserList()
+    {
         $users = Users::where('type', UserTypes::EMPLOYEE)
         ->with("employee")
         ->get();

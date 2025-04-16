@@ -27,7 +27,6 @@ use App\Models\PayrollDetail;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
-use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 

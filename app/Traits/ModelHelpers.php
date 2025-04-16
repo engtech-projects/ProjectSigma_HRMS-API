@@ -19,15 +19,15 @@ trait ModelHelpers
      */
     public function getCreatedAtHumanAttribute()
     {
-    return Carbon::parse($this->created_at)->format("F j, Y h:i A");
+        return Carbon::parse($this->created_at)->format("F j, Y h:i A");
     }
     public function getCreatedAtDateHumanAttribute()
     {
-    return Carbon::parse($this->created_at)->format("F j, Y");
+        return Carbon::parse($this->created_at)->format("F j, Y");
     }
     public function getCreatedAtTimeHumanAttribute()
     {
-    return Carbon::parse($this->created_at)->format("h:i A");
+        return Carbon::parse($this->created_at)->format("h:i A");
     }
     /**
      * ==================================================

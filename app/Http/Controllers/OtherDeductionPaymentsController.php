@@ -8,7 +8,6 @@ use App\Models\OtherDeductionPayments;
 use App\Http\Requests\StoreOtherDeductionPaymentsRequest;
 use App\Http\Requests\UpdateOtherDeductionPaymentsRequest;
 use App\Http\Resources\OtherDeductionPaymentsResource;
-use App\Utils\PaginateResourceCollection;
 
 class OtherDeductionPaymentsController extends Controller
 {
