@@ -139,7 +139,7 @@ class FailureToLog extends Model
         return Carbon::parse($this->date)->format("F j, Y");
     }
 
-    public function getDaysDelayedFillingAttribute()
+    public function getDaysDelayedFilingAttribute()
     {
         $createdAt = Carbon::parse($this->created_at);
         $date = Carbon::parse($this->date);

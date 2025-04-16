@@ -17,7 +17,6 @@ class PortalMonitoringFailureToLog extends JsonResource
 
     public function toArray(Request $request): array
     {
-
         $approvals = $this->summary_approvals;
         return [
             "employee_name" => $this['employee']->fullname_last,
@@ -27,7 +26,7 @@ class PortalMonitoringFailureToLog extends JsonResource
             "date_filled" => $this->created_at_date_human,
             "prepared_by" => $this->created_by_user_name,
             "request_status" => $this['request_status'],
-            "no_of_days_delayed_filling" => $this->days_delayed_filling,
+            "no_of_days_delayed_filling" => $this->days_delayed_filing,
             "date_approved" => $this->date_approved_date_human,
             "approvals" => $approvals
         ];
