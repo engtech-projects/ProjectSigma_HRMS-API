@@ -139,11 +139,6 @@ class FailureToLog extends Model
         return Carbon::parse($this->date)->format("F j, Y");
     }
 
-    public function getCreatedDateHumanAttribute()
-    {
-        return Carbon::parse($this->created_at)->format("F j, Y");
-    }
-
     public function getDaysDelayedFillingAttribute()
     {
         $createdAt = Carbon::parse($this->created_at);
@@ -168,10 +163,5 @@ class FailureToLog extends Model
             return Project::find($this->charging_project_id)?->project_code;
         }
         return "No charging found.";
-    }
-
-    public function getCreatedByFullNameAttribute()
-    {
-        return Users::find($this->created_by)?->employee->fullname_last ?? 'USER NOT FOUND';
     }
 }
