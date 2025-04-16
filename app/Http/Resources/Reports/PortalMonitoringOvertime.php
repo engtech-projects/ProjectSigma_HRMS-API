@@ -31,7 +31,7 @@ class PortalMonitoringOvertime extends JsonResource
                 'date_of_overtime' => $this->overtime_date_human,
                 'prepared_by' => $this->created_by_full_name,
                 'request_status' => $this['request_status'],
-                'days_delayed_filling' => $this->days_delayed_filling,
+                'days_delayed_filling' => $this->days_delayed_filing,
                 'date_approved' => $this->date_approved_date_human,
                 'approvals' => $approvals,
             ];

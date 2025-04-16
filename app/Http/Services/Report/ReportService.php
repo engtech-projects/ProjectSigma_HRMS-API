@@ -4,6 +4,9 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
+use App\Enums\RequestStatuses;
+use App\Http\Services\Report\AttendanceReportService;
+use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -25,6 +28,7 @@ use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
 use App\Http\Resources\Reports\PortalMonitoringOvertime;
 use App\Http\Resources\Reports\PortalMonitoringOvertimeSummary;
 use App\Http\Resources\Reports\PortalMonitoringSalary;
+use App\Http\Resources\Reports\PortalMonitoringFailureToLog;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -32,6 +36,8 @@ use App\Models\Employee;
 use App\Models\Overtime;
 use App\Models\PayrollRecord;
 use App\Models\AllowanceRequest;
+use App\Models\FailureToLog;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -1068,6 +1074,32 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function failureToLogListExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Date of Failure to Logs',
+            'Date Filled',
+            'Prepared By',
+            'Request Status',
+            'No. of days delayed filling',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringFailureToLogList-". Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::failureToLogMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
 
     public static function salaryListExport($validate)
     {
@@ -1319,6 +1351,30 @@ class ReportService
         });
 
         $returnData = PortalMonitoringOvertimeSummary::collection($formatData);
+        return $returnData;
+    }
+
+    public static function failureToLogMonitoring($validate)
+    {
+        $allData = [];
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = FailureToLog::isApproved()
+        ->with("employee")
+        ->whereHas('employee', function ($query) use ($validate, $withDepartment, $withProject) {
+            $query->isActive();
+        })->betweenDates($validate["date_from"], $validate["date_to"])
+        ->when($withDepartment, function ($query) use ($validate) {
+            return $query->where('charging_type', FailureToLog::DEPARTMENT)
+            ->where('charging_id', $validate['department_id']);
+        })
+        ->when($withProject, function ($query) use ($validate) {
+            return $query->where('charging_type', FailureToLog::PROJECT)
+            ->where('charging_id', $validate['project_id']);
+        })->get();
+        $returnData = PortalMonitoringFailureToLog::collection($main);
         return $returnData;
     }
 }

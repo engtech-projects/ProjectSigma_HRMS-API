@@ -15,9 +15,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class FailureToLog extends Model
 {
+
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
+
     use HasFactory;
     use SoftDeletes;
     use HasEmployee;
@@ -59,6 +64,7 @@ class FailureToLog extends Model
             $model->created_by = auth()->user()->id;
         });
     }
+
     public function completeRequestStatus()
     {
         $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
@@ -118,6 +124,11 @@ class FailureToLog extends Model
         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void
+    {
+        $query->whereBetween('date', [$dateFrom, $dateTo]);
+    }
+
     public function getTimeHumanAttribute()
     {
         return Carbon::parse($this->time)->format("h:i A");
@@ -126,6 +137,13 @@ class FailureToLog extends Model
     public function getDateHumanAttribute()
     {
         return Carbon::parse($this->date)->format("F j, Y");
+    }
+
+    public function getDaysDelayedFilingAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $date = Carbon::parse($this->date);
+        return $createdAt->diffInDays($date) > 0 ? $createdAt->diffInDays($date) : 0;
     }
 
     public function getChargingProjectIdAttribute()

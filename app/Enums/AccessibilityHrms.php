@@ -60,6 +60,7 @@ enum AccessibilityHrms: string
     case HRMS_REPORTS_PORTALMONITORING_OVERTIMEMONITORING = "hrms:reports_portal monitoring_overtime monitoring";
     case HRMS_REPORTS_PORTALMONITORING_SALARYMONITORING = "hrms:reports_portal monitoring_salary monitoring";
     case HRMS_REPORTS_PORTALMONITORING_OVERTIMEMONITORINGSUMMARY = "hrms:reports_portal monitoring_overtime monitoring summary";
+    case HRMS_REPORTS_PORTALMONITORING_FAILURETOLOGMONITORING = "hrms:reports_portal monitoring_failure to log monitoring";
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";
