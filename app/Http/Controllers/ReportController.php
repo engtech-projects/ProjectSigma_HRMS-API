@@ -6,7 +6,6 @@ use App\Enums\Reports\LoanReports;
 use App\Enums\Reports\AdministrativeReport;
 use App\Enums\Reports\PortalMonitoringReport;
 use App\Enums\Reports\OtherDeductionReports;
-use App\Http\Requests\DefaultPaymentRequest;
 use App\Http\Requests\HdmfEmployeeLoansRequest;
 use App\Http\Requests\HdmfGroupSummaryLoansRequest;
 use App\Http\Requests\PagibigEmployeeRemittanceRequest;
@@ -214,14 +213,16 @@ class ReportController extends Controller
     {
         $validate = $request->validated();
         if ($validate) {
-            return new JsonResponse([
+            return new JsonResponse(
+                [
                 "success" => true,
                 'message' => 'Employee Tenureship List fetched successfully.',
                 'data' => ReportService::employeeTenureshipList($validate)],
                 JsonResponse::HTTP_OK
             );
         }
-        return new JsonResponse([
+        return new JsonResponse(
+            [
             "success" => false,
             'message' => 'Failed to fetch Employee Tenureship List.'],
             JsonResponse::HTTP_EXPECTATION_FAILED
@@ -276,12 +277,15 @@ class ReportController extends Controller
                             "success" => true,
                             'url' => $downloadUrl,
                             'message' => "Successfully Download."
-                        ]);
+                        ]
+                    );
                     break;
                 default:
-                    return new JsonResponse([
+                    return new JsonResponse(
+                        [
                         "success" => false,
-                        'message' => "File not found."], 400
+                        'message' => "File not found."],
+                        400
                     );
             }
         }
@@ -331,7 +335,8 @@ class ReportController extends Controller
                             "success" => true,
                             'url' => $downloadUrl,
                             'message' => "Successfully Download."
-                        ]);
+                        ]
+                    );
                     break;
                 case PortalMonitoringReport::SALARY_MONITORING->value:
                     $downloadUrl = ReportService::salaryListExport($validated);
@@ -340,7 +345,8 @@ class ReportController extends Controller
                             "success" => true,
                             'url' => $downloadUrl,
                             'message' => "Successfully Download."
-                        ]);
+                        ]
+                    );
                     break;
                 case PortalMonitoringReport::OVERTIME_MONITORING_SUMMARY->value:
                     $downloadUrl = ReportService::overtimeSummaryListExport($validated);
@@ -349,12 +355,15 @@ class ReportController extends Controller
                             "success" => true,
                             'url' => $downloadUrl,
                             'message' => "Successfully Download."
-                        ]);
+                        ]
+                    );
                     break;
                 default:
-                    return new JsonResponse([
+                    return new JsonResponse(
+                        [
                         "success" => false,
-                        'message' => "File not found."], 400
+                        'message' => "File not found."],
+                        400
                     );
             }
         }

@@ -8,7 +8,6 @@ use App\Http\Requests\StoreRequestVoidRequest;
 use App\Http\Requests\UpdateRequestVoidRequest;
 use App\Http\Resources\RequestVoidResource;
 use GuzzleHttp\Psr7\Request;
-use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\JsonResponse;
 
 class RequestVoidController extends Controller

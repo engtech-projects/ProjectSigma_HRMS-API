@@ -8,7 +8,6 @@ use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 class AuthController extends Controller
 {

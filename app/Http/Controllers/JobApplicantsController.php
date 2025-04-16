@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\JobApplicationStatusEnums;
 use App\Enums\HiringStatuses;
-use App\Enums\FillStatuses;
 use App\Models\JobApplicants;
 use App\Models\ManpowerRequestJobApplicants;
 use App\Http\Requests\JobApplicantRequest;
@@ -12,9 +11,7 @@ use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\StoreJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantsRequest;
 use App\Http\Requests\UpdateJobApplicantStatus;
-use App\Http\Resources\AllJobApplicantResource;
 use App\Http\Resources\JobApplicantResource;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -148,7 +145,7 @@ class JobApplicantsController extends Controller
     {
         $valid = $request->validated();
         try {
-            DB::transaction(function() use ($valid, &$applicantProcessing) {
+            DB::transaction(function () use ($valid, &$applicantProcessing) {
                 if ($applicantProcessing->hiring_status === HiringStatuses::REJECTED->value) {
                     //  MUST VERIFY IF NOT PROCESSING IN OTHER MANPOWER REQUEST
                     $notRejectedDatas = $applicantProcessing->jobApplicant->manpowerRequestJobApplicants()
@@ -165,18 +162,17 @@ class JobApplicantsController extends Controller
                 }
                 $applicantProcessing->fill($valid);
                 $applicantProcessing->save();
-                if ( $valid["hiring_status"] === HiringStatuses::PROCESSING->value) {
+                if ($valid["hiring_status"] === HiringStatuses::PROCESSING->value) {
                     $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::PROCESSING->value]);
                 }
-                if ( $valid["hiring_status"] === HiringStatuses::FOR_HIRING->value) {
+                if ($valid["hiring_status"] === HiringStatuses::FOR_HIRING->value) {
                     $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::PROCESSING->value]);
                 }
-                if ( $valid["hiring_status"] === HiringStatuses::REJECTED->value) {
+                if ($valid["hiring_status"] === HiringStatuses::REJECTED->value) {
                     $applicantProcessing->jobApplicant()->update(["status" => JobApplicationStatusEnums::AVAILABLE->value]);
                 }
             });
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return new JsonResponse([
                 "success" => false,
                 "message" => $e->getMessage(),

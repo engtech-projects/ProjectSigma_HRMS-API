@@ -1,13 +1,9 @@
 <?php
+
 namespace App\Http\Services\Payroll;
 
-use App\Enums\RequestStatuses;
-use App\Enums\GroupType;
 use App\Models\PayrollDetail;
 use App\Models\PayrollDetailsCharging;
-use App\Models\PayrollRecord;
-use App\Models\AllowanceRequest;
-use Carbon\Carbon;
 
 class SalaryMonitoringReportService
 {
@@ -140,10 +136,10 @@ class SalaryMonitoringReportService
     {
         $results = collect($groupedAllowances)->mapWithKeys(function ($sections, $chargingName) {
 
-            $uniqueEmployees = collect($sections)->flatMap(fn($section) => $section["employee_allowances"])->unique("id");
+            $uniqueEmployees = collect($sections)->flatMap(fn ($section) => $section["employee_allowances"])->unique("id");
             // $totalAllowance = $uniqueEmployees->sum(fn($employee) => $employee["pivot"]["allowance_amount"]);
-            $totalAllowance = collect($sections)->flatMap(fn($section) => $section["employee_allowances"])
-            ->sum(fn($allowance) => $allowance["pivot"]["allowance_amount"]);
+            $totalAllowance = collect($sections)->flatMap(fn ($section) => $section["employee_allowances"])
+            ->sum(fn ($allowance) => $allowance["pivot"]["allowance_amount"]);
             $totalEmployees = $uniqueEmployees->count();
 
             return [
@@ -224,5 +220,3 @@ class SalaryMonitoringReportService
         return $newUniqueGroup;
     }
 }
-
-?>

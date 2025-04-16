@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class RequestVoid extends Model
 {
@@ -74,7 +73,7 @@ class RequestVoid extends Model
         DB::beginTransaction();
         $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
-        if($this->request->request_status != RequestStatuses::APPROVED->value) {
+        if ($this->request->request_status != RequestStatuses::APPROVED->value) {
             throw new Exception("Void Request Not Approved");
         }
         $this->request->voidRequestStatus();

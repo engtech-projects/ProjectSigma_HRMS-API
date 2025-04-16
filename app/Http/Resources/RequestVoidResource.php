@@ -22,8 +22,8 @@ class RequestVoidResource extends JsonResource
             "created_at_human" => $this->created_at_human,
             "created_by_user_name" => $this->created_by_user_name,
             "void_type" => $this->void_type_name,
-            "request" => $this->whenLoaded("request", function($request) {
-                if ($this->request_type == VoidRequestModels::RequestLeaves->value){
+            "request" => $this->whenLoaded("request", function ($request) {
+                if ($this->request_type == VoidRequestModels::RequestLeaves->value) {
                     return new EmployeeLeaveResource($request);
                 }
             })

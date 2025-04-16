@@ -2,10 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\AccessibilityAccounting;
 use App\Enums\AccessibilityHrms;
-use App\Enums\AccessibilityInventory;
-use App\Enums\AccessibilityProjects;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;

@@ -4,9 +4,6 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
-use App\Enums\RequestStatuses;
-use App\Http\Services\Report\AttendanceReportService;
-use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -35,7 +32,6 @@ use App\Models\Employee;
 use App\Models\Overtime;
 use App\Models\PayrollRecord;
 use App\Models\AllowanceRequest;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -434,7 +430,7 @@ class ReportService
                 ...$employeeData->first()->toArray(),
                 "employee_name" => $employeeData->first()->employee->fullname_last,
                 "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
-                "total_group_amount" => $employeeData->sum(function($detail) use ($validatedData) {
+                "total_group_amount" => $employeeData->sum(function ($detail) use ($validatedData) {
                     return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
                 }),
                 "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
@@ -479,7 +475,7 @@ class ReportService
                 "suffix_name" => $employeeData->first()->employee->suffix_name,
                 "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
                 "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->sum(function($detail) use ($validatedData) {
+                "total_payments" => $employeeData->sum(function ($detail) use ($validatedData) {
                     return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
                 }),
             ];
@@ -514,7 +510,7 @@ class ReportService
                 "last_name" => $employeeData->first()->employee->family_name,
                 "suffix_name" => $employeeData->first()->employee->suffix_name,
                 "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "total_payments" => $employeeData->sum(function($detail) use ($validatedData) {
+                "total_payments" => $employeeData->sum(function ($detail) use ($validatedData) {
                     return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
                 }),
                 "payroll_record" => [
@@ -649,7 +645,7 @@ class ReportService
             return [
                 ...$employeeData->first()->toArray(),
                 "employee_fullname" => $employeeData->first()->employee->fullname_first,
-                "total_group_amount" => $employeeData->sum(function($detail) use ($validatedData) {
+                "total_group_amount" => $employeeData->sum(function ($detail) use ($validatedData) {
                     return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
                 }),
                 "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
@@ -752,7 +748,7 @@ class ReportService
     {
         return PayrollDetail::with(["employee.company_employments"])
         ->with([
-            'loanPayments' => function($query) use($validatedData) {
+            'loanPayments' => function ($query) use ($validatedData) {
                 return $query->where("name", $validatedData["loan_type"]);
             }
         ])
@@ -768,7 +764,7 @@ class ReportService
         ->sortBy('employee.fullname_last', SORT_NATURAL)
         ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
-            $totalLoanPayments = $employeeData->sum(function($detail) use($validatedData) {
+            $totalLoanPayments = $employeeData->sum(function ($detail) use ($validatedData) {
                 return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
             });
             return [
@@ -794,7 +790,7 @@ class ReportService
     {
         $data = PayrollDetail::with(["payroll_record", "employee.company_employments"])
         ->with([
-            'loanPayments' => function($query) use($validatedData) {
+            'loanPayments' => function ($query) use ($validatedData) {
                 return $query->where("name", $validatedData["loan_type"]);
             }
         ])
@@ -841,7 +837,7 @@ class ReportService
     {
         return PayrollDetail::with(["employee.company_employments"])
         ->with([
-            'otherDeductionPayments' => function($query) use($validatedData) {
+            'otherDeductionPayments' => function ($query) use ($validatedData) {
                 return $query->where("name", $validatedData["loan_type"]);
             }
         ])
@@ -857,7 +853,7 @@ class ReportService
         ->sortBy('employee.fullname_last', SORT_NATURAL)
         ->groupBy("employee_id")
         ->map(function ($employeeData) use ($validatedData) {
-            $totalLoanPayments = $employeeData->sum(function($detail) use($validatedData) {
+            $totalLoanPayments = $employeeData->sum(function ($detail) use ($validatedData) {
                 return $detail->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum('amount');
             });
             return [
@@ -880,7 +876,7 @@ class ReportService
     {
         $data = PayrollDetail::with(["payroll_record", "employee.company_employments"])
         ->with([
-            'otherDeductionPayments' => function($query) use($validatedData) {
+            'otherDeductionPayments' => function ($query) use ($validatedData) {
                 return $query->where("name", $validatedData["loan_type"]);
             }
         ])
@@ -914,25 +910,28 @@ class ReportService
     public static function employeeTenureshipList($validate)
     {
         $data = Employee::isActive()->with("current_employment")->get();
-        if($validate["group_type"]!==GroupType::ALL->value){
+        if ($validate["group_type"] !== GroupType::ALL->value) {
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
-            $data = Employee::isActive()->with("current_employment")->whereHas("current_employment",
+            $data = Employee::isActive()->with("current_employment")->whereHas(
+                "current_employment",
                 function ($query) use ($workLocation, $type, $givenId) {
-                    $query->where('work_location', $workLocation)->whereHas($type,
+                    $query->where('work_location', $workLocation)->whereHas(
+                        $type,
                         function ($query) use ($type, $givenId) {
-                            if($givenId) {
-                                if($type === "department"){
+                            if ($givenId) {
+                                if ($type === "department") {
                                     $query->where("departments.id", $givenId);
                                 }
-                                if($type === "projects"){
+                                if ($type === "projects") {
                                     $query->where("projects.id", $givenId);
                                 }
                             }
                         }
                     );
-                })
+                }
+            )
             ->get();
         }
         return AdministrativeEmployeeTenureship::collection($data);
@@ -944,17 +943,17 @@ class ReportService
             "current_employment",
             "present_address",
             "permanent_address",
-             "father",
-             "mother",
-             "spouse",
-             "child",
-             "contact_person",
-             "employee_education_elementary",
-             "employee_education_secondary",
-             "employee_education_college",
-             "company_employments",
+            "father",
+            "mother",
+            "spouse",
+            "child",
+            "contact_person",
+            "employee_education_elementary",
+            "employee_education_secondary",
+            "employee_education_college",
+            "company_employments",
         )->get();
-        if($validate["group_type"]!==GroupType::ALL->value){
+        if ($validate["group_type"] !== GroupType::ALL->value) {
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
@@ -971,13 +970,13 @@ class ReportService
                 "employee_education_secondary",
                 "employee_education_college",
                 "company_employments"
-             )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+            )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
                 $query->where('work_location', $workLocation)->whereHas($type, function ($query) use ($type, $givenId) {
-                    if($givenId) {
-                        if($type === "department"){
+                    if ($givenId) {
+                        if ($type === "department") {
                             $query->where("departments.id", $givenId);
                         }
-                        if($type === "projects"){
+                        if ($type === "projects") {
                             $query->where("projects.id", $givenId);
                         }
                     }
@@ -1139,7 +1138,8 @@ class ReportService
 
     public static function employeeNewList($validate)
     {
-        $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
+        $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas(
+            'company_employments',
             function ($query) use ($validate) {
                 $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
             }
@@ -1149,18 +1149,19 @@ class ReportService
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
 
-            $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
+            $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas(
+                'company_employments',
                 function ($query) use ($validate) {
                     $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
                 }
             )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
                 $query->where('work_location', $workLocation)
                     ->whereHas($type, function ($query) use ($type, $givenId) {
-                        if($givenId) {
-                            if($type === "department"){
+                        if ($givenId) {
+                            if ($type === "department") {
                                 $query->where("departments.id", $givenId);
                             }
-                            if($type === "projects"){
+                            if ($type === "projects") {
                                 $query->where("projects.id", $givenId);
                             }
                         }
@@ -1177,10 +1178,10 @@ class ReportService
             "company_employments",
             "current_employment",
             'employee_leave' => function ($query) use ($validate) {
-            $query->betweenDates($validate["date_from"], $validate["date_to"]);
-        }])->whereHas('employee_leave', function ($query) use ($validate) {
-            $query->betweenDates($validate["date_from"], $validate["date_to"]);
-        })->get();
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            }])->whereHas('employee_leave', function ($query) use ($validate) {
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            })->get();
 
         if ($validate["group_type"] != "All") {
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
@@ -1196,11 +1197,11 @@ class ReportService
             ])->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
                 $query->where('work_location', $workLocation)
                     ->whereHas($type, function ($query) use ($type, $givenId) {
-                        if($givenId) {
-                            if($type === "department"){
+                        if ($givenId) {
+                            if ($type === "department") {
                                 $query->where("departments.id", $givenId);
                             }
-                            if($type === "projects"){
+                            if ($type === "projects") {
                                 $query->where("projects.id", $givenId);
                             }
                         }

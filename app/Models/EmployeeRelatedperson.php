@@ -7,7 +7,6 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -60,9 +59,9 @@ class EmployeeRelatedperson extends Model
     protected function getNameBdayAttribute()
     {
         $bday = $this->date_of_birth;
-        if($bday){
+        if ($bday) {
             $bday = Carbon::parse($this->date_of_birth)->format('F j, Y');
-        }else{
+        } else {
             $bday = "Birthday N/A";
         }
         return implode(" - ", array($this->name, $bday));

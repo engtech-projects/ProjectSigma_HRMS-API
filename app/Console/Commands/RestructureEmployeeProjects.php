@@ -6,7 +6,6 @@ use App\Enums\WorkLocation;
 use App\Models\Employee;
 use App\Models\ProjectMember;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class RestructureEmployeeProjects extends Command
 {

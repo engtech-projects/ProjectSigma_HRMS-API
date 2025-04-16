@@ -11,7 +11,6 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
-use App\Models\Employee;
 use App\Models\Users;
 use App\Notifications\LeaveRequestForApproval;
 use App\Utils\PaginateResourceCollection;

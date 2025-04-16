@@ -4,8 +4,6 @@ namespace App\Http\Resources\Reports;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Carbon\Carbon;
-use App\Models\Users;
 
 class PortalMonitoringOvertimeSummary extends JsonResource
 {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Services\ApiServices;
 
-use App\Enums\GroupType;
 use App\Enums\ReleaseType;
 use App\Enums\SigmaServices\AccountingPayrollParticulars;
 use App\Http\Resources\RequestPayrollSummaryResource;
@@ -41,7 +40,7 @@ class AccountingSecretkeyService
             "payroll_summary_id" => $salaryDisbursementRequest->id,
             "payee" => "MAYBANK",
             "amount" => "",
-            "details" => $details->flatMap(function ($detail, $stakeholder) use(&$net) {
+            "details" => $details->flatMap(function ($detail, $stakeholder) use (&$net) {
                 $datas = [];
                 $summary = $detail->toArray(new Request())['summary'];
                 $chargingType = $summary["charging_type_name"];
@@ -116,7 +115,7 @@ class AccountingSecretkeyService
                     ];
                 }
                 // OD/LOANS AGGREGATION
-                foreach($payrollData as $pDetail) {
+                foreach ($payrollData as $pDetail) {
                     foreach ($pDetail->otherDeductionPayments as $otherDeductionPayment) {
                         $datas[] = [
                             'particular' => $otherDeductionPayment->deduction->otherdeduction->otherdeduction_name,
@@ -155,7 +154,7 @@ class AccountingSecretkeyService
         $wtax = collect($payload['details'])->where('particular', AccountingPayrollParticulars::EWTC->value)->sum('amount');
         $cashAdvance = collect($payload['details'])->where('particular', AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value)->sum('amount');
         $loanProblems = [];
-        $loans = collect($payload['details'])->where('temp_type', 'loan')->map(function ($loan) use($loanParticularTerms, &$loanProblems) {
+        $loans = collect($payload['details'])->where('temp_type', 'loan')->map(function ($loan) use ($loanParticularTerms, &$loanProblems) {
             if (!array_key_exists($loan['particular'], $loanParticularTerms->toArray()) && !in_array($loan['particular'], $loanProblems)) {
                 $loanProblems[] = $loan['particular'];
             }
@@ -165,7 +164,7 @@ class AccountingSecretkeyService
             ];
         })->values()->all();
         $otherDeductionProblems = [];
-        $otherDeductions = collect($payload['details'])->where('temp_type', 'otherdeduction')->map(function ($otherDeduction) use($odParticularTerms, &$otherDeductionProblems) {
+        $otherDeductions = collect($payload['details'])->where('temp_type', 'otherdeduction')->map(function ($otherDeduction) use ($odParticularTerms, &$otherDeductionProblems) {
             if (!array_key_exists($otherDeduction['particular'], $odParticularTerms->toArray()) && !in_array($otherDeduction['particular'], $otherDeductionProblems)) {
                 $otherDeductionProblems[] = $otherDeduction['particular'];
             }
@@ -180,7 +179,7 @@ class AccountingSecretkeyService
             $stopError = true;
             $dataErrors .= 'Loans not set: ' . implode(', ', (array)$loanProblems);
         }
-        if($otherDeductionProblems) {
+        if ($otherDeductionProblems) {
             // Create and SendNotification
             // Log::info($otherDeductionProblems);
             $stopError = true;
@@ -188,8 +187,8 @@ class AccountingSecretkeyService
         }
         if ($stopError) {
             return [
-                "success"=> false,
-                "message"=> "Particulars not set: " . $dataErrors
+                "success" => false,
+                "message" => "Particulars not set: " . $dataErrors
             ];
         }
         // Log::info($loanProblems);
@@ -207,7 +206,7 @@ class AccountingSecretkeyService
             ]) || in_array($detail['temp_type'] ?? null, ['loan', 'otherdeduction']));
         })->values()->all();
         // ADD DEDUCTION AGGREGATES
-        if  ($sss > 0){
+        if ($sss > 0) {
             $tempAllDeductionDetails[] = [
                 'particular' => AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value,
                 'amount' => $sss,

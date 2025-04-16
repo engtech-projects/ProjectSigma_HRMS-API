@@ -4,7 +4,6 @@ namespace App\Http\Services\ApiServices;
 
 use App\Models\Project;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class ProjectMonitoringService
 {

@@ -40,9 +40,9 @@ class CompanyEmployee extends Model
     protected function getEmployeeDateHiredAttribute()
     {
         $data = $this->date_hired;
-        if($data){
+        if ($data) {
             $data = Carbon::parse($this->date_hired)->format('F j, Y');
-        }else{
+        } else {
             $data = "Date Hired N/A";
         }
         return $data;

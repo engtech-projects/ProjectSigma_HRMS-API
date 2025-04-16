@@ -159,4 +159,3 @@ class PayrollRecord extends Model
         $this->refresh();
     }
 }
-

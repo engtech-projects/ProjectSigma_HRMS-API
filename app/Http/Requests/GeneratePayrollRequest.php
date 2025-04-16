@@ -6,7 +6,6 @@ use App\Enums\AssignTypes;
 use App\Enums\PayrollType;
 use App\Enums\ReleaseType;
 use App\Http\Traits\HasApprovalValidation;
-use App\Enums\PayrollDetailsDeductionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 

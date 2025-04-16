@@ -17,7 +17,7 @@ class ApiSyncController extends Controller
             $projectService = new ProjectMonitoringService($authToken);
             // $accountingService = new AccountingService(); // NO SYNCABLE DATA
             // $inventoryService = new InventoryService(); // NO SYNCABLE DATA
-            if (!$projectService->syncAll()){
+            if (!$projectService->syncAll()) {
                 throw new \Exception("Project monitoring sync failed.");
             }
         });
@@ -31,7 +31,7 @@ class ApiSyncController extends Controller
         $authToken = $request->bearerToken();
         DB::transaction(function () use ($authToken) {
             $projectService = new ProjectMonitoringService($authToken);
-            if (!$projectService->syncAll()){
+            if (!$projectService->syncAll()) {
                 throw new \Exception("Project monitoring sync failed.");
             }
         });
@@ -45,7 +45,7 @@ class ApiSyncController extends Controller
         $authToken = $request->bearerToken();
         DB::transaction(function () use ($authToken) {
             $projectService = new ProjectMonitoringService($authToken);
-            if (!$projectService->syncProjects()){
+            if (!$projectService->syncProjects()) {
                 throw new \Exception("Project monitoring sync failed.");
             }
         });
