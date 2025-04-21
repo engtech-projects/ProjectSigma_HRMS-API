@@ -1347,7 +1347,7 @@ class ReportService
                     });
             })->get();
 
-        $formatData = collect($main)->map(function ($item) use ($dateFrom, $dateTo){
+        $formatData = collect($main)->map(function ($item) use ($dateFrom, $dateTo) {
             $uniqueOvertimeIds = collect($item['employee_overtime'])->filter(function ($overtime) use ($dateFrom, $dateTo) {
                 return $overtime['overtime_date'] >= $dateFrom && $overtime['overtime_date'] <= $dateTo;
             })->pluck('id')->unique();
