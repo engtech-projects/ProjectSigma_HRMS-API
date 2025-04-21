@@ -39,12 +39,12 @@ class PortalMonitoringReportRequest extends FormRequest
             'project_id' => "nullable|integer",
             'date_from' => [
                 'required_if:report_type,==,' . PortalMonitoringReport::OVERTIME_MONITORING->value,
-                'nullable',
+                'required',
                 'date'
             ],
             'date_to' => [
                 'required_if:report_type,==,' . PortalMonitoringReport::OVERTIME_MONITORING->value,
-                'nullable',
+                'required',
                 'date'
             ]
         ];
