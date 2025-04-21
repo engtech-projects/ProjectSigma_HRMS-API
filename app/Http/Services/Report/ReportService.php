@@ -1333,10 +1333,12 @@ class ReportService
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = Employee::isActive()->with("employee_overtime")
-            ->whereHas('employee_overtime', function ($query) use ($validate, $withDepartment, $withProject) {
+            ->whereHas('employee_overtime', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
                 $query->isApproved()
-                    ->betweenDates($validate["date_from"], $validate["date_to"])
+                    ->betweenDates($dateFrom, $dateTo)
                     ->when($withDepartment, function ($query) use ($validate) {
                         return $query->where('department_id', $validate['department_id']);
                     })
@@ -1345,8 +1347,10 @@ class ReportService
                     });
             })->get();
 
-        $formatData = collect($main)->map(function ($item) {
-            $uniqueOvertimeIds = collect($item['employee_overtime'])->pluck('id')->unique();
+        $formatData = collect($main)->map(function ($item) use ($dateFrom, $dateTo){
+            $uniqueOvertimeIds = collect($item['employee_overtime'])->filter(function ($overtime) use ($dateFrom, $dateTo) {
+                return $overtime['overtime_date'] >= $dateFrom && $overtime['overtime_date'] <= $dateTo;
+            })->pluck('id')->unique();
             $item['total_filled_overtime'] = $uniqueOvertimeIds->count();
             return $item;
         });
