@@ -283,6 +283,27 @@ class AccessibilitiesSeederInventory extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 2300,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_PRICEQUOTATION_REQUESTS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2310,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_PRICEQUOTATION_ALLQUOTATIONS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2320,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_PRICEQUOTATION_MYQUOTATIONS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
 
             ],
             [ "id" ],
