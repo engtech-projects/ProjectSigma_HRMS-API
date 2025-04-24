@@ -286,6 +286,11 @@ class Employee extends Model
     {
         return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id')->requestStatusApproved();
     }
+
+    public function employee_failure_to_log(): HasMany
+    {
+        return $this->hasMany(FailureToLog::class);
+    }
     public function employee_has_overtime(): BelongsToMany
     {
         return $this->belongsToMany(Overtime::class, 'overtime_employees', 'id', 'employee_id')
