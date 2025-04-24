@@ -26,6 +26,7 @@ use App\Http\Resources\Reports\PortalMonitoringOvertime;
 use App\Http\Resources\Reports\PortalMonitoringOvertimeSummary;
 use App\Http\Resources\Reports\PortalMonitoringSalary;
 use App\Http\Resources\Reports\PortalMonitoringFailureToLog;
+use App\Http\Resources\Reports\PortalMonitoringFailureToLogSummary;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -1170,6 +1171,23 @@ class ReportService
         Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
+    public static function failureToLogMonitoringSummaryListExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Total Number of Failure to Log Filed',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringFailureToLogMonitoringSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::failureToLogMonitoringSummary($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
 
     public static function employeeNewList($validate)
     {
@@ -1356,6 +1374,38 @@ class ReportService
         });
 
         $returnData = PortalMonitoringOvertimeSummary::collection($formatData);
+        return $returnData;
+    }
+
+    public static function failureToLogMonitoringSummary($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $main = Employee::isActive()->with("employee_failure_to_log")
+            ->whereHas('employee_failure_to_log', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
+                $query->isApproved()
+                    ->betweenDates($dateFrom, $dateTo)
+                    ->when($withDepartment, function ($query) use ($validate) {
+                        return $query->where('charging_type', FailureToLog::DEPARTMENT)
+                            ->where('charging_id', $validate['department_id']);
+                    })
+                    ->when($withProject, function ($query) use ($validate) {
+                        return $query->where('charging_type', FailureToLog::PROJECT)
+                            ->where('charging_id', $validate['project_id']);
+                    });
+            })->get();
+
+        $formatData = collect($main)->map(function ($item) use ($dateFrom, $dateTo) {
+            $uniqueOvertimeIds = collect($item['employee_failure_to_log'])->filter(function ($overtime) use ($dateFrom, $dateTo) {
+                return $overtime['date'] >= $dateFrom && $overtime['date'] <= $dateTo;
+            })->pluck('id')->unique();
+            $item['total_filed_failuretolog'] = $uniqueOvertimeIds->count();
+            return $item;
+        });
+
+        $returnData = PortalMonitoringFailureToLogSummary::collection($formatData);
         return $returnData;
     }
 
