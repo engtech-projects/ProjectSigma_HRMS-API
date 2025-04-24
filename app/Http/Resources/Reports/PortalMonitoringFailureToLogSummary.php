@@ -16,7 +16,7 @@ class PortalMonitoringFailureToLogSummary extends JsonResource
     {
         return [
             "employee_name" => $this['fullname_last'],
-            "failuretolog_filled" => $this['total_filled_failuretolog']
+            "failuretolog_filed" => $this['total_filed_failuretolog']
         ];
     }
 }

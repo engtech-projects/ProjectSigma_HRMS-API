@@ -1401,7 +1401,7 @@ class ReportService
             $uniqueOvertimeIds = collect($item['employee_failure_to_log'])->filter(function ($overtime) use ($dateFrom, $dateTo) {
                 return $overtime['date'] >= $dateFrom && $overtime['date'] <= $dateTo;
             })->pluck('id')->unique();
-            $item['total_filled_failuretolog'] = $uniqueOvertimeIds->count();
+            $item['total_filed_failuretolog'] = $uniqueOvertimeIds->count();
             return $item;
         });
 
