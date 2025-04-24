@@ -1175,7 +1175,7 @@ class ReportService
     {
         $masterListHeaders = [
             'Employee Name',
-            'Total Number of Failure to Log Filled',
+            'Total Number of Failure to Log Filed',
         ];
         $fileName = "storage/temp-report-generations/PortalMonitoringFailureToLogMonitoringSummaryList-" . Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
