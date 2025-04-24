@@ -10,9 +10,7 @@ use App\Http\Resources\WorkLocationMembersProjectResource;
 use App\Http\Resources\WorkLocationMembersUnassignedResource;
 use App\Models\Department;
 use App\Models\Employee;
-use App\Models\InternalWorkExperience;
 use App\Models\Project;
-use Illuminate\Support\Facades\Log;
 
 class WorkLocationsController extends Controller
 {

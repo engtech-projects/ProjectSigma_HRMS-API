@@ -93,6 +93,17 @@ class PayrollRecord extends Model
         return 'No charging found.';
     }
 
+    public function getProjectIdentifierNameAttribute()
+    {
+        if ($this->project_id) {
+            return $this->project->employeeInternalWorks->first()?->work_location ? $this->project->employeeInternalWorks->first()?->work_location : 'No work location found.';
+        }
+        if ($this->department_id) {
+            return "Office";
+        }
+        return 'No work location found.';
+    }
+
     public function getPayrollDateHumanAttribute()
     {
         return Carbon::parse($this->payroll_date)->format("F j, Y");
@@ -119,6 +130,11 @@ class PayrollRecord extends Model
         $query->where('request_status', RequestStatuses::APPROVED);
     }
 
+    public function scopeBetweenDates($query, $dateFrom, $dateTo)
+    {
+        $query->whereBetween('payroll_date', [$dateFrom, $dateTo]);
+    }
+
     public function completeRequestStatus()
     {
         $this->request_status = RequestApprovalStatus::APPROVED;
@@ -142,5 +158,4 @@ class PayrollRecord extends Model
         }
         $this->refresh();
     }
-
 }

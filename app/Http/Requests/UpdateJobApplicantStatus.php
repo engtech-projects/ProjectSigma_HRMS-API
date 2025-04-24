@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\JobApplicationStatusEnums;
 use App\Enums\HiringStatuses;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;

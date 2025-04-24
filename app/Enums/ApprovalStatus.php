@@ -2,7 +2,6 @@
 
 namespace App\Enums;
 
-
 enum ApprovalStatus: string
 {
     case APPROVED = 'Approved';

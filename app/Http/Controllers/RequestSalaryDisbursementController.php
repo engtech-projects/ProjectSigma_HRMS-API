@@ -18,7 +18,6 @@ use App\Http\Services\ApiServices\AccountingSecretkeyService;
 use App\Http\Services\Payroll\SalaryDisbursementService;
 use App\Models\PayrollDetail;
 use App\Models\PayrollRecord;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 

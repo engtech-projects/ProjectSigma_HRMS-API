@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\ManpowerRequestStatus;
 use App\Enums\FillStatuses;
 use App\Enums\RequestStatuses;
 use App\Traits\HasApproval;

@@ -3,12 +3,6 @@
 namespace App\Http\Controllers\Actions;
 
 use App\Enums\ApprovalModels;
-use App\Notifications\CashAdvanceDenied;
-use App\Notifications\FailureToLogRequestDenied;
-use App\Notifications\ManpowerRequestDenied;
-use App\Notifications\OvertimeRequestDenied;
-use App\Notifications\PanRequestDenied;
-use App\Notifications\TravelRequestDenied;
 use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatuses;
@@ -17,14 +11,9 @@ use App\Http\Requests\VoidRequest;
 use App\Models\Approvals;
 use App\Models\RequestVoid;
 use App\Models\Users;
-use App\Notifications\AllowanceRequestDenied;
-use App\Notifications\LeaveRequestDenied;
-use App\Notifications\PayrollRequestDenied;
 use App\Notifications\VoidRequestForApproval;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class VoidRequestAction extends Controller
 {
@@ -52,12 +41,12 @@ class VoidRequestAction extends Controller
         $attribute = $request->validated();
         $approvals = Approvals::where("form", "Void Requests")->first();
         $approvalModels = ApprovalModels::toArray();
-        if (RequestVoid::where("request_id", $model->id)->where("request_type", $approvalModels[$modelType])->whereIn("request_status", [RequestStatuses::APPROVED, RequestStatuses::PENDING])->exists()){
+        if (RequestVoid::where("request_id", $model->id)->where("request_type", $approvalModels[$modelType])->whereIn("request_status", [RequestStatuses::APPROVED, RequestStatuses::PENDING])->exists()) {
             return new JsonResponse(["success" => false, "message" => "Void Request already exists."], JsonResponse::HTTP_BAD_REQUEST);
         }
         $attribute["request_type"] = $approvalModels[$modelType];
         $attribute["request_id"] = $model->id;
-        $attribute["approvals"] = collect($approvals->approvals)->map(function($approval) {
+        $attribute["approvals"] = collect($approvals->approvals)->map(function ($approval) {
             return [
                 "type" => $approval['type'],
                 "user_id" => $approval['user_id'],

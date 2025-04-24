@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\AttendancePortal;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

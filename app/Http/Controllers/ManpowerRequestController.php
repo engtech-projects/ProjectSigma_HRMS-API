@@ -9,10 +9,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ManpowerServices;
 use Illuminate\Support\Facades\Storage;
-use App\Utils\PaginateResourceCollection;
 use App\Exceptions\TransactionFailedException;
 use App\Http\Resources\ManpowerRequestResource;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Http\Requests\StoreApplicantRequest;
@@ -201,7 +199,7 @@ class ManpowerRequestController extends Controller
             ];
             $valid["hiring_status"] = HiringStatuses::PROCESSING->value;
             try {
-                DB::transaction(function() use ($valid) {
+                DB::transaction(function () use ($valid) {
                     foreach ($valid["data"] as $data) {
                         $valid["job_applicants_id"] = $data;
                         $record = ManpowerRequestJobApplicants::where('job_applicants_id', $valid["job_applicants_id"])

@@ -310,13 +310,14 @@ class Employee extends Model
     protected function fullnameLast(): Attribute
     {
         return Attribute::make(
-            get: fn () => implode(", ", [$this->family_name, implode(" ",array_values(array_filter([$this->first_name, $this->middle_name, $this->name_suffix])))]),
+            get: fn () => implode(", ", [$this->family_name, implode(" ", array_values(array_filter([$this->first_name, $this->middle_name, $this->name_suffix])))]),
         );
     }
     protected function fullnameFirst(): Attribute
     {
         return Attribute::make(
-            get: fn () => implode(" ",
+            get: fn () => implode(
+                " ",
                 array_values(
                     array_filter([
                         $this->first_name,
@@ -484,9 +485,9 @@ class Employee extends Model
     protected function getDateMarriageAttribute()
     {
         $data = $this->date_of_marriage;
-        if($data){
+        if ($data) {
             $data = Carbon::parse($this->date_of_marriage)->format('F j, Y');
-        }else{
+        } else {
             $data = "Date Of Marriage N/A";
         }
         return $data;

@@ -5,6 +5,7 @@ namespace App\Enums;
 enum AccessibilityProjects: string
 {
     case PROJECTMONITORING_DASHBOARD = "project monitoring:dashboard";
+    case PROJECTMONITORING_PROJECT = "project monitoring:projects";
     case PROJECTMONITORING_MARKETING = "project monitoring:marketing";
     case PROJECTMONITORING_TSS = "project monitoring:tss";
     case PROJECTMONITORING_SETUP = "project monitoring:setup";

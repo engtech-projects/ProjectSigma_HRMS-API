@@ -26,7 +26,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class EmployeePanRequest extends Model
 {
@@ -153,7 +152,7 @@ class EmployeePanRequest extends Model
      * MODEL ATTRIBUTES
      * ==================================================
      */
-     public function getFullNameAttribute()
+    public function getFullNameAttribute()
     {
         if ($this->type == "New Hire") {
             return $this->jobapplicant?->fullname_last;
@@ -185,18 +184,18 @@ class EmployeePanRequest extends Model
      * STATIC SCOPES
      * ==================================================
      */
-     public function scopeRequestStatusPending(Builder $query): void
-     {
-         $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-     }
-     public function scopeApproval($query)
-     {
-         return $query->where("request_status", "=", "Pending");
-     }
-     public function scopeCreatedBy(Builder $query, $id): void
-     {
-         $query->where("created_by", $id);
-     }
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+    }
+    public function scopeApproval($query)
+    {
+        return $query->where("request_status", "=", "Pending");
+    }
+    public function scopeCreatedBy(Builder $query, $id): void
+    {
+        $query->where("created_by", $id);
+    }
     /**
      * ==================================================
      * DYNAMIC SCOPES

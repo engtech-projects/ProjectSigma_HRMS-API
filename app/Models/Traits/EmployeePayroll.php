@@ -2,7 +2,6 @@
 
 namespace App\Models\Traits;
 
-use App\Enums\PayrollType;
 use App\Enums\RequestStatuses;
 use App\Http\Services\Payroll\PayrollService;
 use App\Models\CashAdvance;

@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 trait HasApproval
 {
@@ -46,10 +45,11 @@ trait HasApproval
     public function getSummaryApprovalsAttribute()
     {
         return collect($this->approvals)->map(function ($approval) {
-            $updateDateApproved = $this->date_approved_date_human ? Carbon::parse($this->date_approved_date_human) : null;
+            $updateDateApproved = $this->date_approved_date_human ? Carbon::parse($this->date_approved_date_human)->startOfDay() : null;
             $approval['no_of_days_approved_from_the_date_filled'] = null;
+            $updateCreatedAt = $this->created_at ? Carbon::parse($this->created_at)->startOfDay() : null;
             if ($updateDateApproved) {
-                $approval['no_of_days_approved_from_the_date_filled'] = $updateDateApproved->diffInDays($this->created_at);
+                $approval['no_of_days_approved_from_the_date_filled'] = $updateCreatedAt->diffInDays($updateDateApproved);
             }
             $user = User::with('employee')->find($approval['user_id']);
             $employee = $user?->employee?->fullname_first ?? "SYSTEM ADMINISTRATOR";

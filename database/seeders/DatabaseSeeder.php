@@ -14,17 +14,15 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(
             [
-                // UsersSeeder::class,
+                UsersSeeder::class,
                 SettingsSeeder::class,
                 AccessibilitiesSeeder::class,
+                AccessibilitiesSeederAccounting::class,
+                AccessibilitiesSeederHrms::class,
+                AccessibilitiesSeederInventory::class,
+                AccessibilitiesSeederProjects::class,
                 ApprovalsSeeder::class
             ]
         );
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

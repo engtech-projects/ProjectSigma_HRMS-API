@@ -4,8 +4,6 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
-use App\Http\Services\Report\AttendanceReportService;
-use App\Http\Resources\ApprovalAttributeResource;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -25,17 +23,23 @@ use App\Http\Resources\Reports\AdministrativeEmployeeMasterList;
 use App\Http\Resources\Reports\AdministrativeEmployeeNewList;
 use App\Http\Resources\Reports\AdministrativeEmployeeLeaves;
 use App\Http\Resources\Reports\PortalMonitoringOvertime;
+use App\Http\Resources\Reports\PortalMonitoringOvertimeSummary;
+use App\Http\Resources\Reports\PortalMonitoringSalary;
+use App\Http\Resources\Reports\PortalMonitoringFailureToLog;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
 use App\Models\Employee;
 use App\Models\Overtime;
-use Illuminate\Support\Facades\Log;
+use App\Models\PayrollRecord;
+use App\Models\AllowanceRequest;
+use App\Models\FailureToLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Resources\CompressedImageResource;
+use App\Http\Services\Payroll\SalaryMonitoringReportService;
 
 class ReportService
 {
@@ -45,38 +49,38 @@ class ReportService
     public static function sssEmployeeRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasSssContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_sss_contribution",
-            "total_sss_compensation",
-            "total_sss_wisp",
-            "total_sss",
-        ])
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'sss_employer_contribution' => $employeeData->sum("sss_employer_contribution"),
-                'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
-                'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
-                'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
-                'sss_employer_wisp' => $employeeData->sum("sss_employer_wisp"),
-                'sss_employee_wisp' => $employeeData->sum("sss_employee_wisp"),
-                'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
-                'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
-                'total_sss_wisp' => $employeeData->sum("total_sss_wisp"),
-                'total_sss' => $employeeData->sum("total_sss"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasSssContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_sss_contribution",
+                "total_sss_compensation",
+                "total_sss_wisp",
+                "total_sss",
+            ])
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    'sss_employer_contribution' => $employeeData->sum("sss_employer_contribution"),
+                    'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
+                    'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
+                    'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
+                    'sss_employer_wisp' => $employeeData->sum("sss_employer_wisp"),
+                    'sss_employee_wisp' => $employeeData->sum("sss_employee_wisp"),
+                    'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
+                    'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
+                    'total_sss_wisp' => $employeeData->sum("total_sss_wisp"),
+                    'total_sss' => $employeeData->sum("total_sss"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'SSS Employee Remittance fetched successfully.',
@@ -86,52 +90,52 @@ class ReportService
     public static function sssGroupRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
-                return $query2->where('project_id', $validatedData["project_id"]);
-            })
-                ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
-                    return $query2->where('department_id', $validatedData["department_id"]);
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
+                    return $query2->where('project_id', $validatedData["project_id"]);
                 })
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasSssContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_sss_contribution",
-            "total_sss_compensation",
-            "total_sss_wisp",
-            "total_sss",
-        ])
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'sss_employer_contribution' => $employeeData->sum("sss_employer_contribution"),
-                'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
-                'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
-                'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
-                'sss_employer_wisp' => $employeeData->sum("sss_employer_wisp"),
-                'sss_employee_wisp' => $employeeData->sum("sss_employee_wisp"),
-                'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
-                'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
-                'total_sss_wisp' => $employeeData->sum("total_sss_wisp"),
-                'total_sss' => $employeeData->sum("total_sss"),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->values()
-        ->all();
+                    ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
+                        return $query2->where('department_id', $validatedData["department_id"]);
+                    })
+                    ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasSssContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_sss_contribution",
+                "total_sss_compensation",
+                "total_sss_wisp",
+                "total_sss",
+            ])
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    'sss_employer_contribution' => $employeeData->sum("sss_employer_contribution"),
+                    'sss_employee_contribution' => $employeeData->sum("sss_employee_contribution"),
+                    'sss_employer_compensation' => $employeeData->sum("sss_employer_compensation"),
+                    'sss_employee_compensation' => $employeeData->sum("sss_employee_compensation"),
+                    'sss_employer_wisp' => $employeeData->sum("sss_employer_wisp"),
+                    'sss_employee_wisp' => $employeeData->sum("sss_employee_wisp"),
+                    'total_sss_contribution' => $employeeData->sum("total_sss_contribution"),
+                    'total_sss_compensation' => $employeeData->sum("total_sss_compensation"),
+                    'total_sss_wisp' => $employeeData->sum("total_sss_wisp"),
+                    'total_sss' => $employeeData->sum("total_sss"),
+                    "payroll_record" => [
+                        ...$employeeData->first()->payroll_record->toArray(),
+                        "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->values()
+            ->all();
         $data = collect($data);
         $firstRecord = $data->first();
         $dataArray = $data->all();
-        return[
+        return [
             'success' => true,
             'message' => 'SSS Group Remittance Request fetched.',
             'data' => [
@@ -143,23 +147,23 @@ class ReportService
     public static function sssRemittanceSummary($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasSssContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_sss_contribution",
-            "total_sss_compensation",
-            "total_sss_wisp",
-            "total_sss",
-        ])
-        ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query
+                    ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasSssContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_sss_contribution",
+                "total_sss_compensation",
+                "total_sss_wisp",
+                "total_sss",
+            ])
+            ->sortBy('payroll_record.charging_name', SORT_NATURAL)
+            ->values()
+            ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
         return [
             'success' => true,
@@ -170,28 +174,28 @@ class ReportService
     public static function pagibigEmployeeRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasPagibigContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_pagibig_contribution",
-        ])
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'pagibig_employee_contribution' => $employeeData->sum("pagibig_employee_contribution"),
-                'pagibig_employer_contribution' => $employeeData->sum("pagibig_employer_contribution"),
-                'total_pagibig_contribution' => $employeeData->sum("total_pagibig_contribution"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasPagibigContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_pagibig_contribution",
+            ])
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    'pagibig_employee_contribution' => $employeeData->sum("pagibig_employee_contribution"),
+                    'pagibig_employer_contribution' => $employeeData->sum("pagibig_employer_contribution"),
+                    'total_pagibig_contribution' => $employeeData->sum("total_pagibig_contribution"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -201,38 +205,38 @@ class ReportService
     public static function pagibigGroupRemiitance($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
-                return $query2->where('project_id', $validatedData["project_id"]);
-            })
-                ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
-                    return $query2->where('department_id', $validatedData["department_id"]);
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
+                    return $query2->where('project_id', $validatedData["project_id"]);
                 })
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasPagibigContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_pagibig_contribution",
-        ])
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'pagibig_employee_contribution' => $employeeData->sum("pagibig_employee_contribution"),
-                'pagibig_employer_contribution' => $employeeData->sum("pagibig_employer_contribution"),
-                'total_pagibig_contribution' => $employeeData->sum("total_pagibig_contribution"),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->values()
-        ->all();
+                    ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
+                        return $query2->where('department_id', $validatedData["department_id"]);
+                    })
+                    ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasPagibigContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_pagibig_contribution",
+            ])
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    'pagibig_employee_contribution' => $employeeData->sum("pagibig_employee_contribution"),
+                    'pagibig_employer_contribution' => $employeeData->sum("pagibig_employer_contribution"),
+                    'total_pagibig_contribution' => $employeeData->sum("total_pagibig_contribution"),
+                    "payroll_record" => [
+                        ...$employeeData->first()->payroll_record->toArray(),
+                        "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->values()
+            ->all();
         $data = collect($data);
         $firstRecord = $data->first();
         $dataArray = $data->all();
@@ -248,20 +252,20 @@ class ReportService
     public static function pagibigRemittanceSummary($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasPagibigContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_pagibig_contribution",
-        ])
-        ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query
+                    ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasPagibigContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_pagibig_contribution",
+            ])
+            ->sortBy('payroll_record.charging_name', SORT_NATURAL)
+            ->values()
+            ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
         return [
             'success' => true,
@@ -272,27 +276,27 @@ class ReportService
     public static function philhealthEmployeeRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasPhilhealthContributions()
-        ->get()
-        ->append([
-            "total_philhealth_contribution"
-        ])
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'philhealth_employee_contribution' => $employeeData->sum("philhealth_employee_contribution"),
-                'philhealth_employer_contribution' => $employeeData->sum("philhealth_employer_contribution"),
-                'total_philhealth_contribution' => $employeeData->sum("total_philhealth_contribution"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasPhilhealthContributions()
+            ->get()
+            ->append([
+                "total_philhealth_contribution"
+            ])
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    'philhealth_employee_contribution' => $employeeData->sum("philhealth_employee_contribution"),
+                    'philhealth_employer_contribution' => $employeeData->sum("philhealth_employer_contribution"),
+                    'total_philhealth_contribution' => $employeeData->sum("total_philhealth_contribution"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'PhilHealth Employee Remittance fetched successfully.',
@@ -302,38 +306,38 @@ class ReportService
     public static function philhealthGroupRemittance($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
-                return $query2->where('project_id', $validatedData["project_id"]);
-            })
-                ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
-                    return $query2->where('department_id', $validatedData["department_id"]);
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->when(!empty($validatedData['project_id']), function ($query2) use ($validatedData) {
+                    return $query2->where('project_id', $validatedData["project_id"]);
                 })
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasPhilhealthContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_philhealth_contribution"
-        ])
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                'philhealth_employee_contribution' => $employeeData->sum("philhealth_employee_contribution"),
-                'philhealth_employer_contribution' => $employeeData->sum("philhealth_employer_contribution"),
-                'total_philhealth_contribution' => $employeeData->sum("total_philhealth_contribution"),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->values()
-        ->all();
+                    ->when(!empty($validatedData['department_id']), function ($query2) use ($validatedData) {
+                        return $query2->where('department_id', $validatedData["department_id"]);
+                    })
+                    ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasPhilhealthContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_philhealth_contribution"
+            ])
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    'philhealth_employee_contribution' => $employeeData->sum("philhealth_employee_contribution"),
+                    'philhealth_employer_contribution' => $employeeData->sum("philhealth_employer_contribution"),
+                    'total_philhealth_contribution' => $employeeData->sum("total_philhealth_contribution"),
+                    "payroll_record" => [
+                        ...$employeeData->first()->payroll_record->toArray(),
+                        "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->values()
+            ->all();
         $data = collect($data);
         $firstRecord = $data->first();
         $dataArray = $data->all();
@@ -349,20 +353,20 @@ class ReportService
     public static function philhealthRemittanceSummary($validatedData = [])
     {
         $data = PayrollDetail::with(['payroll_record', "employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->hasPhilhealthContributions()
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->append([
-            "total_philhealth_contribution"
-        ])
-        ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query
+                    ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->hasPhilhealthContributions()
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->append([
+                "total_philhealth_contribution"
+            ])
+            ->sortBy('payroll_record.charging_name', SORT_NATURAL)
+            ->values()
+            ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
         return [
             'success' => true,
@@ -376,27 +380,27 @@ class ReportService
     public static function sssEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::SSS->value);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_name" => $employeeData->first()->employee->fullname_last,
-                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
-                "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::SSS->value);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_name" => $employeeData->first()->employee->fullname_last,
+                    "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
+                    "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'SSS Employee Loan Request fetched.',
@@ -406,43 +410,43 @@ class ReportService
     public static function sssGroupSummaryLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query
-                ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::SSS->value);
-        })
-        ->hasSssContributions()
-        ->get()
-        ->append([
-            "total_sss_contribution",
-            "total_sss_compensation",
-            "total_sss_wisp",
-            "total_sss",
-        ])
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_name" => $employeeData->first()->employee->fullname_last,
-                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
-                "total_group_amount" => $employeeData->sum(function($detail) use ($validatedData) {
-                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-                }),
-                "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->sortBy("payroll_record.charging_name", SORT_NATURAL)
-        ->sortBy("employee_name", SORT_NATURAL)
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query
+                    ->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::SSS->value);
+            })
+            ->hasSssContributions()
+            ->get()
+            ->append([
+                "total_sss_contribution",
+                "total_sss_compensation",
+                "total_sss_wisp",
+                "total_sss",
+            ])
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_name" => $employeeData->first()->employee->fullname_last,
+                    "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
+                    "total_group_amount" => $employeeData->sum(function ($detail) use ($validatedData) {
+                        return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                    }),
+                    "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                    "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                    "payroll_record" => [
+                        ...$employeeData->first()->payroll_record->toArray(),
+                        "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->sortBy("payroll_record.charging_name", SORT_NATURAL)
+            ->sortBy("employee_name", SORT_NATURAL)
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -452,34 +456,34 @@ class ReportService
     public static function hdmfEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::HDMF_MPL->value);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->sum(function($detail) use ($validatedData) {
-                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-                }),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::HDMF_MPL->value);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix_name" => $employeeData->first()->employee->suffix_name,
+                    "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                    "total_payments" => $employeeData->sum(function ($detail) use ($validatedData) {
+                        return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                    }),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Pagibig Employee Remittance Request fetched.',
@@ -489,37 +493,37 @@ class ReportService
     public static function hdmfGroupSummaryLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments", "payroll_record"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::HDMF_MPL->value);
-        })
-        ->get()
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_name" => $employeeData->first()->employee->fullname_last,
-                "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "total_payments" => $employeeData->sum(function($detail) use ($validatedData) {
-                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-                }),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->sortBy("payroll_record.charging_name", SORT_NATURAL)
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::HDMF_MPL->value);
+            })
+            ->get()
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_name" => $employeeData->first()->employee->fullname_last,
+                    "employee_sss_id" => $employeeData->first()->employee->company_employments->sss_number,
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix_name" => $employeeData->first()->employee->suffix_name,
+                    "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                    "total_payments" => $employeeData->sum(function ($detail) use ($validatedData) {
+                        return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                    }),
+                    "payroll_record" => [
+                        ...$employeeData->first()->payroll_record->toArray(),
+                        "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->sortBy("payroll_record.charging_name", SORT_NATURAL)
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -529,32 +533,32 @@ class ReportService
     public static function coopEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::COOP->value);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::COOP->value);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix_name" => $employeeData->first()->employee->suffix_name,
+                    "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                    "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -564,32 +568,32 @@ class ReportService
     public static function coopGroupSummaryLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::COOP->value);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::COOP->value);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix_name" => $employeeData->first()->employee->suffix_name,
+                    "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                    "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -599,26 +603,26 @@ class ReportService
     public static function getDefaultLoanPayments($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) use ($validatedData) {
-            return $query->where('name', $validatedData['loan_type']);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_fullname" => $employeeData->first()->employee->fullname_first,
-                "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) use ($validatedData) {
+                return $query->where('name', $validatedData['loan_type']);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_fullname" => $employeeData->first()->employee->fullname_first,
+                    "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -628,33 +632,33 @@ class ReportService
     public static function getDefaultLoanPaymentsGroup($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) use ($validatedData) {
-            return $query->where('name', $validatedData['loan_type']);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_fullname" => $employeeData->first()->employee->fullname_first,
-                "total_group_amount" => $employeeData->sum(function($detail) use ($validatedData) {
-                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-                }),
-                "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-                "payroll_record" => [
-                    ...$employeeData->first()->payroll_record->toArray(),
-                    "charging_name" => $employeeData->first()->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) use ($validatedData) {
+                return $query->where('name', $validatedData['loan_type']);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_fullname" => $employeeData->first()->employee->fullname_first,
+                    "total_group_amount" => $employeeData->sum(function ($detail) use ($validatedData) {
+                        return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                    }),
+                    "total_amount" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                    "payroll_record" => [
+                        ...$employeeData->first()->payroll_record->toArray(),
+                        "charging_name" => $employeeData->first()->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -664,32 +668,32 @@ class ReportService
     public static function hdmfCalamityEmployeeLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::CALAMITY_LOAN->value);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::CALAMITY_LOAN->value);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix_name" => $employeeData->first()->employee->suffix_name,
+                    "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                    "total_payments" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -699,32 +703,32 @@ class ReportService
     public static function hdmfCalamityGroupSummaryLoans($validatedData = [])
     {
         $data = PayrollDetail::with(["employee.company_employments"])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) {
-            return $query->where('name', LoanReports::CALAMITY_LOAN->value);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix_name" => $employeeData->first()->employee->suffix_name,
-                "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
-            ];
-        })
-        ->values()
-        ->all();
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) {
+                return $query->where('name', LoanReports::CALAMITY_LOAN->value);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix_name" => $employeeData->first()->employee->suffix_name,
+                    "loan_type" => $employeeData->first()->loanPayments?->first()?->name,
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                    "total_payments" => $employeeData->first()->loanPayments()->sum("amount"),
+                ];
+            })
+            ->values()
+            ->all();
         return [
             'success' => true,
             'message' => 'Employee Remittance Request fetched.',
@@ -745,78 +749,78 @@ class ReportService
     public static function getLoanEmployeeReport($validatedData)
     {
         return PayrollDetail::with(["employee.company_employments"])
-        ->with([
-            'loanPayments' => function($query) use($validatedData) {
-                return $query->where("name", $validatedData["loan_type"]);
-            }
-        ])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) use ($validatedData) {
-            return $query->where('name', $validatedData['loan_type']);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            $totalLoanPayments = $employeeData->sum(function($detail) use($validatedData) {
-                return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-            });
-            return [
-                ...$employeeData->first()->toArray(),
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix" => $employeeData->first()->employee->suffix_name,
-                "fullname" => $employeeData->first()->employee->fullname_last,
-                "loan_type" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
-                "total_payments" => $totalLoanPayments,
-                "sss_no" => $employeeData->first()->employee->company_employments->sss_number,
-                "loan_account_no" => "",
-                "pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "application_no" => "",
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-            ];
-        })
-        ->values()
-        ->all();
+            ->with([
+                'loanPayments' => function ($query) use ($validatedData) {
+                    return $query->where("name", $validatedData["loan_type"]);
+                }
+            ])
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) use ($validatedData) {
+                return $query->where('name', $validatedData['loan_type']);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                $totalLoanPayments = $employeeData->sum(function ($detail) use ($validatedData) {
+                    return $detail->loanPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                });
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix" => $employeeData->first()->employee->suffix_name,
+                    "fullname" => $employeeData->first()->employee->fullname_last,
+                    "loan_type" => $employeeData->first()->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                    "total_payments" => $totalLoanPayments,
+                    "sss_no" => $employeeData->first()->employee->company_employments->sss_number,
+                    "loan_account_no" => "",
+                    "pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                    "application_no" => "",
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                ];
+            })
+            ->values()
+            ->all();
     }
     public static function getLoanGroupReport($validatedData)
     {
         $data = PayrollDetail::with(["payroll_record", "employee.company_employments"])
-        ->with([
-            'loanPayments' => function($query) use($validatedData) {
-                return $query->where("name", $validatedData["loan_type"]);
-            }
-        ])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('loanPayments', function ($query) use ($validatedData) {
-            return $query->where('name', $validatedData['loan_type']);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->toArray(),
-                "loan_type" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
-                "total_payments" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "sss_no" => $employeeData->employee->company_employments->sss_number,
-                "payroll_record" => [
-                    ...$employeeData->payroll_record->toArray(),
-                    "charging_name" => $employeeData->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->values()
-        ->all();
+            ->with([
+                'loanPayments' => function ($query) use ($validatedData) {
+                    return $query->where("name", $validatedData["loan_type"]);
+                }
+            ])
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('loanPayments', function ($query) use ($validatedData) {
+                return $query->where('name', $validatedData['loan_type']);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('payroll_record.charging_name', SORT_NATURAL)
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->toArray(),
+                    "loan_type" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                    "total_payments" => $employeeData->loanPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                    "sss_no" => $employeeData->employee->company_employments->sss_number,
+                    "payroll_record" => [
+                        ...$employeeData->payroll_record->toArray(),
+                        "charging_name" => $employeeData->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->values()
+            ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
         return $uniqueGroup;
     }
@@ -834,100 +838,103 @@ class ReportService
     public static function getOtherDeductionEmployeeReport($validatedData)
     {
         return PayrollDetail::with(["employee.company_employments"])
-        ->with([
-            'otherDeductionPayments' => function($query) use($validatedData) {
-                return $query->where("name", $validatedData["loan_type"]);
-            }
-        ])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('otherDeductionPayments', function ($query) use ($validatedData) {
-            return $query->where('name', $validatedData['loan_type']);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('employee.fullname_last', SORT_NATURAL)
-        ->groupBy("employee_id")
-        ->map(function ($employeeData) use ($validatedData) {
-            $totalLoanPayments = $employeeData->sum(function($detail) use($validatedData) {
-                return $detail->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum('amount');
-            });
-            return [
-                ...$employeeData->first()->toArray(),
-                "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
-                "first_name" => $employeeData->first()->employee->first_name,
-                "middle_name" => $employeeData->first()->employee->middle_name,
-                "last_name" => $employeeData->first()->employee->family_name,
-                "suffix" => $employeeData->first()->employee->name_suffix,
-                "fullname" => $employeeData->first()->employee->fullname_last,
-                "loan_type" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])->first()?->name,
-                "total_payments" => $totalLoanPayments,
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-            ];
-        })
-        ->values()
-        ->all();
+            ->with([
+                'otherDeductionPayments' => function ($query) use ($validatedData) {
+                    return $query->where("name", $validatedData["loan_type"]);
+                }
+            ])
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('otherDeductionPayments', function ($query) use ($validatedData) {
+                return $query->where('name', $validatedData['loan_type']);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('employee.fullname_last', SORT_NATURAL)
+            ->groupBy("employee_id")
+            ->map(function ($employeeData) use ($validatedData) {
+                $totalLoanPayments = $employeeData->sum(function ($detail) use ($validatedData) {
+                    return $detail->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum('amount');
+                });
+                return [
+                    ...$employeeData->first()->toArray(),
+                    "employee_pagibig_no" => $employeeData->first()->employee->company_employments->pagibig_number,
+                    "first_name" => $employeeData->first()->employee->first_name,
+                    "middle_name" => $employeeData->first()->employee->middle_name,
+                    "last_name" => $employeeData->first()->employee->family_name,
+                    "suffix" => $employeeData->first()->employee->name_suffix,
+                    "fullname" => $employeeData->first()->employee->fullname_last,
+                    "loan_type" => $employeeData->first()->otherDeductionPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                    "total_payments" => $totalLoanPayments,
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                ];
+            })
+            ->values()
+            ->all();
     }
     public static function getOtherDeductionGroupReport($validatedData)
     {
         $data = PayrollDetail::with(["payroll_record", "employee.company_employments"])
-        ->with([
-            'otherDeductionPayments' => function($query) use($validatedData) {
-                return $query->where("name", $validatedData["loan_type"]);
-            }
-        ])
-        ->whereHas('payroll_record', function ($query) use ($validatedData) {
-            return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
-                ->isApproved();
-        })
-        ->whereHas('otherDeductionPayments', function ($query) use ($validatedData) {
-            return $query->where('name', $validatedData['loan_type']);
-        })
-        ->orderBy("created_at", "DESC")
-        ->get()
-        ->sortBy('payroll_record.charging_name', SORT_NATURAL)
-        ->map(function ($employeeData) use ($validatedData) {
-            return [
-                ...$employeeData->toArray(),
-                "loan_type" => $employeeData->otherDeductionPayments()->where('name', $validatedData['loan_type'])->first()?->name,
-                "total_payments" => $employeeData->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
-                "percov" => $validatedData['filter_month'].$validatedData['filter_year'],
-                "payroll_record" => [
-                    ...$employeeData->payroll_record->toArray(),
-                    "charging_name" => $employeeData->payroll_record->charging_name,
-                ],
-            ];
-        })
-        ->values()
-        ->all();
+            ->with([
+                'otherDeductionPayments' => function ($query) use ($validatedData) {
+                    return $query->where("name", $validatedData["loan_type"]);
+                }
+            ])
+            ->whereHas('payroll_record', function ($query) use ($validatedData) {
+                return $query->whereBetween('payroll_date', [$validatedData['cutoff_start'], $validatedData['cutoff_end']])
+                    ->isApproved();
+            })
+            ->whereHas('otherDeductionPayments', function ($query) use ($validatedData) {
+                return $query->where('name', $validatedData['loan_type']);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get()
+            ->sortBy('payroll_record.charging_name', SORT_NATURAL)
+            ->map(function ($employeeData) use ($validatedData) {
+                return [
+                    ...$employeeData->toArray(),
+                    "loan_type" => $employeeData->otherDeductionPayments()->where('name', $validatedData['loan_type'])->first()?->name,
+                    "total_payments" => $employeeData->otherDeductionPayments()->where('name', $validatedData['loan_type'])->sum("amount"),
+                    "percov" => $validatedData['filter_month'] . $validatedData['filter_year'],
+                    "payroll_record" => [
+                        ...$employeeData->payroll_record->toArray(),
+                        "charging_name" => $employeeData->payroll_record->charging_name,
+                    ],
+                ];
+            })
+            ->values()
+            ->all();
         $uniqueGroup =  collect($data)->groupBy('payroll_record.charging_name');
         return $uniqueGroup;
     }
     public static function employeeTenureshipList($validate)
     {
         $data = Employee::isActive()->with("current_employment")->get();
-        if($validate["group_type"]!==GroupType::ALL->value){
+        if ($validate["group_type"] !== GroupType::ALL->value) {
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
-            $data = Employee::isActive()->with("current_employment")->whereHas("current_employment",
+            $data = Employee::isActive()->with("current_employment")->whereHas(
+                "current_employment",
                 function ($query) use ($workLocation, $type, $givenId) {
-                    $query->where('work_location', $workLocation)->whereHas($type,
+                    $query->where('work_location', $workLocation)->whereHas(
+                        $type,
                         function ($query) use ($type, $givenId) {
-                            if($givenId) {
-                                if($type === "department"){
+                            if ($givenId) {
+                                if ($type === "department") {
                                     $query->where("departments.id", $givenId);
                                 }
-                                if($type === "projects"){
+                                if ($type === "projects") {
                                     $query->where("projects.id", $givenId);
                                 }
                             }
                         }
                     );
-                })
-            ->get();
+                }
+            )
+                ->get();
         }
         return AdministrativeEmployeeTenureship::collection($data);
     }
@@ -938,17 +945,17 @@ class ReportService
             "current_employment",
             "present_address",
             "permanent_address",
-             "father",
-             "mother",
-             "spouse",
-             "child",
-             "contact_person",
-             "employee_education_elementary",
-             "employee_education_secondary",
-             "employee_education_college",
-             "company_employments",
+            "father",
+            "mother",
+            "spouse",
+            "child",
+            "contact_person",
+            "employee_education_elementary",
+            "employee_education_secondary",
+            "employee_education_college",
+            "company_employments",
         )->get();
-        if($validate["group_type"]!==GroupType::ALL->value){
+        if ($validate["group_type"] !== GroupType::ALL->value) {
             $workLocation = ($validate["group_type"] === 'Department') ? "Office" : "Project Code";
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
@@ -965,19 +972,19 @@ class ReportService
                 "employee_education_secondary",
                 "employee_education_college",
                 "company_employments"
-             )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
+            )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
                 $query->where('work_location', $workLocation)->whereHas($type, function ($query) use ($type, $givenId) {
-                    if($givenId) {
-                        if($type === "department"){
+                    if ($givenId) {
+                        if ($type === "department") {
                             $query->where("departments.id", $givenId);
                         }
-                        if($type === "projects"){
+                        if ($type === "projects") {
                             $query->where("projects.id", $givenId);
                         }
                     }
                 });
             })
-            ->get();
+                ->get();
         }
         return AdministrativeEmployeeMasterList::collection($data);
     }
@@ -998,7 +1005,8 @@ class ReportService
             'Date of Birth',
             'Place of Birth',
             'Citizenship',
-            'Blood Type', 'Gender',
+            'Blood Type',
+            'Gender',
             'Religion',
             'Civil Status',
             'Height',
@@ -1026,7 +1034,7 @@ class ReportService
             'Current Position',
             'Salary Grade'
         ];
-        $fileName = "storage/temp-report-generations/Masterlist-". Str::random(10);
+        $fileName = "storage/temp-report-generations/Masterlist-" . Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
         $reportData = ReportService::employeeMasterList($validate)->resolve();
@@ -1034,14 +1042,13 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
     public static function overtimeListExport($validate)
     {
         $masterListHeaders = [
-            'NO',
             'Employee Name',
             'Designation',
             'Section',
@@ -1052,7 +1059,7 @@ class ReportService
             'Date Approved',
             'Approvals',
         ];
-        $fileName = "storage/temp-report-generations/PortalMonitoringOvertimeList-". Str::random(10);
+        $fileName = "storage/temp-report-generations/PortalMonitoringOvertimeList-" . Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
         $reportData = ReportService::overtimeMonitoring($validate)->resolve();
@@ -1060,13 +1067,114 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName.'.xlsx', now()->addMinutes(5));
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+    public static function failureToLogListExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Date of Failure to Logs',
+            'Date Filled',
+            'Prepared By',
+            'Request Status',
+            'No. of days delayed filling',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringFailureToLogList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::failureToLogMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+
+    public static function salaryListExport($validate)
+    {
+        $masterListHeaders = [
+            'Project Name',
+            'Project Identifier',
+            'Basic Pay',
+            'Number Of Personnel (Basic Pay Charged)',
+            'Overtime Pay',
+            'Number Of Personnel (Overtime Pay Charged)',
+            'Sunday Pay',
+            'Number Of Personnel (Sunday Pay Charged)',
+            'Allowance',
+            'Number Of Personnel (Allowance Charged)',
+            'Special Holiday',
+            'Number Of Personnel (Special Holiday Pay Charged)',
+            'Regular Holiday',
+            'Number Of Personnel (Regular Holiday Pay Charged)',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringSalaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::salaryMonitoring($validate)->resolve();
+        foreach ($reportData as $index => $row) {
+            $excel->addRow($row);
+        }
+        $lastIndex = count($reportData);
+        $excel->addRow([]);
+        $lastIndex += 1;
+        $excel->addRow([
+            "Total Amount",
+            "",
+            "=SUM(C2:C{$lastIndex})",
+            "",
+            "=SUM(E2:E{$lastIndex})",
+            "",
+            "=SUM(G2:G{$lastIndex})",
+            "",
+            "=SUM(I2:I{$lastIndex})",
+            "",
+            "=SUM(K2:K{$lastIndex})",
+            "",
+            "=SUM(M2:M{$lastIndex})",
+            ""
+        ]);
+        $lastIndex = $lastIndex + 2;
+        $excel->addRow([
+            "Grand Total Amount",
+            ...array_fill(0, 13, ""),
+            "=SUM(C{$lastIndex}:N{$lastIndex})"
+        ]);
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+    public static function overtimeSummaryListExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Total Number of Overtime Filled',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringOvertimeSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::overtimeSummaryMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
     public static function employeeNewList($validate)
     {
-        $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
+        $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas(
+            'company_employments',
             function ($query) use ($validate) {
                 $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
             }
@@ -1076,18 +1184,19 @@ class ReportService
             $type = ($validate["group_type"] === 'Department') ? "department" : "projects";
             $givenId = ($validate["group_type"] === 'Department') ? $validate["department_id"] : $validate["project_id"];
 
-            $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas('company_employments',
+            $data = Employee::isActive()->with("current_employment", "company_employments")->whereHas(
+                'company_employments',
                 function ($query) use ($validate) {
                     $query->whereBetween('date_hired', [$validate["date_from"], $validate["date_to"]]);
                 }
             )->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
                 $query->where('work_location', $workLocation)
                     ->whereHas($type, function ($query) use ($type, $givenId) {
-                        if($givenId) {
-                            if($type === "department"){
+                        if ($givenId) {
+                            if ($type === "department") {
                                 $query->where("departments.id", $givenId);
                             }
-                            if($type === "projects"){
+                            if ($type === "projects") {
                                 $query->where("projects.id", $givenId);
                             }
                         }
@@ -1104,8 +1213,9 @@ class ReportService
             "company_employments",
             "current_employment",
             'employee_leave' => function ($query) use ($validate) {
-            $query->betweenDates($validate["date_from"], $validate["date_to"]);
-        }])->whereHas('employee_leave', function ($query) use ($validate) {
+                $query->betweenDates($validate["date_from"], $validate["date_to"]);
+            }
+        ])->whereHas('employee_leave', function ($query) use ($validate) {
             $query->betweenDates($validate["date_from"], $validate["date_to"]);
         })->get();
 
@@ -1123,11 +1233,11 @@ class ReportService
             ])->whereHas("current_employment", function ($query) use ($workLocation, $type, $givenId) {
                 $query->where('work_location', $workLocation)
                     ->whereHas($type, function ($query) use ($type, $givenId) {
-                        if($givenId) {
-                            if($type === "department"){
+                        if ($givenId) {
+                            if ($type === "department") {
                                 $query->where("departments.id", $givenId);
                             }
-                            if($type === "projects"){
+                            if ($type === "projects") {
                                 $query->where("projects.id", $givenId);
                             }
                         }
@@ -1185,16 +1295,88 @@ class ReportService
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
         $main = Overtime::with("employees")
-        ->betweenDates($dateFrom, $dateTo)
-        ->when($withDepartment, function ($query) use ($validate) {
-            return $query->where('department_id', $validate['department_id']);
-        })
-        ->when($withProject, function ($query) use ($validate) {
-            return $query->where('project_id', $validate['project_id']);
-        });
+            ->betweenDates($dateFrom, $dateTo)
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->where('department_id', $validate['department_id']);
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->where('project_id', $validate['project_id']);
+            })->get();
 
-        $main = $main->get();
-        return PortalMonitoringOvertime::collection($main);
+        $returnData = PortalMonitoringOvertime::collection($main);
+        return $returnData;
     }
 
+    public static function salaryMonitoring($validate)
+    {
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $payrollRecords = PayrollRecord::isApproved()->betweenDates($dateFrom, $dateTo)->get();
+        $allowanceRequest =  AllowanceRequest::isApproved()
+            ->with("employee_allowances")
+            ->betweenDates($dateFrom, $dateTo)
+            ->when($withDepartment, function ($query) {
+                return $query->where('charge_assignment_type', SalaryMonitoringReportService::DEPARTMENT);
+            })
+            ->when($withProject, function ($query) {
+                return $query->where('charge_assignment_type', SalaryMonitoringReportService::PROJECT);
+            })->get();
+        $payrollRecordsIds = $payrollRecords->pluck("id");
+        $payrollSummaryDatas = SalaryMonitoringReportService::getPayrollSummary($payrollRecordsIds, $allowanceRequest, $withDepartment, $withProject);
+
+        return PortalMonitoringSalary::collection($payrollSummaryDatas);
+    }
+
+    public static function overtimeSummaryMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $main = Employee::isActive()->with("employee_overtime")
+            ->whereHas('employee_overtime', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
+                $query->isApproved()
+                    ->betweenDates($dateFrom, $dateTo)
+                    ->when($withDepartment, function ($query) use ($validate) {
+                        return $query->where('department_id', $validate['department_id']);
+                    })
+                    ->when($withProject, function ($query) use ($validate) {
+                        return $query->where('project_id', $validate['project_id']);
+                    });
+            })->get();
+
+        $formatData = collect($main)->map(function ($item) use ($dateFrom, $dateTo) {
+            $uniqueOvertimeIds = collect($item['employee_overtime'])->filter(function ($overtime) use ($dateFrom, $dateTo) {
+                return $overtime['overtime_date'] >= $dateFrom && $overtime['overtime_date'] <= $dateTo;
+            })->pluck('id')->unique();
+            $item['total_filled_overtime'] = $uniqueOvertimeIds->count();
+            return $item;
+        });
+
+        $returnData = PortalMonitoringOvertimeSummary::collection($formatData);
+        return $returnData;
+    }
+
+    public static function failureToLogMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = FailureToLog::isApproved()
+            ->with("employee")
+            ->whereHas('employee', function ($query) use ($validate, $withDepartment, $withProject) {
+                $query->isActive();
+            })->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->where('charging_type', FailureToLog::DEPARTMENT)
+                    ->where('charging_id', $validate['department_id']);
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->where('charging_type', FailureToLog::PROJECT)
+                    ->where('charging_id', $validate['project_id']);
+            })->get();
+        $returnData = PortalMonitoringFailureToLog::collection($main);
+        return $returnData;
+    }
 }

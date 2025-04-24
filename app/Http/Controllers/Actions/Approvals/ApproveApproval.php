@@ -44,7 +44,7 @@ class ApproveApproval extends Controller
             return $this->approve($modelType, $model);
         });
     }
-    function approve($modelType, $model)
+    public function approve($modelType, $model)
     {
 
         $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED, "date_approved" => Carbon::now()]);
