@@ -29,7 +29,9 @@ class AuthController extends Controller
                 "message" => "Failed to log in. Employee Terminated",
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
-
+        if (config("app.single_device_login")) {
+            $check_user->tokens()->delete(); // Logout other sessions / cannot simultaneously login on multiple devices
+        }
         $token = $check_user->createToken('auth_token:' . $check_user->id)->plainTextToken;
         return response()->json([
             'mesage' => 'Sign in successful.',
