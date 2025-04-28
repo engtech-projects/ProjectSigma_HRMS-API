@@ -215,16 +215,18 @@ class ReportController extends Controller
         if ($validate) {
             return new JsonResponse(
                 [
-                "success" => true,
-                'message' => 'Employee Tenureship List fetched successfully.',
-                'data' => ReportService::employeeTenureshipList($validate)],
+                    "success" => true,
+                    'message' => 'Employee Tenureship List fetched successfully.',
+                    'data' => ReportService::employeeTenureshipList($validate)
+                ],
                 JsonResponse::HTTP_OK
             );
         }
         return new JsonResponse(
             [
-            "success" => false,
-            'message' => 'Failed to fetch Employee Tenureship List.'],
+                "success" => false,
+                'message' => 'Failed to fetch Employee Tenureship List.'
+            ],
             JsonResponse::HTTP_EXPECTATION_FAILED
         );
     }
@@ -283,8 +285,9 @@ class ReportController extends Controller
                 default:
                     return new JsonResponse(
                         [
-                        "success" => false,
-                        'message' => "File not found."],
+                            "success" => false,
+                            'message' => "File not found."
+                        ],
                         400
                     );
             }
@@ -309,10 +312,16 @@ class ReportController extends Controller
                 case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING->value:
                     $reportData = ReportService::failureToLogMonitoring($validated);
                     break;
+                case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::failureToLogMonitoringSummary($validated);
+                    break;
                 default:
-                    return new JsonResponse([
-                        "success" => false,
-                        'message' => "No data found."], 400
+                    return new JsonResponse(
+                        [
+                            "success" => false,
+                            'message' => "No data found."
+                        ],
+                        400
                     );
             }
         }
@@ -373,13 +382,25 @@ class ReportController extends Controller
                             "success" => true,
                             'url' => $downloadUrl,
                             'message' => "Successfully Download."
-                        ]);
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::failureToLogMonitoringSummaryListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
                     break;
                 default:
                     return new JsonResponse(
                         [
-                        "success" => false,
-                        'message' => "File not found."],
+                            "success" => false,
+                            'message' => "File not found."
+                        ],
                         400
                     );
             }

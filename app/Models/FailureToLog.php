@@ -15,19 +15,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class FailureToLog extends Model
 {
-
-    public const DEPARTMENT = "App\Models\Department";
-    public const PROJECT = "App\Models\Project";
-
     use HasFactory;
     use SoftDeletes;
     use HasEmployee;
     use HasApproval;
     use ModelHelpers;
+
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
 
     protected $fillable = [
         'date',

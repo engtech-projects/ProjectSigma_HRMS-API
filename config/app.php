@@ -27,8 +27,9 @@ return [
 
     '201_editor' => array_map('intval', explode(',', env('201_EDITOR') ?? '')),
 
-    'artisan' => env('ENABLE_ARTISAN_ROUTES', 'false'),
-    'logout_change_password' => env('LOGOUT_CHANGE_PASSWORD', false),
+    'artisan' => (bool) env('ENABLE_ARTISAN_ROUTES', false),
+    'logout_change_password' => (bool) env('LOGOUT_CHANGE_PASSWORD', false),
+    'single_device_login' => (bool) env('SINGLE_DEVICE_LOGIN', false),
     'pagination_per_page' => env('PAGINATION_PER_PAGE', 10),
     /*
     |--------------------------------------------------------------------------
