@@ -39,6 +39,9 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_PRICEQUOTATION_REQUESTS = "inventory:procurement_price quotation_requests";
     case INVENTORY_PROCUREMENT_PRICEQUOTATION_ALLQUOTATIONS = "inventory:procurement_price quotation_all quotations";
     case INVENTORY_PROCUREMENT_PRICEQUOTATION_MYQUOTATIONS = "inventory:procurement_price quotation_my quotations";
+    case INVENTORY_PROCUREMENT_CANVASSSUMMARY_REQUESTS = "inventory:procurement_canvass summary_requests";
+    case INVENTORY_PROCUREMENT_CANVASSSUMMARY_ALLREQUEST = "inventory:procurement_canvass summary_all requests";
+    case INVENTORY_PROCUREMENT_CANVASSSUMMARY_MYREQUESTS = "inventory:procurement_canvass summary_my approvals";
     public static function toArray(): array
     {
         $array = [];
