@@ -27,6 +27,8 @@ use App\Http\Resources\Reports\PortalMonitoringOvertimeSummary;
 use App\Http\Resources\Reports\PortalMonitoringSalary;
 use App\Http\Resources\Reports\PortalMonitoringFailureToLog;
 use App\Http\Resources\Reports\PortalMonitoringFailureToLogSummary;
+use App\Http\Resources\Reports\PortalMonitoringLeave;
+use App\Http\Resources\Reports\PortalMonitoringLeaveSummary;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -41,6 +43,7 @@ use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Resources\CompressedImageResource;
 use App\Http\Services\Payroll\SalaryMonitoringReportService;
+use App\Models\EmployeeLeaves;
 
 class ReportService
 {
@@ -1427,6 +1430,55 @@ class ReportService
                     ->where('charging_id', $validate['project_id']);
             })->get();
         $returnData = PortalMonitoringFailureToLog::collection($main);
+        return $returnData;
+    }
+
+    public static function leaveMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = EmployeeLeaves::isApproved()
+            ->with("employee")
+            ->whereHas('employee', function ($query) {
+                $query->isActive();
+            })->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->where('department_id', $validate['department_id']);
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->where('project_id', $validate['project_id']);
+            })->get();
+        $returnData = PortalMonitoringLeave::collection($main);
+        return $returnData;
+    }
+
+    public static function leaveMonitoringSummary($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $main = Employee::isActive()->with("employee_leave")
+            ->whereHas('employee_leave', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
+                $query->isApproved()
+                    ->betweenDates($dateFrom, $dateTo)
+                    ->when($withDepartment, function ($query) use ($validate) {
+                        return $query->where('department_id', $validate['department_id']);
+                    })
+                    ->when($withProject, function ($query) use ($validate) {
+                        return $query->where('project_id', $validate['project_id']);
+                    });
+            })->get();
+
+        $formatData = collect($main)->map(function ($item) use ($dateFrom, $dateTo) {
+            $uniqueOvertimeIds = collect($item['employee_failure_to_log'])->filter(function ($overtime) use ($dateFrom, $dateTo) {
+                return $overtime['date'] >= $dateFrom && $overtime['date'] <= $dateTo;
+            })->pluck('id')->unique();
+            $item['total_leave_filed'] = $uniqueOvertimeIds->count();
+            return $item;
+        });
+
+        $returnData = PortalMonitoringLeaveSummary::collection($formatData);
         return $returnData;
     }
 }

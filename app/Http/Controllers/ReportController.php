@@ -315,6 +315,12 @@ class ReportController extends Controller
                 case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING_SUMMARY->value:
                     $reportData = ReportService::failureToLogMonitoringSummary($validated);
                     break;
+                case PortalMonitoringReport::LEAVE_MONITORING->value:
+                    $reportData = ReportService::leaveMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::leaveMonitoringSummary($validated);
+                    break;
                 default:
                     return new JsonResponse(
                         [
