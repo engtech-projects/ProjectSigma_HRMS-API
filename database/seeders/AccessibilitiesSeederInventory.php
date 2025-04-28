@@ -325,6 +325,34 @@ class AccessibilitiesSeederInventory extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 2360,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_FORMSANDMYREQUESTS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2370,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_ALLREQUEST->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2380,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYREQUESTS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 2390,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
 
 
             ],

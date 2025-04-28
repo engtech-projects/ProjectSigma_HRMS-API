@@ -42,6 +42,10 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_CANVASSSUMMARY_REQUESTS = "inventory:procurement_canvass summary_requests";
     case INVENTORY_PROCUREMENT_CANVASSSUMMARY_ALLREQUEST = "inventory:procurement_canvass summary_all requests";
     case INVENTORY_PROCUREMENT_CANVASSSUMMARY_MYREQUESTS = "inventory:procurement_canvass summary_my approvals";
+    case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_FORMSANDMYREQUESTS = "inventory:procurement_notice of change purchase order_form and my requests";
+    case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_ALLREQUEST = "inventory:procurement_notice of change purchase order_all requests";
+    case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYREQUESTS = "inventory:procurement_notice of change purchase order_my requests";
+    case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS = "inventory:procurement_notice of change purchase order_my approvals";
     public static function toArray(): array
     {
         $array = [];
