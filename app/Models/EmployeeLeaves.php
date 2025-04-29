@@ -8,6 +8,7 @@ use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
 use App\Traits\ModelHelpers;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -141,5 +142,17 @@ class EmployeeLeaves extends Model
             $query->where('date_of_absence_from', '<=', $dateFrom)
                   ->where('date_of_absence_to', '>=', $dateTo);
         });
+    }
+
+    public function getDateHumanAttribute()
+    {
+        return Carbon::parse($this->date_of_absence_from)->format("F j, Y");
+    }
+
+    public function getDaysDelayedFilingAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $date = Carbon::parse($this->date_of_absence_from);
+        return $createdAt->diffInDays($date) > 0 ? $createdAt->diffInDays($date) : 0;
     }
 }
