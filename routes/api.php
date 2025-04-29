@@ -419,7 +419,7 @@ Route::prefix('project-monitoring')->group(function () {
 });
 Route::get('current-announcements', [AnnouncementsController::class, 'currentAnnouncements']);
 // SYSTEM SETUP ROUTES
-if (config()->get('app.artisan') == 'true') {
+if (config('app.artisan')) {
     Route::prefix('artisan')->group(function () {
         Route::get('storage', function () {
             Artisan::call("storage:link");

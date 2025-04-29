@@ -312,6 +312,9 @@ class ReportController extends Controller
                 case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING->value:
                     $reportData = ReportService::failureToLogMonitoring($validated);
                     break;
+                case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::failureToLogMonitoringSummary($validated);
+                    break;
                 default:
                     return new JsonResponse(
                         [
@@ -374,6 +377,16 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING->value:
                     $downloadUrl = ReportService::failureToLogListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::failureToLogMonitoringSummaryListExport($validated);
                     return response()->json(
                         [
                             "success" => true,
