@@ -33,9 +33,9 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENTSUPPLIERS_FORM = "inventory:procurement_suppliers_form and my requests";
     case INVENTORY_PROCUREMENTSPPLIERS_MYAPPROVALS = "inventory:procurement_suppliers_my approvals";
     case INVENTORY_PROCUREMENTSUPPLIERS_EDIT = "inventory:procurement_suppliers_edit";
-    case INVENTORY_REQUESTSTOCKS_FORM = "inventory:request stock_form and my requests";
-    case INVENTORY_REQUESTSTOCKS_ALLREQUESTS = "inventory:request stock_all requests";
-    case INVENTORY_REQUESTSTOCKS_MYAPPROVALS = "inventory:request stock_my approvals";
+    case INVENTORY_REQUESTSTOCK_FORM = "inventory:request stock_form and my requests";
+    case INVENTORY_REQUESTSTOCK_ALLREQUESTS = "inventory:request stock_all requests";
+    case INVENTORY_REQUESTSTOCK_MYAPPROVALS = "inventory:request stock_my approvals";
     case INVENTORY_PROCUREMENT_PRICEQUOTATION_REQUESTS = "inventory:procurement_price quotation_requests";
     case INVENTORY_PROCUREMENT_PRICEQUOTATION_ALLQUOTATIONS = "inventory:procurement_price quotation_all quotations";
     case INVENTORY_PROCUREMENT_PRICEQUOTATION_MYQUOTATIONS = "inventory:procurement_price quotation_my quotations";
