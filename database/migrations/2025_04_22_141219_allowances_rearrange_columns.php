@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('allowances', function ($table) {
-            $table->timestamp('created_at')->after('amount')->change();
-            $table->timestamp('updated_at')->after('created_at')->change();
+            $table->timestamp('created_at')->nullable()->after('amount')->change();
+            $table->timestamp('updated_at')->nullable()->after('created_at')->change();
             $table->timestamp('deleted_at')->nullable()->after('updated_at')->change();
         });
         Schema::useNativeSchemaOperationsIfPossible(false);
