@@ -315,6 +315,12 @@ class ReportController extends Controller
                 case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING_SUMMARY->value:
                     $reportData = ReportService::failureToLogMonitoringSummary($validated);
                     break;
+                case PortalMonitoringReport::LEAVE_MONITORING->value:
+                    $reportData = ReportService::leaveMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::leaveMonitoringSummary($validated);
+                    break;
                 default:
                     return new JsonResponse(
                         [
@@ -387,6 +393,26 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::FAILURE_TO_LOG_MONITORING_SUMMARY->value:
                     $downloadUrl = ReportService::failureToLogMonitoringSummaryListExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::LEAVE_MONITORING->value:
+                    $downloadUrl = ReportService::leaveMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::leaveMonitoringSummaryExport($validated);
                     return response()->json(
                         [
                             "success" => true,
