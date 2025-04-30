@@ -341,15 +341,15 @@ class AccessibilitiesSeederInventory extends Seeder
                 ],
                 [
                     'id' => 2380,
-                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYREQUESTS->value,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 2390,
-                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS->value,
-                    'deleted_at' => null,
+                    'accessibilities_name' => "",
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
