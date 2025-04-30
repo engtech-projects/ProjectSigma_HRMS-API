@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('employee_eligibilities', function ($table) {
-            $table->timestamp('created_at')->after('cert_exp_date')->change();
-            $table->timestamp('updated_at')->after('created_at')->change();
+            $table->timestamp('created_at')->nullable()->after('cert_exp_date')->change();
+            $table->timestamp('updated_at')->nullable()->after('created_at')->change();
             $table->timestamp('deleted_at')->nullable()->after('updated_at')->change();
         });
         Schema::useNativeSchemaOperationsIfPossible(false);

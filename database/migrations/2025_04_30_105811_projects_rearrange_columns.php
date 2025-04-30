@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('projects', function ($table) {
-            $table->timestamp('created_at')->nullable()->after('project_codes')->change();
+            $table->timestamp('created_at')->nullable()->after('project_code')->change();
             $table->timestamp('updated_at')->nullable()->after('created_at')->change();
             $table->timestamp('deleted_at')->nullable()->after('updated_at')->change();
         });

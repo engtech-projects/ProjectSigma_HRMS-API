@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('accessibilities', function ($table) {
-            $table->timestamp('created_at')->after('accessibilities_name')->change();
-            $table->timestamp('updated_at')->after('created_at')->change();
+            $table->timestamp('created_at')->nullable()->after('accessibilities_name')->change();
+            $table->timestamp('updated_at')->nullable()->after('created_at')->change();
             $table->timestamp('deleted_at')->nullable()->after('updated_at')->change();
         });
         Schema::useNativeSchemaOperationsIfPossible(false);
