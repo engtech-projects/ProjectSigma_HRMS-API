@@ -244,7 +244,7 @@ class AttendanceLogController extends Controller
                 "message" => "You don't have permission to perform this action.",
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
-        if($log->deleted_at){
+        if ($log->deleted_at) {
             return new JsonResponse([
                 "success" => false,
                 "message" => "Already deleted.",
