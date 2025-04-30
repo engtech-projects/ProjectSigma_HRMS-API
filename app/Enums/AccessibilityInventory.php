@@ -36,9 +36,6 @@ enum AccessibilityInventory: string
     case INVENTORY_REQUESTSTOCK_FORM = "inventory:request stock_form and my requests";
     case INVENTORY_REQUESTSTOCK_ALLREQUESTS = "inventory:request stock_all requests";
     case INVENTORY_REQUESTSTOCK_MYAPPROVALS = "inventory:request stock_my approvals";
-    case INVENTORY_REQUESTSTOCKS_FORM = "inventory:request stock_form and my requests";
-    case INVENTORY_REQUESTSTOCKS_ALLREQUESTS = "inventory:request stock_all requests";
-    case INVENTORY_REQUESTSTOCKS_MYAPPROVALS = "inventory:request stock_my approvals";
     case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_REQUESTS = "inventory:procurement_request price quotation_requests";
     case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_ALLQUOTATIONS = "inventory:procurement_request price quotation_all quotations";
     case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_MYQUOTATIONS = "inventory:procurement_request price quotation_my quotations";
