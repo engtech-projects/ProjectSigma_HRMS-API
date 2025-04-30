@@ -1228,6 +1228,51 @@ class ReportService
         }
         return AdministrativeEmployeeNewList::collection($data);
     }
+
+    public static function leaveMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Date of Leave',
+            'Date Filled',
+            'Prepared By',
+            'Request Status',
+            'No. of days delayed filling',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringLeaveList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::leaveMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+    public static function leaveMonitoringSummaryExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Total Number of Leave Filed',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringLeaveSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::leaveMonitoringSummary($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeLeaves($validate)
     {
         $data = Employee::isActive()->with([
@@ -1475,8 +1520,8 @@ class ReportService
                 return $overtime['date'] >= $dateFrom && $overtime['date'] <= $dateTo;
             })->pluck('id')->unique();
             $item['total_leave_filed'] = $uniqueOvertimeIds->count();
-            return $item;
-        });
+            return $item['total_leave_filed'] > 0 ? $item : null;
+        })->filter()->values();
 
         $returnData = PortalMonitoringLeaveSummary::collection($formatData);
         return $returnData;

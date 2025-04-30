@@ -33,9 +33,9 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENTSUPPLIERS_FORM = "inventory:procurement_suppliers_form and my requests";
     case INVENTORY_PROCUREMENTSPPLIERS_MYAPPROVALS = "inventory:procurement_suppliers_my approvals";
     case INVENTORY_PROCUREMENTSUPPLIERS_EDIT = "inventory:procurement_suppliers_edit";
-    case INVENTORY_REQUESTSTOCKS_FORM = "inventory:request stock_form and my requests";
-    case INVENTORY_REQUESTSTOCKS_ALLREQUESTS = "inventory:request stock_all requests";
-    case INVENTORY_REQUESTSTOCKS_MYAPPROVALS = "inventory:request stock_my approvals";
+    case INVENTORY_REQUESTSTOCK_FORM = "inventory:request stock_form and my requests";
+    case INVENTORY_REQUESTSTOCK_ALLREQUESTS = "inventory:request stock_all requests";
+    case INVENTORY_REQUESTSTOCK_MYAPPROVALS = "inventory:request stock_my approvals";
     case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_REQUESTS = "inventory:procurement_request price quotation_requests";
     case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_ALLQUOTATIONS = "inventory:procurement_request price quotation_all quotations";
     case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_MYQUOTATIONS = "inventory:procurement_request price quotation_my quotations";
@@ -47,7 +47,6 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_CANVASSSUMMARY_MYREQUESTS = "inventory:procurement_canvass summary_my approvals";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_FORMSANDMYREQUESTS = "inventory:procurement_notice of change purchase order_form and my requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_ALLREQUEST = "inventory:procurement_notice of change purchase order_all requests";
-    case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYREQUESTS = "inventory:procurement_notice of change purchase order_my requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS = "inventory:procurement_notice of change purchase order_my approvals";
 
     public static function toArray(): array

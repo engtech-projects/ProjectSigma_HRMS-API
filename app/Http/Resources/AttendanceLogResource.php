@@ -24,6 +24,7 @@ class AttendanceLogResource extends JsonResource
             "assignment" => $this->charging_designation,
             "employee" => new EmployeeSummaryResource($this->employee),
             "portal_name" => optional($this->portal)->name_location,
+            "deleted_at" => $this->deleted_at,
         ];
     }
 }

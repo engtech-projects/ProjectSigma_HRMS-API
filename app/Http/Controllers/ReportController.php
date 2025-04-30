@@ -401,6 +401,26 @@ class ReportController extends Controller
                         ]
                     );
                     break;
+                case PortalMonitoringReport::LEAVE_MONITORING->value:
+                    $downloadUrl = ReportService::leaveMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::leaveMonitoringSummaryExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
                 default:
                     return new JsonResponse(
                         [

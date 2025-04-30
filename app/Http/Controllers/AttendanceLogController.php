@@ -16,6 +16,7 @@ use App\Http\Resources\AttendanceLogResource;
 use App\Http\Requests\StoreAttendanceLogRequest;
 use App\Http\Requests\StoreFacialAttendanceLog;
 use App\Http\Requests\UpdateAttendanceLogRequest;
+use App\Http\Traits\CheckAccessibility;
 use App\Models\AttendancePortal;
 use App\Models\Employee;
 use App\Models\EmployeePattern;
@@ -23,6 +24,7 @@ use Carbon\Carbon;
 
 class AttendanceLogController extends Controller
 {
+    use CheckAccessibility;
     protected $attendanceLogService;
     public const DEPARTMENT = "App\Models\Department";
     public const PROJECT = "App\Models\Project";
@@ -236,8 +238,19 @@ class AttendanceLogController extends Controller
      */
     public function destroy(AttendanceLog $log)
     {
+        if (!$this->checkUserAccess([])) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "You don't have permission to perform this action.",
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+        if ($log->deleted_at) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "Already deleted.",
+            ], JsonResponse::HTTP_NOT_ACCEPTABLE);
+        }
         $this->attendanceLogService->delete($log);
-
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully deleted.",
