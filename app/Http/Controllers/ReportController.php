@@ -321,6 +321,12 @@ class ReportController extends Controller
                 case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
                     $reportData = ReportService::leaveMonitoringSummary($validated);
                     break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING->value:
+                    $reportData = ReportService::travelOrderMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::travelOrderMonitoringSummary($validated);
+                    break;
                 default:
                     return new JsonResponse(
                         [
@@ -413,6 +419,26 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
                     $downloadUrl = ReportService::leaveMonitoringSummaryExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING->value:
+                    $downloadUrl = ReportService::travelOrderMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::travelOrderMonitoringSummaryExport($validated);
                     return response()->json(
                         [
                             "success" => true,
