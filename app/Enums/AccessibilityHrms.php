@@ -64,6 +64,8 @@ enum AccessibilityHrms: string
     case HRMS_REPORTS_PORTALMONITORING_FAILURETOLOGMONITORINGSUMMARY = "hrms:reports_portal monitoring_failure to log monitoring summary";
     case HRMS_REPORTS_PORTALMONITORING_LEAVEMONITORING = "hrms:reports_portal monitoring_leave monitoring";
     case HRMS_REPORTS_PORTALMONITORING_LEAVEMONITORINGSUMMARY = "hrms:reports_portal monitoring_leave monitoring summary";
+    case HRMS_REPORTS_PORTALMONITORING_TRAVELORDERMONITORING = "hrms:reports_portal monitoring_travel order monitoring";
+    case HRMS_REPORTS_PORTALMONITORING_TRAVELORDERMONITORINGSUMMARY = "hrms:reports_portal monitoring_travel order monitoring summary";
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";

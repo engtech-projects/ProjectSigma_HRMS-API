@@ -29,6 +29,9 @@ use App\Http\Resources\Reports\PortalMonitoringFailureToLog;
 use App\Http\Resources\Reports\PortalMonitoringFailureToLogSummary;
 use App\Http\Resources\Reports\PortalMonitoringLeave;
 use App\Http\Resources\Reports\PortalMonitoringLeaveSummary;
+use App\Http\Resources\Reports\PortalMonitoringTravelOrder;
+use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
+use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
 use App\Models\PayrollDetail;
@@ -1273,6 +1276,50 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function travelOrderMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Date of Travel Order',
+            'Date Filled',
+            'Prepared By',
+            'Request Status',
+            'No. of days delayed filling',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringTravelOrderList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::travelOrderMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+    public static function travelOrderMonitoringSummaryExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Total Number of Travel Order Filed',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringTravelOrderSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::travelOrderMonitoringSummary($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeLeaves($validate)
     {
         $data = Employee::isActive()->with([
@@ -1515,15 +1562,65 @@ class ReportService
                     });
             })->get();
 
-        $formatData = collect($main)->map(function ($item) use ($dateFrom, $dateTo) {
-            $uniqueOvertimeIds = collect($item['employee_failure_to_log'])->filter(function ($overtime) use ($dateFrom, $dateTo) {
-                return $overtime['date'] >= $dateFrom && $overtime['date'] <= $dateTo;
-            })->pluck('id')->unique();
+        $formatData = collect($main)->map(function ($item) {
+            $uniqueOvertimeIds = collect($item['employee_leave'])->pluck('id')->unique();
             $item['total_leave_filed'] = $uniqueOvertimeIds->count();
             return $item['total_leave_filed'] > 0 ? $item : null;
         })->filter()->values();
 
         $returnData = PortalMonitoringLeaveSummary::collection($formatData);
+        return $returnData;
+    }
+
+    public static function travelOrderMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = TravelOrder::isApproved()
+            ->with("employees")
+            ->whereHas('employees', function ($query) {
+                $query->isActive();
+            })->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->where('charge_type', TravelOrder::DEPARTMENT)
+                    ->where('charge_id', $validate['department_id']);
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->where('charge_type', TravelOrder::PROJECT)
+                    ->where('charge_id', $validate['project_id']);
+            })->get();
+
+        $returnData = PortalMonitoringTravelOrder::collection($main);
+        return $returnData;
+    }
+
+    public static function travelOrderMonitoringSummary($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
+        $main = Employee::isActive()->with("employee_travel_order")
+            ->whereHas('employee_travel_order', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
+                $query->isApproved()
+                    ->betweenDates($dateFrom, $dateTo)
+                    ->when($withDepartment, function ($query) use ($validate) {
+                        return $query->where('charge_type', TravelOrder::DEPARTMENT)
+                        ->where('charge_id', $validate['department_id']);
+                    })
+                    ->when($withProject, function ($query) use ($validate) {
+                        return $query->where('charge_type', TravelOrder::PROJECT)
+                        ->where('charge_id', $validate['project_id']);
+                    });
+            })->get();
+
+        $formatData = collect($main)->map(function ($item) {
+            $uniqueTravelOrderIds = collect($item['employee_travel_order'])->pluck('id')->unique();
+            $item['total_travel_order_filed'] = $uniqueTravelOrderIds->count();
+            return $item['total_travel_order_filed'] > 0 ? $item : null;
+        })->filter()->values();
+
+        $returnData = PortalMonitoringTravelOrderSummary::collection($formatData);
         return $returnData;
     }
 }
