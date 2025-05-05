@@ -13,7 +13,8 @@ return new class () extends Migration {
         Schema::table('overtime', function ($table) {
             $table->text('approvals')->nullable()->after('created_by')->change();
             $table->text('request_status')->nullable()->after('approvals')->change();
-            $table->timestamp('created_at')->nullable()->after('request_status')->change();
+            $table->unsignedBigInteger('created_by')->nullable()->after('request_status')->change();
+            $table->timestamp('created_at')->nullable()->after('created_by')->change();
             $table->timestamp('updated_at')->nullable()->after('created_at')->change();
             $table->timestamp('deleted_at')->nullable()->after('updated_at')->change();
         });
