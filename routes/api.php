@@ -376,6 +376,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::prefix("enums")->group(function () {
         Route::get('employee-heads', [HrmsEnumController::class, 'employeeHeads']);
+        Route::get('approval-users', [HrmsEnumController::class, 'approvalUsers']);
+        Route::get('approval-heads', [HrmsEnumController::class, 'approvalHeads']);
     });
     Route::prefix('sync')->group(function () {
         Route::post('/all', [ApiSyncController::class, 'syncAll']);
