@@ -196,6 +196,11 @@ class EmployeePanRequest extends Model
     {
         $query->where("created_by", $id);
     }
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void
+    {
+        $query->whereBetween('date_of_effictivity', [$dateFrom, $dateTo]);
+    }
+
     /**
      * ==================================================
      * DYNAMIC SCOPES
@@ -535,5 +540,23 @@ class EmployeePanRequest extends Model
     public function rehire()
     {
         // JUST A PLACEHOLDER WILL PROBABLY BE USED SOON
+    }
+
+    public function getDaysDelayedFilingAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $dateRequested = Carbon::parse($this->date_of_effictivity);
+        return $createdAt->diffInDays($dateRequested) > 0 ? $createdAt->diffInDays($dateRequested) : 0;
+    }
+
+    public function getDateRequestedHumanAttribute()
+    {
+        $data = $this->date_of_effictivity;
+        if ($data) {
+            $data = Carbon::parse($this->date_of_effictivity)->format('F j, Y');
+        } else {
+            $data = "Date Requested N/A";
+        }
+        return $data;
     }
 }
