@@ -6,6 +6,7 @@ use App\Enums\FillStatuses;
 use App\Enums\RequestStatuses;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -53,7 +54,6 @@ class ManpowerRequest extends Model
     protected $casts = [
         'approvals' => 'array'
     ];
-
     /**
      * MODEL
      * STATIC METHODS
@@ -122,6 +122,11 @@ class ManpowerRequest extends Model
         $query->where('request_status', RequestStatuses::APPROVED);
     }
 
+    public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void
+    {
+        $query->whereBetween('date_requested', [$dateFrom, $dateTo]);
+    }
+
     public function completeRequestStatus()
     {
         $this->request_status = RequestStatuses::APPROVED;
@@ -159,5 +164,34 @@ class ManpowerRequest extends Model
             return true;
         }
         return false;
+    }
+
+    public function getDaysDelayedFilingAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $dateRequested = Carbon::parse($this->date_requested);
+        return $createdAt->diffInDays($dateRequested) > 0 ? $createdAt->diffInDays($dateRequested) : 0;
+    }
+
+    public function getDateRequestedHumanAttribute()
+    {
+        $data = $this->date_requested;
+        if ($data) {
+            $data = Carbon::parse($this->date_requested)->format('F j, Y');
+        } else {
+            $data = "Date Requested N/A";
+        }
+        return $data;
+    }
+
+    public function getDateRequiredHumanAttribute()
+    {
+        $data = $this->date_required;
+        if ($data) {
+            $data = Carbon::parse($this->date_required)->format('F j, Y');
+        } else {
+            $data = "Date Required N/A";
+        }
+        return $data;
     }
 }
