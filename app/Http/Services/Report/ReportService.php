@@ -4,6 +4,7 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
+use App\Enums\PanRequestType;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -32,6 +33,7 @@ use App\Http\Resources\Reports\PortalMonitoringLeaveSummary;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrder;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
 use App\Http\Resources\Reports\PortalMonitoringManpowerRequest;
+use App\Http\Resources\Reports\PortalMonitoringPanTermination;
 use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -49,6 +51,7 @@ use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Resources\CompressedImageResource;
 use App\Http\Services\Payroll\SalaryMonitoringReportService;
 use App\Models\EmployeeLeaves;
+use App\Models\EmployeePanRequest;
 
 class ReportService
 {
@@ -1674,6 +1677,62 @@ class ReportService
 
         $returnData = PortalMonitoringManpowerRequest::collection($main);
         return $returnData;
+    }
+
+    public static function panTerminationMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = EmployeePanRequest::isApproved()
+            ->with("employee", "projects", "department", "position")
+            ->where("type", PanRequestType::TERMINATION)
+            ->whereHas('employee', function ($query) {
+                $query->isActive();
+            })
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->whereHas('department', function ($withQuery) use ($validate) {
+                    $withQuery->where('id', $validate['department_id']);
+                });
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->whereHas('projects', function ($withQuery) use ($validate) {
+                    $withQuery->where('id', $validate['project_id']);
+                });
+            })
+            ->get();
+
+        $returnData = PortalMonitoringPanTermination::collection($main);
+        return $returnData;
+    }
+
+    public static function panTerminationMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Last Day Worked',
+            'Termination Type',
+            'Termination Reason',
+            'Eligible for re-hire',
+            'Effectivity Date',
+            'Requested by',
+            'Request Status',
+            'No. of Days Delayed Filing',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringPanTerminationList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::panTerminationMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
     }
 
 }
