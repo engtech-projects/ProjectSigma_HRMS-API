@@ -14,6 +14,7 @@ use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\EmployeeDetailedEnumResource;
 use App\Http\Resources\EmployeeInfos\CompleteDetailsResource;
+use App\Http\Resources\EmployeeInfos\SearchEmployeeResource;
 use App\Models\AttendanceLog;
 use App\Models\EmployeeLeaves;
 use App\Models\Leave;
@@ -65,12 +66,11 @@ class EmployeeController extends Controller
             ->with("account")
             ->limit(25)
             ->orderBy('family_name')
-            ->get()
-            ->append(["fullname_last", "fullname_first"]);
+            ->get();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
-        $data->data = $main;
+        $data->data = SearchEmployeeResource::collection($main);
         return response()->json($data);
     }
 
