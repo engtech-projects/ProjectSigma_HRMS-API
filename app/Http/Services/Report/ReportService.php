@@ -1721,13 +1721,19 @@ class ReportService
             })
             ->betweenDates($validate["date_from"], $validate["date_to"])
             ->when($withDepartment, function ($query) use ($validate) {
-                return $query->whereHas('department', function ($withQuery) use ($validate) {
+                return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
+                    if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
+                        return $withQuery;
+                    }
                     $withQuery->where('id', $validate['department_id']);
                 });
             })
             ->when($withProject, function ($query) use ($validate) {
-                return $query->whereHas('projects', function ($withQuery) use ($validate) {
-                    $withQuery->where('id', $validate['project_id']);
+                return $query->has('projects')->whereHas('projects', function ($withQuery) use ($validate) {
+                    if (!isset($validate['project_id']) || is_null($validate['project_id'])) {
+                        return $withQuery;
+                    }
+                    $withQuery->where('projects.id', $validate['project_id']);
                 });
             })
             ->get();
@@ -1748,13 +1754,19 @@ class ReportService
             })
             ->betweenDates($validate["date_from"], $validate["date_to"])
             ->when($withDepartment, function ($query) use ($validate) {
-                return $query->whereHas('department', function ($withQuery) use ($validate) {
+                return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
+                    if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
+                        return $withQuery;
+                    }
                     $withQuery->where('id', $validate['department_id']);
                 });
             })
             ->when($withProject, function ($query) use ($validate) {
-                return $query->whereHas('projects', function ($withQuery) use ($validate) {
-                    $withQuery->where('id', $validate['project_id']);
+                return $query->has('projects')->whereHas('projects', function ($withQuery) use ($validate) {
+                    if (!isset($validate['project_id']) || is_null($validate['project_id'])) {
+                        return $withQuery;
+                    }
+                    $withQuery->where('projects.id', $validate['project_id']);
                 });
             })
             ->get();
