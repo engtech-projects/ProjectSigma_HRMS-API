@@ -4,6 +4,7 @@ namespace App\Http\Services\Report;
 
 use App\Enums\Reports\LoanReports;
 use App\Enums\GroupType;
+use App\Enums\PanRequestType;
 use App\Http\Resources\DefaultReportPaymentResource;
 use App\Http\Resources\HdmfEmployeeLoansResource;
 use App\Http\Resources\HdmfGroupSummaryLoansResource;
@@ -32,6 +33,7 @@ use App\Http\Resources\Reports\PortalMonitoringLeaveSummary;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrder;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
 use App\Http\Resources\Reports\PortalMonitoringManpowerRequest;
+use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
 use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -49,6 +51,7 @@ use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Resources\CompressedImageResource;
 use App\Http\Services\Payroll\SalaryMonitoringReportService;
 use App\Models\EmployeeLeaves;
+use App\Models\EmployeePanRequest;
 
 class ReportService
 {
@@ -1354,6 +1357,35 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function panTransferMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Current Work Location',
+            'Current Salary Type',
+            'Old Position',
+            'New Work Location',
+            'New Salary Type',
+            'New Position',
+            'Effectivity Date',
+            'Requested by',
+            'Request Status',
+            'No. of Days Delayed Filing',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringPanTransferList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::panTransferMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeLeaves($validate)
     {
         $data = Employee::isActive()->with([
@@ -1673,6 +1705,33 @@ class ReportService
             })->get();
 
         $returnData = PortalMonitoringManpowerRequest::collection($main);
+        return $returnData;
+    }
+
+    public static function panTransferMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = EmployeePanRequest::isApproved()
+            ->with("employee", "projects", "department", "position")
+            ->where("type", PanRequestType::TRANSFER)
+            ->whereHas('employee', function ($query) {
+                $query->isActive();
+            })
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->whereHas('department', function ($withQuery) use ($validate) {
+                    $withQuery->where('id', $validate['department_id']);
+                });
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->whereHas('projects', function ($withQuery) use ($validate) {
+                    $withQuery->where('id', $validate['project_id']);
+                });
+            })
+            ->get();
+
+        $returnData = PortalMonitoringPanTransfer::collection($main);
         return $returnData;
     }
 
