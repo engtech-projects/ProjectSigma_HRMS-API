@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'Project Simga - HRMS API Documentation',
+                'title' => 'Project Sigma - HRMS API Documentation',
             ],
 
             'routes' => [
