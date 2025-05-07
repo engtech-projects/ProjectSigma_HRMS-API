@@ -1299,7 +1299,7 @@ class ReportService
         $fileName = "storage/temp-report-generations/PortalMonitoringTravelOrderList-" . Str::random(10);
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
-        $reportData = ReportService::travelOrderMonitoring($validate)->resolve();
+        $reportData = ReportService::travelOrderMonitoring($validate);
         foreach ($reportData as $row) {
             $excel->addRow($row);
         }
@@ -1656,9 +1656,9 @@ class ReportService
                 return $query->where('charge_type', TravelOrder::PROJECT)
                     ->where('charge_id', $validate['project_id']);
             })->get();
-
         $returnData = PortalMonitoringTravelOrder::collection($main);
-        return $returnData;
+        $flattenedData = collect($returnData)->flatMap(fn ($group) => collect($group))->values();
+        return $flattenedData;
     }
 
     public static function travelOrderMonitoringSummary($validate)
