@@ -549,13 +549,13 @@ class EmployeePanRequest extends Model
         return $createdAt->diffInDays($dateRequested) > 0 ? $createdAt->diffInDays($dateRequested) : 0;
     }
 
-    public function getDateRequestedHumanAttribute()
+    public function getDateEffictivityHumanAttribute()
     {
         $data = $this->date_of_effictivity;
         if ($data) {
             $data = Carbon::parse($this->date_of_effictivity)->format('F j, Y');
         } else {
-            $data = "Date Requested N/A";
+            $data = "Date of Effectivity N/A";
         }
         return $data;
     }

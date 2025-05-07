@@ -24,7 +24,7 @@ class PortalMonitoringPanTransfer extends JsonResource
             "new_work_location" => $this->work_location,
             "new_salary_type" => $this->salary_type,
             "new_position" => $this['position']?->name,
-            "effectivity_date" => $this->date_requested_human,
+            "effectivity_date" => $this->date_effictivity_human,
             "date_requested" => $this->request_created_at,
             "requested_by" => $this->created_by_user_name,
             "requested_status" => $this["request_status"],
