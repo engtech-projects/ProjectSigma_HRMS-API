@@ -34,6 +34,7 @@ use App\Http\Resources\Reports\PortalMonitoringTravelOrder;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
 use App\Http\Resources\Reports\PortalMonitoringManpowerRequest;
 use App\Http\Resources\Reports\PortalMonitoringPanTermination;
+use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
 use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -1357,6 +1358,35 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function panTransferMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Current Work Location',
+            'Current Salary Type',
+            'Old Position',
+            'New Work Location',
+            'New Salary Type',
+            'New Position',
+            'Effectivity Date',
+            'Requested by',
+            'Request Status',
+            'No. of Days Delayed Filing',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringPanTransferList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::panTransferMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeLeaves($validate)
     {
         $data = Employee::isActive()->with([
@@ -1680,12 +1710,14 @@ class ReportService
     }
 
     public static function panTerminationMonitoring($validate)
+    public static function panTransferMonitoring($validate)
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TERMINATION)
+            ->where("type", PanRequestType::TRANSFER)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
@@ -1733,6 +1765,10 @@ class ReportService
         $excel->close();
         Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
+    }
+
+        $returnData = PortalMonitoringPanTransfer::collection($main);
+        return $returnData;
     }
 
 }
