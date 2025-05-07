@@ -16,7 +16,7 @@ class PortalMonitoringTravelOrder extends JsonResource
     public function toArray(Request $request): array
     {
         $approvals = $this->summary_approvals;
-        $main = collect($this['employees'])->map(function ($employee) use($approvals) {
+        $main = collect($this['employees'])->map(function ($employee) use ($approvals) {
             return [
                 'employee_name' => $employee['fullname_last'],
                 'designation' => $employee->current_position_name,
