@@ -1681,7 +1681,7 @@ class ReportService
                         return $query->where('charge_type', TravelOrder::PROJECT)
                         ->where('charge_id', $validate['project_id']);
                     });
-                })->get();
+            })->get();
         $updatedData = collect($main)->map(function ($employee) {
             $employee['total_travel_order'] = count($employee['employee_travel_order']);
             return $employee;
