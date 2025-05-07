@@ -1643,11 +1643,13 @@ class ReportService
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = TravelOrder::isApproved()
             ->with("employees")
             ->whereHas('employees', function ($query) {
                 $query->isActive();
-            })->betweenDates($validate["date_from"], $validate["date_to"])
+            })->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->where('charge_type', TravelOrder::DEPARTMENT)
                     ->where('charge_id', $validate['department_id']);
@@ -1680,14 +1682,11 @@ class ReportService
                         ->where('charge_id', $validate['project_id']);
                     });
             })->get();
-
-        $formatData = collect($main)->map(function ($item) {
-            $uniqueTravelOrderIds = collect($item['employee_travel_order'])->pluck('id')->unique();
-            $item['total_travel_order_filed'] = $uniqueTravelOrderIds->count();
-            return $item['total_travel_order_filed'] > 0 ? $item : null;
-        })->filter()->values();
-
-        $returnData = PortalMonitoringTravelOrderSummary::collection($formatData);
+        $updatedData = collect($main)->map(function ($employee) {
+            $employee['total_travel_order'] = count($employee['employee_travel_order']);
+            return $employee;
+        })->toArray();
+        $returnData = PortalMonitoringTravelOrderSummary::collection($updatedData);
         return $returnData;
     }
 
