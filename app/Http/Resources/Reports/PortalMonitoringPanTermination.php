@@ -27,7 +27,7 @@ class PortalMonitoringPanTermination extends JsonResource
             "effectivity_date" => $this->date_requested_human,
             "date_requested" => $this->request_created_at,
             "requested_by" => $this->created_by_user_name,
-            "requested_status" => $this["request_status"],
+            "request_status" => $this["request_status"],
             "days_delayed_filling" => $this->days_delayed_filing,
             "date_approved" => $this->date_approved_date_human,
             "approvals" => $approvals,
