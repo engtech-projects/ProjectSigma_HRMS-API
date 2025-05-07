@@ -1710,14 +1710,12 @@ class ReportService
     }
 
     public static function panTerminationMonitoring($validate)
-    public static function panTransferMonitoring($validate)
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TERMINATION)
-            ->where("type", PanRequestType::TRANSFER)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
@@ -1735,6 +1733,33 @@ class ReportService
             ->get();
 
         $returnData = PortalMonitoringPanTermination::collection($main);
+        return $returnData;
+    }
+
+    public static function panTransferMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = EmployeePanRequest::isApproved()
+            ->with("employee", "projects", "department", "position")
+            ->where("type", PanRequestType::TRANSFER)
+            ->whereHas('employee', function ($query) {
+                $query->isActive();
+            })
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->whereHas('department', function ($withQuery) use ($validate) {
+                    $withQuery->where('id', $validate['department_id']);
+                });
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->whereHas('projects', function ($withQuery) use ($validate) {
+                    $withQuery->where('id', $validate['project_id']);
+                });
+            })
+            ->get();
+
+        $returnData = PortalMonitoringPanTransfer::collection($main);
         return $returnData;
     }
 
@@ -1766,9 +1791,4 @@ class ReportService
         Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
-
-        $returnData = PortalMonitoringPanTransfer::collection($main);
-        return $returnData;
-    }
-
 }
