@@ -33,6 +33,7 @@ use App\Http\Resources\Reports\PortalMonitoringLeaveSummary;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrder;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
 use App\Http\Resources\Reports\PortalMonitoringManpowerRequest;
+use App\Http\Resources\Reports\PortalMonitoringPanTermination;
 use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
 use App\Models\TravelOrder;
 use App\Models\Loans;
@@ -1708,6 +1709,39 @@ class ReportService
         return $returnData;
     }
 
+    public static function panTerminationMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = EmployeePanRequest::isApproved()
+            ->with("employee", "projects", "department", "position")
+            ->where("type", PanRequestType::TERMINATION)
+            ->whereHas('employee', function ($query) {
+                $query->isActive();
+            })
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
+                    if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
+                        return $withQuery;
+                    }
+                    $withQuery->where('id', $validate['department_id']);
+                });
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->has('projects')->whereHas('projects', function ($withQuery) use ($validate) {
+                    if (!isset($validate['project_id']) || is_null($validate['project_id'])) {
+                        return $withQuery;
+                    }
+                    $withQuery->where('projects.id', $validate['project_id']);
+                });
+            })
+            ->get();
+
+        $returnData = PortalMonitoringPanTermination::collection($main);
+        return $returnData;
+    }
+
     public static function panTransferMonitoring($validate)
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
@@ -1720,13 +1754,19 @@ class ReportService
             })
             ->betweenDates($validate["date_from"], $validate["date_to"])
             ->when($withDepartment, function ($query) use ($validate) {
-                return $query->whereHas('department', function ($withQuery) use ($validate) {
+                return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
+                    if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
+                        return $withQuery;
+                    }
                     $withQuery->where('id', $validate['department_id']);
                 });
             })
             ->when($withProject, function ($query) use ($validate) {
-                return $query->whereHas('projects', function ($withQuery) use ($validate) {
-                    $withQuery->where('id', $validate['project_id']);
+                return $query->has('projects')->whereHas('projects', function ($withQuery) use ($validate) {
+                    if (!isset($validate['project_id']) || is_null($validate['project_id'])) {
+                        return $withQuery;
+                    }
+                    $withQuery->where('projects.id', $validate['project_id']);
                 });
             })
             ->get();
@@ -1735,4 +1775,32 @@ class ReportService
         return $returnData;
     }
 
+    public static function panTerminationMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'Last Day Worked',
+            'Termination Type',
+            'Termination Reason',
+            'Eligible for re-hire',
+            'Effectivity Date',
+            'Requested by',
+            'Request Status',
+            'No. of Days Delayed Filing',
+            'Date Approved',
+            'Approvals',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringPanTerminationList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::panTerminationMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
 }
