@@ -16,7 +16,7 @@ class PortalMonitoringTravelOrderSummary extends JsonResource
     {
         return [
             "employee_name" => $this['fullname_last'],
-            "total_travel_order_filed" => $this['total_travel_order_filed']
+            "total_travel_order_filed" => $this['total_travel_order']
         ];
     }
 }
