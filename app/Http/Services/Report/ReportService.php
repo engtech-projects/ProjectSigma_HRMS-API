@@ -35,6 +35,7 @@ use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
 use App\Http\Resources\Reports\PortalMonitoringManpowerRequest;
 use App\Http\Resources\Reports\PortalMonitoringPanTermination;
 use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
+use App\Http\Resources\Reports\PortalMonitoringPanPromotion;
 use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -1801,5 +1802,38 @@ class ReportService
         $excel->close();
         Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
+    }
+
+    public static function panPromotionMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $main = EmployeePanRequest::isApproved()
+            ->with("employee", "projects", "department", "position", "salarygrade")
+            ->where("type", PanRequestType::PROMOTION)
+            ->whereHas('employee', function ($query) {
+                $query->isActive();
+            })
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
+                    if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
+                        return $withQuery;
+                    }
+                    $withQuery->where('id', $validate['department_id']);
+                });
+            })
+            ->when($withProject, function ($query) use ($validate) {
+                return $query->has('projects')->whereHas('projects', function ($withQuery) use ($validate) {
+                    if (!isset($validate['project_id']) || is_null($validate['project_id'])) {
+                        return $withQuery;
+                    }
+                    $withQuery->where('projects.id', $validate['project_id']);
+                });
+            })
+            ->get();
+
+        $returnData = PortalMonitoringPanPromotion::collection($main);
+        return $returnData;
     }
 }

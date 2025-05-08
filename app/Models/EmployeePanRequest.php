@@ -551,12 +551,11 @@ class EmployeePanRequest extends Model
 
     public function getDateRequestedHumanAttribute()
     {
-        $data = $this->date_of_effictivity;
+        $data = $this->created_at;
         if ($data) {
-            $data = Carbon::parse($this->date_of_effictivity)->format('F j, Y');
+            $data = Carbon::parse($this->created_at)->format('F j, Y');
         } else {
             $data = "Date Requested N/A";
-            $data = "Date of Effectivity N/A";
         }
         return $data;
     }
@@ -566,9 +565,16 @@ class EmployeePanRequest extends Model
         if ($data) {
             $data = Carbon::parse($this->date_of_effictivity)->format('F j, Y');
         } else {
-            $data = "Date Requested N/A";
             $data = "Date of Effectivity N/A";
         }
         return $data;
+    }
+
+    public function getCurrentSalarygradeAndStepAttribute()
+    {
+        if (!$this->salarygrade) {
+            return "No salary grade set.";
+        }
+        return "SG ". $this->salarygrade?->salary_grade_level?->salary_grade_level . " - STEP ". $this->salarygrade?->step_name;
     }
 }

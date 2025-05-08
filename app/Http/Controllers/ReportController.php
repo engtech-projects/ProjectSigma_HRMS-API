@@ -333,8 +333,11 @@ class ReportController extends Controller
                 case PortalMonitoringReport::PAN_TERMINATION_MONITORING->value:
                     $reportData = ReportService::panTerminationMonitoring($validated);
                     break;
-                case PortalMonitoringReport::PAN_TRANSFER->value:
+                case PortalMonitoringReport::PAN_TRANSFER_MONITORING->value:
                     $reportData = ReportService::panTransferMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::PAN_PROMOTION_MONITORING->value:
+                    $reportData = ReportService::panPromotionMonitoring($validated);
                     break;
                 default:
                     return new JsonResponse(
@@ -476,7 +479,7 @@ class ReportController extends Controller
                         ]
                     );
                     break;
-                case PortalMonitoringReport::PAN_TRANSFER->value:
+                case PortalMonitoringReport::PAN_TRANSFER_MONITORING->value:
                     $downloadUrl = ReportService::panTransferMonitoringExport($validated);
                     return response()->json(
                         [
