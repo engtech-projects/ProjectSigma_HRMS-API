@@ -24,7 +24,7 @@ class PortalMonitoringPanPromotion extends JsonResource
             "old_salary_type" => $this['employee']->current_employment?->salary_type,
             "new_employement_status" => $this['employee']->current_employment?->work_location,
             "new_position" => $this['position']?->name,
-            "new_salary_grade" => $this->salary_grades,
+            "new_salary_grade" => $this->current_salarygrade_and_step,
             "new_salary_type" => $this->salary_type,
             "effectivity_date" => $this->date_effictivity_human,
             "date_requested" => $this->request_created_at,

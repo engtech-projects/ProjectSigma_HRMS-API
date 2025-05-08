@@ -1809,7 +1809,7 @@ class ReportService
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
         $main = EmployeePanRequest::isApproved()
-            ->with("employee", "projects", "department", "position")
+            ->with("employee", "projects", "department", "position", "salarygrade")
             ->where("type", PanRequestType::PROMOTION)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
