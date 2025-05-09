@@ -90,7 +90,6 @@ use App\Http\Controllers\ProjectListController as ViewProjectListController;
 use App\Http\Controllers\RequestSalaryDisbursementController;
 use App\Http\Controllers\RequestVoidController;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
