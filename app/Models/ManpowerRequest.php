@@ -112,10 +112,6 @@ class ManpowerRequest extends Model
      * LOCAL SCOPES
      */
 
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', 'Pending');
-    }
 
     public function scopeForHiring(Builder $query): void
     {
@@ -129,14 +125,8 @@ class ManpowerRequest extends Model
 
     public function completeRequestStatus()
     {
-        $this->request_status = RequestStatuses::APPROVED;
-        $this->fill_status = FillStatuses::OPEN;
-        $this->save();
-        $this->refresh();
-    }
-    public function denyRequestStatus()
-    {
-        $this->request_status = RequestStatuses::DENIED;
+        $this->request_status = RequestStatuses::APPROVED->value;
+        $this->fill_status = FillStatuses::OPEN->value;
         $this->save();
         $this->refresh();
     }
@@ -144,23 +134,6 @@ class ManpowerRequest extends Model
     public function requestStatusCompleted(): bool
     {
         if ($this->request_status == RequestStatuses::APPROVED) {
-            return true;
-        }
-        return false;
-    }
-
-    public function requestStatusEnded(): bool
-    {
-        if (
-            in_array(
-                $this->request_status,
-                [
-                    RequestStatuses::APPROVED,
-                    RequestStatuses::VOID,
-                    RequestStatuses::DENIED,
-                ]
-            )
-        ) {
             return true;
         }
         return false;

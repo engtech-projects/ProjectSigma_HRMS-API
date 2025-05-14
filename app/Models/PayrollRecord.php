@@ -3,10 +3,8 @@
 namespace App\Models;
 
 use App\Enums\PostingStatusType;
-use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatuses;
 use App\Enums\TermsOfPaymentType;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -120,16 +118,6 @@ class PayrollRecord extends Model
         return Carbon::parse($this->cutoff_end)->format("F j, Y");
     }
 
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', RequestStatuses::PENDING);
-    }
-
-    public function scopeRequestStatusApproved(Builder $query): void
-    {
-        $query->where('request_status', RequestStatuses::APPROVED);
-    }
-
     public function scopeBetweenDates($query, $dateFrom, $dateTo)
     {
         $query->whereBetween('payroll_date', [$dateFrom, $dateTo]);
@@ -137,7 +125,7 @@ class PayrollRecord extends Model
 
     public function completeRequestStatus()
     {
-        $this->request_status = RequestApprovalStatus::APPROVED;
+        $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
         foreach ($this->payroll_details as $employeePayroll) {
             foreach ($employeePayroll->deductions as $deductions) {

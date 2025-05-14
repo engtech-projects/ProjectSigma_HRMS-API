@@ -15,7 +15,7 @@ use App\Http\Requests\StoreManpowerRequestRequest;
 use App\Http\Requests\UpdateManpowerRequestRequest;
 use App\Http\Requests\StoreApplicantRequest;
 use App\Enums\HiringStatuses;
-use App\Enums\ManpowerRequestStatus;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\ApprovedPositionsFilter;
 
 class ManpowerRequestController extends Controller
@@ -162,7 +162,7 @@ class ManpowerRequestController extends Controller
     {
         $attributes = $request->validated();
         $attributes["created_by"] = auth()->user()->id;
-        $attributes["request_status"] = ManpowerRequestStatus::PENDING;
+        $attributes["request_status"] = RequestStatuses::PENDING->value;
         try {
             $checkSave = $this->manpowerService->createManpowerRequest($attributes);
             if ($checkSave) {

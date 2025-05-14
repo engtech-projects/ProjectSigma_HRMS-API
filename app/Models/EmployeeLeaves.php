@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\RequestStatuses;
 use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
@@ -55,16 +54,6 @@ class EmployeeLeaves extends Model
     ];
 
     protected $appends = ['daily_date_durations'];
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', RequestStatuses::PENDING->value);
-    }
-
-    public function scopeApproval($query)
-    {
-        return $query->where("request_status", "=", "Pending");
-    }
 
     public function employee(): HasOne
     {
