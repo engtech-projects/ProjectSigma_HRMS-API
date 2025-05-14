@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\RequestApprovalStatus;
 use App\Models\TravelOrder;
 
 class EmployeeTravelOrderService
@@ -24,15 +23,6 @@ class EmployeeTravelOrderService
     {
         return TravelOrder::with(['employee', 'department'])
             ->where("created_by", auth()->user()->id)
-            ->get();
-    }
-    public function getAllLeaveRequest()
-    {
-        $userId = auth()->user()->id;
-        return TravelOrder::requestStatusPending()
-            ->with(['user.employee'])
-            ->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
     }
     public function getMyRequest()

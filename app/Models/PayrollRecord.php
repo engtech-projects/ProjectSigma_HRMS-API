@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -58,11 +57,6 @@ class PayrollRecord extends Model
     public function project(): HasOne
     {
         return $this->hasOne(Project::class, "id", "project_id");
-    }
-
-    public function created_by_user(): BelongsTo
-    {
-        return $this->belongsTo(Users::class, "created_by", "id");
     }
 
     public function salary_disbursement(): BelongsToMany
