@@ -30,6 +30,9 @@ class TravelOrder extends Model
     use HasUser;
     use ModelHelpers;
 
+    public const DEPARTMENT = "App\Models\Department";
+    public const PROJECT = "App\Models\Project";
+
     protected $casts = [
         "approvals" => "array",
         "date_of_travel" => "date:Y-m-d",
@@ -154,5 +157,12 @@ class TravelOrder extends Model
             return Project::find($this->charging_project_id)?->project_code;
         }
         return "No charging found.";
+    }
+
+    public function getDaysDelayedFilingAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $travelDate = Carbon::parse($this->date_of_travel);
+        return $createdAt->diffInDays($travelDate) > 0 ? $createdAt->diffInDays($travelDate) : 0;
     }
 }

@@ -321,6 +321,24 @@ class ReportController extends Controller
                 case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
                     $reportData = ReportService::leaveMonitoringSummary($validated);
                     break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING->value:
+                    $reportData = ReportService::travelOrderMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::travelOrderMonitoringSummary($validated);
+                    break;
+                case PortalMonitoringReport::MANPOWER_REQUEST_MONITORING->value:
+                    $reportData = ReportService::manpowerRequestMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::PAN_TERMINATION_MONITORING->value:
+                    $reportData = ReportService::panTerminationMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::PAN_TRANSFER_MONITORING->value:
+                    $reportData = ReportService::panTransferMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::PAN_PROMOTION_MONITORING->value:
+                    $reportData = ReportService::panPromotionMonitoring($validated);
+                    break;
                 default:
                     return new JsonResponse(
                         [
@@ -413,6 +431,56 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::LEAVE_MONITORING_SUMMARY->value:
                     $downloadUrl = ReportService::leaveMonitoringSummaryExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING->value:
+                    $downloadUrl = ReportService::travelOrderMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::TRAVEL_ORDER_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::travelOrderMonitoringSummaryExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::MANPOWER_REQUEST_MONITORING->value:
+                    $downloadUrl = ReportService::manpowerRequestMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::PAN_TERMINATION_MONITORING->value:
+                    $downloadUrl = ReportService::panTerminationMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::PAN_TRANSFER_MONITORING->value:
+                    $downloadUrl = ReportService::panTransferMonitoringExport($validated);
                     return response()->json(
                         [
                             "success" => true,
