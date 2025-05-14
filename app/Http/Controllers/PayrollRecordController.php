@@ -92,6 +92,8 @@ class PayrollRecordController extends Controller
             $result = collect($employeeDtr)->map(function ($employee) use ($periodDates, $filters) {
                 $employee["payroll_records"] = $this->employeeService->generatePayroll($periodDates, $filters, $employee);
                 $employee->current_employment['position'] = $employee->current_employment->position;
+                $employee->current_position = $employee->current_position_name;
+                $employee->current_salarygrade = $employee->current_salarygrade_and_step;
                 return $employee;
             });
         } catch (\Throwable $th) {

@@ -48,4 +48,8 @@ class SalaryGradeStep extends Model
             get: fn () => $this->latePerHourDeduction / 60,
         );
     }
+    public function getSgStepNameAttribute()
+    {
+        return "SG ". $this->salary_grade_level?->salary_grade_level . "- STEP ". $this->step_name;
+    }
 }
