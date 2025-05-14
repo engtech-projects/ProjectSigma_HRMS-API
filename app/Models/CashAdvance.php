@@ -43,9 +43,9 @@ class CashAdvance extends Model
         'deduction_date_start',
         'purpose',
         'remarks',
+        'approvals',
         'request_status',
         'created_by',
-        'approvals',
     ];
 
     protected $appends = [

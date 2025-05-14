@@ -42,12 +42,12 @@ class ManpowerRequest extends Model
         'gender',
         'educational_requirement',
         'preferred_qualifications',
-        'approvals',
         'remarks',
-        'request_status',
-        'fill_status',
         'charged_to',
         'breakdown_details',
+        'fill_status',
+        'approvals',
+        'request_status',
         'created_by',
     ];
 

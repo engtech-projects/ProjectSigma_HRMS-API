@@ -32,8 +32,8 @@ class PayrollRecord extends Model
         'cutoff_start',
         'cutoff_end',
         'advance_days',
-        'request_status',
         'approvals',
+        'request_status',
         'created_by',
     ];
     protected $casts = [

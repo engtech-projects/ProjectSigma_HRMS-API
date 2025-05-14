@@ -42,6 +42,7 @@ class AllowanceRequest extends Model
         'cutoff_end',
         'total_days',
         'approvals',
+        'request_status',
         'created_by',
     ];
 

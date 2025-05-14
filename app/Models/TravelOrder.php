@@ -47,11 +47,11 @@ class TravelOrder extends Model
         'duration_of_travel',
         'means_of_transportation',
         'remarks',
-        'created_by',
-        'approvals',
-        'request_status',
         'charge_type',
         'charge_id',
+        'approvals',
+        'request_status',
+        'created_by',
     ];
 
     protected $appends = [

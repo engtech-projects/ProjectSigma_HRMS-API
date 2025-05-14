@@ -32,11 +32,12 @@ class FailureToLog extends Model
         'time',
         'log_type',
         'reason',
-        'approvals',
-        'request_status',
         'employee_id',
         'charging_type',
         'charging_id',
+        'approvals',
+        'request_status',
+        'created_by',
     ];
     protected $casts = [
         'date' => 'date:Y-m-d',
