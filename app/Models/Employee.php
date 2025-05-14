@@ -279,12 +279,12 @@ class Employee extends Model
     public function employee_travel_order(): BelongsToMany
     {
         return $this->belongsToMany(TravelOrder::class, 'travel_order_members', 'employee_id')
-        ->requestStatusApproved()
+        ->isApproved()
         ->whereNull("travel_order_members.deleted_at");
     }
     public function employee_overtime(): BelongsToMany
     {
-        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id')->requestStatusApproved();
+        return $this->belongsToMany(Overtime::class, 'overtime_employees', 'employee_id')->isApproved();
     }
 
     public function employee_failure_to_log(): HasMany
@@ -460,7 +460,7 @@ class Employee extends Model
     {
         $otSchedWithLogs =  $this->employee_overtime()
             ->whereDate('overtime_date', "=", $date)
-            ->requestStatusApproved()
+            ->isApproved()
             ->get();
         return $otSchedWithLogs->map(function ($sched) use ($date) {
             return [

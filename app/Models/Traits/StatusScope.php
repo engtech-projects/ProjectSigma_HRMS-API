@@ -2,18 +2,18 @@
 
 namespace App\Models\Traits;
 
-use App\Enums\PersonelAccessForm;
+use App\Enums\RequestStatuses;
 use Illuminate\Database\Eloquent\Builder;
 
 trait StatusScope
 {
     public function scopeApproved(Builder $query): void
     {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
+        $query->where('request_status', RequestStatuses::APPROVED);
     }
 
     public function scopePending(Builder $query): void
     {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
+        $query->where('request_status', RequestStatuses::PENDING);
     }
 }

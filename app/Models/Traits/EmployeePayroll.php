@@ -192,7 +192,7 @@ trait EmployeePayroll
     public function cash_advance_deduction($salary, $type, $date)
     {
         $date = Carbon::parse($date);
-        $cashAdvance = $this->cash_advance()->requestStatusApproved()->get();
+        $cashAdvance = $this->cash_advance()->isApproved()->get();
         $cashAdvance = collect($cashAdvance->filter(function ($cAdv) use ($date) {
             return $cAdv->balance > 0 && $cAdv->deduction_date_start->lte($date);
         })->values()->all());

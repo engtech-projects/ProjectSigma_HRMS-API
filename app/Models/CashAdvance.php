@@ -5,12 +5,10 @@ namespace App\Models;
 use App\Enums\LoanPaymentPostingStatusType;
 use App\Traits\HasApproval;
 use App\Enums\LoanPaymentsType;
-use App\Enums\PersonelAccessForm;
 use App\Models\Traits\StatusScope;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -145,15 +143,6 @@ class CashAdvance extends Model
         }
 
         return true;
-    }
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-    public function scopeRequestStatusApproved(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 
     public function payroll_detail_deduction(): MorphOne
