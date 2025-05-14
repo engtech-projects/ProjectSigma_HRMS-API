@@ -79,8 +79,9 @@ class EmployeePanRequest extends Model
         'eligible_for_rehire',
         'last_day_worked',
         'comments',
-        'created_by',
         'approvals',
+        'request_status',
+        'created_by',
     ];
 
     protected $perPage = 10;

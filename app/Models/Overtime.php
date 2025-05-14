@@ -40,9 +40,9 @@ class Overtime extends Model
         'overtime_end_time',
         'reason',
         'meal_deduction',
-        'created_by',
         'approvals',
         'request_status',
+        'created_by',
     ];
 
     protected $casts = [
