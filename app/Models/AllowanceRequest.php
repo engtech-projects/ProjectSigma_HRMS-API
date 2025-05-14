@@ -59,11 +59,6 @@ class AllowanceRequest extends Model
         ->withTimestamps();
     }
 
-    public function created_by_user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
     public function getCutoffStartHumanAttribute()
     {
         return Carbon::parse($this->cutoff_start)->format("F j, Y");

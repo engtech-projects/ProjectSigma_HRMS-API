@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\RequestApprovalStatus;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Models\EmployeeLeaves;
 
@@ -38,16 +37,6 @@ class EmployeeLeaveService
             ->with(['employee', 'department'])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId])
-            ->get();
-    }
-
-    public function getAllLeaveRequest()
-    {
-        $userId = auth()->user()->id;
-        return EmployeeLeaves::requestStatusPending()
-            ->with(['user.employee'])
-            ->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
     }
 
