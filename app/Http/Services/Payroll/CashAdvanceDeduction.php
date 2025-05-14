@@ -22,7 +22,7 @@ class CashAdvanceDeduction extends PayrollDeduction
     {
         $deduction = 0;
         $payrollDate = Carbon::parse($filters["payroll_date"]);
-        $cashAdvance = $this->employee->cash_advance()->requestStatusApproved()->first();
+        $cashAdvance = $this->employee->cash_advance()->isApproved()->first();
 
         if ($cashAdvance) {
             if (!$cashAdvance->cashPaid()) {

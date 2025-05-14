@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use App\Enums\AssignTypes;
-use App\Enums\PersonelAccessForm;
 use App\Traits\HasApproval;
 use App\Traits\HasUser;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,11 +47,11 @@ class TravelOrder extends Model
         'duration_of_travel',
         'means_of_transportation',
         'remarks',
-        'created_by',
-        'approvals',
-        'request_status',
         'charge_type',
         'charge_id',
+        'approvals',
+        'request_status',
+        'created_by',
     ];
 
     protected $appends = [
@@ -61,21 +59,6 @@ class TravelOrder extends Model
         "date_time_start",
         "date_time_end",
     ];
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-
-    public function scopeRequestStatusApproved(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
-    }
-
-    public function scopeApproval($query)
-    {
-        return $query->where("request_status", "=", "Pending");
-    }
 
     public function scopeBetweenDates($query, $dateFrom, $dateTo)
     {

@@ -5,9 +5,7 @@ namespace App\Models;
 use App\Enums\EmployeeAddressType;
 use App\Traits\HasUser;
 use App\Traits\HasApproval;
-use App\Enums\PersonelAccessForm;
 use Laravel\Sanctum\HasApiTokens;
-use App\Enums\ManpowerRequestStatus;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\JobApplicationStatusEnums;
@@ -18,6 +16,8 @@ use App\Enums\EmployeeCompanyEmploymentsStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\EmployeeInternalWorkExperiencesStatus;
+use App\Enums\FillStatuses;
+use App\Enums\RequestStatuses;
 use App\Enums\WorkLocation;
 use App\Http\Traits\UploadFileTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -79,8 +79,9 @@ class EmployeePanRequest extends Model
         'eligible_for_rehire',
         'last_day_worked',
         'comments',
-        'created_by',
         'approvals',
+        'request_status',
+        'created_by',
     ];
 
     protected $perPage = 10;
@@ -184,14 +185,6 @@ class EmployeePanRequest extends Model
      * STATIC SCOPES
      * ==================================================
      */
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-    public function scopeApproval($query)
-    {
-        return $query->where("request_status", "=", "Pending");
-    }
     public function scopeCreatedBy(Builder $query, $id): void
     {
         $query->where("created_by", $id);
@@ -227,42 +220,9 @@ class EmployeePanRequest extends Model
                 $this->terminationRequest();
                 break;
         }
-        $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
+        $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
         $this->refresh();
-    }
-    public function denyRequestStatus()
-    {
-
-        $this->request_status = PersonelAccessForm::REQUESTSTATUS_DISAPPROVED;
-        $this->save();
-        $this->refresh();
-    }
-
-    public function requestStatusCompleted(): bool
-    {
-        if ($this->request_status == PersonelAccessForm::REQUESTSTATUS_APPROVED) {
-            return true;
-        }
-        return false;
-    }
-
-    public function requestStatusEnded(): bool
-    {
-        if (
-            in_array(
-                $this->request_status,
-                [
-                    PersonelAccessForm::REQUESTSTATUS_DISAPPROVED,
-                    PersonelAccessForm::REQUESTSTATUS_FILLED,
-                    PersonelAccessForm::REQUESTSTATUS_HOLD,
-                    PersonelAccessForm::REQUESTSTATUS_CANCELLED,
-                ]
-            )
-        ) {
-            return true;
-        }
-        return false;
     }
 
     /** Get InternalWorkExperience model
@@ -396,7 +356,7 @@ class EmployeePanRequest extends Model
         }
         // update status for job appicants and manpower
         $this->jobapplicantonly()->update(["status" => JobApplicationStatusEnums::HIRED]);
-        $this->jobapplicantonly->manpower()->update(["fill_status" => ManpowerRequestStatus::FILLED]);
+        $this->jobapplicantonly->manpower()->update(["fill_status" => FillStatuses::FILLED]);
         $jobApplicantId = $jobApplicant["id"];
         $manpowerRequestJobApplicants = ManpowerRequestJobApplicants::where("job_applicants_id", $jobApplicantId)->where("hiring_status", "For Hiring")->first();
         $manpowerRequestJobApplicants->hiring_status = "Hired";

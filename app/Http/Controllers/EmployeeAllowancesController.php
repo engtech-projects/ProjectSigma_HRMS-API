@@ -80,7 +80,7 @@ class EmployeeAllowancesController extends Controller
                         "charge_assignment_type" => $group_type,
                     ])
                     ->whereDate("allowance_date", $allowance_date)
-                    ->requestStatusApproved();
+                    ->isApproved();
                 })
                 ->get();
                 return new JsonResponse([

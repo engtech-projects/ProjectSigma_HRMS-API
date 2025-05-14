@@ -5,14 +5,11 @@ namespace App\Models;
 use App\Enums\LoanPaymentPostingStatusType;
 use App\Traits\HasApproval;
 use App\Enums\LoanPaymentsType;
-use App\Enums\PersonelAccessForm;
 use App\Models\Traits\StatusScope;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -46,9 +43,9 @@ class CashAdvance extends Model
         'deduction_date_start',
         'purpose',
         'remarks',
+        'approvals',
         'request_status',
         'created_by',
-        'approvals',
     ];
 
     protected $appends = [
@@ -79,11 +76,6 @@ class CashAdvance extends Model
     public function cashAdvancePaymentsPosted(): HasMany
     {
         return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id')->isPosted();
-    }
-
-    public function created_by_user(): BelongsTo
-    {
-        return $this->belongsTo(Users::class, "created_by", "id");
     }
 
     public function getBalanceAttribute()
@@ -145,15 +137,6 @@ class CashAdvance extends Model
         }
 
         return true;
-    }
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-    public function scopeRequestStatusApproved(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 
     public function payroll_detail_deduction(): MorphOne

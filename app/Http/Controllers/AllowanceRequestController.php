@@ -100,7 +100,7 @@ class AllowanceRequestController extends Controller
     public function store(StoreAllowanceRequestRequest $request)
     {
         $valData = $request->validated();
-        $valData["request_status"] = RequestStatuses::PENDING;
+        $valData["request_status"] = RequestStatuses::PENDING->value;
         $valData["created_by"] = auth()->user()->id;
         if ($valData["charging_type"] == AssignTypes::DEPARTMENT->value) {
             $valData["charge_assignment_id"] = $valData["department_id"];

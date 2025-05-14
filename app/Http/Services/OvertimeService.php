@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\RequestApprovalStatus;
 use App\Models\Overtime;
 
 class OvertimeService
@@ -34,15 +33,6 @@ class OvertimeService
             ->with(['employees', 'department'])
             ->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => $userId])
-            ->get();
-    }
-    public function getAllLeaveRequest()
-    {
-        $userId = auth()->user()->id;
-        return Overtime::requestStatusPending()
-            ->with(['user.employee'])
-            ->whereJsonLength('approvals', '>', 0)
-            ->whereJsonContains('approvals', ['user_id' => $userId, 'status' => RequestApprovalStatus::PENDING])
             ->get();
     }
     public function getMyRequest()

@@ -90,7 +90,6 @@ class UpdateManpowerRequestRequest extends FormRequest
             'request_status' => [
                 "nullable",
                 "string",
-                'in:Pending,Approved,Filled,Hold,Cancelled,Disapproved'
             ],
             'charged_to' => [
                 "nullable",

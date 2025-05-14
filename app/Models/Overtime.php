@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\AttendanceLogType;
-use App\Enums\PersonelAccessForm;
 use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
@@ -41,9 +40,9 @@ class Overtime extends Model
         'overtime_end_time',
         'reason',
         'meal_deduction',
-        'created_by',
         'approvals',
         'request_status',
+        'created_by',
     ];
 
     protected $casts = [
@@ -105,16 +104,6 @@ class Overtime extends Model
     public function scopeSetSection($query, $groupType, $id)
     {
         return $query->where($groupType, $id);
-    }
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-
-    public function scopeRequestStatusApproved(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 
     public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void

@@ -25,9 +25,9 @@ class RequestSalaryDisbursement extends Model
         'payroll_date',
         'payroll_type',
         'release_type',
-        'request_status',
         'disbursement_status',
         'approvals',
+        'request_status',
         'created_by',
     ];
     protected $casts = [

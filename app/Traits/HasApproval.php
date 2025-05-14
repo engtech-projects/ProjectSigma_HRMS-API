@@ -61,10 +61,6 @@ trait HasApproval
      * STATIC SCOPES
      * ==================================================
      */
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', RequestStatuses::PENDING);
-    }
     public function scopeAuthUserPending(Builder $query): void
     {
         $query->whereJsonLength('approvals', '>', 0)
@@ -78,6 +74,10 @@ trait HasApproval
             JSON_UNQUOTE(JSON_EXTRACT(approvals, JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')))) = 'Pending' AND
             JSON_UNQUOTE(JSON_EXTRACT(approvals, REPLACE(JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')), '.status', '.user_id'))) = ?
         ", [$userId]);
+    }
+    public function scopeRequestStatusPending(Builder $query): void
+    {
+        $query->where('request_status', RequestStatuses::PENDING);
     }
     public function scopeIsPending(Builder $query): void
     {
@@ -130,6 +130,10 @@ trait HasApproval
     }
     public function requestStatusCompleted(): bool
     {
+        // DEFAULT IDENTIFIER IF REQUEST STATUS HAS ALREADY ENDED
+        if ($this->request_status == RequestStatuses::APPROVED->value) {
+            return true;
+        }
         return false;
     }
     public function requestStatusEnded(): bool

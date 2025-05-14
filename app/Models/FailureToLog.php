@@ -6,7 +6,7 @@ use App\Enums\AssignTypes;
 use App\Traits\HasApproval;
 use App\Enums\AttendanceLogType;
 use App\Enums\AttendanceType;
-use App\Enums\PersonelAccessForm;
+use App\Enums\RequestStatuses;
 use App\Models\Traits\HasEmployee;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
@@ -32,11 +32,12 @@ class FailureToLog extends Model
         'time',
         'log_type',
         'reason',
-        'approvals',
-        'request_status',
         'employee_id',
         'charging_type',
         'charging_id',
+        'approvals',
+        'request_status',
+        'created_by',
     ];
     protected $casts = [
         'date' => 'date:Y-m-d',
@@ -65,7 +66,7 @@ class FailureToLog extends Model
 
     public function completeRequestStatus()
     {
-        $this->request_status = PersonelAccessForm::REQUESTSTATUS_APPROVED;
+        $this->request_status = RequestStatuses::APPROVED->value;
         AttendanceLog::create([
             'date' => $this->date,
             'time' => $this->time,
@@ -79,47 +80,13 @@ class FailureToLog extends Model
         $this->refresh();
     }
 
-    public function denyRequestStatus()
-    {
-        $this->request_status = PersonelAccessForm::REQUESTSTATUS_DISAPPROVED;
-        $this->save();
-        $this->refresh();
-    }
 
     public function requestStatusCompleted(): bool
     {
-        if ($this->request_status == PersonelAccessForm::REQUESTSTATUS_APPROVED) {
+        if ($this->request_status == RequestStatuses::APPROVED->value) {
             return true;
         }
         return false;
-    }
-
-    public function requestStatusEnded(): bool
-    {
-        if (
-            in_array(
-                $this->request_status,
-                [
-                    PersonelAccessForm::REQUESTSTATUS_DISAPPROVED,
-                    PersonelAccessForm::REQUESTSTATUS_FILLED,
-                    PersonelAccessForm::REQUESTSTATUS_HOLD,
-                    PersonelAccessForm::REQUESTSTATUS_CANCELLED,
-                ]
-            )
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    public function scopeRequestStatusPending(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_PENDING);
-    }
-
-    public function scopeRequestStatusApproved(Builder $query): void
-    {
-        $query->where('request_status', PersonelAccessForm::REQUESTSTATUS_APPROVED);
     }
 
     public function scopeBetweenDates(Builder $query, $dateFrom, $dateTo): void

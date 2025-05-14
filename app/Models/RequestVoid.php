@@ -23,8 +23,8 @@ class RequestVoid extends Model
         'request_type',
         'request_id',
         'reason_for_void',
-        'request_status',
         'approvals',
+        'request_status',
         'created_by',
     ];
     protected $casts = [
