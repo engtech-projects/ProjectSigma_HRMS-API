@@ -16,11 +16,10 @@ class PortalMonitoringManpowerRequestSummary extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "requested_position" => $this['position']->name,
-            "request_status" => $this['fill_status'],
-            "total_number_requested" => $this->manpower_applicants_count,
-            "total_number_unserved" => $this->manpower_applicants_pending_and_process_count,
-            "total_number_served" => $this->manpower_applicants_hired_count,
+            "requested_position" => $this["name"],
+            "total_number_requested" => $this["total_number_requested"],
+            "total_number_unserved" => $this["total_number_unserved"],
+            "total_number_served" => $this["total_number_served"],
         ];
     }
 }

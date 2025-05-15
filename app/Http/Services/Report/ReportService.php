@@ -1394,7 +1394,6 @@ class ReportService
         $masterListHeaders = [
             'Requested Position/Title',
             'Total Number Requested',
-            'Request Status',
             'Total Number of Unserved',
             'Total Number of Served',
         ];
@@ -1745,7 +1744,25 @@ class ReportService
                 return $query->where('requesting_department', $validate['department_id']);
             })->get();
 
-        $returnData = PortalMonitoringManpowerRequestSummary::collection($main);
+        $dataMerge = $main->groupBy('position.name')->map(function ($entries) {
+            return [
+                "name" => $entries->first()["position"]["name"],
+                "total_number_requested" => $entries->flatMap(fn ($entry) => $entry["manpowerRequestJobApplicants"])->count(),
+                "total_number_unserved" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
+                ->filter(fn ($applicant) => in_array($applicant["hiring_status"], ["Processing", "For Hiring"]))
+                ->count()),
+                "total_number_served" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
+                ->filter(fn ($applicant) => $applicant["hiring_status"] === "Hired")
+                ->count()),
+                "manpower_request_job_applicants" => $entries->flatMap(fn ($entry) => $entry["manpowerRequestJobApplicants"])->map(fn ($request) => [
+                    "id" => $request["id"],
+                    "job_applicants_id" => $request["job_applicants_id"],
+                    "manpowerrequests_id" => $request["manpowerrequests_id"],
+                    "hiring_status" => $request["hiring_status"]
+                ])
+            ];
+        })->values();
+        $returnData = PortalMonitoringManpowerRequestSummary::collection($dataMerge);
         return $returnData;
     }
 
