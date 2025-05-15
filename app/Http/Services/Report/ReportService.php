@@ -33,6 +33,7 @@ use App\Http\Resources\Reports\PortalMonitoringLeaveSummary;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrder;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
 use App\Http\Resources\Reports\PortalMonitoringManpowerRequest;
+use App\Http\Resources\Reports\PortalMonitoringManpowerRequestSummary;
 use App\Http\Resources\Reports\PortalMonitoringPanTermination;
 use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
 use App\Http\Resources\Reports\PortalMonitoringPanPromotion;
@@ -1388,6 +1389,27 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
+    public static function manpowerRequestMonitoringSummaryExport($validate)
+    {
+        $masterListHeaders = [
+            'Requested Position/Title',
+            'Total Number Requested',
+            'Request Status',
+            'Total Number of Unserved',
+            'Total Number of Served',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringManpowerRequestSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::manpowerRequestMonitoringSummary($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
     public static function employeeLeaves($validate)
     {
         $data = Employee::isActive()->with([
@@ -1706,6 +1728,24 @@ class ReportService
             })->get();
 
         $returnData = PortalMonitoringManpowerRequest::collection($main);
+        return $returnData;
+    }
+
+    public static function manpowerRequestMonitoringSummary($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        if ($withProject) {
+            return collect([]);
+        }
+        $main = ManpowerRequest::isApproved()
+            ->with("department", "position", "manpowerRequestJobApplicants")
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->where('requesting_department', $validate['department_id']);
+            })->get();
+
+        $returnData = PortalMonitoringManpowerRequestSummary::collection($main);
         return $returnData;
     }
 

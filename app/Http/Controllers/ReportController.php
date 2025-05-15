@@ -330,6 +330,9 @@ class ReportController extends Controller
                 case PortalMonitoringReport::MANPOWER_REQUEST_MONITORING->value:
                     $reportData = ReportService::manpowerRequestMonitoring($validated);
                     break;
+                case PortalMonitoringReport::MANPOWER_REQUEST_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::manpowerRequestMonitoringSummary($validated);
+                    break;
                 case PortalMonitoringReport::PAN_TERMINATION_MONITORING->value:
                     $reportData = ReportService::panTerminationMonitoring($validated);
                     break;
@@ -461,6 +464,16 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::MANPOWER_REQUEST_MONITORING->value:
                     $downloadUrl = ReportService::manpowerRequestMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::MANPOWER_REQUEST_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::manpowerRequestMonitoringSummaryExport($validated);
                     return response()->json(
                         [
                             "success" => true,

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\FillStatuses;
 use App\Enums\RequestStatuses;
+use App\Enums\HiringStatuses;
 use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
@@ -166,5 +167,25 @@ class ManpowerRequest extends Model
             $data = "Date Required N/A";
         }
         return $data;
+    }
+
+    public function getManpowerApplicantsPendingAndProcessCountAttribute()
+    {
+        return $this->manpowerRequestJobApplicants()
+        ->where('hiring_status', HiringStatuses::PROCESSING->value)
+        ->orWhere('hiring_status', HiringStatuses::FOR_HIRING->value)
+        ->count();
+    }
+
+    public function getManpowerApplicantsHiredCountAttribute()
+    {
+        return $this->manpowerRequestJobApplicants()
+        ->where('hiring_status', HiringStatuses::HIRED->value)
+        ->count();
+    }
+
+    public function getManpowerApplicantsCountAttribute()
+    {
+        return $this->manpowerRequestJobApplicants()->count();
     }
 }
