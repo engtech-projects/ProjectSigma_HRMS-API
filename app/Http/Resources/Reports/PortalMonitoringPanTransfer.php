@@ -17,11 +17,12 @@ class PortalMonitoringPanTransfer extends JsonResource
     {
         $approvals = $this->summary_approvals;
         return [
+            // ...parent::toArray($request),
             "employee_name" => $this['employee']->fullname_last,
-            "current_work_location" => $this['employee']->current_position_name,
+            "current_work_location" => $this["employee"]->current_assignment_names,
             "current_salary_type" => $this['employee']->current_employment?->salary_type,
             "old_position" => $this['employee']->current_employment?->position?->name,
-            "new_work_location" => $this->work_location,
+            "new_work_location" => $this->department_name ? $this->department_name : $this->project_names,
             "new_salary_type" => $this->salary_type,
             "new_position" => $this['position']?->name,
             "effectivity_date" => $this->date_effictivity_human,

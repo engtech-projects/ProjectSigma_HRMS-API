@@ -1786,6 +1786,7 @@ class ReportService
             'Termination Reason',
             'Eligible for re-hire',
             'Effectivity Date',
+            'Date Requested',
             'Requested by',
             'Request Status',
             'No. of Days Delayed Filing',
