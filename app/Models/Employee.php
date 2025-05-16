@@ -303,22 +303,22 @@ class Employee extends Model
     * MODEL ATTRIBUTES
     * ==================================================
     */
-    protected function age(): Attribute
+    public function getAgeAttribute()
     {
         if (!$this->date_of_birth) {
-            return new Attribute(
-                get: fn () => "Date of birth not set.",
-            );
+            return "Date of birth not set.";
         }
-        return new Attribute(
-            get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
-        );
+        return Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age;
     }
     public function getFullnameLastAttribute()
     {
         return $this->family_name . ", " . implode(
             " ",
-            array_values(array_filter([$this->first_name, $this->middle_name, $this->name_suffix]))
+            array_values(array_filter([
+                $this->first_name,
+                $this->middle_name,
+                $this->name_suffix
+                ]))
         );
     }
 
