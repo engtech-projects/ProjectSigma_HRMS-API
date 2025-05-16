@@ -56,7 +56,8 @@ class FailureToLogController extends Controller
     {
         try {
             $validatedData = $request->validated();
-            $validatedData["request_status"] = RequestStatuses::PENDING;
+            $validatedData["request_status"] = RequestStatuses::PENDING->value;
+            $validatedData["created_by"] = auth()->user()->id;
             $validatedData["charging_id"] = $request->validated();
             if ($validatedData["charging_type"] == AssignTypes::DEPARTMENT->value) {
                 $validatedData["charging_id"] = $validatedData["department_id"];
