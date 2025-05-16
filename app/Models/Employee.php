@@ -38,6 +38,8 @@ class Employee extends Model
     protected $appends = [
         'fullname_last',
         'fullname_first',
+        'fullname_last_mi',
+        'fullname_first_mi',
     ];
 
 
@@ -312,31 +314,56 @@ class Employee extends Model
             get: fn () => Carbon::createFromFormat("ymd", $this->date_of_birth->format('ymd'))->age,
         );
     }
-    protected function fullnameLast(): Attribute
+    public function getFullnameLastAttribute()
     {
-        return Attribute::make(
-            get: fn () => implode(", ", [$this->family_name, implode(" ", array_values(array_filter([$this->first_name, $this->middle_name, $this->name_suffix])))]),
+        return $this->family_name . ", " . implode(
+            " ",
+            array_values(array_filter([$this->first_name, $this->middle_name, $this->name_suffix]))
         );
     }
-    protected function fullnameFirst(): Attribute
+
+    public function getFullnameFirstAttribute()
     {
-        return Attribute::make(
-            get: fn () => implode(
-                " ",
-                array_values(
-                    array_filter([
-                        $this->first_name,
-                        $this->middle_name,
-                        $this->family_name,
-                        $this->name_suffix,
-                    ])
-                )
-            ),
+        return implode(
+            " ",
+            array_values(
+                array_filter([
+                    $this->first_name,
+                    $this->middle_name,
+                    $this->family_name,
+                    $this->name_suffix,
+                ])
+            )
+        );
+    }
+    public function getFullnameLastMiAttribute()
+    {
+        return $this->family_name . ", " . implode(
+            " ",
+            array_values(array_filter([ // To remove null values
+                $this->first_name,
+                $this->middle_initial,
+                $this->name_suffix,
+            ]))
+        );
+    }
+    public function getFullnameFirstMiAttribute()
+    {
+        return implode(
+            " ",
+            array_values(
+                array_filter([
+                    $this->first_name,
+                    $this->middle_initial,
+                    $this->family_name,
+                    $this->name_suffix,
+                ])
+            )
         );
     }
     public function getMiddleInitialAttribute()
     {
-        return substr($this->middle_name, 0, 1) . ".";
+        return $this->middle_name ? substr($this->middle_name, 0, 1) . "." : null;
     }
     public function getLeaveCreditsAttribute()
     {
