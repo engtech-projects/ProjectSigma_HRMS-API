@@ -57,8 +57,8 @@ class OvertimeController extends Controller
                 $main = new Overtime();
                 $validData = $request->validated();
                 $main->fill($validData);
-                $main->created_by = auth()->user()->id;
                 $main->request_status = StringRequestApprovalStatus::PENDING;
+                $main->created_by = auth()->user()->id;
                 $main->save();
                 $main->employees()->attach($validData["employees"]);
                 $main->refresh();

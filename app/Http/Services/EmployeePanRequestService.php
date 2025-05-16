@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\RequestStatuses;
 use App\Models\EmployeePanRequest;
 use App\Models\Users;
 use App\Notifications\PanRequestForApproval;
@@ -21,6 +22,8 @@ class EmployeePanRequestService
 
     public function create($attributes)
     {
+        $attributes["request_status"] = RequestStatuses::PENDING->value;
+        $attributes["created_by"] = auth()->user()->id;
         $main = EmployeePanRequest::create($attributes);
         $main->projects()->sync($attributes['projects']);
         $main->save();

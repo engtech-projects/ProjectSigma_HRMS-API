@@ -85,8 +85,8 @@ class RequestSalaryDisbursementController extends Controller
                 'message' => 'Cannot create request for pending payroll records.',
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
-        $validatedData["created_by"] = auth()->user()->id;
         $validatedData["request_status"] = RequestStatuses::PENDING;
+        $validatedData["created_by"] = auth()->user()->id;
         DB::transaction(function () use ($validatedData) {
             $createdRequest = RequestSalaryDisbursement::create($validatedData);
             $createdRequest->payroll_records()->attach($validatedData["payroll_records_ids"]);

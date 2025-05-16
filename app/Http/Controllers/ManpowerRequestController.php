@@ -161,8 +161,8 @@ class ManpowerRequestController extends Controller
     public function store(StoreManpowerRequestRequest $request)
     {
         $attributes = $request->validated();
-        $attributes["created_by"] = auth()->user()->id;
         $attributes["request_status"] = RequestStatuses::PENDING->value;
+        $attributes["created_by"] = auth()->user()->id;
         try {
             $checkSave = $this->manpowerService->createManpowerRequest($attributes);
             if ($checkSave) {

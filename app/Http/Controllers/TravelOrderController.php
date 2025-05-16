@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssignTypes;
-use App\Enums\StringRequestApprovalStatus;
+use App\Enums\RequestStatuses;
 use App\Http\Requests\AllTravelRequest;
 use App\Http\Requests\TravelApprovalRequest;
 use App\Http\Requests\TravelRequest;
@@ -70,7 +70,7 @@ class TravelOrderController extends Controller
                     $validatedData["charge_type"] = Project::class;
                 }
                 $main->fill($validatedData);
-                $main->request_status = StringRequestApprovalStatus::PENDING;
+                $main->request_status = RequestStatuses::PENDING->value;
                 $main->created_by = auth()->user()->id;
                 $main->save();
                 $main->employees()->attach($validatedData["employee_ids"]);

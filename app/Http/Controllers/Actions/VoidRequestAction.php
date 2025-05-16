@@ -53,6 +53,7 @@ class VoidRequestAction extends Controller
                 "status" => RequestApprovalStatus::PENDING,
             ];
         })->values()->toArray();
+        $attribute["request_status"] = RequestStatuses::PENDING->value;
         $attribute["created_by"] = Auth::user()->id;
         $createData = RequestVoid::create($attribute);
         if (!$createData) {
