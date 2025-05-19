@@ -1672,8 +1672,7 @@ class ReportService
         $dateTo = Carbon::parse($validate["date_to"]);
         $main = Employee::isActive()->with("employee_travel_order")
             ->whereHas('employee_travel_order', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
-                $query->isApproved()
-                    ->betweenDates($dateFrom, $dateTo)
+                $query->betweenDates($dateFrom, $dateTo)
                     ->when($withDepartment, function ($query) use ($validate) {
                         return $query->where('charge_type', TravelOrder::DEPARTMENT)
                         ->where('charge_id', $validate['department_id']);
@@ -1683,10 +1682,17 @@ class ReportService
                         ->where('charge_id', $validate['project_id']);
                     });
             })->get();
-        $updatedData = collect($main)->map(function ($employee) {
-            $employee['total_travel_order'] = count($employee['employee_travel_order']);
-            return $employee;
+
+        $updatedData = collect($main)->map(function ($item) use ($dateFrom, $dateTo) {
+            $filteredOrders = collect($item['employee_travel_order'])->whereBetween('date_of_travel', [$dateFrom, $dateTo])->values();
+            return [
+                'id' => $item['id'],
+                'fullname_last' => $item['fullname_last'],
+                'filter_employee_travel_order' => $filteredOrders->all(),
+                'total_travel_order' => $filteredOrders->count(),
+            ];
         })->toArray();
+
         $returnData = PortalMonitoringTravelOrderSummary::collection($updatedData);
         return $returnData;
     }
