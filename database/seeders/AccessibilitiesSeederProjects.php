@@ -123,6 +123,13 @@ class AccessibilitiesSeederProjects extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
+                    'id' => 3053,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_SETUP_SYNCHRONIZATION->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
                     'id' => 3060,
                     'accessibilities_name' => "",
                     'deleted_at' => Carbon::now(),

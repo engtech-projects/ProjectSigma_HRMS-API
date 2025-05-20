@@ -9,6 +9,7 @@ enum AccessibilityProjects: string
     case PROJECTMONITORING_MARKETING = "project monitoring:marketing";
     case PROJECTMONITORING_TSS = "project monitoring:tss";
     case PROJECTMONITORING_SETUP = "project monitoring:setup";
+    case PROJECTMONITORING_SETUP_SYNCHRONIZATION = "project monitoring:setup_synchronization";
 
     public static function toArray(): array
     {
