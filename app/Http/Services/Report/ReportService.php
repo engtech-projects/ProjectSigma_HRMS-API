@@ -38,6 +38,7 @@ use App\Http\Resources\Reports\PortalMonitoringPanTermination;
 use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
 use App\Http\Resources\Reports\PortalMonitoringPanPromotion;
 use App\Http\Resources\Reports\PortalMonitoringAttendanceLog;
+use App\Http\Resources\Reports\PortalMonitoringAttendanceLogSummary;
 use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -2025,14 +2026,16 @@ class ReportService
         $totalTimeInPm = $structureResult->sum("time_in_pm");
         $totalTimeOutPm = $structureResult->sum("time_out_pm");
 
-        $result = [
-            "total_time_in_am" => $totalTimeInAm,
-            "total_time_out_am" => $totalTimeOutAm,
-            "total_time_in_pm" => $totalTimeInPm,
-            "total_time_out_pm" => $totalTimeOutPm,
-        ];
-
-        return collect([$result]);
+        $result = collect([
+            [
+                "total_time_in_am" => $totalTimeInAm,
+                "total_time_out_am" => $totalTimeOutAm,
+                "total_time_in_pm" => $totalTimeInPm,
+                "total_time_out_pm" => $totalTimeOutPm,
+            ]
+        ]);
+        $returnData = PortalMonitoringAttendanceLogSummary::collection($result);
+        return $returnData;
     }
 
     public static function attendanceLogMonitoringSummaryExport($validate)
