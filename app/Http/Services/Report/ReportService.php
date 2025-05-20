@@ -37,6 +37,8 @@ use App\Http\Resources\Reports\PortalMonitoringManpowerRequestSummary;
 use App\Http\Resources\Reports\PortalMonitoringPanTermination;
 use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
 use App\Http\Resources\Reports\PortalMonitoringPanPromotion;
+use App\Http\Resources\Reports\PortalMonitoringAttendanceLog;
+use App\Http\Resources\Reports\PortalMonitoringAttendanceLogSummary;
 use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -47,6 +49,7 @@ use App\Models\PayrollRecord;
 use App\Models\AllowanceRequest;
 use App\Models\FailureToLog;
 use App\Models\ManpowerRequest;
+use App\Models\AttendanceLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -1899,5 +1902,166 @@ class ReportService
 
         $returnData = PortalMonitoringPanPromotion::collection($main);
         return $returnData;
+    }
+
+    public static function getTotalCountingAttendanceLog($data)
+    {
+        $groupedData = collect([]);
+
+        $data->groupBy("employee.id")->chunk(100)->each(function ($chunk) use ($groupedData) {
+            $chunk->each(function ($entries) use ($groupedData) {
+                $groupedData->push([
+                    "employee_name" => optional($entries->first()->employee)->fullname_last,
+                    "designation" => optional($entries->first()->employee)->current_position_name,
+                    "section" => $entries->first()->charging_designation,
+                    "logs" => $entries->map(fn($entry) => [
+                        "id" => $entry->id,
+                        "date" => $entry->date,
+                        "time" => $entry->time,
+                        "log_type" => $entry->log_type,
+                        "time_human" => $entry->time_human,
+                        "charging_designation" => $entry->charging_designation,
+                    ])->values(),
+                    "department" => optional($entries->first()->department),
+                    "project" => optional($entries->first()->project),
+                ]);
+            });
+        });
+
+        $countInAndOut = collect([]);
+
+        $groupedData->chunk(100)->each(function ($chunk) use ($countInAndOut) {
+            $chunk->each(function ($employee) use ($countInAndOut) {
+                $countInAndOut->push([
+                    "employee_name" => $employee["employee_name"],
+                    "designation" => $employee["designation"],
+                    "section" => $employee["section"],
+                    "logs_count" => $employee["logs"]
+                        ->groupBy("date")
+                        ->map(fn($logs) => [
+                            "timeInAm" => $logs->where("log_type", "In")->whereBetween("time", ["00:00:00", "12:00:00"])->unique("time")->count(),
+                            "timeOutAm" => $logs->where("log_type", "Out")->whereBetween("time", ["00:00:00", "13:00:00"])->unique("time")->count(),
+                            "timeInPm" => $logs->where("log_type", "In")->whereBetween("time", ["12:00:00", "24:00:00"])->unique("time")->count(),
+                            "timeOutPm" => $logs->where("log_type", "Out")->whereBetween("time", ["13:00:00", "24:00:00"])->unique("time")->count(),
+                        ]),
+                ]);
+            });
+        });
+
+        $structureData = collect([]);
+
+        $countInAndOut->chunk(100)->each(function ($chunk) use ($structureData) {
+            $chunk->each(function ($employee) use ($structureData) {
+                $structureData->push([
+                    "employee_name" => $employee["employee_name"],
+                    "designation" => $employee["designation"],
+                    "section" => $employee["section"],
+                    "time_in_am" => $employee["logs_count"]->sum("timeInAm"),
+                    "time_out_am" => $employee["logs_count"]->sum("timeOutAm"),
+                    "time_in_pm" => $employee["logs_count"]->sum("timeInPm"),
+                    "time_out_pm" => $employee["logs_count"]->sum("timeOutPm"),
+                ]);
+            });
+        });
+
+        return $structureData;
+    }
+
+    public static function attendanceLogMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $query = AttendanceLog::with(["employee", "department", "project"])
+            ->whereHas("employee", fn($query) => $query->isActive())
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, fn($query) => $query->has("department")
+                ->whereHas("department", fn($withQuery) =>
+                    $withQuery->where("id", $validate["department_id"] ?? null)))
+            ->when($withProject, fn($query) => $query->has("project")
+                ->whereHas("project", fn($withQuery) =>
+                    $withQuery->where("projects.id", $validate["project_id"] ?? null)))
+            ->get();
+
+        $structureResult = self::getTotalCountingAttendanceLog($query);
+
+        $returnData = PortalMonitoringAttendanceLog::collection($structureResult);
+        return $returnData;
+    }
+
+    public static function attendanceLogMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'IN (AM)',
+            'OUT (AM)',
+            'IN (PM)',
+            'OUT (PM)',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringAttendanceLogList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::attendanceLogMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+
+    public static function attendanceLogMonitoringSummary($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $query = AttendanceLog::with(["employee", "department", "project"])
+            ->whereHas("employee", fn($query) => $query->isActive())
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, fn($query) => $query->has("department")
+                ->whereHas("department", fn($withQuery) =>
+                    $withQuery->where("id", $validate["department_id"] ?? null)))
+            ->when($withProject, fn($query) => $query->has("project")
+                ->whereHas("project", fn($withQuery) =>
+                    $withQuery->where("projects.id", $validate["project_id"] ?? null)))
+            ->get();
+
+        $structureResult = self::getTotalCountingAttendanceLog($query);
+        $totalTimeInAm = $structureResult->sum("time_in_am");
+        $totalTimeOutAm = $structureResult->sum("time_out_am");
+        $totalTimeInPm = $structureResult->sum("time_in_pm");
+        $totalTimeOutPm = $structureResult->sum("time_out_pm");
+
+        $result = collect([
+            [
+                "total_time_in_am" => $totalTimeInAm,
+                "total_time_out_am" => $totalTimeOutAm,
+                "total_time_in_pm" => $totalTimeInPm,
+                "total_time_out_pm" => $totalTimeOutPm,
+            ]
+        ]);
+        $returnData = PortalMonitoringAttendanceLogSummary::collection($result);
+        return $returnData;
+    }
+
+    public static function attendanceLogMonitoringSummaryExport($validate)
+    {
+        $masterListHeaders = [
+            'TOTAL NUMBER IN (AM)',
+            'TOTAL NUMBER OUT (AM)',
+            'TOTAL NUMBER IN (PM)',
+            'TOTAL NUMBER OUT (PM)',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringAttendanceLogSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::attendanceLogMonitoringSummary($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
     }
 }

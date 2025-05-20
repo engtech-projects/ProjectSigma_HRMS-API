@@ -342,6 +342,12 @@ class ReportController extends Controller
                 case PortalMonitoringReport::PAN_PROMOTION_MONITORING->value:
                     $reportData = ReportService::panPromotionMonitoring($validated);
                     break;
+                case PortalMonitoringReport::ATTENDANCE_LOG_MONITORING->value:
+                    $reportData = ReportService::attendanceLogMonitoring($validated);
+                    break;
+                case PortalMonitoringReport::ATTENDANCE_LOG_MONITORING_SUMMARY->value:
+                    $reportData = ReportService::attendanceLogMonitoringSummary($validated);
+                    break;
                 default:
                     return new JsonResponse(
                         [
@@ -494,6 +500,26 @@ class ReportController extends Controller
                     break;
                 case PortalMonitoringReport::PAN_TRANSFER_MONITORING->value:
                     $downloadUrl = ReportService::panTransferMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::ATTENDANCE_LOG_MONITORING->value:
+                    $downloadUrl = ReportService::attendanceLogMonitoringExport($validated);
+                    return response()->json(
+                        [
+                            "success" => true,
+                            'url' => $downloadUrl,
+                            'message' => "Successfully Download."
+                        ]
+                    );
+                    break;
+                case PortalMonitoringReport::ATTENDANCE_LOG_MONITORING_SUMMARY->value:
+                    $downloadUrl = ReportService::attendanceLogMonitoringSummaryExport($validated);
                     return response()->json(
                         [
                             "success" => true,
