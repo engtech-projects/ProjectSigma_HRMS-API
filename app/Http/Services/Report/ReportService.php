@@ -1907,7 +1907,7 @@ class ReportService
                     "employee_name" => optional($entries->first()->employee)->fullname_last,
                     "designation" => optional($entries->first()->employee)->current_position_name,
                     "section" => $entries->first()->charging_designation,
-                    "logs" => $entries->map(fn($entry) => [
+                    "logs" => $entries->map(fn ($entry) => [
                         "id" => $entry->id,
                         "date" => $entry->date,
                         "time" => $entry->time,
@@ -1931,7 +1931,7 @@ class ReportService
                     "section" => $employee["section"],
                     "logs_count" => $employee["logs"]
                         ->groupBy("date")
-                        ->map(fn($logs) => [
+                        ->map(fn ($logs) => [
                             "timeInAm" => $logs->where("log_type", "In")->whereBetween("time", ["00:00:00", "12:00:00"])->unique("time")->count(),
                             "timeOutAm" => $logs->where("log_type", "Out")->whereBetween("time", ["00:00:00", "13:00:00"])->unique("time")->count(),
                             "timeInPm" => $logs->where("log_type", "In")->whereBetween("time", ["12:00:00", "24:00:00"])->unique("time")->count(),
@@ -1965,13 +1965,13 @@ class ReportService
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
         $query = AttendanceLog::with(["employee", "department", "project"])
-            ->whereHas("employee", fn($query) => $query->isActive())
+            ->whereHas("employee", fn ($query) => $query->isActive())
             ->betweenDates($validate["date_from"], $validate["date_to"])
-            ->when($withDepartment, fn($query) => $query->has("department")
-                ->whereHas("department", fn($withQuery) =>
+            ->when($withDepartment, fn ($query) => $query->has("department")
+                ->whereHas("department", fn ($withQuery) =>
                     $withQuery->where("id", $validate["department_id"] ?? null)))
-            ->when($withProject, fn($query) => $query->has("project")
-                ->whereHas("project", fn($withQuery) =>
+            ->when($withProject, fn ($query) => $query->has("project")
+                ->whereHas("project", fn ($withQuery) =>
                     $withQuery->where("projects.id", $validate["project_id"] ?? null)))
             ->get();
 
@@ -2010,13 +2010,13 @@ class ReportService
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
         $query = AttendanceLog::with(["employee", "department", "project"])
-            ->whereHas("employee", fn($query) => $query->isActive())
+            ->whereHas("employee", fn ($query) => $query->isActive())
             ->betweenDates($validate["date_from"], $validate["date_to"])
-            ->when($withDepartment, fn($query) => $query->has("department")
-                ->whereHas("department", fn($withQuery) =>
+            ->when($withDepartment, fn ($query) => $query->has("department")
+                ->whereHas("department", fn ($withQuery) =>
                     $withQuery->where("id", $validate["department_id"] ?? null)))
-            ->when($withProject, fn($query) => $query->has("project")
-                ->whereHas("project", fn($withQuery) =>
+            ->when($withProject, fn ($query) => $query->has("project")
+                ->whereHas("project", fn ($withQuery) =>
                     $withQuery->where("projects.id", $validate["project_id"] ?? null)))
             ->get();
 
