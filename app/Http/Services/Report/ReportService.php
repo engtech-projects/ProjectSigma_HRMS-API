@@ -1939,10 +1939,10 @@ class ReportService
                     "logs_count" => $employee["logs"]
                         ->groupBy("date")
                         ->map(fn ($logs) => [
-                            "timeInAm" => $logs->where("log_type", "In")->whereBetween("time", ["00:00:00", "12:00:00"])->unique("time")->count(),
-                            "timeOutAm" => $logs->where("log_type", "Out")->whereBetween("time", ["00:00:00", "13:00:00"])->unique("time")->count(),
-                            "timeInPm" => $logs->where("log_type", "In")->whereBetween("time", ["12:00:00", "24:00:00"])->unique("time")->count(),
-                            "timeOutPm" => $logs->where("log_type", "Out")->whereBetween("time", ["13:00:00", "24:00:00"])->unique("time")->count(),
+                            "timeInAm" => $logs->where("log_type", "In")->whereBetween("time", ["00:00:00", "12:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeOutAm" => $logs->where("log_type", "Out")->whereBetween("time", ["00:00:00", "13:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeInPm" => $logs->where("log_type", "In")->whereBetween("time", ["12:00:00", "24:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeOutPm" => $logs->where("log_type", "Out")->whereBetween("time", ["13:00:00", "24:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
                         ]),
                 ]);
             });
@@ -2032,7 +2032,6 @@ class ReportService
         $totalTimeOutAm = $structureResult->sum("time_out_am");
         $totalTimeInPm = $structureResult->sum("time_in_pm");
         $totalTimeOutPm = $structureResult->sum("time_out_pm");
-
         $result = collect([
             [
                 "total_time_in_am" => $totalTimeInAm,
