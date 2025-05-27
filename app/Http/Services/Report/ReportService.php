@@ -1674,7 +1674,7 @@ class ReportService
             ->with("employees")
             ->whereHas('employees', function ($query) {
                 $query->isActive();
-            })->betweenDatesOfTravel($dateFrom, $dateTo)
+            })->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->where('charge_type', TravelOrder::DEPARTMENT)
                     ->where('charge_id', $validate['department_id']);

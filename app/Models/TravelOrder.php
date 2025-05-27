@@ -68,11 +68,6 @@ class TravelOrder extends Model
         });
     }
 
-    public function scopeBetweenDatesOfTravel($query, $dateFrom, $dateTo)
-    {
-        $query->whereBetween('date_of_travel', [$dateFrom, $dateTo]);
-    }
-
     public function employees(): BelongsToMany
     {
         return $this->belongsToMany(Employee::class, TravelOrderMembers::class)
