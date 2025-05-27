@@ -1758,7 +1758,7 @@ class ReportService
                 "name" => $entries->first()["position"]["name"],
                 "total_number_requested" => $entries->flatMap(fn ($entry) => $entry["manpowerRequestJobApplicants"])->count(),
                 "total_number_unserved" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
-                ->filter(fn ($applicant) => in_array($applicant["hiring_status"], ["Processing", "For Hiring"]))
+                ->filter(fn ($applicant) => in_array($applicant["hiring_status"], ["Processing", "For Hiring", "Rejected"]))
                 ->count()),
                 "total_number_served" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
                 ->filter(fn ($applicant) => $applicant["hiring_status"] === "Hired")
@@ -1779,13 +1779,15 @@ class ReportService
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TERMINATION)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
-            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
                     if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
@@ -1812,13 +1814,15 @@ class ReportService
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TRANSFER)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
-            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
                     if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
@@ -1939,10 +1943,10 @@ class ReportService
                     "logs_count" => $employee["logs"]
                         ->groupBy("date")
                         ->map(fn ($logs) => [
-                            "timeInAm" => $logs->where("log_type", "In")->whereBetween("time", ["00:00:00", "12:00:00"])->unique("time")->count(),
-                            "timeOutAm" => $logs->where("log_type", "Out")->whereBetween("time", ["00:00:00", "13:00:00"])->unique("time")->count(),
-                            "timeInPm" => $logs->where("log_type", "In")->whereBetween("time", ["12:00:00", "24:00:00"])->unique("time")->count(),
-                            "timeOutPm" => $logs->where("log_type", "Out")->whereBetween("time", ["13:00:00", "24:00:00"])->unique("time")->count(),
+                            "timeInAm" => $logs->where("log_type", "In")->whereBetween("time", ["00:00:00", "12:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeOutAm" => $logs->where("log_type", "Out")->whereBetween("time", ["00:00:00", "13:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeInPm" => $logs->where("log_type", "In")->whereBetween("time", ["12:00:00", "24:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeOutPm" => $logs->where("log_type", "Out")->whereBetween("time", ["13:00:00", "24:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
                         ]),
                 ]);
             });
@@ -2032,7 +2036,6 @@ class ReportService
         $totalTimeOutAm = $structureResult->sum("time_out_am");
         $totalTimeInPm = $structureResult->sum("time_in_pm");
         $totalTimeOutPm = $structureResult->sum("time_out_pm");
-
         $result = collect([
             [
                 "total_time_in_am" => $totalTimeInAm,
