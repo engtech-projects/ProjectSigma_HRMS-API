@@ -1674,7 +1674,7 @@ class ReportService
             ->with("employees")
             ->whereHas('employees', function ($query) {
                 $query->isActive();
-            })->betweenDates($dateFrom, $dateTo)
+            })->betweenDatesOfTravel($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->where('charge_type', TravelOrder::DEPARTMENT)
                     ->where('charge_id', $validate['department_id']);
@@ -1779,13 +1779,15 @@ class ReportService
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TERMINATION)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
-            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
                     if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
@@ -1812,13 +1814,15 @@ class ReportService
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TRANSFER)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
-            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
                     if (!isset($validate['department_id']) || is_null($validate['department_id'])) {

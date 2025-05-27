@@ -519,7 +519,7 @@ class EmployeePanRequest extends Model
         }
         return $data;
     }
-    public function getDateEffictivityHumanAttribute()
+    public function getDateEffectivityHumanAttribute()
     {
         $data = $this->date_of_effictivity;
         if ($data) {
