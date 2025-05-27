@@ -60,12 +60,12 @@ class JobApplicantsController extends Controller
     {
         $valid = $request->validated();
         $main = JobApplicants::with("manpower")->select("id", "firstname", "middlename", "lastname")
-            ->when(isset($valid["name"]), function ($query) use ($valid) {
+            ->when(isset($valid["key"]), function ($query) use ($valid) {
                 $query->where(function ($q) use ($valid) {
-                    $q->orWhere('firstname', 'like', "%{$valid["name"]}%")
-                        ->orWhere('lastname', 'like', "%{$valid["name"]}%")
-                        ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["name"] . "%")
-                        ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
+                    $q->orWhere('firstname', 'like', "%{$valid["key"]}%")
+                        ->orWhere('lastname', 'like', "%{$valid["key"]}%")
+                        ->orWhere(DB::raw("CONCAT(lastname, ', ', firstname, ', ', COALESCE(middlename, ''))"), 'LIKE', $valid["key"] . "%")
+                        ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["key"] . "%");
                 });
             })
             ->whereHas('manpower', function ($query) {
