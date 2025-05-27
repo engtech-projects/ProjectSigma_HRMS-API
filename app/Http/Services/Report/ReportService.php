@@ -1758,7 +1758,7 @@ class ReportService
                 "name" => $entries->first()["position"]["name"],
                 "total_number_requested" => $entries->flatMap(fn ($entry) => $entry["manpowerRequestJobApplicants"])->count(),
                 "total_number_unserved" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
-                ->filter(fn ($applicant) => in_array($applicant["hiring_status"], ["Processing", "For Hiring"]))
+                ->filter(fn ($applicant) => in_array($applicant["hiring_status"], ["Processing", "For Hiring", "Rejected"]))
                 ->count()),
                 "total_number_served" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
                 ->filter(fn ($applicant) => $applicant["hiring_status"] === "Hired")
