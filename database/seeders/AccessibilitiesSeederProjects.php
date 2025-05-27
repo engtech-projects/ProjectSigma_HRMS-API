@@ -104,7 +104,7 @@ class AccessibilitiesSeederProjects extends Seeder
                 [
                     'id' => 3030,
                     'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING->value,
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
