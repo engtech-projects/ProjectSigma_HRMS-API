@@ -36,18 +36,25 @@ enum AccessibilityInventory: string
     case INVENTORY_REQUESTSTOCK_FORM = "inventory:request stock_form and my requests";
     case INVENTORY_REQUESTSTOCK_ALLREQUESTS = "inventory:request stock_all requests";
     case INVENTORY_REQUESTSTOCK_MYAPPROVALS = "inventory:request stock_my approvals";
-    case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_REQUESTS = "inventory:procurement_request price quotation_requests";
-    case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_ALLQUOTATIONS = "inventory:procurement_request price quotation_all quotations";
-    case INVENTORY_PROCUREMENT_REQUESTPRICEQUOTATION_MYQUOTATIONS = "inventory:procurement_request price quotation_my quotations";
-    case INVENTORY_PROCUREMENT_PRICEQUOTATION_REQUESTS = "inventory:procurement_price quotation_requests";
-    case INVENTORY_PROCUREMENT_PRICEQUOTATION_ALLQUOTATIONS = "inventory:procurement_price quotation_all quotations";
-    case INVENTORY_PROCUREMENT_PRICEQUOTATION_MYQUOTATIONS = "inventory:procurement_price quotation_my quotations";
     case INVENTORY_PROCUREMENT_CANVASSSUMMARY_REQUESTS = "inventory:procurement_canvass summary_requests";
     case INVENTORY_PROCUREMENT_CANVASSSUMMARY_ALLREQUEST = "inventory:procurement_canvass summary_all requests";
     case INVENTORY_PROCUREMENT_CANVASSSUMMARY_MYREQUESTS = "inventory:procurement_canvass summary_my approvals";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_FORMSANDMYREQUESTS = "inventory:procurement_notice of change purchase order_form and my requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_ALLREQUEST = "inventory:procurement_notice of change purchase order_all requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS = "inventory:procurement_notice of change purchase order_my approvals";
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTALL = "inventory:procurement_procurement request_ all";
+
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTONGOING = "inventory:procurement_procurement request_request list ongoing";
+
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_SETCANVASSER = "inventory:procurement_procurement request_set canvasser";
+
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PRICEQUOTATION = "inventory:procurement_procurement request_price quotations_create and view";
+
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_CANVASSSUMMARY = "inventory:procurement_procurement request_canvass summary_create and view";
+
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_ALLLIST = "inventory:procurement_purchase order_all list";
+
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_CREATENCPO = "inventory:procurement_purchase order_create ncpo";
 
     public static function toArray(): array
     {
