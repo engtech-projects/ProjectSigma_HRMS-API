@@ -39,7 +39,7 @@ class ApiSyncController extends Controller
         return response()->json([
             'message' => 'No Services to sync with yet.',
             'success' => true,
-        ], 204);
+        ], 202);
     }
     // INVENTORY
     public function syncAllInventory(Request $request)
@@ -47,7 +47,7 @@ class ApiSyncController extends Controller
         return response()->json([
             'message' => 'No Services to sync with yet.',
             'success' => true,
-        ], 204);
+        ], 202);
     }
     // PROJECT MONITORING
     public function syncAllProjectMonitoring(Request $request)
