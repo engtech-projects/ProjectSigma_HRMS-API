@@ -3,7 +3,6 @@
 namespace App\Http\Services\ApiServices;
 
 use App\Models\Project;
-use Illuminate\Support\Facades\Http;
 
 class ProjectMonitoringService
 {
