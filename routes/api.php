@@ -139,10 +139,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('setup')->group(function () {
         Route::resource('payroll-particular-terms', AccountingParticularController::class)->names('payrollParticularTerms');
         Route::prefix('sync')->group(function () {
-            Route::post('/all', [ApiSyncController::class, 'syncAll']);
+            Route::post('/all', [ApiSyncController::class, 'syncAll'])->name("api.sync.all");
             Route::prefix('project')->group(function () {
-                Route::post('/all', [ApiSyncController::class, 'syncAllProjectMonitoring']);
-                Route::post('/project', [ApiSyncController::class, 'syncProjects']);
+                Route::post('/all', [ApiSyncController::class, 'syncAllProjectMonitoring'])->name("api.sync.projectmonitoring.all");
+                Route::post('/project', [ApiSyncController::class, 'syncProjects'])->name("api.sync.projectmonitoring.projects");
+            });
+        });
+    });
+    Route::prefix('sync')->group(function () {
+        Route::post('/all', function () {
+            return response(null, 301)->header('Location', route('api.sync.all'));
+        });
+        Route::prefix('project')->group(function () {
+            Route::post('/all', function () {
+                return response(null, 301)->header('Location', route('api.sync.all.projectmonitoring'));
+            });
+            Route::post('/project', function () {
+                return response(null, 301)->header('Location', route('api.sync.projectmonitoring.projects'));
             });
         });
     });

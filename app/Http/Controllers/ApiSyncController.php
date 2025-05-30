@@ -14,10 +14,13 @@ class ApiSyncController extends Controller
             // $accountingService = new AccountingSecretKeyService(); // NO SYNCABLE DATA
             // $inventoryService = new InventorySecretKeyService(); // NO SYNCABLE DATA
             $projectService = new ProjectMonitoringSecretKeyService();
-            if (!$projectService->syncAll()) {
-                throw new \Exception("Project monitoring sync failed.");
-            }
             $errorServices = [];
+            // if (!$accountingService->syncAll()) {
+            //     $errorServices[] = "Accounting";
+            // }
+            // if (!$inventoryService->syncAll()) {
+            //     $errorServices[] = "Inventory";
+            // }
             if (!$projectService->syncAll()) {
                 $errorServices[] = "Project Monitoring";
             }

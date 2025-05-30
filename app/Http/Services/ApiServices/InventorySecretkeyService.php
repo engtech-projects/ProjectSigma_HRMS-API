@@ -10,6 +10,6 @@ class InventorySecretkeyService
     public function __construct()
     {
         $this->authToken = config('services.sigma.secret_key');
-        $this->apiUrl = config('services.url.accounting_api');
+        $this->apiUrl = config('services.url.inventory_api');
     }
 }

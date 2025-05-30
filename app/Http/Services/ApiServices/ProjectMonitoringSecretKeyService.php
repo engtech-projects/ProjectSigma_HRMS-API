@@ -4,6 +4,7 @@ namespace App\Http\Services\ApiServices;
 
 use App\Models\Project;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ProjectMonitoringSecretKeyService
 {
@@ -58,6 +59,11 @@ class ProjectMonitoringSecretKeyService
             ->acceptJson()
             ->get($this->apiUrl.'/sigma/sync-list/projects');
         if (! $response->successful()) {
+            Log::channel('project_monitoring')->error('Project API sync failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'url' => $this->apiUrl.'/sigma/sync-list/projects'
+            ]);
             return [];
         }
         return $response->json()["data"];
