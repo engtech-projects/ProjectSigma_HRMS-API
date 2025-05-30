@@ -138,6 +138,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // to do: Move Setup Routes inside setups prefix
     Route::prefix('setup')->group(function () {
         Route::resource('payroll-particular-terms', AccountingParticularController::class)->names('payrollParticularTerms');
+        Route::prefix('sync')->group(function () {
+            Route::post('/all', [ApiSyncController::class, 'syncAll']);
+            Route::prefix('project')->group(function () {
+                Route::post('/all', [ApiSyncController::class, 'syncAllProjectMonitoring']);
+                Route::post('/project', [ApiSyncController::class, 'syncProjects']);
+            });
+        });
     });
     // APPROVALS
     Route::resource('approvals', ApprovalsController::class);
@@ -378,13 +385,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('employee-heads', [HrmsEnumController::class, 'employeeHeads']);
         Route::get('approval-users', [HrmsEnumController::class, 'approvalUsers']);
         Route::get('approval-heads', [HrmsEnumController::class, 'approvalHeads']);
-    });
-    Route::prefix('sync')->group(function () {
-        Route::post('/all', [ApiSyncController::class, 'syncAll']);
-        Route::prefix('project')->group(function () {
-            Route::post('/all', [ApiSyncController::class, 'syncAllProjectMonitoring']);
-            Route::post('/project', [ApiSyncController::class, 'syncProjects']);
-        });
     });
 });
 // ATTENDANCE PORTAL TOKEN AUTH
