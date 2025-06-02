@@ -1293,7 +1293,8 @@ class ReportService
             'Employee Name',
             'Designation',
             'Section',
-            'Date of Travel Order',
+            'Date of Travel From',
+            'Date of Travel To',
             'Date Filled',
             'Prepared By',
             'Request Status',
@@ -1839,6 +1840,7 @@ class ReportService
                     $withQuery->where('projects.id', $validate['project_id']);
                 });
             })
+            ->orderBy('date_of_effectivity', 'asc')
             ->get();
 
         $returnData = PortalMonitoringPanTransfer::collection($main);
