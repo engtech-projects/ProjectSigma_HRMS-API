@@ -4,6 +4,7 @@ namespace App\Http\Resources\Reports;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class PortalMonitoringTravelOrder extends JsonResource
 {
@@ -22,7 +23,7 @@ class PortalMonitoringTravelOrder extends JsonResource
                 'designation' => $employee->current_position_name,
                 'section' => $employee->current_assignment_names,
                 'date_of_travel_order_from' => $this->date_of_travel_human,
-                'date_of_travel_order_to' => $this->date_of_travel_with_duration_travel,
+                'date_of_travel_order_to' => Carbon::parse($this->date_time_end_human)->format('F j, Y'),
                 'date_filled' => $this->created_at_date_human,
                 'prepared_by' => $this->created_by_user_name,
                 'request_status' => $this['request_status'],
