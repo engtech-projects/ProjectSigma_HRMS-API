@@ -102,6 +102,15 @@ class TravelOrder extends Model
     {
         return Carbon::parse($this->date_of_travel)->format("F j, Y");
     }
+
+    public function getDateOfTravelWithDurationTravelAttribute()
+    {
+        $dateOfTravel = Carbon::parse($this->date_of_travel);
+        $newDateOfTravel = $dateOfTravel->addDays($this->duration_of_travel);
+
+        return $newDateOfTravel->format("F j, Y");
+    }
+
     public function getDateTimeStartAttribute()
     {
         return $this->date_of_travel
