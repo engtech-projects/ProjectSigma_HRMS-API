@@ -56,6 +56,8 @@ enum AccessibilityInventory: string
 
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_CREATENCPO = "inventory:procurement_purchase order_create ncpo";
 
+    case INVENTORY_SETUP_SYNCHRONIZATION = "inventory:setup_synchronization";
+
     public static function toArray(): array
     {
         $array = [];
