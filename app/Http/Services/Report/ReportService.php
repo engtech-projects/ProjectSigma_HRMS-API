@@ -33,9 +33,12 @@ use App\Http\Resources\Reports\PortalMonitoringLeaveSummary;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrder;
 use App\Http\Resources\Reports\PortalMonitoringTravelOrderSummary;
 use App\Http\Resources\Reports\PortalMonitoringManpowerRequest;
+use App\Http\Resources\Reports\PortalMonitoringManpowerRequestSummary;
 use App\Http\Resources\Reports\PortalMonitoringPanTermination;
 use App\Http\Resources\Reports\PortalMonitoringPanTransfer;
 use App\Http\Resources\Reports\PortalMonitoringPanPromotion;
+use App\Http\Resources\Reports\PortalMonitoringAttendanceLog;
+use App\Http\Resources\Reports\PortalMonitoringAttendanceLogSummary;
 use App\Models\TravelOrder;
 use App\Models\Loans;
 use App\Models\OtherDeduction;
@@ -46,6 +49,7 @@ use App\Models\PayrollRecord;
 use App\Models\AllowanceRequest;
 use App\Models\FailureToLog;
 use App\Models\ManpowerRequest;
+use App\Models\AttendanceLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -1289,7 +1293,8 @@ class ReportService
             'Employee Name',
             'Designation',
             'Section',
-            'Date of Travel Order',
+            'Date of Travel From',
+            'Date of Travel To',
             'Date Filled',
             'Prepared By',
             'Request Status',
@@ -1380,6 +1385,26 @@ class ReportService
         $excel = SimpleExcelWriter::create($fileName . ".xlsx");
         $excel->addHeader($masterListHeaders);
         $reportData = ReportService::panTransferMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+    public static function manpowerRequestMonitoringSummaryExport($validate)
+    {
+        $masterListHeaders = [
+            'Requested Position/Title',
+            'Total Number Requested',
+            'Total Number of Unserved',
+            'Total Number of Served',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringManpowerRequestSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::manpowerRequestMonitoringSummary($validate)->resolve();
         foreach ($reportData as $row) {
             $excel->addRow($row);
         }
@@ -1672,8 +1697,7 @@ class ReportService
         $dateTo = Carbon::parse($validate["date_to"]);
         $main = Employee::isActive()->with("employee_travel_order")
             ->whereHas('employee_travel_order', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
-                $query->isApproved()
-                    ->betweenDates($dateFrom, $dateTo)
+                $query->betweenDates($dateFrom, $dateTo)
                     ->when($withDepartment, function ($query) use ($validate) {
                         return $query->where('charge_type', TravelOrder::DEPARTMENT)
                         ->where('charge_id', $validate['department_id']);
@@ -1683,10 +1707,17 @@ class ReportService
                         ->where('charge_id', $validate['project_id']);
                     });
             })->get();
-        $updatedData = collect($main)->map(function ($employee) {
-            $employee['total_travel_order'] = count($employee['employee_travel_order']);
-            return $employee;
+
+        $updatedData = collect($main)->map(function ($item) use ($dateFrom, $dateTo) {
+            $filteredOrders = collect($item['employee_travel_order'])->whereBetween('date_of_travel', [$dateFrom, $dateTo])->values();
+            return [
+                'id' => $item['id'],
+                'fullname_last' => $item['fullname_last'],
+                'filter_employee_travel_order' => $filteredOrders->all(),
+                'total_travel_order' => $filteredOrders->count(),
+            ];
         })->toArray();
+
         $returnData = PortalMonitoringTravelOrderSummary::collection($updatedData);
         return $returnData;
     }
@@ -1709,17 +1740,55 @@ class ReportService
         return $returnData;
     }
 
+    public static function manpowerRequestMonitoringSummary($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        if ($withProject) {
+            return collect([]);
+        }
+        $main = ManpowerRequest::isApproved()
+            ->with("department", "position", "manpowerRequestJobApplicants")
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, function ($query) use ($validate) {
+                return $query->where('requesting_department', $validate['department_id']);
+            })->get();
+
+        $dataMerge = $main->groupBy('position.name')->map(function ($entries) {
+            return [
+                "name" => $entries->first()["position"]["name"],
+                "total_number_requested" => $entries->flatMap(fn ($entry) => $entry["manpowerRequestJobApplicants"])->count(),
+                "total_number_unserved" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
+                ->filter(fn ($applicant) => in_array($applicant["hiring_status"], ["Processing", "For Hiring", "Rejected"]))
+                ->count()),
+                "total_number_served" => $entries->sum(fn ($entry) => collect($entry["manpowerRequestJobApplicants"])
+                ->filter(fn ($applicant) => $applicant["hiring_status"] === "Hired")
+                ->count()),
+                "manpower_request_job_applicants" => $entries->flatMap(fn ($entry) => $entry["manpowerRequestJobApplicants"])->map(fn ($request) => [
+                    "id" => $request["id"],
+                    "job_applicants_id" => $request["job_applicants_id"],
+                    "manpowerrequests_id" => $request["manpowerrequests_id"],
+                    "hiring_status" => $request["hiring_status"]
+                ])
+            ];
+        })->values();
+        $returnData = PortalMonitoringManpowerRequestSummary::collection($dataMerge);
+        return $returnData;
+    }
+
     public static function panTerminationMonitoring($validate)
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TERMINATION)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
-            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
                     if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
@@ -1746,13 +1815,15 @@ class ReportService
     {
         $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $dateFrom = Carbon::parse($validate["date_from"]);
+        $dateTo = Carbon::parse($validate["date_to"]);
         $main = EmployeePanRequest::isApproved()
             ->with("employee", "projects", "department", "position")
             ->where("type", PanRequestType::TRANSFER)
             ->whereHas('employee', function ($query) {
                 $query->isActive();
             })
-            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->betweenDates($dateFrom, $dateTo)
             ->when($withDepartment, function ($query) use ($validate) {
                 return $query->has('department')->whereHas('department', function ($withQuery) use ($validate) {
                     if (!isset($validate['department_id']) || is_null($validate['department_id'])) {
@@ -1769,6 +1840,7 @@ class ReportService
                     $withQuery->where('projects.id', $validate['project_id']);
                 });
             })
+            ->orderBy('date_of_effectivity', 'asc')
             ->get();
 
         $returnData = PortalMonitoringPanTransfer::collection($main);
@@ -1786,6 +1858,7 @@ class ReportService
             'Termination Reason',
             'Eligible for re-hire',
             'Effectivity Date',
+            'Date Requested',
             'Requested by',
             'Request Status',
             'No. of Days Delayed Filing',
@@ -1835,5 +1908,165 @@ class ReportService
 
         $returnData = PortalMonitoringPanPromotion::collection($main);
         return $returnData;
+    }
+
+    public static function getTotalCountingAttendanceLog($data)
+    {
+        $groupedData = collect([]);
+
+        $data->groupBy("employee.id")->chunk(100)->each(function ($chunk) use ($groupedData) {
+            $chunk->each(function ($entries) use ($groupedData) {
+                $groupedData->push([
+                    "employee_name" => optional($entries->first()->employee)->fullname_last,
+                    "designation" => optional($entries->first()->employee)->current_position_name,
+                    "section" => $entries->first()->charging_designation,
+                    "logs" => $entries->map(fn ($entry) => [
+                        "id" => $entry->id,
+                        "date" => $entry->date,
+                        "time" => $entry->time,
+                        "log_type" => $entry->log_type,
+                        "time_human" => $entry->time_human,
+                        "charging_designation" => $entry->charging_designation,
+                    ])->values(),
+                    "department" => optional($entries->first()->department),
+                    "project" => optional($entries->first()->project),
+                ]);
+            });
+        });
+
+        $countInAndOut = collect([]);
+
+        $groupedData->chunk(100)->each(function ($chunk) use ($countInAndOut) {
+            $chunk->each(function ($employee) use ($countInAndOut) {
+                $countInAndOut->push([
+                    "employee_name" => $employee["employee_name"],
+                    "designation" => $employee["designation"],
+                    "section" => $employee["section"],
+                    "logs_count" => $employee["logs"]
+                        ->groupBy("date")
+                        ->map(fn ($logs) => [
+                            "timeInAm" => $logs->where("log_type", "In")->whereBetween("time", ["00:00:00", "12:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeOutAm" => $logs->where("log_type", "Out")->whereBetween("time", ["00:00:00", "13:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeInPm" => $logs->where("log_type", "In")->whereBetween("time", ["12:00:00", "24:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                            "timeOutPm" => $logs->where("log_type", "Out")->whereBetween("time", ["13:00:00", "24:00:00"])->unique("time")->isNotEmpty() ? 1 : 0,
+                        ]),
+                ]);
+            });
+        });
+
+        $structureData = collect([]);
+
+        $countInAndOut->chunk(100)->each(function ($chunk) use ($structureData) {
+            $chunk->each(function ($employee) use ($structureData) {
+                $structureData->push([
+                    "employee_name" => $employee["employee_name"],
+                    "designation" => $employee["designation"],
+                    "section" => $employee["section"],
+                    "time_in_am" => $employee["logs_count"]->sum("timeInAm"),
+                    "time_out_am" => $employee["logs_count"]->sum("timeOutAm"),
+                    "time_in_pm" => $employee["logs_count"]->sum("timeInPm"),
+                    "time_out_pm" => $employee["logs_count"]->sum("timeOutPm"),
+                ]);
+            });
+        });
+
+        return $structureData;
+    }
+
+    public static function attendanceLogMonitoring($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $query = AttendanceLog::with(["employee", "department", "project"])
+            ->whereHas("employee", fn ($query) => $query->isActive())
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, fn ($query) => $query->has("department")
+                ->whereHas("department", fn ($withQuery) =>
+                    $withQuery->where("id", $validate["department_id"] ?? null)))
+            ->when($withProject, fn ($query) => $query->has("project")
+                ->whereHas("project", fn ($withQuery) =>
+                    $withQuery->where("projects.id", $validate["project_id"] ?? null)))
+            ->get();
+
+        $structureResult = self::getTotalCountingAttendanceLog($query);
+
+        $returnData = PortalMonitoringAttendanceLog::collection($structureResult);
+        return $returnData;
+    }
+
+    public static function attendanceLogMonitoringExport($validate)
+    {
+        $masterListHeaders = [
+            'Employee Name',
+            'Designation',
+            'Section',
+            'IN (AM)',
+            'OUT (AM)',
+            'IN (PM)',
+            'OUT (PM)',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringAttendanceLogList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::attendanceLogMonitoring($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+
+
+    public static function attendanceLogMonitoringSummary($validate)
+    {
+        $withDepartment = $validate["group_type"] == GroupType::DEPARTMENT->value;
+        $withProject = $validate["group_type"] == GroupType::PROJECT->value;
+        $query = AttendanceLog::with(["employee", "department", "project"])
+            ->whereHas("employee", fn ($query) => $query->isActive())
+            ->betweenDates($validate["date_from"], $validate["date_to"])
+            ->when($withDepartment, fn ($query) => $query->has("department")
+                ->whereHas("department", fn ($withQuery) =>
+                    $withQuery->where("id", $validate["department_id"] ?? null)))
+            ->when($withProject, fn ($query) => $query->has("project")
+                ->whereHas("project", fn ($withQuery) =>
+                    $withQuery->where("projects.id", $validate["project_id"] ?? null)))
+            ->get();
+
+        $structureResult = self::getTotalCountingAttendanceLog($query);
+        $totalTimeInAm = $structureResult->sum("time_in_am");
+        $totalTimeOutAm = $structureResult->sum("time_out_am");
+        $totalTimeInPm = $structureResult->sum("time_in_pm");
+        $totalTimeOutPm = $structureResult->sum("time_out_pm");
+        $result = collect([
+            [
+                "total_time_in_am" => $totalTimeInAm,
+                "total_time_out_am" => $totalTimeOutAm,
+                "total_time_in_pm" => $totalTimeInPm,
+                "total_time_out_pm" => $totalTimeOutPm,
+            ]
+        ]);
+        $returnData = PortalMonitoringAttendanceLogSummary::collection($result);
+        return $returnData;
+    }
+
+    public static function attendanceLogMonitoringSummaryExport($validate)
+    {
+        $masterListHeaders = [
+            'TOTAL NUMBER IN (AM)',
+            'TOTAL NUMBER OUT (AM)',
+            'TOTAL NUMBER IN (PM)',
+            'TOTAL NUMBER OUT (PM)',
+        ];
+        $fileName = "storage/temp-report-generations/PortalMonitoringAttendanceLogSummaryList-" . Str::random(10);
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader($masterListHeaders);
+        $reportData = ReportService::attendanceLogMonitoringSummary($validate)->resolve();
+        foreach ($reportData as $row) {
+            $excel->addRow($row);
+        }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
     }
 }

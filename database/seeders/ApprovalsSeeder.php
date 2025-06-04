@@ -244,26 +244,26 @@ class ApprovalsSeeder extends Seeder
             ]
         );
         // PROJECTS
-        // DB::table('approvals')->upsert(
-        //     [
-        //         [
-        //             'id' => 210,
-        //             'form' => "New Item Profile",
-        //             'approvals' => "[]",
-        //             'module' => ApprovalModules::INVENTORY->value,
-        //             'deleted_at' => null,
-        //             'created_at' => Carbon::now(),
-        //             'updated_at' => Carbon::now(),
-        //         ],
-        //     ],
-        //     [
-        //         'id'
-        //     ],
-        //     [
-        //         'form'
-        //         'module'
-        //         'deleted_at'
-        //     ]
-        // );
+        DB::table('approvals')->upsert(
+            [
+                [
+                    'id' => 3010,
+                    'form' => "Project Award Request",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::PROJECT->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+            ],
+            [
+                'id'
+            ],
+            [
+                'form',
+                'module',
+                'deleted_at',
+            ]
+        );
     }
 }
