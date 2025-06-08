@@ -87,6 +87,7 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeEmployeesController;
 use App\Http\Controllers\PayrollRecordController;
 use App\Http\Controllers\ProjectListController as ViewProjectListController;
+use App\Http\Controllers\Request13thMonthController;
 use App\Http\Controllers\RequestSalaryDisbursementController;
 use App\Http\Controllers\RequestVoidController;
 use Illuminate\Support\Facades\Artisan;
@@ -247,6 +248,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('payslip-ready', [RequestSalaryDisbursementController::class, 'payslipReady']);
         Route::get('payslip-ready/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'payslipReadyShow']);
         Route::post('submit-to-accounting/{requestSalaryDisbursement}', [RequestSalaryDisbursementController::class, 'submitToAccounting']);
+    });
+    Route::prefix('13th-month')->group(function () {
+        Route::post('draft', [Request13thMonthController::class, 'generateDraft'])->name('request13thMonth.draft');
+        Route::resource('resource', Request13thMonthController::class)->names("request13thMonth")->except(["patch", "update", "put"]);
+        Route::get('my-requests', [Request13thMonthController::class, 'myRequests']);
+        Route::get('my-approvals', [Request13thMonthController::class, 'myApprovals']);
     });
     Route::prefix('request-voids')->group(function () {
         Route::post('void/{modelName}/{model}', VoidRequestAction::class);

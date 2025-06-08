@@ -21,7 +21,6 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        // \App\Http\Middleware\PortalIPMiddleware::class,
     ];
 
     /**
@@ -65,7 +64,7 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'portal_in' =>  \App\Http\Middleware\PortalIPMiddleware::class,
-        'secret_api' =>  \App\Http\Middleware\SecretApiKey::class,
+        'portal_in' => \App\Http\Middleware\PortalIPMiddleware::class,
+        'secret_api' => \App\Http\Middleware\SecretApiKey::class,
     ];
 }
