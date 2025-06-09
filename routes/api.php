@@ -254,6 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', Request13thMonthController::class)->names("request13thMonth")->except(["patch", "update", "put"]);
         Route::get('my-requests', [Request13thMonthController::class, 'myRequests']);
         Route::get('my-approvals', [Request13thMonthController::class, 'myApprovals']);
+        Route::get('summary', [Request13thMonthController::class, 'summary']);
     });
     Route::prefix('request-voids')->group(function () {
         Route::post('void/{modelName}/{model}', VoidRequestAction::class);

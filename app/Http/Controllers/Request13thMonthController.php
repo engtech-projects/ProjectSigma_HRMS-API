@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\RequestStatuses;
 use App\Http\Requests\Request13thMonthDraft;
+use App\Http\Requests\Request13thMonthSummaryRequest;
 use App\Models\Request13thMonth;
 use App\Http\Requests\StoreRequest13thMonthRequest;
 use App\Http\Resources\Request13thMonthDetailedResource;
@@ -154,7 +155,9 @@ class Request13thMonthController extends Controller
             ]
         );
     }
-
+    /**
+     * List of my requests.
+     */
     public function myRequests()
     {
         $requests = Request13thMonth::myRequests()
@@ -169,7 +172,9 @@ class Request13thMonthController extends Controller
             ]
         );
     }
-
+    /**
+     * List of my Approvals.
+     */
     public function myApprovals()
     {
         $requests = Request13thMonth::myApprovals()
@@ -184,5 +189,30 @@ class Request13thMonthController extends Controller
             ]
         );
     }
-
+    /**
+     * Summary of the specified 13th month date.
+     */
+    public function summary(Request13thMonthSummaryRequest $request)
+    {
+        $validatedData = $request->validated();
+        $payrollService = new Payroll13thMonthService();
+        try {
+            $summaryData = $payrollService->generateSummary(
+                $validatedData["date_requested"],
+            );
+        } catch (Exception $e) {
+            Log::error('Failed to generate 13th month summary: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate summary data',
+            ], 500);
+        }
+        return response()->json(
+            [
+                'data' => $summaryData,
+                'success' => true,
+                'message' => 'Successfully generated 13th month summary',
+            ]
+        );
+    }
 }

@@ -26,7 +26,7 @@ class Request13thMonthDetailedResource extends JsonResource
             'days_advance'          => $this->days_advance,
             'metadata'              => $this->metadata,
             'request_status'        => $this->request_status,
-            "approvals"             => ApprovalAttributeResource::collection($this->approvals),
+            "approvals"             => $this->approvals ? ApprovalAttributeResource::collection($this->approvals) : null,
             "next_approval"         => $this->getNextPendingApproval(),
             "created_at_human"      => $this->created_at_human,
             "created_by_user_name"  => $this->created_by_user_name,

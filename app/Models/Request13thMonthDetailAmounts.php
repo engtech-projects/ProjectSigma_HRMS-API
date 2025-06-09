@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Request13thMonthDetailAmounts extends Model
@@ -43,6 +44,15 @@ class Request13thMonthDetailAmounts extends Model
     {
         return $this->morphTo();
     }
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, "charge_id");
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, "charge_id");
+    }
     /**
     * ==================================================
     * MODEL ATTRIBUTES
@@ -51,10 +61,10 @@ class Request13thMonthDetailAmounts extends Model
     public function getChargingNameAttribute()
     {
         if ($this->charge_type == AttendancePortal::DEPARTMENT) {
-            return $this->chargeable?->department_name ?? "";
+            return $this->department?->department_name ?? "";
         }
         if ($this->charge_type == AttendancePortal::PROJECT) {
-            return $this->chargeable?->project_code ?? "";
+            return $this->project?->project_code ?? "";
         }
         return 'No charging found.';
     }

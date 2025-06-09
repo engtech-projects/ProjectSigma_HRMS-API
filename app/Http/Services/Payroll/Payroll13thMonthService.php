@@ -5,6 +5,7 @@ namespace App\Http\Services\Payroll;
 use App\Models\Department;
 use App\Models\PayrollDetail;
 use App\Models\Project;
+use App\Models\Request13thMonthDetailAmounts;
 use Carbon\Carbon;
 
 class Payroll13thMonthService
@@ -140,6 +141,33 @@ class Payroll13thMonthService
                 "payroll_record_ids" => $payrollIds,
             ],
         ];
+    }
+    public function generateSummary($dateRequested)
+    {
+        $approvedRequests = Request13thMonthDetailAmounts::with(['detail.request13thMonth'])
+        ->whereHas('detail.request13thMonth', function ($query) use ($dateRequested) {
+            $query->where('date_requested', $dateRequested)
+            ->isApproved();
+        })
+        ->get()
+        ->append(["charging_name"]);
+        $groupedData = $approvedRequests->groupBy('charging_name')
+        ->map(function ($items, $chargingName) {
+            $totalAmount = $items->sum('amount');
+            $totalRegularSalary = $items->sum("metadata.payroll_total_regular_salary");
+            $totalRegularHolidaySalary = $items->sum("metadata.payroll_total_regular_holiday_salary");
+            $totalSpecialHolidaySalary = $items->sum("metadata.payroll_total_special_holiday_salary");
+            return [
+                'payroll_duration' => $items->first()->detail->request13thMonth->payroll_duration_human,
+                'charging_name' => $chargingName,
+                'total_amount' => round($totalAmount, 2),
+                'total_regular_salary' => round($totalRegularSalary, 2),
+                'total_regular_holiday_salary' => round($totalRegularHolidaySalary, 2),
+                'total_special_holiday_salary' => round($totalSpecialHolidaySalary, 2),
+                'unique_payrolls' => $items->pluck('detail.request13thMonth.metadata.payroll_record_ids')->flatten()->unique()->count(),
+            ];
+        })->values()->all();
+        return $groupedData;
     }
 
 }
