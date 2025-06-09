@@ -125,7 +125,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
-
+                [
+                    'id' => 20,
+                    'form' => "13th Month Request",
+                    'module' => ApprovalModules::HRMS->value,
+                    'approvals' => "[]",
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [
                 'id'

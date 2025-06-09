@@ -40,7 +40,11 @@ class Request13thMonth extends Model
         'approvals' => 'array',
     ];
 
-    // Define relationships
+    /**
+    * ==================================================
+    * MODEL RELATIONSHIPS
+    * ==================================================
+    */
     public function details()
     {
         return $this->hasMany(Request13thMonthDetails::class, 'request_13th_months_id', "id");
@@ -50,4 +54,41 @@ class Request13thMonth extends Model
     {
         return $this->morphTo();
     }
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
+    public function getDateRequestedHumanAttribute()
+    {
+        return $this->date_requested->format('F j, Y');
+    }
+    public function getDateFromHumanAttribute()
+    {
+        return $this->date_from?->format('F j, Y');
+    }
+    public function getDateToHumanAttribute()
+    {
+        return $this->date_to?->format('F j, Y');
+    }
+    public function getPayrollDurationHumanAttribute()
+    {
+        return $this->date_from_human . ' - ' . $this->date_to_human;
+    }
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
+
 }

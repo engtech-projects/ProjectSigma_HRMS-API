@@ -29,7 +29,11 @@ class Request13thMonthDetailAmounts extends Model
         'metadata' => 'array',
     ];
 
-    // Define relationships
+    /**
+    * ==================================================
+    * MODEL RELATIONSHIPS
+    * ==================================================
+    */
     public function detail()
     {
         return $this->belongsTo(Request13thMonthDetails::class, 'request_13th_month_detail_id', 'id');
@@ -39,4 +43,35 @@ class Request13thMonthDetailAmounts extends Model
     {
         return $this->morphTo();
     }
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
+    public function getChargingNameAttribute()
+    {
+        if ($this->charge_type == AttendancePortal::DEPARTMENT) {
+            return $this->chargeable?->department_name ?? "";
+        }
+        if ($this->charge_type == AttendancePortal::PROJECT) {
+            return $this->chargeable?->project_code ?? "";
+        }
+        return 'No charging found.';
+    }
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
+
 }

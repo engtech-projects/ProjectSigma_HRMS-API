@@ -5,6 +5,8 @@ namespace App\Http\Services\Payroll;
 use App\Models\Department;
 use App\Models\PayrollDetail;
 use App\Models\Project;
+use App\Models\Request13thMonthDetailAmounts;
+use App\Models\Request13thMonthDetails;
 use Carbon\Carbon;
 
 class Payroll13thMonthService
@@ -98,19 +100,40 @@ class Payroll13thMonthService
                         "name" => $chargingName,
                         "days_advance" => $advancedDays,
                         "daily_rate" => $employeeDailyRate,
+                        "payroll_total_amount" => $chargingAmount,
+                        "payroll_total_regular_salary" => $chargingAmount,
+                        "payroll_total_regular_holiday_salary" => 0,
+                        "payroll_total_special_holiday_salary" => 0,
+                        "total_amount" => round($chargingAmount / 12, 2),
+                        "regular_salary" => round($chargingAmount / 12, 2),
+                        "regular_holiday_salary" => 0,
+                        "special_holiday_salary" => 0,
                     ],
                 ];
             }
-            return [
+            $payrollRecords = $data->pluck('payroll_record.id')->unique();
+            $responseData = [
                 "employee_id" => $data->first()->employee_id,
                 "amounts" => $chargeAmounts,
                 "metadata" => [
                     "employee_name" => $data->first()->employee->fullname_last,
+                    "payroll_record_ids" => $payrollRecords,
+                    "payroll_record_count" => $payrollRecords->count(),
+                    "total_payroll_regular" => round(array_sum(array_map(function ($charge) {
+                        return $charge['metadata']['payroll_total_regular_salary'] ?? 0;
+                    }, $chargeAmounts)), 2),
+                    "total_payroll_regular_holiday" => round(array_sum(array_map(function ($charge) {
+                        return $charge['metadata']['payroll_total_regular_holiday_salary'] ?? 0;
+                    }, $chargeAmounts)), 2),
+                    "total_payroll_special_holiday" => round(array_sum(array_map(function ($charge) {
+                        return $charge['metadata']['payroll_total_special_holiday_salary'] ?? 0;
+                    }, $chargeAmounts)), 2),
+                    "charging_names" => implode(", ", array_unique(array_column(array_column($chargeAmounts, 'metadata'), 'name') ?? [])),
                     "total_payroll_amount" => round(array_sum(array_column($chargeAmounts, 'total_payroll')), 2),
                     "total_amount" => round(array_sum(array_column($chargeAmounts, 'amount')), 2),
-
                 ],
             ];
+            return $responseData;
         });
         return [
             "details" => $payrollDetails->values()->all(),

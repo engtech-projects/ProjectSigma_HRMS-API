@@ -63,6 +63,7 @@ class Request13thMonthDraft extends FormRequest
                 "in:". Project::class.",".Department::class,
              ],
             "charging_id" => [
+                "nullable",
                 "required_with:charging_type",
                 "integer",
                 Rule::when(

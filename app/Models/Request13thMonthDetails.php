@@ -21,6 +21,11 @@ class Request13thMonthDetails extends Model
         'metadata' => 'array',
     ];
 
+    /**
+     * ==================================================
+     * MODEL RELATIONSHIPS
+     * ==================================================
+     */
     public function request13thMonth()
     {
         return $this->belongsTo(Request13thMonth::class, 'request_13th_months_id');
@@ -35,4 +40,25 @@ class Request13thMonthDetails extends Model
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
+
 }

@@ -9,6 +9,8 @@ use App\Http\Requests\StoreRequest13thMonthRequest;
 use App\Http\Resources\Request13thMonthDetailedResource;
 use App\Http\Resources\Request13thMonthListingResource;
 use App\Http\Services\Payroll\Payroll13thMonthService;
+use App\Models\Request13thMonthDetailAmounts;
+use App\Models\Request13thMonthDetails;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -64,11 +66,11 @@ class Request13thMonthController extends Controller
                     $generatedDetail->amounts()->create($amount);
                 }
             }
+            $generatedRequest->load("details.amounts");
         });
-
         return response()->json(
             [
-                'data' => $generatedRequest->load("details.amounts"),
+                'data' => $generatedRequest,
                 'success' => true,
                 'message' => 'Successfully created 13th month request',
             ]
@@ -126,11 +128,53 @@ class Request13thMonthController extends Controller
             'details' => $draftData['details'],
             'metadata' => $draftData['metadata'], // Assuming metadata is not required for draft generation
         ];
+        $jsonData = $responseData;
+        $modelData = new Request13thMonth($responseData);
+        foreach ($draftData['details'] as $detail) {
+            $childDetail = new Request13thMonthDetails($detail);
+            foreach ($detail['amounts'] as $amount) {
+                $childDetail->amounts->add(new Request13thMonthDetailAmounts($amount));
+            }
+            $modelData->details->add($childDetail);
+        }
         return response()->json(
             [
-                'data' => $responseData,
+                'data' => [
+                    "json" => $jsonData,
+                    "model" => new Request13thMonthDetailedResource($modelData),
+                ],
                 'success' => true,
                 'message' => 'Successfully generated draft for 13th month request',
+            ]
+        );
+    }
+
+    public function myRequests()
+    {
+        $requests = Request13thMonth::myRequests()
+        ->orderBy("created_at", "DESC")
+        ->paginate(10);
+
+        return response()->json(
+            [
+                'data' => Request13thMonthListingResource::collection($requests)->response()->getData(true),
+                'success' => true,
+                'message' => 'Successfully fetched my 13th month requests',
+            ]
+        );
+    }
+
+    public function myApprovals()
+    {
+        $requests = Request13thMonth::myApprovals()
+        ->orderBy("created_at", "DESC")
+        ->paginate(10);
+
+        return response()->json(
+            [
+                'data' => Request13thMonthListingResource::collection($requests)->response()->getData(true),
+                'success' => true,
+                'message' => 'Successfully fetched my 13th month approvals',
             ]
         );
     }

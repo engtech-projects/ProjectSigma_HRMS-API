@@ -3,7 +3,10 @@
 namespace App\Http\Requests;
 
 use App\Http\Traits\HasApprovalValidation;
+use App\Models\Department;
+use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest13thMonthRequest extends FormRequest
 {
@@ -51,9 +54,30 @@ class StoreRequest13thMonthRequest extends FormRequest
             'date_to' => ['required', 'date_format:Y-m-d', 'after_or_equal:date_from'],
             'employees' => ['required', 'array'],
             'employees.*' => ['integer', 'exists:employees,id', 'distinct'],
-            'days_advance' => ['nullable', 'integer', 'min:0'],
-            'charging_type' => ['nullable', 'string'],
-            'charging_id' => ['nullable', 'integer'],
+            "days_advance" => [
+                "required",
+                "integer",
+                "min:0",
+            ],
+            "charging_type" => [
+                Rule::when(
+                    fn () => $this->days_advance === 0,
+                    ['nullable'],
+                    ['required']
+                ),
+                "string",
+                "in:". Project::class.",".Department::class,
+             ],
+            "charging_id" => [
+                "nullable",
+                "required_with:charging_type",
+                "integer",
+                Rule::when(
+                    fn () => $this->charging_type === Project::class,
+                    ['exists:projects,id'],
+                    ['exists:departments,id']
+                ),
+            ],
             'metadata' => ["required", 'array'],
             "details" => ['required', 'array'],
             "details.*.employee_id" => ['required', 'integer', 'exists:employees,id'],

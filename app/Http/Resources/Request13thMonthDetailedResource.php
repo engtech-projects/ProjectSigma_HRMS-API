@@ -15,13 +15,23 @@ class Request13thMonthDetailedResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'               => $this->id,
-            'employee'         => new EmployeeSummaryResource($this->whenLoaded('employee')),
-            'requested_amount' => $this->requested_amount,
-            'status'           => $this->status,
-            // 'details'          => Request13thMonthDetailsResource::collection($this->whenLoaded('details')),
-            'created_at'       => $this->created_at,
-            'updated_at'       => $this->updated_at,
+            'id'                => $this->id ?? '',
+            'employee'          => new EmployeeSummaryResource($this->whenLoaded('employee')),
+            'details'           => Request13mDetailsResource::collection($this->whenLoaded('details')),
+            'date_requested'    => $this->date_requested,
+            'payroll_duration'  => $this->payroll_duration_human,
+            'date_from'         => $this->date_from_human,
+            'date_to'           => $this->date_to_human,
+            'days_advance'      => $this->days_advance,
+            'metadata'          => $this->metadata,
+
+            'request_status'    => $this->request_status,
+            "approvals" => ApprovalAttributeResource::collection($this->approvals),
+            "next_approval" => $this->getNextPendingApproval(),
+            "created_at_human" => $this->created_at_human,
+            "created_by_user_name" => $this->created_by_user_name,
+            'created_at'        => $this->created_at,
+            'updated_at'        => $this->updated_at,
         ];
     }
 }
