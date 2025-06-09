@@ -13,6 +13,6 @@ enum VoidRequestModels: string
     use EnumHelper;
     case RequestLeaves = EmployeeLeaves::class;
     case RequestTravelOrder = TravelOrder::class;
-    case RequestOvertime = Overtime::class
+    case RequestOvertime = Overtime::class;
     case RequestAllowance = AllowanceRequest::class;
 }
