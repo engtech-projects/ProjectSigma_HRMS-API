@@ -61,10 +61,7 @@ class Request13thMonthController extends Controller
                 ]
             );
             foreach ($validatedData["details"] as $detail) {
-                $generatedDetail = $generatedRequest->details()->create([
-                    "employee_id" => $detail["employee_id"],
-                    "metadata" => json_encode($detail["metadata"]),
-                ]);
+                $generatedDetail = $generatedRequest->details()->create($detail);
                 foreach ($detail["amounts"] as $amount) {
                     $generatedDetail->amounts()->create($amount);
                 }
