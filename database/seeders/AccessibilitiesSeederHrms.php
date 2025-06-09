@@ -103,8 +103,8 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 13,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_ATTENDANCE_ATTENDANCELOGSDELETE->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
