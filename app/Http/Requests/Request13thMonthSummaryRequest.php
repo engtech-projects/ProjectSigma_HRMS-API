@@ -25,6 +25,7 @@ class Request13thMonthSummaryRequest extends FormRequest
             "date_requested" => [
                 "required",
                 "date",
+                "date_format:Y-m-d",
             ],
         ];
     }

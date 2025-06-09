@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Enums\ApprovalModels;
 use App\Enums\NotificationModules;
 use App\Models\Request13thMonth;
-use App\Models\RequestVoid;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;

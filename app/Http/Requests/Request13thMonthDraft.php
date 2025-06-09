@@ -55,7 +55,7 @@ class Request13thMonthDraft extends FormRequest
             ],
             "charging_type" => [
                 Rule::when(
-                    fn () => $this->days_advance === 0,
+                    fn () => $this->days_advance == 0,
                     ['nullable'],
                     ['required']
                 ),
@@ -67,7 +67,7 @@ class Request13thMonthDraft extends FormRequest
                 "required_with:charging_type",
                 "integer",
                 Rule::when(
-                    fn () => $this->charging_type === Project::class,
+                    fn () => $this->charging_type == Project::class,
                     ['exists:projects,id'],
                     ['exists:departments,id']
                 ),

@@ -60,10 +60,10 @@ class Request13thMonthDetailAmounts extends Model
     */
     public function getChargingNameAttribute()
     {
-        if ($this->charge_type == AttendancePortal::DEPARTMENT) {
+        if ($this->charge_type == Department::class) {
             return $this->department?->department_name ?? "";
         }
-        if ($this->charge_type == AttendancePortal::PROJECT) {
+        if ($this->charge_type == Project::class) {
             return $this->project?->project_code ?? "";
         }
         return 'No charging found.';
