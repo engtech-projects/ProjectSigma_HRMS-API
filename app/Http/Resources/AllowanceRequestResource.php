@@ -31,6 +31,8 @@ class AllowanceRequestResource extends JsonResource
             "next_approval" => $this->getNextPendingApproval(),
             "created_by" => $this->created_by,
             "requested_by_user" => $this->created_by_user->employee->fullname_first ?? $this->created_by_user->name,
+            "created_by_user" => $this->created_by_user_name,
+            "created_at_human" => $this->created_at_human,
         ];
     }
 }
