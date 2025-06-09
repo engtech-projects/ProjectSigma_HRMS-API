@@ -80,12 +80,11 @@ class Request13thMonthController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request13thMonth $request13thMonth)
+    public function show(Request13thMonth $resource)
     {
-        $request13thMonth->load("details.amounts");
         return response()->json(
             [
-                'data' => new Request13thMonthDetailedResource($request13thMonth),
+                'data' => new Request13thMonthDetailedResource($resource),
                 'success' => true,
                 'message' => 'Successfully fetched 13th month request',
             ]

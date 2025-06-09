@@ -5,8 +5,6 @@ namespace App\Http\Services\Payroll;
 use App\Models\Department;
 use App\Models\PayrollDetail;
 use App\Models\Project;
-use App\Models\Request13thMonthDetailAmounts;
-use App\Models\Request13thMonthDetails;
 use Carbon\Carbon;
 
 class Payroll13thMonthService

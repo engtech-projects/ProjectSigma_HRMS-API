@@ -37,7 +37,7 @@ class Request13thMonth extends Model
         'date_to' => 'date:Y-m-d',
         'employees' => 'array',
         'metadata' => 'array',
-        'approvals' => 'array',
+        "approvals" => 'array',
     ];
 
     /**
@@ -65,11 +65,11 @@ class Request13thMonth extends Model
     }
     public function getDateFromHumanAttribute()
     {
-        return $this->date_from?->format('F j, Y');
+        return $this->date_from->format('F j, Y');
     }
     public function getDateToHumanAttribute()
     {
-        return $this->date_to?->format('F j, Y');
+        return $this->date_to->format('F j, Y');
     }
     public function getPayrollDurationHumanAttribute()
     {
