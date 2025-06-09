@@ -116,6 +116,8 @@ enum AccessibilityHrms: string
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS = "hrms:loans and advances_other deductions"; // TO DELETE
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_FORMS = "hrms:loans and advances_other deductions_forms";
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALLREQUESTS = "hrms:loans and advances_other deductions_list";
+    case HRMS_ATTENDANCE_ATTENDANCELOGS = "hrms:attendance_attendance logs";
+    case HRMS_ATTENDANCE_ATTENDANCELOGSDELETE = "hrms:attendance_attendance logs delete";
     case HRMS_LNOTNTO_LEAVE_FORM = "hrms:leaves and overtime_leave_form";
     case HRMS_LNOTNTO_LEAVE_ALLREQUESTS = "hrms:leaves and overtime_leave_list";
     case HRMS_LNOTNTO_LEAVE_MYAPPROVALS = "hrms:leaves and overtime_leave_my approvals";
@@ -127,7 +129,6 @@ enum AccessibilityHrms: string
     case HRMS_LNOTNTO_TRAVELORDER_ALLREQUESTS = "hrms:leaves and overtime_travel order_list";
     case HRMS_LNOTNTO_TRAVELORDER_MYREQUESTS = "hrms:leaves and overtime_travel order_my request";
     case HRMS_LNOTNTO_TRAVELORDER_MYAPPROVALS = "hrms:leaves and overtime_travel order_my approvals";
-    case HRMS_ATTENDANCE_ATTENDANCELOGS = "hrms:attendance_attendance logs";
     case HRMS_EMPLOYEE_JOBAPPLICANT = "hrms:employee_job applicant";
     // case HRMS_ = "hrms:attendance_biometrics";
 
