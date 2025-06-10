@@ -238,12 +238,6 @@ class AttendanceLogController extends Controller
      */
     public function destroy(AttendanceLog $log)
     {
-        if (!$this->checkUserAccess([])) {
-            return new JsonResponse([
-                "success" => false,
-                "message" => "You don't have permission to perform this action.",
-            ], JsonResponse::HTTP_UNAUTHORIZED);
-        }
         if ($log->deleted_at) {
             return new JsonResponse([
                 "success" => false,
