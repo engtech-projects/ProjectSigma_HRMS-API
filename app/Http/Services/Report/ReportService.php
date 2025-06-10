@@ -1840,7 +1840,7 @@ class ReportService
                     $withQuery->where('projects.id', $validate['project_id']);
                 });
             })
-            ->orderBy('date_of_effectivity', 'asc')
+            ->orderBy('date_of_effictivity', 'asc')
             ->get();
 
         $returnData = PortalMonitoringPanTransfer::collection($main);

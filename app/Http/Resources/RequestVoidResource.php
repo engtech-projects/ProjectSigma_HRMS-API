@@ -25,6 +25,12 @@ class RequestVoidResource extends JsonResource
             "request" => $this->whenLoaded("request", function ($request) {
                 if ($this->request_type == VoidRequestModels::RequestLeaves->value) {
                     return new EmployeeLeaveResource($request);
+                } elseif ($this->request_type == VoidRequestModels::RequestTravelOrder->value) {
+                    return new TravelOrderResource($request);
+                } elseif ($this->request_type == VoidRequestModels::RequestOvertime->value) {
+                    return new OvertimeResource($request);
+                } elseif ($this->request_type == VoidRequestModels::RequestAllowance->value) {
+                    return new AllowanceRequestResource($request);
                 }
             })
         ];

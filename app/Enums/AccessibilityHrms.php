@@ -40,7 +40,10 @@ enum AccessibilityHrms: string
     case HRMS_PAYROLL_SALARY_GENERATEPAYROLL_ALLREQUESTS = "hrms:payroll_salary_generate payroll_all requests";
     case HRMS_PAYROLL_SALARY_GENERATEPAYROLL_MYAPPROVALS = "hrms:payroll_salary_generate payroll_my approvals";
     case HRMS_PAYROLL_SALARY_PAYROLLRECORD = "hrms:payroll_salary_payroll records";
-    case HRMS_PAYROLL_13THMONTH = "hrms:payroll_13th month";
+    case HRMS_PAYROLL_13THMONTH_FORMANDMYREQUEST = "hrms:payroll_13th month_form and my requests";
+    case HRMS_PAYROLL_13THMONTH_ALLREQUESTS = "hrms:payroll_13th month_all requests";
+    case HRMS_PAYROLL_13THMONTH_MYAPPROVALS = "hrms:payroll_13th month_my approvals";
+    case HRMS_PAYROLL_13THMONTH_SUMMARY = "hrms:payroll_13th month_summary";
     case HRMS_PAYROLL_ALLOWANCE = "hrms:payroll_allowance";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_FORM = "hrms:payroll_salary disbursement_form and my requests";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_AllREQUESTS = "hrms:payroll_salary disbursement_all requests";
@@ -77,23 +80,9 @@ enum AccessibilityHrms: string
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";
     case HRMS_LOCATION_EMPLOYEES = "hrms:location employees";
-    // case HRMS_ = "";
     case HRMS_REQUEST_VOID_CREATEREQUEST = "hrms:request void_my requests and create request";
     case HRMS_REQUEST_VOID_ALLREQUEST = "hrms:request void_all requests";
     case HRMS_REQUEST_VOID_MYAPPROVALS = "hrms:request void_my approvals";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
     case HRMS_EMPLOYEE_201_PIS = "hrms:employee_201_pis";
     case HRMS_EMPLOYEE_201_STAFFINFOSHEET = "hrms:employee_201_staff information sheet";
     case HRMS_EMPLOYEE_201_DOCUMENTSMEMO = "hrms:employee_201_documents and memos";
@@ -127,6 +116,8 @@ enum AccessibilityHrms: string
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS = "hrms:loans and advances_other deductions"; // TO DELETE
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_FORMS = "hrms:loans and advances_other deductions_forms";
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALLREQUESTS = "hrms:loans and advances_other deductions_list";
+    case HRMS_ATTENDANCE_ATTENDANCELOGS = "hrms:attendance_attendance logs";
+    case HRMS_ATTENDANCE_ATTENDANCELOGSDELETE = "hrms:attendance_attendance logs delete";
     case HRMS_LNOTNTO_LEAVE_FORM = "hrms:leaves and overtime_leave_form";
     case HRMS_LNOTNTO_LEAVE_ALLREQUESTS = "hrms:leaves and overtime_leave_list";
     case HRMS_LNOTNTO_LEAVE_MYAPPROVALS = "hrms:leaves and overtime_leave_my approvals";
@@ -138,7 +129,6 @@ enum AccessibilityHrms: string
     case HRMS_LNOTNTO_TRAVELORDER_ALLREQUESTS = "hrms:leaves and overtime_travel order_list";
     case HRMS_LNOTNTO_TRAVELORDER_MYREQUESTS = "hrms:leaves and overtime_travel order_my request";
     case HRMS_LNOTNTO_TRAVELORDER_MYAPPROVALS = "hrms:leaves and overtime_travel order_my approvals";
-    case HRMS_ATTENDANCE_ATTENDANCELOGS = "hrms:attendance_attendance logs";
     case HRMS_EMPLOYEE_JOBAPPLICANT = "hrms:employee_job applicant";
     // case HRMS_ = "hrms:attendance_biometrics";
 
