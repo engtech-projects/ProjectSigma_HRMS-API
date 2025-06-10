@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccessibilityHrms;
 use App\Enums\AssignTypes;
 use App\Enums\AttendanceType;
 use App\Enums\WorkLocation;
@@ -238,6 +239,12 @@ class AttendanceLogController extends Controller
      */
     public function destroy(AttendanceLog $log)
     {
+        if (!$this->checkUserAccess([AccessibilityHrms::HRMS_ATTENDANCE_ATTENDANCELOGSDELETE->value])) {
+            return new JsonResponse([
+                "success" => false,
+                "message" => "You don't have permission to perform this action.",
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
         if ($log->deleted_at) {
             return new JsonResponse([
                 "success" => false,
