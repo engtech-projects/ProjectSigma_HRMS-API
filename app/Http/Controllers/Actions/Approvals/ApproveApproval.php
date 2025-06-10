@@ -25,6 +25,10 @@ use App\Notifications\LeaveRequestApproved;
 use App\Notifications\LeaveRequestForApproval;
 use App\Notifications\PayrollRequestApproved;
 use App\Notifications\PayrollRequestForApproval;
+use App\Notifications\Request13thMonthApproved;
+use App\Notifications\Request13thMonthForApproval;
+use App\Notifications\VoidRequestApproved;
+use App\Notifications\VoidRequestForApproval;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -61,6 +65,8 @@ class ApproveApproval extends Controller
                 ApprovalModels::EmployeePanRequest->name => PanRequestForApproval::class,
                 ApprovalModels::GenerateAllowance->name => AllowanceRequestForApproval::class,
                 ApprovalModels::GeneratePayroll->name => PayrollRequestForApproval::class,
+                ApprovalModels::Request13thMonth->name => Request13thMonthForApproval::class,
+                ApprovalModels::RequestVoid->name => VoidRequestForApproval::class,
             ];
             if (isset($notificationMap[$modelType])) {
                 Users::find($nextApprovalUser)->notify(new $notificationMap[$modelType]($model));
@@ -76,6 +82,8 @@ class ApproveApproval extends Controller
                 ApprovalModels::EmployeePanRequest->name => PanRequestApproved::class,
                 ApprovalModels::GenerateAllowance->name => AllowanceRequestApproved::class,
                 ApprovalModels::GeneratePayroll->name => PayrollRequestApproved::class,
+                ApprovalModels::Request13thMonth->name => Request13thMonthApproved::class,
+                ApprovalModels::RequestVoid->name => VoidRequestApproved::class,
             ];
             if (isset($notificationMap[$modelType])) {
                 Users::find($model->created_by)->notify(new $notificationMap[$modelType]($model));
