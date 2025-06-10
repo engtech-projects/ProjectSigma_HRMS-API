@@ -91,7 +91,7 @@ class ApprovalsSeeder extends Seeder
                 ],
                 [
                     'id' => 9,
-                    'form' => "13th Month",
+                    'form' => "13th Month Request",
                     'module' => ApprovalModules::HRMS->value,
                     'approvals' => "[]",
                     'deleted_at' => null,
@@ -127,13 +127,14 @@ class ApprovalsSeeder extends Seeder
                 ],
                 [
                     'id' => 20,
-                    'form' => "13th Month Request",
+                    'form' => "",
                     'module' => ApprovalModules::HRMS->value,
                     'approvals' => "[]",
-                    'deleted_at' => null,
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                // USE 20 when creating new forms and when used delete this comments
             ],
             [
                 'id'
