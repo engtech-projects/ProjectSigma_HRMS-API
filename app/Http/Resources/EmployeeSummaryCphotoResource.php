@@ -25,6 +25,7 @@ class EmployeeSummaryCphotoResource extends JsonResource
             "fullname_last" => $this->fullname_last,
             "current_position" => $this->current_position_name,
             "profile_photo" => new CompressedImageResource($this->profile_photo),
+            "current_department" => $this->current_employment ? $this->current_employment->department_name : null,
         ];
         // return parent::toArray($request);
     }

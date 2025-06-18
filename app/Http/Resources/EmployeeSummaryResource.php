@@ -25,6 +25,7 @@ class EmployeeSummaryResource extends JsonResource
             "fullname_last" => $this->fullname_last,
             "current_position" => $this->current_position_name,
             "current_salarygrade" => $this->current_salarygrade_and_step,
+            "current_department" => $this->current_employment ? $this->current_employment->department_name : null,
         ];
     }
 }
