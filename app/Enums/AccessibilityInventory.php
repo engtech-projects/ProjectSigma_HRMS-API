@@ -42,7 +42,7 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_FORMSANDMYREQUESTS = "inventory:procurement_notice of change purchase order_form and my requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_ALLREQUEST = "inventory:procurement_notice of change purchase order_all requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS = "inventory:procurement_notice of change purchase order_my approvals";
-    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTALL = "inventory:procurement_procurement request_ all";
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTALL = "inventory:procurement_procurement request_request list all";
 
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTONGOING = "inventory:procurement_procurement request_request list ongoing";
 
