@@ -8,6 +8,7 @@ enum AccessibilityInventory: string
     case INVENTORY_SETUP_APPROVALS = "inventory:setup_approvals";
     case INVENTORY_SETUP_ITEMGROUP = "inventory:setup_item group";
     case INVENTORY_SETUP_UNITOFMEASUREMENT = "inventory:setup_unit of measurements";
+    case INVENTORY_SETUP_APISYNCHRONIZATION = "inventory:setup_api synchronization";
     case INVENTORY_SETUP_LISTS_DEPARTMENT_LIST = "inventory:setup_lists_department list";
     case INVENTORY_SETUP_LISTS_EMPLOYEE_LIST = "inventory:setup_lists_employee list";
     case INVENTORY_SETUP_LISTS_USERS_LIST = "inventory:setup_lists_users list";
@@ -59,8 +60,6 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_ALLLIST = "inventory:procurement_purchase order_all list";
 
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_CREATENCPO = "inventory:procurement_purchase order_create ncpo";
-
-    case INVENTORY_SETUP_SYNCHRONIZATION = "inventory:setup_synchronization";
 
     public static function toArray(): array
     {
