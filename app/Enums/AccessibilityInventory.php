@@ -8,6 +8,11 @@ enum AccessibilityInventory: string
     case INVENTORY_SETUP_APPROVALS = "inventory:setup_approvals";
     case INVENTORY_SETUP_ITEMGROUP = "inventory:setup_item group";
     case INVENTORY_SETUP_UNITOFMEASUREMENT = "inventory:setup_unit of measurements";
+    case INVENTORY_SETUP_APISYNCHRONIZATION = "inventory:setup_api synchronization";
+    case INVENTORY_SETUP_LISTS_DEPARTMENT_LIST = "inventory:setup_lists_department list";
+    case INVENTORY_SETUP_LISTS_EMPLOYEE_LIST = "inventory:setup_lists_employee list";
+    case INVENTORY_SETUP_LISTS_USERS_LIST = "inventory:setup_lists_users list";
+    case INVENTORY_SETUP_LISTS_PROJECT_LIST = "inventory:setup_lists_project list";
     case INVENTORY_ITEMPROFILE_BULKUPLOAD = "inventory:item profile_bulk upload";
     case INVENTORY_ITEMPROFILE_NEW_PROFILE = "inventory:item profile_new profile";
     case INVENTORY_ITEMPROFILE_ITEMLIST = "inventory:item profile_item list";
@@ -42,7 +47,7 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_FORMSANDMYREQUESTS = "inventory:procurement_notice of change purchase order_form and my requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_ALLREQUEST = "inventory:procurement_notice of change purchase order_all requests";
     case INVENTORY_PROCUREMENT_NOTICEOFCHANGEPURCHASEORDER_MYAPPROVALS = "inventory:procurement_notice of change purchase order_my approvals";
-    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTALL = "inventory:procurement_procurement request_ all";
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTALL = "inventory:procurement_procurement request_request list all";
 
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_REQUESTLISTONGOING = "inventory:procurement_procurement request_request list ongoing";
 
@@ -55,8 +60,6 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_ALLLIST = "inventory:procurement_purchase order_all list";
 
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_CREATENCPO = "inventory:procurement_purchase order_create ncpo";
-
-    case INVENTORY_SETUP_SYNCHRONIZATION = "inventory:setup_synchronization";
 
     public static function toArray(): array
     {
