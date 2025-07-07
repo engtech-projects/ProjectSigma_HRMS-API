@@ -25,13 +25,14 @@ class Request13thMonthController extends Controller
      */
     public function index()
     {
-        return response()->json(
-            [
-                'data' => Request13thMonthListingResource::collection(Request13thMonth::paginate(10))->response()->getData(true),
-                'success' => true,
-                'message' => 'Successfully fetched 13th month requests',
-            ]
-        );
+
+        $main = Request13thMonthListingResource::orderBy('created_at', 'desc')
+        ->paginate(15);
+        return Request13thMonthListingResource::collection($main)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched my 13th month requests.',
+        ]);
     }
 
     /**
@@ -160,14 +161,11 @@ class Request13thMonthController extends Controller
         $requests = Request13thMonth::myRequests()
         ->orderBy("created_at", "DESC")
         ->paginate(15);
-
-        return response()->json(
-            [
-                'data' => Request13thMonthListingResource::collection($requests)->response()->getData(true),
-                'success' => true,
-                'message' => 'Successfully fetched my 13th month requests',
-            ]
-        );
+        return Request13thMonthListingResource::collection($requests)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched my 13th month requests.',
+        ]);
     }
     /**
      * List of my Approvals.
@@ -176,15 +174,12 @@ class Request13thMonthController extends Controller
     {
         $requests = Request13thMonth::myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(10);
-
-        return response()->json(
-            [
-                'data' => Request13thMonthListingResource::collection($requests)->response()->getData(true),
-                'success' => true,
-                'message' => 'Successfully fetched my 13th month approvals',
-            ]
-        );
+        ->paginate(15);
+        return Request13thMonthListingResource::collection($requests)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched my 13th month requests.',
+        ]);
     }
     /**
      * Summary of the specified 13th month date.

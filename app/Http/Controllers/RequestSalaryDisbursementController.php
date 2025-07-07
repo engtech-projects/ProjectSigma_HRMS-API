@@ -44,11 +44,11 @@ class RequestSalaryDisbursementController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate();
-        return new JsonResponse([
+        ->paginate(15);
+        return RequestPayrollSummaryListResource::collection($allRequests)
+        ->additional([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => RequestPayrollSummaryListResource::collection($allRequests)->response()->getData(true),
         ]);
     }
 
@@ -148,11 +148,11 @@ class RequestSalaryDisbursementController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate();
-        return new JsonResponse([
+        ->paginate(15);
+        return RequestPayrollSummaryListResource::collection($myRequests)
+        ->additional([
             'success' => true,
-            'message' => 'Request fetched.',
-            'data' => RequestPayrollSummaryListResource::collection($myRequests)->response()->getData(true),
+            'message' => 'Cash Advance Request fetched.',
         ]);
     }
 
@@ -178,11 +178,11 @@ class RequestSalaryDisbursementController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate();
-        return new JsonResponse([
+        ->paginate(15);
+        return RequestPayrollSummaryListResource::collection($myApproval)
+        ->additional([
             'success' => true,
-            'message' => 'Request fetched.',
-            'data' => RequestPayrollSummaryListResource::collection($myApproval)->response()->getData(true),
+            'message' => 'Cash Advance Request fetched.',
         ]);
     }
 
@@ -194,17 +194,11 @@ class RequestSalaryDisbursementController extends Controller
         $payslipReady = RequestSalaryDisbursement::isApproved()
         ->where("disbursement_status", DisbursementStatus::RELEASED)
         ->orderBy("created_at", "DESC")
-        ->paginate();
-        // if ($payslipReady->isEmpty()) {
-        //     return new JsonResponse([
-        //         'success' => false,
-        //         'message' => 'No data found.',
-        //     ], JsonResponse::HTTP_OK);
-        // }
-        return new JsonResponse([
+        ->paginate(15);
+        return RequestPayrollSummaryListResource::collection($payslipReady)
+        ->additional([
             'success' => true,
-            'message' => 'Request fetched.',
-            'data' => RequestPayrollSummaryListResource::collection($payslipReady)->response()->getData(true),
+            'message' => 'Cash Advance Request fetched.',
         ]);
     }
     /**

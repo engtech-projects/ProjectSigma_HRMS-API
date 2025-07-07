@@ -35,15 +35,12 @@ class PersonnelActionNoticeRequestController extends Controller
                     $q->where(DB::raw("CONCAT(firstname, ' ', middlename, ' ', lastname)"), 'LIKE', "%{$request->employee}%");
                 });
             })
-            ->orderBy('created_at', 'desc')
-            ->paginate();
-        // TO FIX EMPLOYEE FILTER
-
-        $paginated = EmployeePanRequestResource::collection($panRequest)->response()->getData(true);
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => $paginated
+        ->orderBy('created_at', 'desc')
+        ->paginate();
+        return EmployeePanRequest::collection($panRequest)
+        ->additional([
+            'success' => true,
+            'message' => "Successfully fetched.",
         ]);
     }
 
@@ -76,7 +73,7 @@ class PersonnelActionNoticeRequestController extends Controller
         return PersonnelActionNoticeRequestController::collection($noticeRequest)
         ->additional([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'personal action notice request fetched.',
         ]);
     }
 
@@ -89,7 +86,7 @@ class PersonnelActionNoticeRequestController extends Controller
         return PersonnelActionNoticeRequestController::collection($myApproval)
         ->additional([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'personal action notice request fetched.',
         ]);
     }
 

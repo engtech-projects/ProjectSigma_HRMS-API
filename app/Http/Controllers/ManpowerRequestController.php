@@ -34,36 +34,20 @@ class ManpowerRequestController extends Controller
     public function index()
     {
         $manpowerRequests = $this->manpowerService->getAll();
-        $collection = ManpowerRequestResource::collection($manpowerRequests)->response()->getData(true);
-        if (empty($collection['data'])) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
+        return ManpowerRequestResource::collection($manpowerRequests)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $collection
+            'message' => "Manpower Request fetched.",
         ]);
     }
 
     public function openPositions()
     {
         $data = $this->manpowerService->getOpenPositions();
-        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
-
-        if (empty($collection['data'])) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-
-        return new JsonResponse([
+        return ManpowerRequestResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $collection
+            'message' => "Manpower Request fetched.",
         ]);
     }
 
@@ -71,19 +55,10 @@ class ManpowerRequestController extends Controller
     {
         $validatedData = $request->validated();
         $data = $this->manpowerService->getApprovedPositions($validatedData);
-        $collection = ManpowerRequestResource::collection($data)->response()->getData(true);
-
-        if (empty($collection['data'])) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-
-        return new JsonResponse([
+        return ManpowerRequestResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $collection
+            'message' => "Manpower Request fetched.",
         ]);
     }
 

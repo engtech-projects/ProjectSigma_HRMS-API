@@ -39,11 +39,10 @@ class CashAdvanceController extends Controller
         ->with('employee')
         ->orderBy("created_at", "DESC")
         ->paginate();
-
-        return new JsonResponse([
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
         ]);
     }
 
@@ -187,12 +186,11 @@ class CashAdvanceController extends Controller
         ->myRequests()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->paginate();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
+            'message' => "Cash Advance Request fetched.",
         ]);
     }
 
@@ -210,12 +208,11 @@ class CashAdvanceController extends Controller
         ->myApprovals()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
+            'message' => "Cash Advance Request fetched.",
         ]);
     }
 
@@ -229,16 +226,14 @@ class CashAdvanceController extends Controller
         })
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->paginate(15)
         ->filter(function ($cashAdv) {
             return !$cashAdv->cashPaid();
         })
-        ->values()
-        ->all();
+        ->paginate(15);
         return CashAdvanceResource::collection($data)
         ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
+            'message' => "Cash Advance Request fetched.",
         ]);
     }
 
@@ -252,12 +247,10 @@ class CashAdvanceController extends Controller
         })
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->paginate(15)
         ->filter(function ($cashAdv) {
             return $cashAdv->cashPaid();
         })
-        ->values()
-        ->all();
+        ->paginate(15);
         return CashAdvanceResource::collection($data)
         ->additional([
             'success' => true,

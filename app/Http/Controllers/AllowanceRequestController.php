@@ -165,7 +165,7 @@ class AllowanceRequestController extends Controller
         return AllowanceRequestResource::collection($myRequest)
         ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
+            'message' => 'allowance request fetched.',
         ]);
     }
 
@@ -181,7 +181,7 @@ class AllowanceRequestController extends Controller
         return AllowanceRequestResource::collection($result)
         ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
+            'message' => 'allowance request fetched.',
         ]);
     }
 }

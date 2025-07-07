@@ -25,10 +25,7 @@ class LoansController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(15)
-        ->values()
-        ->all();
-
+        ->paginate(15);
 
         return LoanResource::collection($data)
         ->additional([
@@ -47,11 +44,6 @@ class LoansController extends Controller
         })
         ->orderBy("created_at", "DESC")
         ->paginate(15);
-        $data = collect($data->filter(function ($loan) {
-            return !$loan->loanPaid();
-        })
-        ->values()
-        ->all());
         return LoanResource::collection($data)
         ->additional([
             'success' => true,
@@ -69,12 +61,6 @@ class LoansController extends Controller
         })
         ->orderBy("created_at", "DESC")
         ->paginate(15);
-        $data = collect($data->filter(function ($loan) {
-            return $loan->loanPaid();
-        })
-        ->values()
-        ->all());
-
         return LoanResource::collection($data)
         ->additional([
             'success' => true,

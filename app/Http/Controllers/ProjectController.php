@@ -23,9 +23,7 @@ class ProjectController extends Controller
     public function index()
     {
         $project = $this->projectService->getAll();
-        $collection = collect(ProjectResource::collection($project));
-
-        return ProjectResource::collection($collection)
+        return ProjectResource::collection($project)
         ->additional([
             'success' => true,
             'message' => 'Successfully fetch.',

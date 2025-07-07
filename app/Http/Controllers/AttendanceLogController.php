@@ -48,12 +48,11 @@ class AttendanceLogController extends Controller
     public function allAttendanceLogs(AllAttendanceLogsRequest $request)
     {
         $attendanceLog = $this->attendanceLogService->getFilterDateAndEmployee($request);
-        $collection = AttendanceLogResource::collection($attendanceLog)->response()->getData(true);
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => $collection,
-        ], JsonResponse::HTTP_OK);
+        return AttendanceLogResource::collection($attendanceLog)
+        ->additional([
+            'success' => true,
+            'message' => "Successfully fetched.",
+        ]);
     }
 
     /**

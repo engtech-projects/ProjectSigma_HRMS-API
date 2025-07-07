@@ -40,7 +40,7 @@ class EmployeeAllowancesController extends Controller
         return AllowanceRequestResource::collection($main)
         ->additional([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
+            'message' => 'Allowances Request fetched.',
         ]);
     }
 

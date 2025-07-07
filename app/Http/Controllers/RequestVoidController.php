@@ -27,12 +27,11 @@ class RequestVoidController extends Controller
             return $query->whereDate('request_type', $validatedData['date_filter']);
         })
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return RequestVoidResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
-            'data' => RequestVoidResource::collection($data)->response()->getData(true)
+            'message' => 'Void Request fetched.',
         ]);
     }
 
@@ -84,11 +83,11 @@ class RequestVoidController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(15);
+        return RequestVoidResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
-            'data' => RequestVoidResource::collection($data)->response()->getData(true)
+            'message' => 'Void Request fetched.',
         ]);
     }
     /**
@@ -107,12 +106,11 @@ class RequestVoidController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return RequestVoidResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => RequestVoidResource::collection($data)->response()->getData(true)
+            'message' => 'Void Request fetched.',
         ]);
     }
 }

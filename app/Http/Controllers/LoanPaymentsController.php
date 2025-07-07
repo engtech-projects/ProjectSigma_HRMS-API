@@ -27,7 +27,7 @@ class LoanPaymentsController extends Controller
         return LoanPaymentResource::collection($data)
         ->additional([
             'success' => true,
-            'message' => 'Loan Payments Request fetched.',
+            'message' => 'Loan Payments fetched.',
         ]);
     }
 
