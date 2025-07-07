@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\LoanPaymentPostingStatusType;
 use App\Enums\LoanPaymentsType;
+use App\Enums\PostingStatusType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,11 @@ class Loans extends Model
         "balance",
     ];
 
+    /**
+    * ==================================================
+    * MODEL RELATIONSHIPS
+    * ==================================================
+    */
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'id', 'employee_id');
@@ -58,7 +64,11 @@ class Loans extends Model
     {
         return $this->hasMany(LoanPayments::class)->where("posting_status", LoanPaymentPostingStatusType::NOTPOSTED);
     }
-
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
     public function getInstallmentDeductionTermAttribute()
     {
         switch ($this->terms_of_payment) {
@@ -88,7 +98,8 @@ class Loans extends Model
         return round($this->loanPayments()->sum("amount_paid"), 2);
     }
 
-    public function loanPaid()
+
+    public function isFullyPaidAttribute()
     {
         $totalpaid = $this->loanPayments()->sum('amount_paid');
         if ($this->amount <= $totalpaid) {
@@ -96,6 +107,47 @@ class Loans extends Model
         }
         return false;
     }
+
+    public function getCreatedAtHumanAttribute()
+    {
+        return Carbon::parse($this->created_at)->format("F j, Y");
+    }
+
+    public function getDeductionStartHumanAttribute()
+    {
+        return Carbon::parse($this->deduction_date_start)->format("F j, Y");
+    }
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
+    public static function scopeIsOngoing($query)
+    {
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from loan_payments where loans_id = loans.id and posting_status = ?) , 0) < amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+    public static function scopeIsPaid($query)
+    {
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from loan_payments where loans_id = loans.id and posting_status = ?) , 0) >= amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
+
+
 
     public function paymentWillOverpay($paymentAmount)
     {
@@ -110,7 +162,7 @@ class Loans extends Model
     public function loanPayment($paymentAmount, $type)
     {
 
-        if ($this->loanPaid()) {
+        if ($this->is_fully_paid) {
             return false;
         }
 
@@ -137,15 +189,5 @@ class Loans extends Model
         }
 
         return true;
-    }
-
-    public function getCreatedAtHumanAttribute()
-    {
-        return Carbon::parse($this->created_at)->format("F j, Y");
-    }
-
-    public function getDeductionStartHumanAttribute()
-    {
-        return Carbon::parse($this->deduction_date_start)->format("F j, Y");
     }
 }

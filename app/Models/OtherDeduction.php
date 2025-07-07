@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\LoanPaymentPostingStatusType;
 use App\Enums\LoanPaymentsType;
+use App\Enums\PostingStatusType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,13 @@ class OtherDeduction extends Model
         "balance",
     ];
 
+    /**
+    * ==================================================
+    * MODEL RELATIONSHIPS
+    * ==================================================
+    */
+
+
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'id', 'employee_id');
@@ -54,6 +62,11 @@ class OtherDeduction extends Model
         return $this->hasMany(OtherDeductionPayments::class, 'otherdeduction_id', 'id')->isPosted();
     }
 
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
     public function getBalanceAttribute()
     {
         return floatval($this->amount - $this->totalPaid);
@@ -64,7 +77,17 @@ class OtherDeduction extends Model
         return $this->otherDeductionPaymentPosted()->sum("amount_paid");
     }
 
-    public function cashPaid()
+    public function getCreatedAtHumanAttribute()
+    {
+        return Carbon::parse($this->created_at)->format("F j, Y");
+    }
+
+    public function getDeductionStartHumanAttribute()
+    {
+        return Carbon::parse($this->deduction_date_start)->format("F j, Y");
+    }
+
+    public function isFullyPaidAttribute()
     {
         $totalpaid = $this->otherDeductionPaymentPosted()->sum("amount_paid");
         if ($this->amount <= $totalpaid) {
@@ -82,10 +105,40 @@ class OtherDeduction extends Model
         }
         return false;
     }
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
+    public function scopeIsOngoing($query)
+    {
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from other_deduction_payments where otherdeduction_id = other_deductions.id and posting_status = ?) , 0) < amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+
+    public function scopeIsPaid($query)
+    {
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from other_deduction_payments where otherdeduction_id = other_deductions.id and posting_status = ?) , 0) >= amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
 
     public function cashAdvance($paymentAmount, $type)
     {
-        if ($this->cashPaid()) {
+        if ($this->is_fully_paid) {
             return false;
         }
 
@@ -112,15 +165,5 @@ class OtherDeduction extends Model
         }
 
         return true;
-    }
-
-    public function getCreatedAtHumanAttribute()
-    {
-        return Carbon::parse($this->created_at)->format("F j, Y");
-    }
-
-    public function getDeductionStartHumanAttribute()
-    {
-        return Carbon::parse($this->deduction_date_start)->format("F j, Y");
     }
 }

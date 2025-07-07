@@ -25,7 +25,7 @@ class LoanDeduction extends PayrollDeduction
         $loan = $this->employee->employee_loan->first();
         if ($loan) {
             $loanPayments = $loan->loan_payment_notposted;
-            if (!$loan->loanPaid()) {
+            if (!$loan->is_fully_paid) {
                 if ($loan->deduction_date_start->lt($payrollDate)) {
                     $deduction = $loan->installment_deduction;
                 }

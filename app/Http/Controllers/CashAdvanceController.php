@@ -78,7 +78,7 @@ class CashAdvanceController extends Controller
         $msg = "";
         $status = 200;
 
-        if ($cash->cashPaid()) {
+        if ($cash->is_fully_paid) {
             $status = 422;
             $valid = false;
             $msg = "Cash advance already fully paid.";
@@ -206,7 +206,6 @@ class CashAdvanceController extends Controller
             });
         })
         ->myApprovals()
-        ->with('employee')
         ->orderBy("created_at", "DESC")
         ->paginate(15);
         return CashAdvanceResource::collection($data)
@@ -216,6 +215,10 @@ class CashAdvanceController extends Controller
         ]);
     }
 
+
+    /**
+     * Display a list of ongoing cash advances.
+     */
     public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -224,11 +227,9 @@ class CashAdvanceController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->with('employee')
+        ->isApproved()
+        ->isOngoing()
         ->orderBy("created_at", "DESC")
-        ->filter(function ($cashAdv) {
-            return !$cashAdv->cashPaid();
-        })
         ->paginate(15);
         return CashAdvanceResource::collection($data)
         ->additional([
@@ -237,6 +238,9 @@ class CashAdvanceController extends Controller
         ]);
     }
 
+    /**
+     * Display a list of paid cash advances.
+     */
     public function getPaidCashAdvance(PaidCashAdvanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -245,11 +249,10 @@ class CashAdvanceController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isApproved()
+        ->isPaid()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->filter(function ($cashAdv) {
-            return $cashAdv->cashPaid();
-        })
         ->paginate(15);
         return CashAdvanceResource::collection($data)
         ->additional([

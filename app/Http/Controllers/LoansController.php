@@ -34,6 +34,9 @@ class LoansController extends Controller
         ]);
     }
 
+    /**
+     * Display a list of ongoing loans.
+     */
     public function ongoing(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
@@ -42,6 +45,7 @@ class LoansController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isOngoing()
         ->orderBy("created_at", "DESC")
         ->paginate(15);
         return LoanResource::collection($data)
@@ -51,6 +55,9 @@ class LoansController extends Controller
         ]);
     }
 
+    /**
+     * Display a list of paid loans.
+     */
     public function paid(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
@@ -59,6 +66,7 @@ class LoansController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isPaid()
         ->orderBy("created_at", "DESC")
         ->paginate(15);
         return LoanResource::collection($data)
@@ -114,7 +122,7 @@ class LoansController extends Controller
         $valid = true;
         $msg = "";
         $validatedData = $request->validated();
-        if ($loan->loanPaid()) {
+        if ($loan->is_fully_paid) {
             $valid = false;
             $msg = "Payment already paid.";
         } elseif ($loan->paymentWillOverpay($validatedData['paymentAmount'])) {
