@@ -73,17 +73,10 @@ class PersonnelActionNoticeRequestController extends Controller
     public function myRequests()
     {
         $noticeRequest = $this->panRequestService->getMyRequests();
-        if (empty($noticeRequest)) {
-            return new JsonResponse([
-                "success" => false,
-                "message" => "No data found.",
-            ]);
-        }
-        $paginated = EmployeePanRequestResource::collection($noticeRequest)->response()->getData(true);
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => $paginated
+        return PersonnelActionNoticeRequestController::collection($noticeRequest)
+        ->additional([
+            'success' => true,
+            'message' => 'Travel Order Request fetched.',
         ]);
     }
 
@@ -93,16 +86,10 @@ class PersonnelActionNoticeRequestController extends Controller
     public function myApprovals()
     {
         $myApproval = $this->panRequestService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
+        return PersonnelActionNoticeRequestController::collection($myApproval)
+        ->additional([
             'success' => true,
-            'message' => 'Personnel Action Notice Request fetched.',
-            'data' => EmployeePanRequestResource::collection($myApproval)->response()->getData(true)
+            'message' => 'Travel Order Request fetched.',
         ]);
     }
 

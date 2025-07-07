@@ -27,12 +27,12 @@ class OtherDeductionController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate(15);
 
-        return new JsonResponse([
+        return OtherDeductionResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'All Other Deductions fetched.',
-            'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
         ]);
     }
 
@@ -45,17 +45,17 @@ class OtherDeductionController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get()
+        ->paginate(15)
         ->filter(function ($otherded) {
             return !$otherded->cashPaid();
         })
         ->values()
         ->all();
 
-        return new JsonResponse([
+        return OtherDeductionResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Ongoing Other Deductions fetched.',
-            'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
+            'message' => 'All Other Deductions fetched.',
         ]);
     }
 
@@ -68,17 +68,18 @@ class OtherDeductionController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get()
+        ->paginate(15)
         ->filter(function ($otherded) {
             return $otherded->cashPaid();
         })
         ->values()
         ->all();
 
-        return new JsonResponse([
+
+        return OtherDeductionResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Paid Other Deductions fetched.',
-            'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
+            'message' => 'All Other Deductions fetched.',
         ]);
     }
 

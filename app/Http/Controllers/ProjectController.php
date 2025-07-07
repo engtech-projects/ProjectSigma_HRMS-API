@@ -6,7 +6,6 @@ use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ProjectService;
 use App\Http\Resources\ProjectResource;
-use App\Utils\PaginateResourceCollection;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 
@@ -26,11 +25,11 @@ class ProjectController extends Controller
         $project = $this->projectService->getAll();
         $collection = collect(ProjectResource::collection($project));
 
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
-        ], JsonResponse::HTTP_OK);
+        return ProjectResource::collection($collection)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetch.',
+        ]);
     }
 
 

@@ -93,20 +93,10 @@ class ManpowerRequestController extends Controller
     public function forHiring()
     {
         $manpowerRequest = $this->manpowerService->getAllForHiring();
-        $collection = ManpowerRequestResource::collection($manpowerRequest)->response()->getData(true);
-
-        if (empty($collection['data'])) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-                'data' => []
-            ], JsonResponse::HTTP_OK);
-        }
-
-        return new JsonResponse([
+        return ManpowerRequestResource::collection($manpowerRequest)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $collection
+            'message' => 'Successfully fetched.',
         ]);
     }
 
@@ -114,21 +104,11 @@ class ManpowerRequestController extends Controller
     public function myRequest()
     {
         $myRequest = $this->manpowerService->getMyRequest();
-        $collection = ManpowerRequestResource::collection($myRequest)->response()->getData(true);
-
-        if (empty($collection['data'])) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-                'data' => []
-            ], JsonResponse::HTTP_OK);
-        }
-
-        return new JsonResponse([
+        return ManpowerRequestResource::collection($myRequest)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $collection
-        ], JsonResponse::HTTP_OK);
+            'message' => 'Successfully fetched.',
+        ]);
     }
 
     /**
@@ -137,20 +117,10 @@ class ManpowerRequestController extends Controller
     public function myApproval()
     {
         $myApproval = $this->manpowerService->getMyApprovals();
-        $collection = ManpowerRequestResource::collection($myApproval)->response()->getData(true);
-
-        if (empty($collection['data'])) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-                'data' => []
-            ], JsonResponse::HTTP_OK);
-        }
-
-        return new JsonResponse([
+        return ManpowerRequestResource::collection($myApproval)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => $collection
+            'message' => 'Successfully fetched.',
         ]);
     }
 

@@ -9,7 +9,6 @@ use App\Http\Resources\LoanResource;
 use App\Models\Loans;
 use App\Http\Requests\StoreLoansRequest;
 use App\Http\Requests\UpdateLoansRequest;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 
 class LoansController extends Controller
@@ -26,15 +25,15 @@ class LoansController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get()
+        ->paginate(15)
         ->values()
         ->all();
 
 
-        return new JsonResponse([
+        return LoanResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Loans fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
+            'message' => 'Loan fetched.',
         ]);
     }
 
@@ -47,16 +46,16 @@ class LoansController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate(15);
         $data = collect($data->filter(function ($loan) {
             return !$loan->loanPaid();
         })
         ->values()
         ->all());
-        return new JsonResponse([
+        return LoanResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Loans fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
+            'message' => 'Loan fetched.',
         ]);
     }
 
@@ -69,17 +68,17 @@ class LoansController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate(15);
         $data = collect($data->filter(function ($loan) {
             return $loan->loanPaid();
         })
         ->values()
         ->all());
 
-        return new JsonResponse([
+        return LoanResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Loans fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
+            'message' => 'Loan fetched.',
         ]);
     }
 

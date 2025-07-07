@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProjectResource;
 use App\Http\Services\ProjectService;
-use App\Utils\PaginateResourceCollection;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProjectListController extends Controller
@@ -24,10 +22,10 @@ class ProjectListController extends Controller
     {
         $project = $this->projectService->getAll();
         $collection = collect(ProjectResource::collection($project));
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
-        ], JsonResponse::HTTP_OK);
+        return ProjectResource::collection($collection)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched.',
+        ]);
     }
 }

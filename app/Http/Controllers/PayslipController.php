@@ -20,7 +20,7 @@ class PayslipController extends Controller
             })
             ->whereIn('id', $validatedData['ids'])
             ->orderBy('created_at', 'DESC')
-            ->get();
+            ->paginate(15);
         return view('reports.docs.payslip_print', [ 'payroll_details' => PayrollDetailsResource::collection($payroll_details)]);
     }
 }

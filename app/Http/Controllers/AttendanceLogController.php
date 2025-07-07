@@ -11,7 +11,6 @@ use App\Http\Requests\StoreQrAttendanceLog;
 use App\Models\AttendanceLog;
 use App\Models\CompanyEmployee;
 use Illuminate\Http\JsonResponse;
-use App\Utils\PaginateResourceCollection;
 use App\Http\Services\AttendanceLogService;
 use App\Http\Resources\AttendanceLogResource;
 use App\Http\Requests\StoreAttendanceLogRequest;
@@ -40,12 +39,11 @@ class AttendanceLogController extends Controller
     public function index()
     {
         $attendanceLog = $this->attendanceLogService->getAll();
-        $collection = collect(AttendanceLogResource::collection($attendanceLog));
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => PaginateResourceCollection::paginate($collection, 15)
-        ], JsonResponse::HTTP_OK);
+        return AttendanceLogResource::collection($attendanceLog)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched.',
+        ]);
     }
     public function allAttendanceLogs(AllAttendanceLogsRequest $request)
     {
@@ -261,12 +259,10 @@ class AttendanceLogController extends Controller
     public function getToday()
     {
         $attendanceLog = $this->attendanceLogService->getAllToday();
-        $collection = collect(AttendanceLogResource::collection($attendanceLog));
-
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => PaginateResourceCollection::paginate(collect($collection), 15)
-        ], JsonResponse::HTTP_OK);
+        return AttendanceLogResource::collection($attendanceLog)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched.',
+        ]);
     }
 }

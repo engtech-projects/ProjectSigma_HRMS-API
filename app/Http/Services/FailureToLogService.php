@@ -15,12 +15,12 @@ class FailureToLogService
     {
         return FailureToLog::with(['employee'])
             ->myRequests()
-            ->get();
+            ->paginate(15);
     }
     public function getMyApprovals()
     {
         return FailureToLog::with(['employee'])
             ->myApprovals()
-            ->get();
+            ->paginate(15);
     }
 }

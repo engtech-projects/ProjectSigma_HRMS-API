@@ -17,7 +17,6 @@ use App\Models\Users;
 use App\Notifications\CashAdvanceForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Utils\PaginateResourceCollection;
 
 class CashAdvanceController extends Controller
 {
@@ -219,6 +218,7 @@ class CashAdvanceController extends Controller
             'data' => CashAdvanceResource::collection($data)->response()->getData(true)
         ]);
     }
+
     public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -229,16 +229,16 @@ class CashAdvanceController extends Controller
         })
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->get()
+        ->paginate(15)
         ->filter(function ($cashAdv) {
             return !$cashAdv->cashPaid();
         })
         ->values()
         ->all();
-        return new JsonResponse([
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
 
@@ -252,17 +252,16 @@ class CashAdvanceController extends Controller
         })
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->get()
+        ->paginate(15)
         ->filter(function ($cashAdv) {
             return $cashAdv->cashPaid();
         })
         ->values()
         ->all();
-
-        return new JsonResponse([
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
 }

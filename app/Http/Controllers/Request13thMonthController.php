@@ -159,7 +159,7 @@ class Request13thMonthController extends Controller
     {
         $requests = Request13thMonth::myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(10);
+        ->paginate(15);
 
         return response()->json(
             [

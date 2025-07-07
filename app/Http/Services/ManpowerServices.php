@@ -39,7 +39,7 @@ class ManpowerServices
             $query->where('fill_status', $filter["fill_status"]);
         })
         ->orderBy('created_at', 'desc')
-        ->paginate();
+        ->paginate(15);
     }
     public function getAllForHiring($filter = [])
     {
@@ -59,7 +59,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->paginate(15);
     }
     public function getAllManpowerRequest($filter = [])
     {
@@ -79,7 +79,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(15);
     }
     public function getMyRequest($filter = [])
     {
@@ -97,7 +97,7 @@ class ManpowerServices
             ->when(isset($filter["fill_status"]), function ($query) use ($filter) {
                 $query->where('fill_status', $filter["fill_status"]);
             })
-            ->paginate();
+            ->paginate(15);
     }
     public function getMyApprovals($filter = [])
     {
@@ -118,7 +118,7 @@ class ManpowerServices
             })
             ->myApprovals()
             ->orderBy('created_at', 'desc')
-            ->paginate();
+            ->paginate(15);
     }
     public function createManpowerRequest(array $attributes)
     {
@@ -159,7 +159,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate();
+            ->paginate(15);
     }
     public function getApprovedPositions($filter = [])
     {
@@ -179,6 +179,6 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate();
+            ->paginate(15);
     }
 }

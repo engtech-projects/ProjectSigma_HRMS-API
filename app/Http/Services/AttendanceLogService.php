@@ -16,11 +16,11 @@ class AttendanceLogService
     }
     public function getAll()
     {
-        return $this->log->with(['project', 'department', 'employee'])->get();
+        return $this->log->with(['project', 'department', 'employee'])->paginate(15);
     }
     public function getAllToday()
     {
-        return $this->log->where('date', Carbon::now()->format('Y-m-d'))->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->get();
+        return $this->log->where('date', Carbon::now()->format('Y-m-d'))->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->paginate(15);
     }
     public function getFilterDateAndEmployee($request)
     {
@@ -40,7 +40,7 @@ class AttendanceLogService
         if ($request->attendance_type && $request->attendance_type != AttendanceType::ALL->value) {
             $query->where('attendance_type', $request->attendance_type);
         }
-        return $query->with(['project', 'department', 'employee', 'portal'])->withTrashed()->orderBy('created_at', 'DESC')->paginate(10);
+        return $query->with(['project', 'department', 'employee', 'portal'])->withTrashed()->orderBy('created_at', 'DESC')->paginate(15);
     }
     public function get(AttendanceLog $log)
     {
@@ -72,7 +72,7 @@ class AttendanceLogService
     }
     public function getEmployeeAttendance($employeeId)
     {
-        $attendances = AttendanceLog::whereIn('employee_id', $employeeId)->get();
+        $attendances = AttendanceLog::whereIn('employee_id', $employeeId)->paginate(15);
         return $attendances;
     }
 }

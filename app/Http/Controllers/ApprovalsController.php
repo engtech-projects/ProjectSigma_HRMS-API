@@ -6,10 +6,8 @@ use App\Models\Approvals;
 use App\Http\Requests\StoreApprovalsRequest;
 use App\Http\Requests\UpdateApprovalsRequest;
 use App\Http\Resources\ApprovalResource;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class ApprovalsController extends Controller
 {
@@ -18,13 +16,11 @@ class ApprovalsController extends Controller
      */
     public function index(Request $request)
     {
-        $approvals = Approvals::where('module', '=', $request->input("module"))->get();
-        $collection = collect(ApprovalResource::collection($approvals));
-
-        return new JsonResponse([
-           'success' => 'true',
-           'message' => 'Successfully fetched.',
-           'data' => new JsonResource(PaginateResourceCollection::paginate($collection, 10))
+        $approvals = Approvals::where('module', '=', $request->input("module"))->paginate(15);
+        return ApprovalResource::collection($approvals)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched.',
         ]);
     }
 

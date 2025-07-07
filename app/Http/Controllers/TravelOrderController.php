@@ -16,9 +16,7 @@ use App\Http\Resources\TravelOrderResource;
 use App\Http\Services\TravelOrderService;
 use App\Models\Users;
 use App\Notifications\TravelRequestForApproval;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TravelOrderController extends Controller
@@ -44,12 +42,11 @@ class TravelOrderController extends Controller
         })
         ->with(["user.employee"])
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return TravelOrderResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Travel Order Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
         ]);
     }
 
@@ -168,11 +165,11 @@ class TravelOrderController extends Controller
         ->with(['user.employee'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(15);
+        return TravelOrderResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'My Request Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
         ]);
     }
 
@@ -193,11 +190,11 @@ class TravelOrderController extends Controller
         ->with(['user.employee'])
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(15);
+        return TravelOrderResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'My Request Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
         ]);
     }
 }

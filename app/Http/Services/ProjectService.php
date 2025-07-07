@@ -17,7 +17,7 @@ class ProjectService
     {
         return $this->project->with([
             'project_has_employees',
-        ])->get();
+        ])->paginate();
     }
 
     public function get(Project $project)
