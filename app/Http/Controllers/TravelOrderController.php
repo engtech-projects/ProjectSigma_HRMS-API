@@ -26,9 +26,7 @@ class TravelOrderController extends Controller
     {
         $this->RequestService = $RequestService;
     }
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index(AllTravelRequest $request)
     {
         $validatedData = $request->validated();
@@ -50,9 +48,6 @@ class TravelOrderController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreTravelOrderRequest $request)
     {
         try {
@@ -89,9 +84,6 @@ class TravelOrderController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $main = TravelOrder::with(['department',"employees"])->find($id);
@@ -107,9 +99,6 @@ class TravelOrderController extends Controller
         return response()->json($data, 404);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateTravelOrderRequest $request, $id)
     {
         $main = TravelOrder::find($id);
@@ -128,9 +117,6 @@ class TravelOrderController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $main = TravelOrder::find($id);
@@ -173,9 +159,6 @@ class TravelOrderController extends Controller
         ]);
     }
 
-    /**
-     * Show can view all pan request to be approved by logged in user (same login in manpower request)
-     */
     public function myApprovals(TravelApprovalRequest $request)
     {
         $validatedData = $request->validated();

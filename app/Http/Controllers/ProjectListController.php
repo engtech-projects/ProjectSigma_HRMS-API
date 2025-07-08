@@ -21,8 +21,7 @@ class ProjectListController extends Controller
     public function __invoke(Request $request)
     {
         $project = $this->projectService->getAll();
-        $collection = collect(ProjectResource::collection($project));
-        return ProjectResource::collection($collection)
+        return ProjectResource::collection($project)
         ->additional([
             'success' => true,
             'message' => 'Successfully fetched.',
