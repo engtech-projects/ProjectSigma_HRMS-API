@@ -169,7 +169,7 @@ class TravelOrderController extends Controller
         return TravelOrderResource::collection($data)
         ->additional([
             'success' => true,
-            'message' => 'My Request Overtime Request fetched.',
+            'message' => 'My Request Travel Order Request fetched.',
         ]);
     }
 
@@ -194,7 +194,7 @@ class TravelOrderController extends Controller
         return TravelOrderResource::collection($data)
         ->additional([
             'success' => true,
-            'message' => 'My Request Overtime Request fetched.',
+            'message' => 'My Request Travel Order Request fetched.',
         ]);
     }
 }
