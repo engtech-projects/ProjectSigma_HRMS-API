@@ -73,7 +73,7 @@ class PersonnelActionNoticeRequestController extends Controller
         return PersonnelActionNoticeRequestController::collection($noticeRequest)
         ->additional([
             'success' => true,
-            'message' => 'personal action notice request fetched.',
+            'message' => 'Personal Action Notice Request fetched.',
         ]);
     }
 
@@ -86,7 +86,7 @@ class PersonnelActionNoticeRequestController extends Controller
         return PersonnelActionNoticeRequestController::collection($myApproval)
         ->additional([
             'success' => true,
-            'message' => 'personal action notice request fetched.',
+            'message' => 'Personal Action Notice Request fetched.',
         ]);
     }
 

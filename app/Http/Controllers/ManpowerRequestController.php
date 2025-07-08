@@ -8,7 +8,6 @@ use App\Models\JobApplicants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ManpowerServices;
-use Illuminate\Support\Facades\Storage;
 use App\Exceptions\TransactionFailedException;
 use App\Http\Resources\ManpowerRequestResource;
 use App\Http\Requests\StoreManpowerRequestRequest;

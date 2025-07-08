@@ -253,7 +253,7 @@ class PayrollRecordController extends Controller
         return PayrollRequestResource::collection($allRequests)
         ->additional([
             'success' => true,
-            'message' => 'payroll request fetched.',
+            'message' => 'Payroll Request fetched.',
         ]);
     }
 
@@ -280,7 +280,7 @@ class PayrollRecordController extends Controller
         return PayrollRequestResource::collection($myRequest)
         ->additional([
             'success' => true,
-            'message' => 'payroll request fetched.',
+            'message' => 'Payroll Request fetched.',
         ]);
     }
     /**
@@ -309,7 +309,7 @@ class PayrollRecordController extends Controller
         return PayrollRequestResource::collection($myApproval)
         ->additional([
             'success' => true,
-            'message' => 'payroll request fetched.',
+            'message' => 'Payroll Request fetched.',
         ]);
     }
     /**
@@ -337,7 +337,7 @@ class PayrollRecordController extends Controller
         return PayrollRequestResource::collection($datas)
         ->additional([
             'success' => true,
-            'message' => 'payroll request fetched.',
+            'message' => 'Payroll Request fetched.',
         ]);
     }
 }
