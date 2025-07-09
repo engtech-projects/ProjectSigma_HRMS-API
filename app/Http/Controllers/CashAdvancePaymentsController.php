@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CashAdvancePaymentRequest;
-use App\Http\Resources\CashAdvancePaymentResource;
 use App\Models\CashAdvancePayments;
 use App\Http\Requests\StoreCashAdvancePaymentsRequest;
 use App\Http\Requests\UpdateCashAdvancePaymentsRequest;

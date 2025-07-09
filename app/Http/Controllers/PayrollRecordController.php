@@ -17,7 +17,6 @@ use App\Http\Requests\PayrollRecordsListFilterRequest;
 use App\Http\Requests\PayrollRecordsRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Http\Requests\StorePayrollRecordRequest;
-use App\Http\Resources\PayrollRecordsResource;
 use App\Http\Resources\PayrollRequestResource;
 use App\Models\Department;
 use App\Models\CashAdvancePayments;

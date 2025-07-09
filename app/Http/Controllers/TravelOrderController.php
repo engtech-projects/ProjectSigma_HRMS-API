@@ -26,7 +26,7 @@ class TravelOrderController extends Controller
     {
         $this->RequestService = $RequestService;
     }
-    
+
     public function index(AllTravelRequest $request)
     {
         $validatedData = $request->validated();
