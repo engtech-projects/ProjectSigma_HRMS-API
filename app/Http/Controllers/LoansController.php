@@ -9,7 +9,6 @@ use App\Http\Resources\LoanResource;
 use App\Models\Loans;
 use App\Http\Requests\StoreLoansRequest;
 use App\Http\Requests\UpdateLoansRequest;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 
 class LoansController extends Controller
@@ -26,18 +25,18 @@ class LoansController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get()
-        ->values()
-        ->all();
+        ->paginate(15);
 
-
-        return new JsonResponse([
+        return LoanResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Loans fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
+            'message' => 'Loan fetched.',
         ]);
     }
 
+    /**
+     * Display a list of ongoing loans.
+     */
     public function ongoing(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
@@ -46,20 +45,19 @@ class LoansController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isOngoing()
         ->orderBy("created_at", "DESC")
-        ->get();
-        $data = collect($data->filter(function ($loan) {
-            return !$loan->loanPaid();
-        })
-        ->values()
-        ->all());
-        return new JsonResponse([
+        ->paginate(15);
+        return LoanResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Loans fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
+            'message' => 'Loan fetched.',
         ]);
     }
 
+    /**
+     * Display a list of paid loans.
+     */
     public function paid(LoansAllRequest $request)
     {
         $validatedData = $request->validated();
@@ -68,18 +66,13 @@ class LoansController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isPaid()
         ->orderBy("created_at", "DESC")
-        ->get();
-        $data = collect($data->filter(function ($loan) {
-            return $loan->loanPaid();
-        })
-        ->values()
-        ->all());
-
-        return new JsonResponse([
+        ->paginate(15);
+        return LoanResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Loans fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(LoanResource::collection($data)))
+            'message' => 'Loan fetched.',
         ]);
     }
 
@@ -129,7 +122,7 @@ class LoansController extends Controller
         $valid = true;
         $msg = "";
         $validatedData = $request->validated();
-        if ($loan->loanPaid()) {
+        if ($loan->is_fully_paid) {
             $valid = false;
             $msg = "Payment already paid.";
         } elseif ($loan->paymentWillOverpay($validatedData['paymentAmount'])) {

@@ -13,9 +13,7 @@ use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
 use App\Models\Users;
 use App\Notifications\LeaveRequestForApproval;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EmployeeLeavesController extends Controller
@@ -39,11 +37,11 @@ class EmployeeLeavesController extends Controller
                 ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
         })
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(15);
+        return EmployeeLeaveResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
+            'message' => 'Employee Leaves Request fetched.',
         ]);
     }
     /**
@@ -151,11 +149,11 @@ class EmployeeLeavesController extends Controller
         ->with(['employee', 'department', 'project'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(15);
+        return EmployeeLeaveResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Travel Order Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
+            'message' => 'Employee Leaves Request fetched.',
         ]);
     }
     /**
@@ -193,12 +191,11 @@ class EmployeeLeavesController extends Controller
         ->with(['employee', 'department', 'project'])
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return EmployeeLeaveResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Leave Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(EmployeeLeaveResource::collection($data)))
+            'message' => 'Employee Leaves Request fetched.',
         ]);
     }
 }

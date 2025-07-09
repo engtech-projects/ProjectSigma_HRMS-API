@@ -17,7 +17,7 @@ class EmployeePanRequestService
 
     public function getAll()
     {
-        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])->orderBy('created_at', 'desc')->get();
+        return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])->orderBy('created_at', 'desc')->paginate();
     }
 
     public function create($attributes)
@@ -37,12 +37,12 @@ class EmployeePanRequestService
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->myRequests()
-            ->paginate();
+            ->paginate(15);
     }
     public function getMyApprovals()
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->myApprovals()
-            ->paginate();
+            ->paginate(15);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\LoanPaymentPostingStatusType;
 use App\Traits\HasApproval;
 use App\Enums\LoanPaymentsType;
+use App\Enums\PostingStatusType;
 use App\Models\Traits\StatusScope;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
@@ -53,6 +54,12 @@ class CashAdvance extends Model
         "balance",
     ];
 
+    /**
+    * ==================================================
+    * MODEL RELATIONSHIPS
+    * ==================================================
+    */
+
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
@@ -77,7 +84,20 @@ class CashAdvance extends Model
     {
         return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id')->isPosted();
     }
+    public function payroll_detail_deduction(): MorphOne
+    {
+        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
+    }
 
+    public function payroll_details_charging(): MorphOne
+    {
+        return $this->morphOne(PayrollDetailDeduction::class, 'charge');
+    }
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
     public function getBalanceAttribute()
     {
         return round($this->amount - $this->totalPaid, 2);
@@ -88,7 +108,7 @@ class CashAdvance extends Model
         return round($this->cashAdvancePaymentsPosted()->sum("amount_paid"), 2);
     }
 
-    public function cashPaid()
+    public function isFullyPaidAttribute()
     {
         $totalpaid = $this->cashAdvancePaymentsPosted()->sum("amount_paid");
         if ($this->amount <= $totalpaid) {
@@ -96,7 +116,36 @@ class CashAdvance extends Model
         }
         return false;
     }
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
+    public static function scopeIsOngoing($query)
+    {
 
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from cash_advance_payments where cashadvance_id = cash_advances.id and posting_status = ?) , 0) < amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+    public static function scopeIsPaid($query)
+    {
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from cash_advance_payments where cashadvance_id = cash_advances.id and posting_status = ?) , 0) >= amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
     public function paymentWillOverpay($amount)
     {
         // $totalpaid = $this->loanPayments()->sum('amount_paid');
@@ -110,7 +159,7 @@ class CashAdvance extends Model
 
     public function cashAdvance($paymentAmount, $type)
     {
-        if ($this->cashPaid()) {
+        if ($this->is_fully_paid) {
             return false;
         }
 
@@ -139,13 +188,4 @@ class CashAdvance extends Model
         return true;
     }
 
-    public function payroll_detail_deduction(): MorphOne
-    {
-        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
-    }
-
-    public function payroll_details_charging(): MorphOne
-    {
-        return $this->morphOne(PayrollDetailDeduction::class, 'charge');
-    }
 }

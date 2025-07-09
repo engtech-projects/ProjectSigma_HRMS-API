@@ -27,15 +27,18 @@ class OtherDeductionController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->get();
+        ->paginate(15);
 
-        return new JsonResponse([
+        return OtherDeductionResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'All Other Deductions fetched.',
-            'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
         ]);
     }
 
+    /**
+     * Display a list of ongoing other deductions.
+     */
     public function ongoing(OtherDeductionAllList $request)
     {
         $validatedData = $request->validated();
@@ -44,21 +47,19 @@ class OtherDeductionController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isOngoing()
         ->orderBy("created_at", "DESC")
-        ->get()
-        ->filter(function ($otherded) {
-            return !$otherded->cashPaid();
-        })
-        ->values()
-        ->all();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return OtherDeductionResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Ongoing Other Deductions fetched.',
-            'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
+            'message' => 'All Other Deductions fetched.',
         ]);
     }
 
+    /**
+     * Display a list of paid other deductions.
+     */
     public function paid(OtherDeductionAllList $request)
     {
         $validatedData = $request->validated();
@@ -67,18 +68,13 @@ class OtherDeductionController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isPaid()
         ->orderBy("created_at", "DESC")
-        ->get()
-        ->filter(function ($otherded) {
-            return $otherded->cashPaid();
-        })
-        ->values()
-        ->all();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return OtherDeductionResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Paid Other Deductions fetched.',
-            'data' => PaginateResourceCollection::paginate(OtherDeductionResource::collection($data)->collect()),
+            'message' => 'All Other Deductions fetched.',
         ]);
     }
 
@@ -178,7 +174,7 @@ class OtherDeductionController extends Controller
         $valid = true;
         $msg = "";
 
-        if ($oded->cashPaid()) {
+        if ($oded->is_fully_paid) {
             $valid = false;
             $msg = "Payment already paid.";
         } elseif ($oded->paymentWillOverpay($request->paymentAmount)) {

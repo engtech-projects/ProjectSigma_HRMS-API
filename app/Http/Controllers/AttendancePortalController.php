@@ -9,7 +9,6 @@ use App\Http\Requests\UpdateAttendancePortalRequest;
 use App\Http\Resources\AttendancePortalResource;
 use App\Models\Department;
 use App\Models\Project;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,19 +24,12 @@ class AttendancePortalController extends Controller
      */
     public function index()
     {
-        $main = AttendancePortal::get();
-        if (!is_null($main)) {
-            $collection = collect(AttendancePortalResource::collection($main));
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Attendance Portals fetched.',
-                'data' => PaginateResourceCollection::paginate(collect($collection), 15)
-            ]);
-        }
-        return new JsonResponse([
-            'success' => false,
-            'message' => 'No data found.',
-        ], 404);
+        $main = AttendancePortal::paginate(15);
+        return AttendancePortal::collection($main)
+        ->additional([
+            'success' => true,
+            'message' => 'Attendance Portals fetched.',
+        ]);
     }
 
     /**

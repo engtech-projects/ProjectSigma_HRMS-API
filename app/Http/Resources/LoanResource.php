@@ -20,7 +20,7 @@ class LoanResource extends JsonResource
             "payments" => LoanPaymentResource::collection($this->loanPayments),
             "date_filed" => $this->created_at_human,
             "deduction_start" => $this->deduction_start_human,
-            "is_fully_paid" => $this->loanPaid(),
+            "is_fully_paid" => $this->is_fully_paid,
             "total_paid" => $this->total_paid,
             "remaining_balance" => $this->balance,
             "amount_formatted" => number_format($this->amount, 2),

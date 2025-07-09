@@ -7,8 +7,6 @@ use App\Http\Resources\LoanPaymentResource;
 use App\Models\LoanPayments;
 use App\Http\Requests\StoreLoanPaymentsRequest;
 use App\Http\Requests\UpdateLoanPaymentsRequest;
-use App\Utils\PaginateResourceCollection;
-use Illuminate\Http\JsonResponse;
 
 class LoanPaymentsController extends Controller
 {
@@ -25,12 +23,11 @@ class LoanPaymentsController extends Controller
         })
         ->with(['employee','loan'])
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return LoanPaymentResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(LoanPaymentResource::collection($data)))
+            'message' => 'Loan Payments fetched.',
         ]);
     }
 

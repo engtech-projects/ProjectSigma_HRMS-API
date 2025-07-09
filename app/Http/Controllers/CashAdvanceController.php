@@ -17,7 +17,6 @@ use App\Models\Users;
 use App\Notifications\CashAdvanceForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Utils\PaginateResourceCollection;
 
 class CashAdvanceController extends Controller
 {
@@ -40,11 +39,10 @@ class CashAdvanceController extends Controller
         ->with('employee')
         ->orderBy("created_at", "DESC")
         ->paginate();
-
-        return new JsonResponse([
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
         ]);
     }
 
@@ -80,7 +78,7 @@ class CashAdvanceController extends Controller
         $msg = "";
         $status = 200;
 
-        if ($cash->cashPaid()) {
+        if ($cash->is_fully_paid) {
             $status = 422;
             $valid = false;
             $msg = "Cash advance already fully paid.";
@@ -188,12 +186,11 @@ class CashAdvanceController extends Controller
         ->myRequests()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->paginate();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
+            'message' => "Cash Advance Request fetched.",
         ]);
     }
 
@@ -209,16 +206,19 @@ class CashAdvanceController extends Controller
             });
         })
         ->myApprovals()
-        ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvanceResource::collection($data)->response()->getData(true)
+            'message' => "Cash Advance Request fetched.",
         ]);
     }
+
+
+    /**
+     * Display a list of ongoing cash advances.
+     */
     public function getOngoingCashAdvance(OngoingCashAdvanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -227,21 +227,20 @@ class CashAdvanceController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
-        ->with('employee')
+        ->isApproved()
+        ->isOngoing()
         ->orderBy("created_at", "DESC")
-        ->get()
-        ->filter(function ($cashAdv) {
-            return !$cashAdv->cashPaid();
-        })
-        ->values()
-        ->all();
-        return new JsonResponse([
+        ->paginate(15);
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
+            'message' => "Cash Advance Request fetched.",
         ]);
     }
 
+    /**
+     * Display a list of paid cash advances.
+     */
     public function getPaidCashAdvance(PaidCashAdvanceRequest $request)
     {
         $validatedData = $request->validated();
@@ -250,19 +249,15 @@ class CashAdvanceController extends Controller
                 $query2->where('employee_id', $validatedData["employee_id"]);
             });
         })
+        ->isApproved()
+        ->isPaid()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->get()
-        ->filter(function ($cashAdv) {
-            return $cashAdv->cashPaid();
-        })
-        ->values()
-        ->all();
-
-        return new JsonResponse([
+        ->paginate(15);
+        return CashAdvanceResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Cash Advance Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(CashAdvanceResource::collection($data)))
         ]);
     }
 }

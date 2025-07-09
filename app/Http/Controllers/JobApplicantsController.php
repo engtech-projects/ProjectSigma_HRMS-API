@@ -44,11 +44,11 @@ class JobApplicantsController extends Controller
         })
         ->orderByRaw("DATE(created_at) DESC")
         ->orderBy('lastname')
-        ->paginate();
-        return new JsonResponse([
+        ->paginate(15);
+        return JobApplicantResource::collection($main)
+        ->additional([
             'success' => true,
-            'message' => 'Job Applicant fetched.',
-            'data' => JobApplicantResource::collection($main)->response()->getData(true)
+            'message' => "Job Applicant fetched.",
         ]);
     }
 
@@ -98,11 +98,11 @@ class JobApplicantsController extends Controller
                         ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
                 });
             })
-            ->get();
-        return new JsonResponse([
+        ->paginate();
+        return JobApplicantResource::collection($main)
+        ->additional([
             'success' => true,
-            'message' => 'Job Applicant fetched.',
-            'data' => JobApplicantResource::collection($main)
+            'message' => "Job Applicant fetched.",
         ]);
     }
 

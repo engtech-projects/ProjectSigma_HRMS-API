@@ -25,12 +25,12 @@ class OtherDeductionPaymentsController extends Controller
         })
         ->with(["otherdeduction", "employee"])
         ->orderBy("id", "DESC")
-        ->paginate();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = OtherDeductionPaymentsResource::collection($main)->response()->getData(true);
-        return response()->json($data);
+        ->paginate(15);
+        return OtherDeductionPaymentsResource::collection($main)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched.',
+        ]);
     }
 
     /**
