@@ -13,7 +13,7 @@ class EmployeeAddressController extends Controller
      */
     public function index()
     {
-        $main = EmployeeAddress::paginate(15);
+        $main = EmployeeAddress::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

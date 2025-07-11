@@ -13,7 +13,7 @@ class LeaveController extends Controller
      */
     public function index()
     {
-        $leave = Leave::paginate(15);
+        $leave = Leave::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

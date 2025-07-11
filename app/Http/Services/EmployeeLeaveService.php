@@ -43,7 +43,7 @@ class EmployeeLeaveService
     public function getMyRequest()
     {
         $leaveRequest = EmployeeLeaves::myRequests();
-        return EmployeeLeaveResource::collection($leaveRequest->orderBy('created_by', 'DESC')->paginate(15));
+        return EmployeeLeaveResource::collection($leaveRequest->orderBy('created_by', 'DESC')->paginate(config("app.pagination_per_page")));
     }
 
     public function getMyApprovals()

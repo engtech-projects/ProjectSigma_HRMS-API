@@ -13,7 +13,7 @@ class ExternalWorkExperienceController extends Controller
      */
     public function index()
     {
-        $main = ExternalWorkExperience::paginate(15);
+        $main = ExternalWorkExperience::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

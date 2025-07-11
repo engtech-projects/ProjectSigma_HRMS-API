@@ -10,7 +10,7 @@ class EmployeeStudiesController extends Controller
 {
     public function index()
     {
-        $main = EmployeeStudies::paginate(15);
+        $main = EmployeeStudies::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

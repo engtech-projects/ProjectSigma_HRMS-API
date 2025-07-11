@@ -27,7 +27,7 @@ class OtherDeductionController extends Controller
             });
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
 
         return OtherDeductionResource::collection($data)
         ->additional([
@@ -49,7 +49,7 @@ class OtherDeductionController extends Controller
         })
         ->isOngoing()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return OtherDeductionResource::collection($data)
         ->additional([
             'success' => true,
@@ -70,7 +70,7 @@ class OtherDeductionController extends Controller
         })
         ->isPaid()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return OtherDeductionResource::collection($data)
         ->additional([
             'success' => true,

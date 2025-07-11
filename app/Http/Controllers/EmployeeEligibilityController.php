@@ -13,7 +13,7 @@ class EmployeeEligibilityController extends Controller
      */
     public function index()
     {
-        $main = EmployeeEligibility::paginate(15);
+        $main = EmployeeEligibility::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

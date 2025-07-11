@@ -248,7 +248,7 @@ class PayrollRecordController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return PayrollRequestResource::collection($allRequests)
         ->additional([
             'success' => true,
@@ -275,7 +275,7 @@ class PayrollRecordController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return PayrollRequestResource::collection($myRequest)
         ->additional([
             'success' => true,
@@ -304,7 +304,7 @@ class PayrollRecordController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return PayrollRequestResource::collection($myApproval)
         ->additional([
             'success' => true,
@@ -332,7 +332,7 @@ class PayrollRecordController extends Controller
         ->when($request->has("department_id") && $validatedData["department_id"], function ($query) use ($validatedData) {
             return $query->where("department_id", $validatedData["department_id"]);
         })
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return PayrollRequestResource::collection($datas)
         ->additional([
             'success' => true,

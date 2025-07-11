@@ -44,7 +44,7 @@ class RequestSalaryDisbursementController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return RequestPayrollSummaryListResource::collection($allRequests)
         ->additional([
             'success' => true,
@@ -148,7 +148,7 @@ class RequestSalaryDisbursementController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return RequestPayrollSummaryListResource::collection($myRequests)
         ->additional([
             'success' => true,
@@ -178,7 +178,7 @@ class RequestSalaryDisbursementController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return RequestPayrollSummaryListResource::collection($myApproval)
         ->additional([
             'success' => true,
@@ -194,7 +194,7 @@ class RequestSalaryDisbursementController extends Controller
         $payslipReady = RequestSalaryDisbursement::isApproved()
         ->where("disbursement_status", DisbursementStatus::RELEASED)
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return RequestPayrollSummaryListResource::collection($payslipReady)
         ->additional([
             'success' => true,

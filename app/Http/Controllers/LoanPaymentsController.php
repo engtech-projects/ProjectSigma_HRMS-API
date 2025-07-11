@@ -23,7 +23,7 @@ class LoanPaymentsController extends Controller
         })
         ->with(['employee','loan'])
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return LoanPaymentResource::collection($data)
         ->additional([
             'success' => true,

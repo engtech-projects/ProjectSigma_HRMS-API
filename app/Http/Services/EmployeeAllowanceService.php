@@ -14,16 +14,16 @@ class EmployeeAllowanceService
     }
     public function getAll()
     {
-        return AllowanceRequest::with(['employee_allowances','charge_assignment'])->paginate(15);
+        return AllowanceRequest::with(['employee_allowances','charge_assignment'])->paginate(config("app.pagination_per_page"));
     }
     public function getMyRequests()
     {
         return AllowanceRequest::with(['employee_allowances','charge_assignment'])
         ->myRequests()
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
     }
     public function getMyApprovals()
     {
-        return AllowanceRequest::with(['employee_allowances', 'charge_assignment'])->myApprovals()->paginate(15);
+        return AllowanceRequest::with(['employee_allowances', 'charge_assignment'])->myApprovals()->paginate(config("app.pagination_per_page"));
     }
 }
