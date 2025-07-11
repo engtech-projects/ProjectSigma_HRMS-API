@@ -24,7 +24,6 @@ class CountEmployeeDepartmentController extends Controller
         // $employeeByDepartment = $employeeByDepartment->flatten();
         $employeeByDepartment->put('NO DEPARTMENT', $employeeNoDepartment);
 
-
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',

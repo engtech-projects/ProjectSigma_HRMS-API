@@ -17,7 +17,6 @@ use App\Http\Requests\PayrollRecordsListFilterRequest;
 use App\Http\Requests\PayrollRecordsRequest;
 use App\Http\Services\Payroll\PayrollService;
 use App\Http\Requests\StorePayrollRecordRequest;
-use App\Http\Resources\PayrollRecordsResource;
 use App\Http\Resources\PayrollRequestResource;
 use App\Models\Department;
 use App\Models\CashAdvancePayments;
@@ -139,7 +138,6 @@ class PayrollRecordController extends Controller
             if ($payroll->getNextPendingApproval()) {
                 Users::find($payroll->getNextPendingApproval()['user_id'])->notify(new PayrollRequestForApproval($payroll));
             }
-
         });
         return new JsonResponse([
             'success' => true,
@@ -153,7 +151,6 @@ class PayrollRecordController extends Controller
             'error' => $e,
             'message' => 'Failed to save payroll request.',
         ], 500);
-
     }
 
     public function setPayrollDetails($deductions, $empPayrollDetail)
@@ -249,18 +246,12 @@ class PayrollRecordController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate();
-        if (!is_null($allRequests)) {
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Payrollrecord request fetched.',
-                'data' => PayrollRequestResource::collection($allRequests)->response()->getData(true),
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
-            'success' => false,
-            'message' => 'No data found.',
-        ], 404);
+        ->paginate(config("app.pagination_per_page", 10));
+        return PayrollRequestResource::collection($allRequests)
+        ->additional([
+            'success' => true,
+            'message' => 'Payroll Record Request fetched.',
+        ]);
     }
 
     public function myRequest(PayrollRecordsListFilterRequest $request)
@@ -282,17 +273,11 @@ class PayrollRecordController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate();
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return PayrollRequestResource::collection($myRequest)
+        ->additional([
             'success' => true,
-            'message' => 'Payrollrecord Request fetched.',
-            'data' => PayrollRequestResource::collection($myRequest)->response()->getData(true),
+            'message' => 'Payroll Record Request fetched.',
         ]);
     }
     /**
@@ -317,17 +302,11 @@ class PayrollRecordController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return PayrollRequestResource::collection($myApproval)
+        ->additional([
             'success' => true,
-            'message' => 'Payrollrecord Request fetched.',
-            'data' => PayrollRequestResource::collection($myApproval)->response()->getData(true),
+            'message' => 'Payroll Record Request fetched.',
         ]);
     }
     /**
@@ -351,17 +330,11 @@ class PayrollRecordController extends Controller
         ->when($request->has("department_id") && $validatedData["department_id"], function ($query) use ($validatedData) {
             return $query->where("department_id", $validatedData["department_id"]);
         })
-        ->get();
-        if ($datas->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return PayrollRequestResource::collection($datas)
+        ->additional([
             'success' => true,
-            'message' => 'Payrollrecord Request fetched.',
-            'data' => PayrollRecordsResource::collection($datas)
+            'message' => 'Payroll Record Request fetched.',
         ]);
     }
 }

@@ -13,7 +13,7 @@ class SSSContributionController extends Controller
      */
     public function index()
     {
-        $sss = SSSContribution::paginate(15);
+        $sss = SSSContribution::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

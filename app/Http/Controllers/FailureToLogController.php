@@ -7,7 +7,6 @@ use App\Enums\RequestStatuses;
 use App\Http\Requests\FailToLogRequest;
 use App\Models\FailureToLog;
 use Illuminate\Http\JsonResponse;
-use App\Utils\PaginateResourceCollection;
 use App\Http\Services\FailureToLogService;
 use App\Http\Resources\FailureToLogResource;
 use App\Exceptions\TransactionFailedException;
@@ -40,12 +39,11 @@ class FailureToLogController extends Controller
         })
         ->with("employee")
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return FailureToLogResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Failure to Log Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(FailureToLogResource::collection($data)))
         ]);
     }
 
@@ -135,23 +133,21 @@ class FailureToLogController extends Controller
     public function myRequests()
     {
         $failedLog = $this->failedLogService->getMyRequests();
-        $collection = collect(FailureToLogResource::collection($failedLog));
 
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection))
-        ], JsonResponse::HTTP_OK);
+        return FailureToLogResource::collection($failedLog)
+        ->additional([
+            'success' => true,
+            'message' => 'Failure to Log Request fetched.',
+        ]);
     }
     public function myApprovals()
     {
         $failedLog = $this->failedLogService->getMyApprovals();
-        $collection = collect(FailureToLogResource::collection($failedLog));
 
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetch.",
-            "data" => PaginateResourceCollection::paginate(collect($collection))
-        ], JsonResponse::HTTP_OK);
+        return FailureToLogResource::collection($failedLog)
+        ->additional([
+            'success' => true,
+            'message' => 'Failure to Log Request fetched.',
+        ]);
     }
 }

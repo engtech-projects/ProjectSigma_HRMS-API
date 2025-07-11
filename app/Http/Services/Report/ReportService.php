@@ -1115,7 +1115,6 @@ class ReportService
         return '/' . $fileName . '.xlsx';
     }
 
-
     public static function salaryListExport($validate)
     {
         $masterListHeaders = [
@@ -2016,7 +2015,6 @@ class ReportService
         Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
-
 
     public static function attendanceLogMonitoringSummary($validate)
     {

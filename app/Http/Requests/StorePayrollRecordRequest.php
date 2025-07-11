@@ -311,5 +311,4 @@ class StorePayrollRecordRequest extends FormRequest
             ],
         ];
     }
-
 }

@@ -39,7 +39,7 @@ class ManpowerServices
             $query->where('fill_status', $filter["fill_status"]);
         })
         ->orderBy('created_at', 'desc')
-        ->paginate();
+        ->paginate(config("app.pagination_per_page", 10));
     }
     public function getAllForHiring($filter = [])
     {
@@ -59,7 +59,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->paginate(config("app.pagination_per_page", 10));
     }
     public function getAllManpowerRequest($filter = [])
     {
@@ -79,7 +79,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(config("app.pagination_per_page", 10));
     }
     public function getMyRequest($filter = [])
     {
@@ -97,7 +97,7 @@ class ManpowerServices
             ->when(isset($filter["fill_status"]), function ($query) use ($filter) {
                 $query->where('fill_status', $filter["fill_status"]);
             })
-            ->paginate();
+            ->paginate(config("app.pagination_per_page", 10));
     }
     public function getMyApprovals($filter = [])
     {
@@ -118,11 +118,10 @@ class ManpowerServices
             })
             ->myApprovals()
             ->orderBy('created_at', 'desc')
-            ->paginate();
+            ->paginate(config("app.pagination_per_page", 10));
     }
     public function createManpowerRequest(array $attributes)
     {
-
         $main = $this->manpowerRequest->fill($attributes);
         $main->job_description_attachment = $this->uploadFile($attributes['job_description_attachment'], ManpowerRequest::JDA_DIR);
 
@@ -159,7 +158,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate();
+            ->paginate(config("app.pagination_per_page", 10));
     }
     public function getApprovedPositions($filter = [])
     {
@@ -179,6 +178,6 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate();
+            ->paginate(config("app.pagination_per_page", 10));
     }
 }

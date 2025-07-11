@@ -29,7 +29,6 @@ class ApprovedPositionsFilter extends FormRequest
                 'string',
                 new Enum(FillStatuses::class)
             ],
-
         ];
     }
 }

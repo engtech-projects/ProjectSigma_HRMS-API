@@ -13,7 +13,6 @@ use App\Http\Resources\OvertimeResource;
 use App\Http\Services\OvertimeService;
 use App\Models\Users;
 use App\Notifications\OvertimeRequestForApproval;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -40,11 +39,11 @@ class OvertimeController extends Controller
         })
         ->with('employees')
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return OvertimeResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'All Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
         ]);
     }
     /**
@@ -154,11 +153,11 @@ class OvertimeController extends Controller
         ->with(['user.employee'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return OvertimeResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'My Request Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
+            'message' => 'All Overtime Request fetched.',
         ]);
     }
     /**
@@ -178,11 +177,11 @@ class OvertimeController extends Controller
         ->with(['employees', 'department', 'project'])
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return OvertimeResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'My Request Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(OvertimeResource::collection($data)))
+            'message' => 'All Overtime Request fetched.',
         ]);
     }
 }

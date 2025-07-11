@@ -15,7 +15,6 @@ use App\Models\Employee;
 use App\Models\Project;
 use App\Models\Users;
 use App\Notifications\AllowanceRequestForApproval;
-use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -27,18 +26,13 @@ class AllowanceRequestController extends Controller
      */
     public function index()
     {
-        $main = AllowanceRequest::orderBy('created_at', 'desc')->get();
-        if (!is_null($main)) {
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Successfully fetch all Allowance Requests.',
-                'data' => PaginateResourceCollection::paginate(collect(AllowanceRequestResource::collection($main))),
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
-            'success' => false,
-            'message' => 'No data found.',
-        ], 404);
+        $main = AllowanceRequest::orderBy('created_at', 'desc')
+        ->paginate(config("app.pagination_per_page", 10));
+        return AllowanceRequestResource::collection($main)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetch all Allowance Requests.',
+        ]);
     }
 
     /**
@@ -161,17 +155,17 @@ class AllowanceRequestController extends Controller
         $myRequest = AllowanceRequest::with(['employee_allowances','charge_assignment'])
             ->myRequests()
             ->orderBy("created_at", "DESC")
-            ->get();
+            ->paginate(config("app.pagination_per_page", 10));
         if ($myRequest->isEmpty()) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'No data found.',
             ], JsonResponse::HTTP_OK);
         }
-        return new JsonResponse([
+        return AllowanceRequestResource::collection($myRequest)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(AllowanceRequestResource::collection($myRequest)))
+            'message' => 'Allowance Request fetched.',
         ]);
     }
 
@@ -181,19 +175,13 @@ class AllowanceRequestController extends Controller
     public function myApproval()
     {
         $result = AllowanceRequest::with(['employee_allowances', 'charge_assignment'])
-            ->myApprovals()
-            ->orderBy("created_at", "DESC")
-            ->get();
-        if ($result->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
+        ->myApprovals()
+        ->orderBy("created_at", "DESC")
+        ->paginate(config("app.pagination_per_page", 10));
+        return AllowanceRequestResource::collection($result)
+        ->additional([
             'success' => true,
-            'message' => 'Manpower Request fetched.',
-            'data' => AllowanceRequestResource::collection($result)
+            'message' => 'Allowance Request fetched.',
         ]);
     }
 }

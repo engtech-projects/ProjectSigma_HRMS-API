@@ -14,7 +14,9 @@ class PositionController extends Controller
      */
     public function index(Request $request)
     {
-        $main = Position::with('departments')->where("name", "like", "%".$request->input("name")."%")->paginate(10);
+        $main = Position::with('departments')
+        ->where("name", "like", "%".$request->input("name")."%")
+        ->paginate(config("app.pagination_per_page", 10));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

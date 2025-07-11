@@ -27,7 +27,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $main = Employee::paginate(15);
+        $main = Employee::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -148,7 +148,6 @@ class EmployeeController extends Controller
                 ->with("position")
                 ->with("projects")
                 ->orderBy("id", "desc");
-
         })
         ->find($id);
         $data = json_decode('{}');

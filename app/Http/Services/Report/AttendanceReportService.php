@@ -51,7 +51,6 @@ class AttendanceReportService
             if ($totalWorkHours > 0) {
                 $fullDayAttendanceCount++;
             }
-
         }
         return [
             "attendanceCount" => $fullDayAttendanceCount,

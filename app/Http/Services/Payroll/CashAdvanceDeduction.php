@@ -13,7 +13,6 @@ class CashAdvanceDeduction extends PayrollDeduction
     public $cashAdvance;
     public function __construct(Employee $employee, $salary, array $filters)
     {
-
         $this->employee = $employee;
         $this->cashAdvance = $this->getCashAdvanceDeduction($filters);
         $this->filter = $filters;
@@ -25,7 +24,7 @@ class CashAdvanceDeduction extends PayrollDeduction
         $cashAdvance = $this->employee->cash_advance()->isApproved()->first();
 
         if ($cashAdvance) {
-            if (!$cashAdvance->cashPaid()) {
+            if (!$cashAdvance->is_fully_paid) {
                 if ($cashAdvance->deduction_date_start->lt($payrollDate)) {
                     $deduction = $cashAdvance->installment_deduction;
                 }

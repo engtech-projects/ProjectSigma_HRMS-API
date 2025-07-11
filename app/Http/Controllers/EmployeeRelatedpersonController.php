@@ -13,7 +13,7 @@ class EmployeeRelatedpersonController extends Controller
      */
     public function index()
     {
-        $main = EmployeeRelatedperson::paginate(15);
+        $main = EmployeeRelatedperson::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

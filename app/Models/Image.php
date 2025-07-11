@@ -42,7 +42,6 @@ class Image extends Model
         }
     }
 
-
     protected function base64Compressed(): Attribute // Compressed Base64 String - for bulk
     {
         $width = 112;

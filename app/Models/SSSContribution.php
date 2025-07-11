@@ -29,7 +29,6 @@ class SSSContribution extends Model
         'employer_wisp',
     ];
 
-
     public static function getContribution($salary)
     {
         return self::where('range_from', '<=', $salary)

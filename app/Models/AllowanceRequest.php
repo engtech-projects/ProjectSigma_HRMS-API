@@ -31,7 +31,6 @@ class AllowanceRequest extends Model
         'approvals' => 'array',
     ];
 
-
     protected $fillable = [
         'id',
         'charge_assignment_id',

@@ -37,7 +37,6 @@ class EmployeePatternService
                 return false;
             }
         }
-
     }
     public function getPatternByEmployeeID($id = null)
     {

@@ -14,14 +14,9 @@ class CashAdvanceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user = $this->when('user', function () {
-            return [
-                    "fullname_first" => $this->employee?->fullname_first,
-            ];
-        });
         return [
             "id" => $this->id,
-            "employee" => $user,
+            "employee" => $this->employee->fullname_first,
             "employee_id" => $this->employee_id,
             "department_id" => $this->department_id,
             "project_id" => $this->project_id,
@@ -51,7 +46,6 @@ class CashAdvanceResource extends JsonResource
             "total_paid_formatted" => number_format($this->total_paid, 2),
             "created_by_user" => $this->created_by_user_name,
             "created_at_human" => $this->created_at_human,
-
         ];
     }
 }

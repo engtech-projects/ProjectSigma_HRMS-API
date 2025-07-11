@@ -13,7 +13,7 @@ class PhilhealthContributionController extends Controller
      */
     public function index()
     {
-        $sss = PhilhealthContribution::paginate(15);
+        $sss = PhilhealthContribution::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -79,7 +79,6 @@ class PhilhealthContributionController extends Controller
      */
     public function update(UpdatePhilhealthContributionRequest $request, $id)
     {
-
         $philhealth = PhilhealthContribution::find($id);
         $data = json_decode('{}');
         if (!is_null($philhealth)) {

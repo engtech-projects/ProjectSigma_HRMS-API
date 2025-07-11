@@ -12,5 +12,4 @@ class InventoryService
         $this->authToken = $authToken;
         $this->apiUrl = config('services.url.inventory_api');
     }
-
 }

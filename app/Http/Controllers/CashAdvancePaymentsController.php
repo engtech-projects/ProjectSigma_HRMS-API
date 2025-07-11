@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CashAdvancePaymentRequest;
-use App\Http\Resources\CashAdvancePaymentResource;
 use App\Models\CashAdvancePayments;
 use App\Http\Requests\StoreCashAdvancePaymentsRequest;
 use App\Http\Requests\UpdateCashAdvancePaymentsRequest;
-use Illuminate\Http\JsonResponse;
+use App\Http\Resources\CashAdvancePaymentResource;
 
 class CashAdvancePaymentsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(CashAdvancePaymentRequest $request): JsonResponse
+    public function index(CashAdvancePaymentRequest $request)
     {
         $validatedData = $request->validated();
         $data = CashAdvancePayments::when($request->has('employee_id'), function ($query) use ($validatedData) {
@@ -24,12 +23,11 @@ class CashAdvancePaymentsController extends Controller
         })
         ->with(['employee','cashadvance'])
         ->orderBy("created_at", "DESC")
-        ->paginate();
-
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return CashAdvancePaymentResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
-            'data' => CashAdvancePaymentResource::collection($data)->response()->getData(true)
+            'message' => "Cash Advance Request fetched.",
         ]);
     }
 

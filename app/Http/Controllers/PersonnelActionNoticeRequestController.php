@@ -35,15 +35,12 @@ class PersonnelActionNoticeRequestController extends Controller
                     $q->where(DB::raw("CONCAT(firstname, ' ', middlename, ' ', lastname)"), 'LIKE', "%{$request->employee}%");
                 });
             })
-            ->orderBy('created_at', 'desc')
-            ->paginate();
-        // TO FIX EMPLOYEE FILTER
-
-        $paginated = EmployeePanRequestResource::collection($panRequest)->response()->getData(true);
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => $paginated
+        ->orderBy('created_at', 'desc')
+        ->paginate(config("app.pagination_per_page", 10));
+        return EmployeePanRequestResource::collection($panRequest)
+        ->additional([
+            'success' => true,
+            'message' => "Successfully fetched.",
         ]);
     }
 
@@ -73,17 +70,10 @@ class PersonnelActionNoticeRequestController extends Controller
     public function myRequests()
     {
         $noticeRequest = $this->panRequestService->getMyRequests();
-        if (empty($noticeRequest)) {
-            return new JsonResponse([
-                "success" => false,
-                "message" => "No data found.",
-            ]);
-        }
-        $paginated = EmployeePanRequestResource::collection($noticeRequest)->response()->getData(true);
-        return new JsonResponse([
-            "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => $paginated
+        return EmployeePanRequestResource::collection($noticeRequest)
+        ->additional([
+            'success' => true,
+            'message' => 'Personal Action Notice Request fetched.',
         ]);
     }
 
@@ -93,16 +83,10 @@ class PersonnelActionNoticeRequestController extends Controller
     public function myApprovals()
     {
         $myApproval = $this->panRequestService->getMyApprovals();
-        if ($myApproval->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
+        return EmployeePanRequestResource::collection($myApproval)
+        ->additional([
             'success' => true,
-            'message' => 'Personnel Action Notice Request fetched.',
-            'data' => EmployeePanRequestResource::collection($myApproval)->response()->getData(true)
+            'message' => 'Personal Action Notice Request fetched.',
         ]);
     }
 

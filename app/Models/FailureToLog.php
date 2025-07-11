@@ -80,7 +80,6 @@ class FailureToLog extends Model
         $this->refresh();
     }
 
-
     public function requestStatusCompleted(): bool
     {
         if ($this->request_status == RequestStatuses::APPROVED->value) {

@@ -14,7 +14,6 @@ use App\Http\Services\EmployeeAllowanceService;
 use App\Models\AllowanceRequest;
 use App\Models\Department;
 use App\Models\Project;
-use App\Utils\PaginateResourceCollection;
 use Carbon\Carbon;
 
 class EmployeeAllowancesController extends Controller
@@ -37,17 +36,12 @@ class EmployeeAllowancesController extends Controller
     public function index()
     {
         $main = $this->employeeAllowanceService->getAll();
-        if (!is_null($main)) {
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Successfully fetch all Allowance Requests.',
-                'data' => PaginateResourceCollection::paginate(collect(AllowanceRequestResource::collection($main))),
-            ], JsonResponse::HTTP_OK);
-        }
-        return new JsonResponse([
-            'success' => false,
-            'message' => 'No data found.',
-        ], 404);
+
+        return AllowanceRequestResource::collection($main)
+        ->additional([
+            'success' => true,
+            'message' => 'Allowances Request fetched.',
+        ]);
     }
 
     /**
@@ -134,7 +128,6 @@ class EmployeeAllowancesController extends Controller
      */
     public function update(UpdateEmployeeAllowancesRequest $request, $id)
     {
-
     }
 
     /**

@@ -21,5 +21,4 @@ class Accessibilities extends Model
         'updated_at',
         'created_at',
     ];
-
 }

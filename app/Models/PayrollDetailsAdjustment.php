@@ -26,5 +26,4 @@ class PayrollDetailsAdjustment extends Model
     {
         return $this->belongsTo(payrollDetails::class);
     }
-
 }

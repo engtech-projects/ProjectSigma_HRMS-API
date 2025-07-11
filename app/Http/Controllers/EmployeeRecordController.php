@@ -13,7 +13,7 @@ class EmployeeRecordController extends Controller
      */
     public function index()
     {
-        $main = EmployeeRecord::paginate(15);
+        $main = EmployeeRecord::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

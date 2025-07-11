@@ -261,7 +261,6 @@ class EmployeeService
                 "adjustment_amount" => $data['adjustment_amount'],
             ];
         });
-
     }
 
     public function aggregateTotalHoursWorked($dtrs)

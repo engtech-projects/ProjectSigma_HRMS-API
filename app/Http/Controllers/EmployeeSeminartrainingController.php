@@ -13,7 +13,7 @@ class EmployeeSeminartrainingController extends Controller
      */
     public function index()
     {
-        $main = EmployeeSeminartraining::paginate(15);
+        $main = EmployeeSeminartraining::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

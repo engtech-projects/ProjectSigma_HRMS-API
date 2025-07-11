@@ -77,7 +77,6 @@ class PayrollDeduction
     }
     private function PhilhealthDeduction()
     {
-
         $philhealth = PhilhealthContribution::getContribution($this->salary);
         $result = [
             "share_type" => 0,
@@ -104,7 +103,6 @@ class PayrollDeduction
                 "total_contribution" => $contribution["employer"] + $contribution["employee"]
             ];
         }
-
 
         return $result;
     }

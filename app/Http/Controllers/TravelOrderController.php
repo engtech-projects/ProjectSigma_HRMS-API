@@ -16,9 +16,7 @@ use App\Http\Resources\TravelOrderResource;
 use App\Http\Services\TravelOrderService;
 use App\Models\Users;
 use App\Notifications\TravelRequestForApproval;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TravelOrderController extends Controller
@@ -28,9 +26,7 @@ class TravelOrderController extends Controller
     {
         $this->RequestService = $RequestService;
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(AllTravelRequest $request)
     {
         $validatedData = $request->validated();
@@ -44,18 +40,14 @@ class TravelOrderController extends Controller
         })
         ->with(["user.employee"])
         ->orderBy("created_at", "DESC")
-        ->get();
-
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return TravelOrderResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Travel Order Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreTravelOrderRequest $request)
     {
         try {
@@ -92,9 +84,6 @@ class TravelOrderController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $main = TravelOrder::with(['department',"employees"])->find($id);
@@ -110,9 +99,6 @@ class TravelOrderController extends Controller
         return response()->json($data, 404);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateTravelOrderRequest $request, $id)
     {
         $main = TravelOrder::find($id);
@@ -131,9 +117,6 @@ class TravelOrderController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $main = TravelOrder::find($id);
@@ -168,17 +151,14 @@ class TravelOrderController extends Controller
         ->with(['user.employee'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return TravelOrderResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'My Request Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
+            'message' => 'My Request Travel Order Request fetched.',
         ]);
     }
 
-    /**
-     * Show can view all pan request to be approved by logged in user (same login in manpower request)
-     */
     public function myApprovals(TravelApprovalRequest $request)
     {
         $validatedData = $request->validated();
@@ -193,11 +173,11 @@ class TravelOrderController extends Controller
         ->with(['user.employee'])
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->get();
-        return new JsonResponse([
+        ->paginate(config("app.pagination_per_page", 10));
+        return TravelOrderResource::collection($data)
+        ->additional([
             'success' => true,
-            'message' => 'My Request Overtime Request fetched.',
-            'data' => PaginateResourceCollection::paginate(collect(TravelOrderResource::collection($data)))
+            'message' => 'My Request Travel Order Request fetched.',
         ]);
     }
 }

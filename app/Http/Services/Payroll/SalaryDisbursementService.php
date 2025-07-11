@@ -21,7 +21,6 @@ class SalaryDisbursementService
     }
     public static function getPayrollDetails($payrollIds)
     {
-
         return PayrollDetail::whereIn("payroll_record_id", $payrollIds)
         ->with(['payroll_record', 'otherDeductionPayments.deduction.otherdeduction', 'loanPayments.deduction.loan'])
         ->orderBy("created_at", "DESC")

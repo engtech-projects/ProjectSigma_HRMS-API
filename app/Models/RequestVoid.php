@@ -80,5 +80,4 @@ class RequestVoid extends Model
         $this->refresh();
         DB::commit();
     }
-
 }
