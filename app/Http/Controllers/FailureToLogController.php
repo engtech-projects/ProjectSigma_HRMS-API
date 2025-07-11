@@ -39,7 +39,7 @@ class FailureToLogController extends Controller
         })
         ->with("employee")
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return FailureToLogResource::collection($data)
         ->additional([
             'success' => true,

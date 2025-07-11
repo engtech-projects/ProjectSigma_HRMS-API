@@ -16,7 +16,7 @@ class ApprovalsController extends Controller
      */
     public function index(Request $request)
     {
-        $approvals = Approvals::where('module', '=', $request->input("module"))->paginate(config("app.pagination_per_page"));
+        $approvals = Approvals::where('module', '=', $request->input("module"))->paginate(config("app.pagination_per_page", 10));
         return ApprovalResource::collection($approvals)
         ->additional([
             'success' => true,

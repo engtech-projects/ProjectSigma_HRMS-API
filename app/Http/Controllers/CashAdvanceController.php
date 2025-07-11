@@ -38,7 +38,7 @@ class CashAdvanceController extends Controller
         })
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->paginate();
+        ->paginate(config("app.pagination_per_page", 10));
         return CashAdvanceResource::collection($data)
         ->additional([
             'success' => true,
@@ -186,7 +186,7 @@ class CashAdvanceController extends Controller
         ->myRequests()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return CashAdvanceResource::collection($data)
         ->additional([
             'success' => true,
@@ -207,7 +207,7 @@ class CashAdvanceController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return CashAdvanceResource::collection($data)
         ->additional([
             'success' => true,
@@ -230,7 +230,7 @@ class CashAdvanceController extends Controller
         ->isApproved()
         ->isOngoing()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return CashAdvanceResource::collection($data)
         ->additional([
             'success' => true,
@@ -253,7 +253,7 @@ class CashAdvanceController extends Controller
         ->isPaid()
         ->with('employee')
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return CashAdvanceResource::collection($data)
         ->additional([
             'success' => true,

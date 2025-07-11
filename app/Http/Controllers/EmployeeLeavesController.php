@@ -37,7 +37,7 @@ class EmployeeLeavesController extends Controller
                 ->where('date_of_absence_to', '>=', $validatedData['date_filter']);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return EmployeeLeaveResource::collection($data)
         ->additional([
             'success' => true,
@@ -149,7 +149,7 @@ class EmployeeLeavesController extends Controller
         ->with(['employee', 'department', 'project'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return EmployeeLeaveResource::collection($data)
         ->additional([
             'success' => true,
@@ -191,7 +191,7 @@ class EmployeeLeavesController extends Controller
         ->with(['employee', 'department', 'project'])
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return EmployeeLeaveResource::collection($data)
         ->additional([
             'success' => true,
