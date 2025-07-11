@@ -13,7 +13,7 @@ class WitholdingTaxContributionController extends Controller
      */
     public function index()
     {
-        $witholdingtax = WitholdingTaxContribution::paginate(15);
+        $witholdingtax = WitholdingTaxContribution::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

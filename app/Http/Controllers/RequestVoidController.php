@@ -23,7 +23,7 @@ class RequestVoidController extends Controller
             return $query->whereDate('request_type', $validatedData['date_filter']);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return RequestVoidResource::collection($data)
         ->additional([
             'success' => true,
@@ -70,7 +70,7 @@ class RequestVoidController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return RequestVoidResource::collection($data)
         ->additional([
             'success' => true,
@@ -91,7 +91,7 @@ class RequestVoidController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return RequestVoidResource::collection($data)
         ->additional([
             'success' => true,

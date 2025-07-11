@@ -39,7 +39,7 @@ class ManpowerServices
             $query->where('fill_status', $filter["fill_status"]);
         })
         ->orderBy('created_at', 'desc')
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
     }
     public function getAllForHiring($filter = [])
     {
@@ -59,7 +59,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'DESC')
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
     public function getAllManpowerRequest($filter = [])
     {
@@ -79,7 +79,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
     public function getMyRequest($filter = [])
     {
@@ -97,7 +97,7 @@ class ManpowerServices
             ->when(isset($filter["fill_status"]), function ($query) use ($filter) {
                 $query->where('fill_status', $filter["fill_status"]);
             })
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
     public function getMyApprovals($filter = [])
     {
@@ -118,7 +118,7 @@ class ManpowerServices
             })
             ->myApprovals()
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
     public function createManpowerRequest(array $attributes)
     {
@@ -159,7 +159,7 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
     public function getApprovedPositions($filter = [])
     {
@@ -179,6 +179,6 @@ class ManpowerServices
                 $query->where('fill_status', $filter["fill_status"]);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
 }

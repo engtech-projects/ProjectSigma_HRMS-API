@@ -24,8 +24,8 @@ class AttendancePortalController extends Controller
      */
     public function index()
     {
-        $main = AttendancePortal::paginate(15);
-        return AttendancePortal::collection($main)
+        $main = AttendancePortal::paginate(config("app.pagination_per_page"));
+        return AttendancePortalResource::collection($main)
         ->additional([
             'success' => true,
             'message' => 'Attendance Portals fetched.',

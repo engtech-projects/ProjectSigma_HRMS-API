@@ -13,7 +13,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $department = Department::paginate(15);
+        $department = Department::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

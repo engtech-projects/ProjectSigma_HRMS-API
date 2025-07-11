@@ -44,7 +44,7 @@ class JobApplicantsController extends Controller
         })
         ->orderByRaw("DATE(created_at) DESC")
         ->orderBy('lastname')
-        ->paginate(15);
+        ->paginate(config("app.pagination_per_page"));
         return JobApplicantResource::collection($main)
         ->additional([
             'success' => true,

@@ -14,7 +14,7 @@ class PagibigContributionController extends Controller
     public function index()
     {
         //
-        $pagibig = PagibigContribution::paginate(15);
+        $pagibig = PagibigContribution::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "successfully fetch all";
         $data->success = true;

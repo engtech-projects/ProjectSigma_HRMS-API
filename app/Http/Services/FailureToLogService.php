@@ -15,12 +15,12 @@ class FailureToLogService
     {
         return FailureToLog::with(['employee'])
             ->myRequests()
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
     public function getMyApprovals()
     {
         return FailureToLog::with(['employee'])
             ->myApprovals()
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
 }

@@ -13,7 +13,7 @@ class HMOMembersController extends Controller
      */
     public function index()
     {
-        $main = HMOMembers::with("hmo", "employee")->paginate(15);
+        $main = HMOMembers::with("hmo", "employee")->paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

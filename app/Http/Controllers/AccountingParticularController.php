@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SigmaServices\AccountingParticular;
 use App\Http\Requests\StoreAccountingParticularRequest;
 use App\Http\Requests\UpdateAccountingParticularRequest;
+use App\Http\Resources\AccountingParticularsListingResource;
 
 class AccountingParticularController extends Controller
 {
@@ -13,8 +14,10 @@ class AccountingParticularController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'data' => AccountingParticular::paginate(),
+        $data = AccountingParticular::paginate(config("app.pagination_per_page"));
+
+        return AccountingParticularsListingResource::collection($data)
+        ->additional([
             'success' => true,
             'message' => 'Successfully fetched data.'
         ]);

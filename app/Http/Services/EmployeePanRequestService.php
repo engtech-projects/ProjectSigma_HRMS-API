@@ -37,12 +37,12 @@ class EmployeePanRequestService
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->myRequests()
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
     public function getMyApprovals()
     {
         return EmployeePanRequest::with(['employee', 'jobapplicantonly', 'department', 'salarygrade.salary_grade_level', 'position'])
             ->myApprovals()
-            ->paginate(15);
+            ->paginate(config("app.pagination_per_page"));
     }
 }

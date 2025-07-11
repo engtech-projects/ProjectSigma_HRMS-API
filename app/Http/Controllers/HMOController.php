@@ -15,7 +15,7 @@ class HMOController extends Controller
      */
     public function index()
     {
-        $main = HMO::with("hmoMembers")->paginate(15);
+        $main = HMO::with("hmoMembers")->paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

@@ -14,7 +14,7 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        $settings = Settings::paginate(15);
+        $settings = Settings::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;

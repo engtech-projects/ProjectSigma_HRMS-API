@@ -37,7 +37,7 @@ class PersonnelActionNoticeRequestController extends Controller
             })
         ->orderBy('created_at', 'desc')
         ->paginate();
-        return EmployeePanRequest::collection($panRequest)
+        return EmployeePanRequestResource::collection($panRequest)
         ->additional([
             'success' => true,
             'message' => "Successfully fetched.",
@@ -70,7 +70,7 @@ class PersonnelActionNoticeRequestController extends Controller
     public function myRequests()
     {
         $noticeRequest = $this->panRequestService->getMyRequests();
-        return PersonnelActionNoticeRequestController::collection($noticeRequest)
+        return EmployeePanRequestResource::collection($noticeRequest)
         ->additional([
             'success' => true,
             'message' => 'Personal Action Notice Request fetched.',
@@ -83,7 +83,7 @@ class PersonnelActionNoticeRequestController extends Controller
     public function myApprovals()
     {
         $myApproval = $this->panRequestService->getMyApprovals();
-        return PersonnelActionNoticeRequestController::collection($myApproval)
+        return EmployeePanRequestResource::collection($myApproval)
         ->additional([
             'success' => true,
             'message' => 'Personal Action Notice Request fetched.',
