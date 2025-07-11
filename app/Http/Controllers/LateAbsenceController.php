@@ -24,7 +24,6 @@ class LateAbsenceController extends Controller
 
         $reportData = null;
         if (!Cache::has($cacheKey) || ($request->has('reload') && $request->input('reload') === "true")) {
-
             GenerateLatesAbsencesDashboardReport::dispatch();
 
             return new JsonResponse([

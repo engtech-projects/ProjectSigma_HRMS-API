@@ -25,7 +25,7 @@ class OtherDeductionPaymentsController extends Controller
         })
         ->with(["otherdeduction", "employee"])
         ->orderBy("id", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return OtherDeductionPaymentsResource::collection($main)
         ->additional([
             'success' => true,

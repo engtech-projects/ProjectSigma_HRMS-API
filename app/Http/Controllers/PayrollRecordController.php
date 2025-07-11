@@ -138,7 +138,6 @@ class PayrollRecordController extends Controller
             if ($payroll->getNextPendingApproval()) {
                 Users::find($payroll->getNextPendingApproval()['user_id'])->notify(new PayrollRequestForApproval($payroll));
             }
-
         });
         return new JsonResponse([
             'success' => true,
@@ -152,7 +151,6 @@ class PayrollRecordController extends Controller
             'error' => $e,
             'message' => 'Failed to save payroll request.',
         ], 500);
-
     }
 
     public function setPayrollDetails($deductions, $empPayrollDetail)
@@ -248,7 +246,7 @@ class PayrollRecordController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return PayrollRequestResource::collection($allRequests)
         ->additional([
             'success' => true,
@@ -275,7 +273,7 @@ class PayrollRecordController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return PayrollRequestResource::collection($myRequest)
         ->additional([
             'success' => true,
@@ -304,7 +302,7 @@ class PayrollRecordController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return PayrollRequestResource::collection($myApproval)
         ->additional([
             'success' => true,
@@ -332,7 +330,7 @@ class PayrollRecordController extends Controller
         ->when($request->has("department_id") && $validatedData["department_id"], function ($query) use ($validatedData) {
             return $query->where("department_id", $validatedData["department_id"]);
         })
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return PayrollRequestResource::collection($datas)
         ->additional([
             'success' => true,

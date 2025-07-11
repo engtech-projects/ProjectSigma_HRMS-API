@@ -24,7 +24,6 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('employee_personnel_action_notice_requests', function (Blueprint $table) {
-
         });
     }
 };

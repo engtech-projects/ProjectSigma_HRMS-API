@@ -44,11 +44,11 @@ class RequestSalaryDisbursementController extends Controller
             $query->where("department_id", $request->department_id);
         })
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return RequestPayrollSummaryListResource::collection($allRequests)
         ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
+            'message' => 'Salary Disbursement Request fetched.',
         ]);
     }
 
@@ -68,7 +68,6 @@ class RequestSalaryDisbursementController extends Controller
             'message' => 'Payroll Summary Created.',
             'data' => $generatedData,
         ]);
-
     }
 
     /**
@@ -126,7 +125,6 @@ class RequestSalaryDisbursementController extends Controller
      */
     public function destroy(RequestSalaryDisbursement $resource)
     {
-
     }
 
     public function myRequests(PayrollRecordsListFilterRequest $request)
@@ -148,11 +146,11 @@ class RequestSalaryDisbursementController extends Controller
         })
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return RequestPayrollSummaryListResource::collection($myRequests)
         ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
+            'message' => 'Salary Disbursement Request fetched.',
         ]);
     }
 
@@ -178,11 +176,11 @@ class RequestSalaryDisbursementController extends Controller
         })
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return RequestPayrollSummaryListResource::collection($myApproval)
         ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
+            'message' => 'Salary Disbursement Request fetched.',
         ]);
     }
 
@@ -194,11 +192,11 @@ class RequestSalaryDisbursementController extends Controller
         $payslipReady = RequestSalaryDisbursement::isApproved()
         ->where("disbursement_status", DisbursementStatus::RELEASED)
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return RequestPayrollSummaryListResource::collection($payslipReady)
         ->additional([
             'success' => true,
-            'message' => 'Cash Advance Request fetched.',
+            'message' => 'Salary Disbursement Request fetched.',
         ]);
     }
     /**

@@ -169,5 +169,4 @@ class Payroll13thMonthService
         })->values()->all();
         return $groupedData;
     }
-
 }

@@ -41,7 +41,6 @@ class Employee extends Model
         'fullname_first_mi',
     ];
 
-
     protected $casts = [
         'date_of_birth' => 'datetime:Y-m-d',
         'date_of_marriage' => 'datetime:Y-m-d',
@@ -495,7 +494,6 @@ class Employee extends Model
                 "applied_out" => $sched->attendance_log_outs?->where("employee_id", $this->id)->sortBy('time')->last()
             ];
         });
-
     }
     public function daily_attendance_schedule($date)
     {
@@ -523,5 +521,4 @@ class Employee extends Model
         }
         return $data;
     }
-
 }

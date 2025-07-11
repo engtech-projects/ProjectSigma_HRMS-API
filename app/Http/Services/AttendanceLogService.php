@@ -16,11 +16,15 @@ class AttendanceLogService
     }
     public function getAll()
     {
-        return $this->log->with(['project', 'department', 'employee'])->paginate(config("app.pagination_per_page"));
+        return $this->log->with(['project', 'department', 'employee'])
+        ->paginate(config("app.pagination_per_page", 10));
     }
     public function getAllToday()
     {
-        return $this->log->where('date', Carbon::now()->format('Y-m-d'))->with(['project', 'department', 'employee'])->orderBy('created_at', 'DESC')->paginate(config("app.pagination_per_page"));
+        return $this->log->where('date', Carbon::now()->format('Y-m-d'))
+        ->with(['project', 'department', 'employee'])
+        ->orderBy('created_at', 'DESC')
+        ->paginate(config("app.pagination_per_page", 10));
     }
     public function getFilterDateAndEmployee($request)
     {
@@ -40,7 +44,10 @@ class AttendanceLogService
         if ($request->attendance_type && $request->attendance_type != AttendanceType::ALL->value) {
             $query->where('attendance_type', $request->attendance_type);
         }
-        return $query->with(['project', 'department', 'employee', 'portal'])->withTrashed()->orderBy('created_at', 'DESC')->paginate(config("app.pagination_per_page"));
+        return $query->with(['project', 'department', 'employee', 'portal'])
+        ->withTrashed()
+        ->orderBy('created_at', 'DESC')
+        ->paginate(config("app.pagination_per_page", 10));
     }
     public function get(AttendanceLog $log)
     {
@@ -72,7 +79,8 @@ class AttendanceLogService
     }
     public function getEmployeeAttendance($employeeId)
     {
-        $attendances = AttendanceLog::whereIn('employee_id', $employeeId)->paginate(config("app.pagination_per_page"));
+        $attendances = AttendanceLog::whereIn('employee_id', $employeeId)
+        ->paginate(config("app.pagination_per_page", 10));
         return $attendances;
     }
 }

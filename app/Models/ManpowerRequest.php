@@ -112,7 +112,6 @@ class ManpowerRequest extends Model
      * LOCAL SCOPES
      */
 
-
     public function scopeForHiring(Builder $query): void
     {
         $query->where('request_status', RequestStatuses::APPROVED);

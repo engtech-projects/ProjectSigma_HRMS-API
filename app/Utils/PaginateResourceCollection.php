@@ -11,7 +11,6 @@ class PaginateResourceCollection
 {
     public static function paginate(Collection $results, $showPerPage =  10)
     {
-
         $pageNumber = Paginator::resolveCurrentPage('page');
         $totalPageNumber = $results->count();
         $offset = ($pageNumber * $showPerPage) - $showPerPage;

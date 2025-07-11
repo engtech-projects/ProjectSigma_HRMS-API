@@ -14,7 +14,6 @@ class PanRequestApproved extends Notification
     use Queueable;
     private $panRequest;
 
-
     /**
      * Create a new notification instance.
      */

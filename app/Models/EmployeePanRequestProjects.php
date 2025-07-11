@@ -27,5 +27,4 @@ class EmployeePanRequestProjects extends Model
     {
         return $this->belongsTo(EmployeePanRequest::class);
     }
-
 }

@@ -23,7 +23,7 @@ class CashAdvancePaymentsController extends Controller
         })
         ->with(['employee','cashadvance'])
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return CashAdvancePaymentResource::collection($data)
         ->additional([
             'success' => true,

@@ -68,7 +68,6 @@ class SalaryGradeLevelController extends Controller
         return new SalaryGradeLevelResource($resource->load('salary_grade_step'));
     }
 
-
     /**
      * Update the specified resource in storage.
      */

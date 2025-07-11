@@ -74,7 +74,6 @@ class ManpowerRequestController extends Controller
         ]);
     }
 
-
     public function myRequest()
     {
         $myRequest = $this->manpowerService->getMyRequest();
@@ -97,7 +96,6 @@ class ManpowerRequestController extends Controller
             'message' => 'Successfully fetched.',
         ]);
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -125,7 +123,6 @@ class ManpowerRequestController extends Controller
                 "message" => "Failed to save.",
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
-
     }
 
     public function storeApplicant(StoreApplicantRequest $request)
@@ -158,7 +155,6 @@ class ManpowerRequestController extends Controller
                         $model = JobApplicants::find($valid["job_applicants_id"]);
                         $model->status = "Processing";
                         $model->save();
-
                     }
                 });
                 return new JsonResponse([

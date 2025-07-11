@@ -39,7 +39,7 @@ class OvertimeController extends Controller
         })
         ->with('employees')
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return OvertimeResource::collection($data)
         ->additional([
             'success' => true,
@@ -153,7 +153,7 @@ class OvertimeController extends Controller
         ->with(['user.employee'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return OvertimeResource::collection($data)
         ->additional([
             'success' => true,
@@ -177,7 +177,7 @@ class OvertimeController extends Controller
         ->with(['employees', 'department', 'project'])
         ->myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return OvertimeResource::collection($data)
         ->additional([
             'success' => true,

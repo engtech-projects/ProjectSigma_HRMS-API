@@ -25,9 +25,8 @@ class Request13thMonthController extends Controller
      */
     public function index()
     {
-
-        $main = Request13thMonthListingResource::orderBy('created_at', 'desc')
-        ->paginate(config("app.pagination_per_page"));
+        $main = Request13thMonth::orderBy('created_at', 'desc')
+        ->paginate(config("app.pagination_per_page", 10));
         return Request13thMonthListingResource::collection($main)
         ->additional([
             'success' => true,
@@ -160,7 +159,7 @@ class Request13thMonthController extends Controller
     {
         $requests = Request13thMonth::myRequests()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return Request13thMonthListingResource::collection($requests)
         ->additional([
             'success' => true,
@@ -174,7 +173,7 @@ class Request13thMonthController extends Controller
     {
         $requests = Request13thMonth::myApprovals()
         ->orderBy("created_at", "DESC")
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return Request13thMonthListingResource::collection($requests)
         ->additional([
             'success' => true,

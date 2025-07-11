@@ -19,6 +19,4 @@ class AccountingParticular extends Model
         'accounting_particular_name',
         'description',
     ];
-
-
 }

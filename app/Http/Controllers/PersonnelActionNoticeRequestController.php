@@ -36,7 +36,7 @@ class PersonnelActionNoticeRequestController extends Controller
                 });
             })
         ->orderBy('created_at', 'desc')
-        ->paginate();
+        ->paginate(config("app.pagination_per_page", 10));
         return EmployeePanRequestResource::collection($panRequest)
         ->additional([
             'success' => true,

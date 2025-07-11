@@ -13,7 +13,6 @@ class LoanDeduction extends PayrollDeduction
     public $loan;
     public function __construct(Employee $employee, $salary, array $filters)
     {
-
         $this->employee = $employee;
         $this->loan = $this->getLoanDeduction($filters);
         $this->filter = $filters;

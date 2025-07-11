@@ -310,10 +310,8 @@ trait Attendance
     }
     public function travelCoversTime($travelOrder, $time)
     {
-
     }
     public function leaveCoversTime($leave, $time)
     {
-
     }
 }

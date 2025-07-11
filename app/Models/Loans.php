@@ -74,10 +74,8 @@ class Loans extends Model
         switch ($this->terms_of_payment) {
             case TermsOfPaymentType::WEEKLY->value:
                 return round($this->installment_deduction / 4);
-
             case TermsOfPaymentType::MONTHLY->value:
                 return round($this->installment_deduction / 2);
-
             case TermsOfPaymentType::BIMONTHLY->value:
                 return round($this->installment_deduction / 1);
         }
@@ -97,7 +95,6 @@ class Loans extends Model
     {
         return round($this->loanPayments()->sum("amount_paid"), 2);
     }
-
 
     public function isFullyPaidAttribute()
     {
@@ -147,8 +144,6 @@ class Loans extends Model
     * ==================================================
     */
 
-
-
     public function paymentWillOverpay($paymentAmount)
     {
         $totalpaid = $this->loanPayments()->sum('amount_paid');
@@ -161,7 +156,6 @@ class Loans extends Model
 
     public function loanPayment($paymentAmount, $type)
     {
-
         if ($this->is_fully_paid) {
             return false;
         }

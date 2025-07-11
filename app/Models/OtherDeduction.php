@@ -46,7 +46,6 @@ class OtherDeduction extends Model
     * ==================================================
     */
 
-
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'id', 'employee_id');

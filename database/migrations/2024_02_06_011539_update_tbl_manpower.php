@@ -25,7 +25,6 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-
         Schema::table('manpower_requests', function (Blueprint $table) {
             $table->dropForeign(['requested_by']);
             $table->dropColumn(['requested_by']);

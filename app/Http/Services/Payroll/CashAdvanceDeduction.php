@@ -13,7 +13,6 @@ class CashAdvanceDeduction extends PayrollDeduction
     public $cashAdvance;
     public function __construct(Employee $employee, $salary, array $filters)
     {
-
         $this->employee = $employee;
         $this->cashAdvance = $this->getCashAdvanceDeduction($filters);
         $this->filter = $filters;

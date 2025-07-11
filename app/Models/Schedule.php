@@ -55,7 +55,6 @@ class Schedule extends Model
         'end_time_human',
     ];
 
-
     public function department(): HasOne
     {
         return $this->hasOne(Department::class, "id", "department_id");
@@ -240,7 +239,6 @@ class Schedule extends Model
     {
         return $query->where('scheduleType', self::TYPE_REGULAR);
     }
-
 
     public function scopeIrregularSchedules(Builder $query)
     {

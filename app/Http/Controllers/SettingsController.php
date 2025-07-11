@@ -87,7 +87,6 @@ class SettingsController extends Controller
             $data->message = "Successfully update.";
             $data->success = true;
             return response()->json($data);
-
         } catch (\Throwable $th) {
             $data->message = "Update failed.";
             $data->success = false;

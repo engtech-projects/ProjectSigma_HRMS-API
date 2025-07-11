@@ -128,7 +128,6 @@ class EmployeeAllowancesController extends Controller
      */
     public function update(UpdateEmployeeAllowancesRequest $request, $id)
     {
-
     }
 
     /**

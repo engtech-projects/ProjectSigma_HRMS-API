@@ -44,7 +44,7 @@ class JobApplicantsController extends Controller
         })
         ->orderByRaw("DATE(created_at) DESC")
         ->orderBy('lastname')
-        ->paginate(config("app.pagination_per_page"));
+        ->paginate(config("app.pagination_per_page", 10));
         return JobApplicantResource::collection($main)
         ->additional([
             'success' => true,
@@ -98,7 +98,7 @@ class JobApplicantsController extends Controller
                         ->orWhere(DB::raw("CONCAT(firstname, ', ', COALESCE(middlename, ''), ', ', lastname)"), 'LIKE', $valid["name"] . "%");
                 });
             })
-        ->paginate();
+        ->paginate(config("app.pagination_per_page", 10));
         return JobApplicantResource::collection($main)
         ->additional([
             'success' => true,

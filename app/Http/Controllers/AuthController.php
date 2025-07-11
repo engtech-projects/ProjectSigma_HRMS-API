@@ -43,7 +43,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-
         if ($request->user()) {
             // $request->user()->tokens()->delete();
             $request->user()->currentAccessToken()->delete();
@@ -58,5 +57,4 @@ class AuthController extends Controller
         }
         return  response()->json('Unauthenticated', 401);
     }
-
 }

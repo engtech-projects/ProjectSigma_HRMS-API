@@ -60,5 +60,4 @@ class Request13thMonthDetails extends Model
     * MODEL FUNCTIONS
     * ==================================================
     */
-
 }

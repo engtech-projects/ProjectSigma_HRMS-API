@@ -18,7 +18,6 @@ class JobApplicants extends Model
     use Notifiable;
     use SoftDeletes;
 
-
     protected $fillable = [
         'application_letter_attachment',
         'resume_attachment',
@@ -82,7 +81,6 @@ class JobApplicants extends Model
         'remarks',
     ];
 
-
     public $casts = [
         "children" => "array",
         "education" => "array",
@@ -98,7 +96,6 @@ class JobApplicants extends Model
     {
         return $this->belongsToMany(ManpowerRequest::class, 'manpower_request_job_applicants', 'job_applicants_id', 'manpowerrequests_id')->withPivot("hiring_status", "processing_checklist", "remarks");
     }
-
 
     public function manpowerRequestJobApplicants(): HasMany
     {
@@ -184,5 +181,4 @@ class JobApplicants extends Model
             "degree_earned_of_school" => "",
         ];
     }
-
 }

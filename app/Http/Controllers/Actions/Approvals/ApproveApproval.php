@@ -50,7 +50,6 @@ class ApproveApproval extends Controller
     }
     public function approve($modelType, $model)
     {
-
         $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED, "date_approved" => Carbon::now()]);
         $nextApproval = $model->getNextPendingApproval();
         if ($nextApproval) {
