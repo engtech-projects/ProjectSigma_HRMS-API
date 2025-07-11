@@ -45,7 +45,6 @@ class AbsentController extends Controller
             'attendance_log.department.schedule',
             'attendance_log.project.project_schedule',
             'company_employments'
-
         ])
         ->get();
 
@@ -66,6 +65,5 @@ class AbsentController extends Controller
         ->sortByDesc("absent")
         ->values()
         ->all();
-
     }
 }

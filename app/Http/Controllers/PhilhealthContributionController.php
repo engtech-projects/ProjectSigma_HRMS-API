@@ -79,7 +79,6 @@ class PhilhealthContributionController extends Controller
      */
     public function update(UpdatePhilhealthContributionRequest $request, $id)
     {
-
         $philhealth = PhilhealthContribution::find($id);
         $data = json_decode('{}');
         if (!is_null($philhealth)) {

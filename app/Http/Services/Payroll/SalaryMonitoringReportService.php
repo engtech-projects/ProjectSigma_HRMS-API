@@ -28,7 +28,6 @@ class SalaryMonitoringReportService
             'total_loan_payments',
             'total_other_deduction_payments',
         ]);
-
     }
 
     public static function formatSalaries($groupedSalaryChargings)
@@ -135,7 +134,6 @@ class SalaryMonitoringReportService
     public static function formatAllowances($groupedAllowances)
     {
         $results = collect($groupedAllowances)->mapWithKeys(function ($sections, $chargingName) {
-
             $uniqueEmployees = collect($sections)->flatMap(fn ($section) => $section["employee_allowances"])->unique("id");
             // $totalAllowance = $uniqueEmployees->sum(fn($employee) => $employee["pivot"]["allowance_amount"]);
             $totalAllowance = collect($sections)->flatMap(fn ($section) => $section["employee_allowances"])

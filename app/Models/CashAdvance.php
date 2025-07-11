@@ -123,7 +123,6 @@ class CashAdvance extends Model
     */
     public static function scopeIsOngoing($query)
     {
-
         return $query->whereRaw(
             "coalesce((select sum(amount_paid) from cash_advance_payments where cashadvance_id = cash_advances.id and posting_status = ?) , 0) < amount",
             [PostingStatusType::POSTED->value]
@@ -187,5 +186,4 @@ class CashAdvance extends Model
 
         return true;
     }
-
 }

@@ -148,7 +148,6 @@ class EmployeeController extends Controller
                 ->with("position")
                 ->with("projects")
                 ->orderBy("id", "desc");
-
         })
         ->find($id);
         $data = json_decode('{}');

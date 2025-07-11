@@ -33,7 +33,6 @@ class FormatUserEmployeesRequest extends FormRequest
                 'exists:users,id',
                 Rule::notIn([1]),
             ],
-
         ];
     }
 }

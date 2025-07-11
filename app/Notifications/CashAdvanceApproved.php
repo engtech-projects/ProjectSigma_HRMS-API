@@ -14,7 +14,6 @@ class CashAdvanceApproved extends Notification
     use Queueable;
     protected $cashAdvanceRequest;
 
-
     /**
      * Create a new notification instance.
      */

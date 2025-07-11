@@ -10,7 +10,6 @@ enum AccessibilityAccounting: string
     case FORCE_RESIGN = "Force Resign";
     case OTHERS = "Others";
 
-
     public static function toArray(): array
     {
         $array = [];

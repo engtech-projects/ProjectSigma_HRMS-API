@@ -215,7 +215,6 @@ class CashAdvanceController extends Controller
         ]);
     }
 
-
     /**
      * Display a list of ongoing cash advances.
      */

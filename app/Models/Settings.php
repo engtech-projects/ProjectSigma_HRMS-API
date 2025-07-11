@@ -15,7 +15,6 @@ class Settings extends Model
     use Notifiable;
     use SoftDeletes;
 
-
     protected $fillable = [
         'id',
         'setting_name',

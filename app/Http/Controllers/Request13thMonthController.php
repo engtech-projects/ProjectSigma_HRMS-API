@@ -25,7 +25,6 @@ class Request13thMonthController extends Controller
      */
     public function index()
     {
-
         $main = Request13thMonth::orderBy('created_at', 'desc')
         ->paginate(config("app.pagination_per_page", 10));
         return Request13thMonthListingResource::collection($main)

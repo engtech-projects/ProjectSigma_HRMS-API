@@ -60,7 +60,6 @@ class InternalWorkExperience extends Model
         return $this->hasOne(Position::class, "id", "position_id")->withTrashed();
     }
 
-
     public function employee()
     {
         return $this->belongsTo(Employee::class);
@@ -139,13 +138,11 @@ class InternalWorkExperience extends Model
     }
     public function scopeCurrentOnDate(Builder $query, $date): Builder
     {
-
         return $query->where(function ($query) use ($date) {
             $query->whereDate('date_from', '<=', $date)->whereNotNull('date_to')->whereDate('date_to', '>', $date);
         })->orWhere(function ($query) use ($date) {
             $query->whereDate('date_from', '<=', $date)->whereNull('date_to');
         });
-
 
         /* return $query->where(function ($query) use ($date) {
             $query->where('date_from', '>=', $date)
@@ -167,5 +164,4 @@ class InternalWorkExperience extends Model
     * MODEL FUNCTIONS
     * ==================================================
     */
-
 }

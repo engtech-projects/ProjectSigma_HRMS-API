@@ -10,7 +10,6 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-
         Schema::table('overtime', function (Blueprint $table) {
             if (Schema::hasColumn('overtime', 'employee_id')) {
                 $table->dropForeign('overtime_employee_id_foreign');

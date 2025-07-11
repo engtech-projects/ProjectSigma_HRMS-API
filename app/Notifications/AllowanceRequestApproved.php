@@ -14,7 +14,6 @@ class AllowanceRequestApproved extends Notification
     use Queueable;
     protected $model;
 
-
     /**
      * Create a new notification instance.
      */

@@ -68,7 +68,6 @@ class RequestSalaryDisbursementController extends Controller
             'message' => 'Payroll Summary Created.',
             'data' => $generatedData,
         ]);
-
     }
 
     /**
@@ -126,7 +125,6 @@ class RequestSalaryDisbursementController extends Controller
      */
     public function destroy(RequestSalaryDisbursement $resource)
     {
-
     }
 
     public function myRequests(PayrollRecordsListFilterRequest $request)

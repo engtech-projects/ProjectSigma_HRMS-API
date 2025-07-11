@@ -166,7 +166,6 @@ return new class () extends Migration {
             DB::rollBack();
             throw $e;
         }
-
     }
 
     /**

@@ -101,7 +101,6 @@ class PayrollRecord extends Model
         return Carbon::parse($this->payroll_date)->format("F j, Y");
     }
 
-
     public function getCutoffStartHumanAttribute()
     {
         return Carbon::parse($this->cutoff_start)->format("F j, Y");

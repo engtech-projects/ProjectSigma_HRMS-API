@@ -55,5 +55,4 @@ class LoanPayments extends Model
     {
         return $query->where('posting_status', PostingStatusType::NOTPOSTED->value);
     }
-
 }

@@ -30,6 +30,5 @@ class FunctionDev extends Command
         $requestSalaryDisbursement = RequestSalaryDisbursement::where('id', 17)->first();
         $accountingService = new AccountingSecretkeyService();
         $accountingService->submitPayrollRequest($requestSalaryDisbursement);
-
     }
 }

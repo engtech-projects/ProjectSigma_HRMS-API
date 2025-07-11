@@ -30,7 +30,6 @@ class ManpowerRequestJobApplicants extends Model
         'processing_checklist' => 'array'
     ];
 
-
     public function manpowerRequest()
     {
         return $this->belongsTo(ManpowerRequest::class, 'manpowerrequests_id', 'id');

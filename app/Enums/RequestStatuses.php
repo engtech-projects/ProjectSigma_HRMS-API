@@ -11,5 +11,4 @@ enum RequestStatuses: string
     case PENDING = "Pending";
     case DENIED = "Denied";
     case VOID = "Voided";
-
 }

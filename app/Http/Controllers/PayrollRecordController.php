@@ -138,7 +138,6 @@ class PayrollRecordController extends Controller
             if ($payroll->getNextPendingApproval()) {
                 Users::find($payroll->getNextPendingApproval()['user_id'])->notify(new PayrollRequestForApproval($payroll));
             }
-
         });
         return new JsonResponse([
             'success' => true,
@@ -152,7 +151,6 @@ class PayrollRecordController extends Controller
             'error' => $e,
             'message' => 'Failed to save payroll request.',
         ], 500);
-
     }
 
     public function setPayrollDetails($deductions, $empPayrollDetail)

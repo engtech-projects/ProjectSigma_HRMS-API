@@ -12,5 +12,4 @@ enum HiringStatuses: string
     case FOR_HIRING = "For Hiring";
     case REJECTED = "Rejected";
     case HIRED = "Hired";
-
 }

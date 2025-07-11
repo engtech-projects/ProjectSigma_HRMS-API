@@ -14,8 +14,6 @@ class AdministrativeEmployeeNewList extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
-
         return [
             "employee_id" => $this->company_employments?->employeedisplay_id,
             "fullname" => $this['fullname_last'],

@@ -46,7 +46,6 @@ class CashAdvanceResource extends JsonResource
             "total_paid_formatted" => number_format($this->total_paid, 2),
             "created_by_user" => $this->created_by_user_name,
             "created_at_human" => $this->created_at_human,
-
         ];
     }
 }

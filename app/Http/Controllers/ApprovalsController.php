@@ -24,7 +24,6 @@ class ApprovalsController extends Controller
         ]);
     }
 
-
     public function get($request)
     {
         $formRequest = Approvals::where("form", "=", $request)->first();

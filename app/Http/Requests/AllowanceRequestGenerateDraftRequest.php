@@ -28,7 +28,6 @@ class AllowanceRequestGenerateDraftRequest extends FormRequest
         $this->prepareApprovalValidation();
     }
 
-
     /**
      * Get the validation rules that apply to the request.
      *

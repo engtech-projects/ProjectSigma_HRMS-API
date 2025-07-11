@@ -35,7 +35,6 @@ class DisapproveApproval extends Controller
         return Cache::remember($cacheKey, 5, function () use ($modelType, $model, $request) {
             return $this->disapprove($modelType, $model, $request);
         });
-
     }
     public function disapprove($modelType, $model, DisapproveApprovalRequest $request)
     {

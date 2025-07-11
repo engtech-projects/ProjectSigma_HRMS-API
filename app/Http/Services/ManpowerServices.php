@@ -122,7 +122,6 @@ class ManpowerServices
     }
     public function createManpowerRequest(array $attributes)
     {
-
         $main = $this->manpowerRequest->fill($attributes);
         $main->job_description_attachment = $this->uploadFile($attributes['job_description_attachment'], ManpowerRequest::JDA_DIR);
 

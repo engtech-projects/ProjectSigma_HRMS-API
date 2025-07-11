@@ -19,15 +19,12 @@ class Department extends Model
     use Notifiable;
     use SoftDeletes;
 
-
-
     protected $fillable = [
         'id',
         'department_name',
         'updated_at',
         'created_at',
     ];
-
 
     /**
      * MODEL

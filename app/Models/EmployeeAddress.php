@@ -38,5 +38,4 @@ class EmployeeAddress extends Model
     {
         return $this->street . ", " . $this->brgy . ", " . $this->city . ", " . $this->province;
     }
-
 }

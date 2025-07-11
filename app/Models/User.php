@@ -47,9 +47,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-
     /*** MODEL RELATION */
-
 
     public function employee(): BelongsTo
     {

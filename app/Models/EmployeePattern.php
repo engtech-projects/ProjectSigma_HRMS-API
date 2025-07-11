@@ -34,5 +34,4 @@ class EmployeePattern extends Model
     {
         return $this->hasOne(Employee::class, "id", "employee_id");
     }
-
 }

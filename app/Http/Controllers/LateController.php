@@ -77,5 +77,4 @@ class LateController extends Controller
             'data' => Cache::get('lates'),
         ]);
     }
-
 }

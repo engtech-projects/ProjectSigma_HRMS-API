@@ -29,9 +29,7 @@ class VoidRequestAction extends Controller
         return Cache::remember($cacheKey, 5, function () use ($modelType, $model, $request) {
             return $this->createVoid($modelType, $model, $request);
         });
-
     }
-
 
     public function createVoid($modelType, $model, VoidRequest $request)
     {
