@@ -16,7 +16,8 @@ class CashAdvanceResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "employee" => $this->employee->fullname_first,
+            "employee" => new EmployeeSummaryResource($this->employee),
+            "employee_name" => $this->employee->fullname_first,
             "employee_id" => $this->employee_id,
             "department_id" => $this->department_id,
             "project_id" => $this->project_id,
