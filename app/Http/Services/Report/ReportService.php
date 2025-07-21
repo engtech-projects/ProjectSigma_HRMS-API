@@ -1643,7 +1643,7 @@ class ReportService
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
         $main = Employee::isActive()
-            ->with("employee_leave", function($query) use ($dateFrom, $dateTo) {
+            ->with("employee_leave", function ($query) use ($dateFrom, $dateTo) {
                 $query->isApproved()
                 ->betweenDates($dateFrom, $dateTo);
             })
