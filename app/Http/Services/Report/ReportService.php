@@ -1642,7 +1642,11 @@ class ReportService
         $withProject = $validate["group_type"] == GroupType::PROJECT->value;
         $dateFrom = Carbon::parse($validate["date_from"]);
         $dateTo = Carbon::parse($validate["date_to"]);
-        $main = Employee::isActive()->with("employee_leave")
+        $main = Employee::isActive()
+            ->with("employee_leave", function ($query) use ($dateFrom, $dateTo) {
+                $query->isApproved()
+                ->betweenDates($dateFrom, $dateTo);
+            })
             ->whereHas('employee_leave', function ($query) use ($validate, $withDepartment, $withProject, $dateFrom, $dateTo) {
                 $query->isApproved()
                     ->betweenDates($dateFrom, $dateTo)
@@ -1652,7 +1656,8 @@ class ReportService
                     ->when($withProject, function ($query) use ($validate) {
                         return $query->where('project_id', $validate['project_id']);
                     });
-            })->get();
+            })
+            ->get();
 
         $formatData = collect($main)->map(function ($item) {
             $uniqueOvertimeIds = collect($item['employee_leave'])->pluck('id')->unique();
