@@ -31,8 +31,6 @@ class AccountingSecretkeyService
         $sdrArray = $sdr->toArray(new Request());
         $details = $sdrArray["summary"];
         $atmRemark = $salaryDisbursementRequest->release_type == ReleaseType::ATM ? "WITH ATM" : "WITHOUT ATM";
-        // Log::info($sdrArray);
-        // Log::info($details->toArray(new Request()));
         $net = 0;
         $payload = [
             "requested_by" => $salaryDisbursementRequest->created_by,
@@ -139,13 +137,13 @@ class AccountingSecretkeyService
         $loanParticularTerms = AccountingParticular::where('type', 'loan')->get();
         $loanParticularTerms = $loanParticularTerms->flatMap(function ($particularTerm) {
             return [
-                $particularTerm->local_particular_name => $particularTerm->accounting_particular_name
+                strtolower($particularTerm->local_particular_name) => $particularTerm->accounting_particular_name
             ];
         });
         $odParticularTerms = AccountingParticular::where('type', 'other deduction')->get();
         $odParticularTerms = $odParticularTerms->flatMap(function ($particularTerm) {
             return [
-                $particularTerm->local_particular_name => $particularTerm->accounting_particular_name
+                strtolower($particularTerm->local_particular_name) => $particularTerm->accounting_particular_name
             ];
         });
         $sss = collect($payload['details'])->where('particular', AccountingPayrollParticulars::SSS_PREMIUM_PAYABLE->value)->sum('amount');
@@ -155,33 +153,33 @@ class AccountingSecretkeyService
         $cashAdvance = collect($payload['details'])->where('particular', AccountingPayrollParticulars::ADVANCES_TO_OFFICERS_AND_EMPLOYEES->value)->sum('amount');
         $loanProblems = [];
         $loans = collect($payload['details'])->where('temp_type', 'loan')->map(function ($loan) use ($loanParticularTerms, &$loanProblems) {
-            if (!array_key_exists($loan['particular'], $loanParticularTerms->toArray()) && !in_array($loan['particular'], $loanProblems)) {
-                $loanProblems[] = $loan['particular'];
+            $loanParticularLower = strtolower($loan['particular']);
+            if (!array_key_exists($loanParticularLower, $loanParticularTerms->toArray()) && !in_array($loanParticularLower, $loanProblems)) {
+                $loanProblems[] = $loanParticularLower;
             }
             return [
-                'particular' => $loanParticularTerms[$loan['particular']] ?? 'Unknown',
+                'particular' => $loanParticularTerms[$loanParticularLower] ?? 'Unknown',
                 'amount' => $loan['amount'],
             ];
         })->values()->all();
         $otherDeductionProblems = [];
         $otherDeductions = collect($payload['details'])->where('temp_type', 'otherdeduction')->map(function ($otherDeduction) use ($odParticularTerms, &$otherDeductionProblems) {
-            if (!array_key_exists($otherDeduction['particular'], $odParticularTerms->toArray()) && !in_array($otherDeduction['particular'], $otherDeductionProblems)) {
-                $otherDeductionProblems[] = $otherDeduction['particular'];
+            $otherDeductionParticularLower = strtolower($otherDeduction['particular']);
+            if (!array_key_exists($otherDeductionParticularLower, $odParticularTerms->toArray()) && !in_array($otherDeductionParticularLower, $otherDeductionProblems)) {
+                $otherDeductionProblems[] = $otherDeductionParticularLower;
             }
             return [
-                'particular' => $odParticularTerms[$otherDeduction['particular']] ?? $otherDeduction['particular'],
+                'particular' => $odParticularTerms[$otherDeductionParticularLower] ?? 'Unknown',
                 'amount' => $otherDeduction['amount'],
             ];
         })->values()->all();
         if ($loanProblems) {
             // Create and SendNotification
-            // Log::info($loanProblems);
             $stopError = true;
             $dataErrors .= 'Loans not set: ' . implode(', ', (array)$loanProblems);
         }
         if ($otherDeductionProblems) {
             // Create and SendNotification
-            // Log::info($otherDeductionProblems);
             $stopError = true;
             $dataErrors .= 'Other Deductions not set: ' . implode(', ', (array)$otherDeductionProblems);
         }
@@ -191,10 +189,6 @@ class AccountingSecretkeyService
                 "message" => "Particulars not set: " . $dataErrors
             ];
         }
-        // Log::info($loanProblems);
-        // Log::info($otherDeductionProblems);
-        // Log::info($loans);
-        // Log::info($otherDeductions);
         // REMOVE TEMP DEDUCTIONS
         $payload["details"] = collect($payload["details"])->filter(function ($detail) {
             return !(in_array($detail['particular'], [
