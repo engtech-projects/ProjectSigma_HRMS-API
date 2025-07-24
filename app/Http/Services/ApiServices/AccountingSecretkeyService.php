@@ -258,7 +258,7 @@ class AccountingSecretkeyService
                 "error" => $response->body(),
             ];
         }
-        //Log::info($response);
+        Log::info($response);
         return $response;
         // return true;
     }
