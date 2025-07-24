@@ -250,6 +250,14 @@ class AccountingSecretkeyService
             ->withBody(json_encode($payload), 'application/json')
             ->acceptJson()
             ->post($this->apiUrl.'/api/sigma/payroll/create-request');
+        if ($response->failed()) {
+            Log::error('Accounting API Error: ' . $response->body());
+            return [
+                "success" => false,
+                "message" => "Failed to submit payroll request to accounting API.",
+                "error" => $response->body(),
+            ];
+        }
         //Log::info($response);
         return $response;
         // return true;
