@@ -245,7 +245,7 @@ class AccountingSecretkeyService
             'particular' => AccountingPayrollParticulars::PAYEE->value,
             'amount' => round($net, 2),
         ];
-        // Log::info($payload);
+        Log::info($payload);
         $response = Http::withToken($this->authToken)
             ->withBody(json_encode($payload), 'application/json')
             ->acceptJson()
