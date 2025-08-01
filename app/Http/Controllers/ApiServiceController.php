@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UserTypes;
 use App\Http\Requests\FormatApprovalsRequest;
 use App\Http\Requests\FormatSingleApprovalRequest;
 use App\Http\Requests\FormatUserEmployeesRequest;
-use App\Http\Resources\EmployeeDetailedEnumResource;
 use App\Http\Resources\HrmsServiceApprovalAttributeResource;
+use App\Http\Resources\SyncListDepartmentResource;
+use App\Http\Resources\SyncListEmployeeResource;
+use App\Http\Resources\SyncListUserResource;
 use App\Http\Resources\UserEmployeeSummaryResource;
 use App\Models\Department;
 use App\Models\Employee;
@@ -46,31 +47,33 @@ class ApiServiceController extends Controller
     }
     public function getEmployeeList()
     {
-        $employeeList = Employee::orderBy('family_name')->get();
-
+        $employeeList = Employee::withTrashed()
+        ->orderBy('family_name')
+        ->get();
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => EmployeeDetailedEnumResource::collection($employeeList),
+            'data' => SyncListEmployeeResource::collection($employeeList),
         ]);
     }
     public function getDepartmentList()
     {
-        $main = Department::get();
+        $main = Department::withTrashed()
+        ->get();
         return response()->json([
             "message" => "Successfully fetched users.",
-            "data" => $main,
+            "data" => SyncListDepartmentResource::collection($main),
             "success" => true,
         ]);
     }
     public function getUserList()
     {
-        $users = Users::where('type', UserTypes::EMPLOYEE)
+        $users = Users::withTrashed()
         ->with("employee")
         ->get();
         return response()->json([
             "message" => "Successfully fetched users.",
-            "data" => $users,
+            "data" => SyncListUserResource::collection($users),
             "success" => true,
         ]);
     }
