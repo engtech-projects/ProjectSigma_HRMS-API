@@ -11,7 +11,7 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('payroll_records', function (Blueprint $table) {
-            $table->renameColumn('group_tye', 'charging_type');
+            $table->renameColumn('group_type', 'charging_type');
         });
     }
 
@@ -21,7 +21,7 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('payroll_records', function (Blueprint $table) {
-            $table->renameColumn('charging_type', 'group_tye');
+            $table->renameColumn('charging_type', 'group_type');
         });
     }
 };
