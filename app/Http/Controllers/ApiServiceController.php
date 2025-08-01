@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UserTypes;
 use App\Http\Requests\FormatApprovalsRequest;
 use App\Http\Requests\FormatSingleApprovalRequest;
 use App\Http\Requests\FormatUserEmployeesRequest;
-use App\Http\Resources\EmployeeDetailedEnumResource;
 use App\Http\Resources\HrmsServiceApprovalAttributeResource;
 use App\Http\Resources\SyncListDepartmentResource;
 use App\Http\Resources\SyncListEmployeeResource;
