@@ -177,7 +177,7 @@ class ApprovalsSeeder extends Seeder
                 ],
                 [
                     'id' => 240,
-                    'form' => "Request Stocks",
+                    'form' => "Requisition Slip",
                     'approvals' => "[]",
                     'module' => ApprovalModules::INVENTORY->value,
                     'deleted_at' => null,
