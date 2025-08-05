@@ -428,6 +428,7 @@ Route::middleware("secret_api")->group(function () {
             Route::get("employee", [ApiServiceController::class, "getEmployeeList"]);
             Route::get("department", [ApiServiceController::class, "getDepartmentList"]);
             Route::get("user", [ApiServiceController::class, "getUserList"]);
+            Route::get("accessibilities", [ApiServiceController::class, "getAccessibilitiesList"]);
         });
     });
 });

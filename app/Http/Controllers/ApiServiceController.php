@@ -6,10 +6,12 @@ use App\Http\Requests\FormatApprovalsRequest;
 use App\Http\Requests\FormatSingleApprovalRequest;
 use App\Http\Requests\FormatUserEmployeesRequest;
 use App\Http\Resources\HrmsServiceApprovalAttributeResource;
+use App\Http\Resources\SyncListAccessibilitiesResource;
 use App\Http\Resources\SyncListDepartmentResource;
 use App\Http\Resources\SyncListEmployeeResource;
 use App\Http\Resources\SyncListUserResource;
 use App\Http\Resources\UserEmployeeSummaryResource;
+use App\Models\Accessibilities;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Users;
@@ -74,6 +76,16 @@ class ApiServiceController extends Controller
         return response()->json([
             "message" => "Successfully fetched users.",
             "data" => SyncListUserResource::collection($users),
+            "success" => true,
+        ]);
+    }
+    public function getAccessibilitiesList()
+    {
+        $users = Accessibilities::withTrashed()
+        ->get();
+        return response()->json([
+            "message" => "Successfully fetched users.",
+            "data" => SyncListAccessibilitiesResource::collection($users),
             "success" => true,
         ]);
     }
