@@ -3,6 +3,7 @@
 namespace App\Http\Services\ApiServices;
 
 use App\Models\Project;
+use DateTime;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -28,21 +29,24 @@ class ProjectMonitoringSecretKeyService
         $projects = collect($projects)->map(function ($project) {
             return [
                 "id" => $project['id'],
-                "project_monitoring_id" => $project['id'],
                 "project_code" => $project['code'],
                 "status" => $project['status'],
+                "created_at" => new DateTime($project['created_at']),
+                "updated_at" => new DateTime($project['updated_at']),
+                "deleted_at" => $project["deleted_at"] ? new DateTime($project['deleted_at']) : null,
             ];
         })->toArray();
         Project::upsert(
             $projects,
             [
                 'id',
-                'project_monitoring_id',
             ],
             [
-                'project_monitoring_id',
                 'project_code',
                 'status',
+                'created_at',
+                'updated_at',
+                'deleted_at',
             ]
         );
         return true;

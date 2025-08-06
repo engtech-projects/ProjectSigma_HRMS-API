@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Enums\ApprovalModels;
-use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -29,15 +28,6 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
-
-        Route::bind('projectMonitoringId', function ($value) {
-            try {
-                $project = Project::where('project_monitoring_id', $value)->firstOrfail();
-            } catch (\Exception $e) {
-                throw new NotFoundHttpException("Project not found.", $e, 404);
-            }
-            return $project;
         });
 
         Route::bind('model', function ($value, $route) {

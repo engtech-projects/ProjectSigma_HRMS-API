@@ -15,14 +15,12 @@ class Project extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'project_monitoring_id',
         'project_code',
         'status'
     ];
 
     protected $casts = [
         'project_code' => 'string',
-        'project_monitoring_id' => 'integer',
         'created_at' => 'datetime:Y-m-d'
     ];
 

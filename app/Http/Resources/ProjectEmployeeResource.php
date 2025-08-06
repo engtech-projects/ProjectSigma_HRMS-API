@@ -17,7 +17,6 @@ class ProjectEmployeeResource extends JsonResource
         return [
             "id" => $this->id,
             "code" => $this->project_code,
-            "project_monitoring_id" => $this->project_monitoring_id,
             "project_members_ids" => $this->project_member_ids,
             "project_members" => collect($this->project_has_employees)->map(function ($member) {
                 return [
