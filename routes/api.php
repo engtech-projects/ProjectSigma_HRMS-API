@@ -139,6 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // to do: Move Setup Routes inside setups prefix
     Route::prefix('setup')->group(function () {
         Route::resource('payroll-particular-terms', AccountingParticularController::class)->names('payrollParticularTerms');
+        // DATA SYNC MANUAL USER TRIGGER
         Route::prefix('sync')->group(function () {
             Route::post('/all', [ApiSyncController::class, 'syncAll'])->name("api.sync.all");
             Route::prefix('project')->group(function () {
