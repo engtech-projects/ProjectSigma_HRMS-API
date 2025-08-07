@@ -159,7 +159,6 @@ class Overtime extends Model
     {
         // login = (STARTTIME - BUFFER) to ENDTIME
         $bufferInTimeEarly = Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
-        // $bufferInTimeLate = Carbon::parse($this->overtime_start_time)->addHour((int)config("app.login_late"));
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_IN)
             ->whereDate("date", "=", $this->overtime_date)

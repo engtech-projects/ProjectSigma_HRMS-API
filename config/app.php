@@ -18,8 +18,6 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     'login_early' => env('LOG_IN_EARLY_HOUR', '2'),
-    'login_late' => env('LOG_IN_LATE_HOUR', '4'), // CHANGED TO END OF SCHEDULE -- UNUSEDs
-    'logout_early' => env('LOG_OUT_EARLY_HOUR', '4'), // CHANGED TO START OF SCHEDULE -- UNUSED
     'logout_late' => env('LOG_OUT_LATE_HOUR', '2'),
 
     'salary_grade_setter' => array_map('intval', explode(',', env('SALARY_GRADE_SETTER') ?? '')),

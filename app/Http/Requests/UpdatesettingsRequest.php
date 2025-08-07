@@ -22,13 +22,8 @@ class UpdatesettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'setting_name' => [
-                "required",
-                "string",
-            ],
             'value' => [
                 "required",
-                "string",
             ]
         ];
     }
