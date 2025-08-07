@@ -6,6 +6,7 @@ use App\Models\Settings;
 use App\Http\Requests\StoresettingsRequest;
 use App\Http\Requests\UpdatesettingsRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class SettingsController extends Controller
 {
@@ -15,11 +16,10 @@ class SettingsController extends Controller
     public function index()
     {
         $settings = Settings::paginate(config("app.pagination_per_page"));
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $settings;
-        return response()->json($data);
+        return JsonResource::collection($settings)->additional([
+            'success' => true,
+            'message' => 'Successfully fetch.',
+        ]);
     }
 
     /**
