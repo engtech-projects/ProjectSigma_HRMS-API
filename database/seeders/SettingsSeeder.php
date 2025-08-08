@@ -53,32 +53,32 @@ class SettingsSeeder extends Seeder
                 [
                     'id' => 8,
                     'setting_name' => SetupSettingsEnums::USER_201_EDITOR->value,
-                    'value' => '10:00',
+                    'value' => '',
                 ],
                 [
                     'id' => 9,
                     'setting_name' => SetupSettingsEnums::USER_SALARY_GRADE_SETTER->value,
-                    'value' => '10:00',
+                    'value' => '',
                 ],
                 [
                     'id' => 10,
                     'setting_name' => SetupSettingsEnums::LOGOUT_CHANGE_PASSWORD->value,
-                    'value' => '10:00',
+                    'value' => 'false',
                 ],
                 [
                     'id' => 11,
                     'setting_name' => SetupSettingsEnums::SINGLE_DEVICE_LOGIN->value,
-                    'value' => '10:00',
+                    'value' => 'false',
                 ],
                 [
                     'id' => 12,
                     'setting_name' => SetupSettingsEnums::EARLY_LOGIN->value,
-                    'value' => '10:00',
+                    'value' => '',
                 ],
                 [
                     'id' => 13,
                     'setting_name' => SetupSettingsEnums::LATE_LOGOUT->value,
-                    'value' => '10:00',
+                    'value' => '',
                 ],
             ],
             [
