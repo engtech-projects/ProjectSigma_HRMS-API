@@ -73,12 +73,12 @@ class SettingsSeeder extends Seeder
                 [
                     'id' => 12,
                     'setting_name' => SetupSettingsEnums::EARLY_LOGIN->value,
-                    'value' => '',
+                    'value' => '2',
                 ],
                 [
                     'id' => 13,
                     'setting_name' => SetupSettingsEnums::LATE_LOGOUT->value,
-                    'value' => '',
+                    'value' => '4',
                 ],
             ],
             [

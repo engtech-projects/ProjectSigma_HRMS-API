@@ -20,13 +20,7 @@ return [
     'login_early' => env('LOG_IN_EARLY_HOUR', '2'),
     'logout_late' => env('LOG_OUT_LATE_HOUR', '2'),
 
-    'salary_grade_setter' => array_map('intval', explode(',', env('SALARY_GRADE_SETTER') ?? '')),
-
-    '201_editor' => array_map('intval', explode(',', env('201_EDITOR') ?? '')),
-
     'artisan' => (bool) env('ENABLE_ARTISAN_ROUTES', false),
-    'logout_change_password' => (bool) env('LOGOUT_CHANGE_PASSWORD', false),
-    'single_device_login' => (bool) env('SINGLE_DEVICE_LOGIN', false),
     'pagination_per_page' => env('PAGINATION_PER_PAGE', 10),
     /*
     |--------------------------------------------------------------------------
