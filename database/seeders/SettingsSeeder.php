@@ -21,7 +21,7 @@ class SettingsSeeder extends Seeder
                     'value' => '15',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 2,
@@ -29,7 +29,7 @@ class SettingsSeeder extends Seeder
                     'value' => '30',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 3,
@@ -37,7 +37,7 @@ class SettingsSeeder extends Seeder
                     'value' => '12',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 4,
@@ -45,7 +45,7 @@ class SettingsSeeder extends Seeder
                     'value' => '13',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 5,
@@ -53,7 +53,7 @@ class SettingsSeeder extends Seeder
                     'value' => '10:00',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 6,
@@ -61,7 +61,7 @@ class SettingsSeeder extends Seeder
                     'value' => '27',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 7,
@@ -69,7 +69,7 @@ class SettingsSeeder extends Seeder
                     'value' => '28',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 8,
@@ -77,7 +77,7 @@ class SettingsSeeder extends Seeder
                     'value' => '',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 9,
@@ -85,7 +85,7 @@ class SettingsSeeder extends Seeder
                     'value' => '',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 10,
@@ -93,7 +93,7 @@ class SettingsSeeder extends Seeder
                     'value' => 'false',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 11,
@@ -101,7 +101,7 @@ class SettingsSeeder extends Seeder
                     'value' => 'false',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 12,
@@ -109,7 +109,7 @@ class SettingsSeeder extends Seeder
                     'value' => '2',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
                 [
                     'id' => 13,
@@ -117,7 +117,7 @@ class SettingsSeeder extends Seeder
                     'value' => '4',
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'deleted_at' => now(),
+                    'deleted_at' => null,
                 ],
             ],
             [
