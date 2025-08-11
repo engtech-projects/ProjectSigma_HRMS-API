@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Actions\Employee;
 
 use App\Enums\AttendanceLogType;
-use App\Enums\AttendanceSettings;
+use App\Enums\SetupSettingsEnums;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Settings;
@@ -18,7 +18,7 @@ class CountAbsentLateController extends Controller
     public function __invoke()
     {
         $attendance = [];
-        $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
+        $lateAllowance = Settings::where("setting_name", SetupSettingsEnums::LATE_ALLOWANCE)->first()->value;
         if (!Cache::has('lateAndAbsent')) {
             $attendance = AttendanceLog::whereBetween('date', [
                 Carbon::now()->startOfMonth(),

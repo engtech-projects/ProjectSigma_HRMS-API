@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AttendanceLogType;
+use App\Enums\SetupSettingsEnums;
 use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
@@ -58,6 +59,15 @@ class Overtime extends Model
         'charging_class',
         'charging_id',
     ];
+
+    private $systemSettingLoginEarly;
+    private $systemSettingLogoutLate;
+
+    public function __construct()
+    {
+        $this->systemSettingLoginEarly = intval(Settings::settingName(SetupSettingsEnums::EARLY_LOGIN)->first()->value ?? 2);
+        $this->systemSettingLogoutLate = intval(Settings::settingName(SetupSettingsEnums::LATE_LOGOUT)->first()->value ?? 4);
+    }
 
     public function employees(): BelongsToMany
     {
@@ -138,28 +148,27 @@ class Overtime extends Model
     public function getBufferTimeStartEarlyAttribute()
     {
         $time = Carbon::parse($this->overtime_start_time);
-        $newTime = $time->copy()->subHour((int)config("app.login_early"));
+        $newTime = $time->copy()->subHour($this->systemSettingLoginEarly);
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->startOfDay();
         }
         return $newTime->format("H:i:s");
-        // return Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
+        // return Carbon::parse($this->overtime_start_time)->subHour($this->systemSettingLoginEarly);
     }
     public function getBufferTimeEndLateAttribute()
     {
         $time = Carbon::parse($this->overtime_end_time);
-        $newTime = $time->copy()->addHour((int)config("app.logout_late"));
+        $newTime = $time->copy()->addHour($this->systemSettingLogoutLate);
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->endOfDay();
         }
         return $newTime->format("H:i:s");
-        // return Carbon::parse($this->overtime_end_time)->addHour((int)config("app.logout_late"));
+        // return Carbon::parse($this->overtime_end_time)->addHour($this->systemSettingLogoutLate);
     }
     public function getAttendanceLogInsAttribute()
     {
         // login = (STARTTIME - BUFFER) to ENDTIME
-        $bufferInTimeEarly = Carbon::parse($this->overtime_start_time)->subHour((int)config("app.login_early"));
-        // $bufferInTimeLate = Carbon::parse($this->overtime_start_time)->addHour((int)config("app.login_late"));
+        $bufferInTimeEarly = Carbon::parse($this->overtime_start_time)->subHour($this->systemSettingLoginEarly);
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_IN)
             ->whereDate("date", "=", $this->overtime_date)
@@ -172,7 +181,7 @@ class Overtime extends Model
     {
         // Logout = STARTTIME to (ENDTIME + BUFFER)
         // $bufferOutTimeEarly = $this->overtime_start_time;
-        $bufferOutTimeLate = $this->overtime_end_time->addUnitNoOverflow("hour", (int)config("app.logout_late"), "day");
+        $bufferOutTimeLate = $this->overtime_end_time->addUnitNoOverflow("hour", $this->systemSettingLogoutLate, "day");
         return AttendanceLog::with(["department", "project"])
             ->where("log_type", AttendanceLogType::TIME_OUT)
             ->whereDate("date", "=", $this->overtime_date)

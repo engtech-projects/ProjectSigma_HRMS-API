@@ -2,7 +2,7 @@
 
 namespace App\Http\Traits;
 
-use App\Enums\AttendanceSettings;
+use App\Enums\SetupSettingsEnums;
 use App\Models\AttendanceLog;
 use App\Models\Leave;
 use App\Models\Settings;
@@ -29,8 +29,8 @@ trait Attendance
         $duration = 0;
         $totalLate = 0;
         $undertime = 0;
-        $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
-        $lateAbsent = Settings::where("setting_name", AttendanceSettings::LATE_ABSENT)->first()->value;
+        $lateAllowance = Settings::where("setting_name", SetupSettingsEnums::LATE_ALLOWANCE)->first()->value;
+        $lateAbsent = Settings::where("setting_name", SetupSettingsEnums::LATE_ABSENT)->first()->value;
         $chargings = [];
         $charge = null;
         $leaveUsedToday = 0;

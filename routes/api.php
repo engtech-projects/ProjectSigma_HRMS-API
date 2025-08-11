@@ -118,7 +118,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('philhealth', PhilhealthContributionController::class);
     Route::resource('pagibig', PagibigContributionController::class);
     Route::resource('witholdingtax', WitholdingTaxContributionController::class);
-    Route::resource('settings', SettingsController::class);
     Route::resource('allowance', AllowanceController::class);
     Route::get('allowance-list', [AllowanceController::class, 'get']);
     Route::resource('leave', LeaveController::class);
@@ -127,7 +126,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('resource', PositionController::class)->names("setupPosition");
         Route::get('list', [PositionController::class, 'get']);
     });
-    Route::put('update-settings', [SettingsController::class, 'updateSettings']);
     Route::prefix('department')->group(function () {
         Route::resource('resource', DepartmentController::class)->names("setupDepartment");
         Route::get('list', [DepartmentController::class, 'get']);
@@ -138,6 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // to do: Move Setup Routes inside setups prefix
     Route::prefix('setup')->group(function () {
+        Route::resource('settings', SettingsController::class)->only(["index", "update"]);
         Route::resource('payroll-particular-terms', AccountingParticularController::class)->names('payrollParticularTerms');
         // DATA SYNC MANUAL USER TRIGGER
         Route::prefix('sync')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SetupSettingsEnums;
 use App\Enums\UpdateTypesOnUser;
 use App\Enums\UserTypes;
 use App\Models\Users;
@@ -9,6 +10,7 @@ use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUserCredentialRequest;
 use App\Http\Requests\UpdateUsersRequest;
 use App\Http\Resources\UserEmployeeResource;
+use App\Models\Settings;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -81,7 +83,8 @@ class UsersController extends Controller
             $data->success = true;
             $data->data = $users;
             // Logout Other Devices
-            if (config("app.logout_change_password")) {
+            $logoutOnChangepassword = boolval(Settings::settingName(SetupSettingsEnums::LOGOUT_CHANGE_PASSWORD)->first()->value ?? false);
+            if ($logoutOnChangepassword) {
                 $request->user()->tokens()->where('id', '!=', $request->user()->currentAccessToken()->id)->delete();
             }
             return response()->json($data);

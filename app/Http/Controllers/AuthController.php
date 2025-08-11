@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SetupSettingsEnums;
 use App\Http\Requests\AuthUserRequest;
 use App\Http\Resources\UserEmployeeCphotoResource;
+use App\Models\Settings;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +31,8 @@ class AuthController extends Controller
                 "message" => "Failed to log in. Employee Terminated",
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
-        if (config("app.single_device_login")) {
+        $singleDeviceLogin = boolval(Settings::settingName(SetupSettingsEnums::SINGLE_DEVICE_LOGIN)->first()->value ?? false);
+        if ($singleDeviceLogin) {
             $check_user->tokens()->delete(); // Logout other sessions / cannot simultaneously login on multiple devices
         }
         $token = $check_user->createToken('auth_token:' . $check_user->id)->plainTextToken;

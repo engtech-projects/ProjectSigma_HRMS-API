@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AttendanceLogType;
-use App\Enums\AttendanceSettings;
+use App\Enums\SetupSettingsEnums;
 use App\Enums\SalaryRequestType;
 use App\Http\Resources\CompressedImageResource;
 use App\Models\AttendanceLog;
@@ -19,7 +19,7 @@ class LateController extends Controller
     public function getLateThisMonth(Schedule $req, AttendanceLog $log)
     {
         $attendance = [];
-        $lateAllowance = Settings::where("setting_name", AttendanceSettings::LATE_ALLOWANCE)->first()->value;
+        $lateAllowance = Settings::where("setting_name", SetupSettingsEnums::LATE_ALLOWANCE)->first()->value;
         if (!Cache::has('lates')) {
             $attendance = AttendanceLog::whereBetween('date', [
                 Carbon::now()->startOfMonth(),
