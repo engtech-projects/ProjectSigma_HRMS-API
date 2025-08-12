@@ -29,4 +29,15 @@ class Settings extends Model
     {
         return $query->where('setting_name', $name);
     }
+    /**
+     *
+     * MODEL FUNCTIONS
+     *
+     */
+
+    public static function getSettingValue($name)
+    {
+        return self::where('setting_name', $name)->first()->value;
+    }
+
 }

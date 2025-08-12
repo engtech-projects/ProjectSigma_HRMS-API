@@ -22,9 +22,9 @@ class AccessibilitiesController extends Controller
     public function index(Request $request)
     {
         $showSuperAdmin = $this->checkUserAccess([]);
-        $salaryGradeSetterSettings = Settings::settingName(SetupSettingsEnums::USER_SALARY_GRADE_SETTER)->first()->value;
+        $salaryGradeSetterSettings = Settings::getSettingValue(SetupSettingsEnums::USER_SALARY_GRADE_SETTER);
         $salaryGradeSetterIds = array_map('intval', explode(',', $salaryGradeSetterSettings));
-        $edit201SetterSettings = Settings::settingName(SetupSettingsEnums::USER_201_EDITOR)->first()->value;
+        $edit201SetterSettings = Settings::getSettingValue(SetupSettingsEnums::USER_201_EDITOR);
         $edit201SetterIds = array_map('intval', explode(',', $edit201SetterSettings));
         $showSetupSalary = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, $salaryGradeSetterIds);
         $showEdit201 = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, $edit201SetterIds);
