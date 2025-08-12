@@ -17,6 +17,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'login_early' => env('LOGIN_EARLY', 2),
+    'logout_late' => env('LOGOUT_LATE', 2),
+
     'artisan' => (bool) env('ENABLE_ARTISAN_ROUTES', false),
     'pagination_per_page' => env('PAGINATION_PER_PAGE', 10),
     /*
