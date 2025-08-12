@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\AttendanceLogType;
 use App\Enums\ScheduleGroupType;
-use App\Enums\SetupSettingsEnums;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;

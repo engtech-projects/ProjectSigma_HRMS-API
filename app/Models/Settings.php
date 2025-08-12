@@ -39,5 +39,4 @@ class Settings extends Model
     {
         return self::where('setting_name', $name)->first()->value;
     }
-
 }

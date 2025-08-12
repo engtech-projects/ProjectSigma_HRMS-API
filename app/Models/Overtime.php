@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\AttendanceLogType;
-use App\Enums\SetupSettingsEnums;
 use App\Models\Traits\SeparatedCharging;
 use App\Models\Traits\StatusScope;
 use App\Traits\HasApproval;
