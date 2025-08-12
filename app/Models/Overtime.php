@@ -65,8 +65,8 @@ class Overtime extends Model
 
     public function __construct()
     {
-        $this->systemSettingLoginEarly = intval(Settings::settingName(SetupSettingsEnums::EARLY_LOGIN)->first()->value ?? 2);
-        $this->systemSettingLogoutLate = intval(Settings::settingName(SetupSettingsEnums::LATE_LOGOUT)->first()->value ?? 4);
+        $this->systemSettingLoginEarly = intval(config("app.login_early", 2));
+        $this->systemSettingLogoutLate = intval(config("app.logout_late", 2));
     }
 
     public function employees(): BelongsToMany
