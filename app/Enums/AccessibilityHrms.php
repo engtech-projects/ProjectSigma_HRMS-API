@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum AccessibilityHrms: string
 {
-    case SUPERADMIN = "project sigma:super admin";
     case HRMS_DASHBOARD = "hrms:dashboard";
     case HRMS_ANNOUNCEMENT = "hrms:announcement";
     case HRMS_ATTENDANCE_ATTENDANCEPORTAL = "hrms:attendance_attendance portal";
