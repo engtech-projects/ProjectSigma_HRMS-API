@@ -24,7 +24,7 @@ class ManpowerServices
     public function getAll($filter = [])
     {
         return $this->manpowerRequest
-        ->with("position", "user.employee")
+        ->with("position")
         ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
             $query->where('date_required', $filter["date_required"]);
         })
@@ -140,7 +140,7 @@ class ManpowerServices
     public function getOpenPositions($filter = [])
     {
         return $this->manpowerRequest
-            ->with("position", "user.employee")
+            ->with("position")
             ->where('fill_status', FillStatuses::OPEN->value)
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);
@@ -160,7 +160,7 @@ class ManpowerServices
     public function getApprovedPositions($filter = [])
     {
         return $this->manpowerRequest
-            ->with("position", "user.employee")
+            ->with("position")
             ->where('request_status', RequestStatuses::APPROVED->value)
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);

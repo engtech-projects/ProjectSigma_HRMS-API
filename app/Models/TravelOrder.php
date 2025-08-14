@@ -89,11 +89,6 @@ class TravelOrder extends Model
         return $this->hasMany(TravelOrderMembers::class, "id", "travel_order_id");
     }
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
     public function getTimeOfTravelHumanAttribute()
     {
         return Carbon::parse($this->time_of_travel)->format("h:i A");

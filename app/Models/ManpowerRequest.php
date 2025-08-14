@@ -82,11 +82,6 @@ class ManpowerRequest extends Model
      * MODEL
      * RELATED RELATIONS
      * */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
     public function job_applicants()
     {
         return $this->belongsToMany(JobApplicants::class, 'manpower_request_job_applicants', 'manpowerrequests_id', 'job_applicants_id')->withPivot("id", "hiring_status", "processing_checklist", "remarks");
