@@ -29,8 +29,8 @@ trait Attendance
         $duration = 0;
         $totalLate = 0;
         $undertime = 0;
-        $lateAllowance = Settings::where("setting_name", SetupSettingsEnums::LATE_ALLOWANCE)->first()->value;
-        $lateAbsent = Settings::where("setting_name", SetupSettingsEnums::LATE_ABSENT)->first()->value;
+        $lateAllowance = Settings::getSettingValue(SetupSettingsEnums::LATE_ALLOWANCE);
+        $lateAbsent = Settings::getSettingValue(SetupSettingsEnums::LATE_ABSENT);
         $chargings = [];
         $charge = null;
         $leaveUsedToday = 0;

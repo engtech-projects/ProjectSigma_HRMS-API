@@ -37,6 +37,6 @@ class Settings extends Model
 
     public static function getSettingValue($name)
     {
-        return self::where('setting_name', $name)->first()->value;
+        return self::settingName($name)->first()?->value;
     }
 }

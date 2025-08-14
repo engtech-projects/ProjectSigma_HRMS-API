@@ -405,8 +405,8 @@ class AttendanceService
         // SETUP LEAVE FOR CHECKING IF ON LEAVE AND WILL APPLY FOR TODAY
         $leaveUsedToday = array_fill(0, sizeof($employeeDayData["leaves"]), 0);
         // SETTINGS FOR LATES AND ABSENT
-        $lateMinsAllowance = Settings::where("setting_name", SetupSettingsEnums::LATE_ALLOWANCE)->first()->value; // Minutes of late that will be considered as not late
-        $lateMinsConsideredAbsent = Settings::where("setting_name", SetupSettingsEnums::LATE_ABSENT)->first()->value; // Minutes of late that will be considered as absent for a schedule
+        $lateMinsAllowance = Settings::getSettingValue(SetupSettingsEnums::LATE_ALLOWANCE); // Minutes of late that will be considered as not late
+        $lateMinsConsideredAbsent = Settings::getSettingValue(SetupSettingsEnums::LATE_ABSENT); // Minutes of late that will be considered as absent for a schedule
         $isSunday = $date->dayOfWeek == Carbon::SUNDAY;
         foreach ($employeeDayData['schedules'] as $schedule) {
             $scheduleMetaData = [

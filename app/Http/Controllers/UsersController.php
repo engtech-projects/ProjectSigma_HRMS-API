@@ -83,7 +83,7 @@ class UsersController extends Controller
             $data->success = true;
             $data->data = $users;
             // Logout Other Devices
-            $logoutOnChangepassword = boolval(Settings::settingName(SetupSettingsEnums::LOGOUT_CHANGE_PASSWORD)->first()->value ?? false);
+            $logoutOnChangepassword = boolval(Settings::getSettingValue(SetupSettingsEnums::LOGOUT_CHANGE_PASSWORD));
             if ($logoutOnChangepassword) {
                 $request->user()->tokens()->where('id', '!=', $request->user()->currentAccessToken()->id)->delete();
             }

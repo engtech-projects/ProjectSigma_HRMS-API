@@ -19,7 +19,7 @@ class LateController extends Controller
     public function getLateThisMonth(Schedule $req, AttendanceLog $log)
     {
         $attendance = [];
-        $lateAllowance = Settings::where("setting_name", SetupSettingsEnums::LATE_ALLOWANCE)->first()->value;
+        $lateAllowance = Settings::getSettingValue(SetupSettingsEnums::LATE_ALLOWANCE);
         if (!Cache::has('lates')) {
             $attendance = AttendanceLog::whereBetween('date', [
                 Carbon::now()->startOfMonth(),

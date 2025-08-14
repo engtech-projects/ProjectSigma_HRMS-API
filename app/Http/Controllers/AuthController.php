@@ -31,7 +31,7 @@ class AuthController extends Controller
                 "message" => "Failed to log in. Employee Terminated",
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
-        $singleDeviceLogin = boolval(Settings::settingName(SetupSettingsEnums::SINGLE_DEVICE_LOGIN)->first()->value ?? false);
+        $singleDeviceLogin = boolval(Settings::getSettingValue(SetupSettingsEnums::SINGLE_DEVICE_LOGIN));
         if ($singleDeviceLogin) {
             $check_user->tokens()->delete(); // Logout other sessions / cannot simultaneously login on multiple devices
         }

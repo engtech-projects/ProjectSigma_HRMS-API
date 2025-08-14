@@ -18,7 +18,7 @@ class CountAbsentLateController extends Controller
     public function __invoke()
     {
         $attendance = [];
-        $lateAllowance = Settings::where("setting_name", SetupSettingsEnums::LATE_ALLOWANCE)->first()->value;
+        $lateAllowance = Settings::getSettingValue(SetupSettingsEnums::LATE_ALLOWANCE);
         if (!Cache::has('lateAndAbsent')) {
             $attendance = AttendanceLog::whereBetween('date', [
                 Carbon::now()->startOfMonth(),
