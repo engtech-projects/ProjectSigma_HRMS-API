@@ -129,7 +129,6 @@ enum AccessibilityHrms: string
     case HRMS_LNOTNTO_TRAVELORDER_ALLREQUESTS = "hrms:leaves and overtime_travel order_list";
     case HRMS_LNOTNTO_TRAVELORDER_MYREQUESTS = "hrms:leaves and overtime_travel order_my request";
     case HRMS_LNOTNTO_TRAVELORDER_MYAPPROVALS = "hrms:leaves and overtime_travel order_my approvals";
-    case HRMS_EMPLOYEE_JOBAPPLICANT = "hrms:employee_job applicant";
     // case HRMS_ = "hrms:attendance_biometrics";
 
     public static function toArray(): array
