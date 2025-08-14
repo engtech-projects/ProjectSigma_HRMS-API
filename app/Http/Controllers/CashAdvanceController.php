@@ -13,7 +13,6 @@ use App\Http\Requests\UpdateCashAdvanceRequest;
 use App\Http\Requests\CashAdvanceRequest;
 use App\Http\Resources\CashAdvanceResource;
 use App\Http\Services\CashAdvanceService;
-use App\Models\Users;
 use App\Notifications\CashAdvanceForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -63,9 +62,7 @@ class CashAdvanceController extends Controller
             return response()->json($data, 400);
         }
         $main->refresh();
-        if ($main->getNextPendingApproval()) {
-            Users::find($main->getNextPendingApproval()['user_id'])->notify(new CashAdvanceForApproval($main));
-        }
+        $main->notifyNextApprover(CashAdvanceForApproval::class);
         $data->message = "Successfully save.";
         $data->success = true;
         $data->data = $main;

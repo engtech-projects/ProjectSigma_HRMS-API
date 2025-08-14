@@ -14,7 +14,6 @@ use App\Http\Requests\StoreFailureToLogRequest;
 use App\Http\Requests\UpdateFailureToLogRequest;
 use App\Models\Department;
 use App\Models\Project;
-use App\Models\Users;
 use App\Notifications\FailureToLogRequestForApproval;
 use Illuminate\Support\Facades\Log;
 
@@ -67,9 +66,7 @@ class FailureToLogController extends Controller
             if ($validatedData) {
                 $main = FailureToLog::create($validatedData);
                 $main->refresh();
-                if ($main->getNextPendingApproval()) {
-                    Users::find($main->getNextPendingApproval()['user_id'])->notify(new FailureToLogRequestForApproval($main));
-                }
+                $main->notifyNextApprover(FailureToLogRequestForApproval::class);
             }
         } catch (\Exception $e) {
             Log::error($e);

@@ -245,7 +245,7 @@ class Employee extends Model
     }
     public function account(): HasOne
     {
-        return $this->hasOne(Users::class);
+        return $this->hasOne(User::class);
     }
     public function employee_schedule(): HasMany
     {

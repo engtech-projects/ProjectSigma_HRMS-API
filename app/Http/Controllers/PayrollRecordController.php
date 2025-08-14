@@ -24,7 +24,6 @@ use App\Models\LoanPayments;
 use App\Models\OtherDeductionPayments;
 use App\Models\PayrollDetail;
 use App\Models\Project;
-use App\Models\Users;
 use App\Notifications\PayrollRequestForApproval;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -123,7 +122,6 @@ class PayrollRecordController extends Controller
         $attribute['request_status'] = RequestStatuses::PENDING->value;
         $attribute['created_by'] = auth()->user()->id;
         $attribute["charging_type"] = $attribute["group_type"];
-        // try {
         DB::transaction(function () use ($attribute) {
             $payroll = PayrollRecord::create($attribute);
             foreach ($attribute["payroll_details"] as $employeePayrollData) {
@@ -135,17 +133,12 @@ class PayrollRecordController extends Controller
                 }
             }
             $payroll->refresh();
-            if ($payroll->getNextPendingApproval()) {
-                Users::find($payroll->getNextPendingApproval()['user_id'])->notify(new PayrollRequestForApproval($payroll));
-            }
+            $payroll->notifyNextApprover(PayrollRequestForApproval::class);
         });
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully saved.',
         ], JsonResponse::HTTP_OK);
-        // } catch (Exception $e) {
-        //     Log::error($e);
-        // }
         return new JsonResponse([
             'success' => false,
             'error' => $e,

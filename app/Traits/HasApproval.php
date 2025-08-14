@@ -6,34 +6,27 @@ use App\Enums\AccessibilityHrms;
 use Illuminate\Support\Carbon;
 use App\Enums\RequestStatuses;
 use App\Http\Traits\CheckAccessibility;
+use App\Models\Traits\HasCreatedBy;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 trait HasApproval
 {
     use CheckAccessibility;
+    use HasCreatedBy;
     /**
      * ==================================================
      * MODEL RELATIONSHIPS
      * ==================================================
      */
-    public function created_by_user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
 
     /**
      * ==================================================
      * MODEL ATTRIBUTES
      * ==================================================
      */
-    public function getCreatedByUserNameAttribute()
-    {
-        return $this->created_by_user->employee?->fullname_first ?? ($this->created_by_user?->name ?? 'USER NOT FOUND');
-    }
 
     public function getDateApprovedDateHumanAttribute()
     {
@@ -251,5 +244,19 @@ trait HasApproval
     {
         $this->request_status = RequestStatuses::VOID;
         $this->save();
+    }
+    public function notifyNextApprover($notificationModel)
+    {
+        $nextApproval = $this->getNextPendingApproval();
+        if ($nextApproval) {
+            $user = User::find($nextApproval['user_id']);
+            if ($user) {
+                $user->notify(new $notificationModel($this));
+            }
+        }
+    }
+    public function notifyCreator($notificationModel)
+    {
+        $this->created_by_user->notify(new $notificationModel($this));
     }
 }

@@ -11,7 +11,6 @@ use App\Http\Requests\StoreEmployeeLeavesRequest;
 use App\Http\Requests\UpdateEmployeeLeavesRequest;
 use App\Http\Resources\EmployeeLeaveResource;
 use App\Http\Services\EmployeeLeaveService;
-use App\Models\Users;
 use App\Notifications\LeaveRequestForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -52,24 +51,19 @@ class EmployeeLeavesController extends Controller
         $main = new EmployeeLeaves();
         $valData = $request->validated();
         $data = json_decode('{}');
-
         if ($valData) {
             $main->fill($valData);
             $main->created_by = Auth::user()->id;
             $main->request_status = RequestStatuses::PENDING;
-
             if (!$main->save()) {
                 $data->message = "Save failed.";
                 $data->success = false;
                 return response()->json($data, 400);
             }
             $main->refresh();
-            if ($main->getNextPendingApproval()) {
-                Users::find($main->getNextPendingApproval()['user_id'])->notify(new LeaveRequestForApproval($main));
-            }
+            $main->notifyNextApprover(LeaveRequestForApproval::class);
             $data->message = "Successfully save.";
             $data->success = true;
-            $main = $main->refresh();
             $data->data = new EmployeeLeaveResource($main);
             return response()->json($data, 200);
         }

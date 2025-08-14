@@ -4,7 +4,6 @@ namespace App\Http\Services;
 
 use App\Http\Traits\UploadFileTrait;
 use App\Models\ManpowerRequest;
-use App\Models\Users;
 use App\Notifications\ManpowerRequestForApproval;
 use App\Enums\FillStatuses;
 use App\Enums\RequestStatuses;
@@ -126,9 +125,7 @@ class ManpowerServices
         $main->job_description_attachment = $this->uploadFile($attributes['job_description_attachment'], ManpowerRequest::JDA_DIR);
 
         if ($main->save()) {
-            if ($main->getNextPendingApproval()) {
-                Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
-            }
+            $main->notifyNextApprover(ManpowerRequestForApproval::class);
             return true;
         }
         return false;

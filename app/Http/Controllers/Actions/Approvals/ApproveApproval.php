@@ -18,7 +18,6 @@ use App\Notifications\TravelRequestForApproval;
 use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
-use App\Models\Users;
 use App\Notifications\AllowanceRequestApproved;
 use App\Notifications\AllowanceRequestForApproval;
 use App\Notifications\LeaveRequestApproved;
@@ -53,7 +52,6 @@ class ApproveApproval extends Controller
         $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED, "date_approved" => Carbon::now()]);
         $nextApproval = $model->getNextPendingApproval();
         if ($nextApproval) {
-            $nextApprovalUser = $nextApproval["user_id"];
             $notificationMap = [
                 ApprovalModels::LeaveEmployeeRequest->name => LeaveRequestForApproval::class,
                 ApprovalModels::TravelOrder->name => TravelRequestForApproval::class,
@@ -68,7 +66,7 @@ class ApproveApproval extends Controller
                 ApprovalModels::RequestVoid->name => VoidRequestForApproval::class,
             ];
             if (isset($notificationMap[$modelType])) {
-                Users::find($nextApprovalUser)->notify(new $notificationMap[$modelType]($model));
+                $model->notifyNextApprover($notificationMap[$modelType]);
             }
         } else {
             $notificationMap = [
@@ -85,7 +83,7 @@ class ApproveApproval extends Controller
                 ApprovalModels::RequestVoid->name => VoidRequestApproved::class,
             ];
             if (isset($notificationMap[$modelType])) {
-                Users::find($model->created_by)->notify(new $notificationMap[$modelType]($model));
+                $model->notifyCreator($notificationMap[$modelType]);
             }
         }
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);

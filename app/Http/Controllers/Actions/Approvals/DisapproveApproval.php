@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DisapproveApprovalRequest;
-use App\Models\Users;
 use App\Notifications\AllowanceRequestDenied;
 use App\Notifications\LeaveRequestDenied;
 use App\Notifications\PayrollRequestDenied;
@@ -52,7 +51,7 @@ class DisapproveApproval extends Controller
             ApprovalModels::GeneratePayroll->name => PayrollRequestDenied::class,
         ];
         if (isset($notificationMap[$modelType])) {
-            Users::find($model->created_by)->notify(new $notificationMap[$modelType]($model));
+            $model->notifyCreator($notificationMap[$modelType]);
         }
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], JsonResponse::HTTP_OK);
     }

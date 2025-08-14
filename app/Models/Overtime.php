@@ -98,11 +98,6 @@ class Overtime extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function getCreatedByFullNameAttribute()
-    {
-        return Users::find($this->created_by)?->employee->fullname_last ?? 'USER NOT FOUND';
-    }
-
     public function getDaysDelayedFilingAttribute()
     {
         $createdAt = Carbon::parse($this->created_at);

@@ -6,7 +6,7 @@ use App\Enums\SetupSettingsEnums;
 use App\Http\Requests\AuthUserRequest;
 use App\Http\Resources\UserEmployeeCphotoResource;
 use App\Models\Settings;
-use App\Models\Users;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
@@ -17,7 +17,7 @@ class AuthController extends Controller
     {
         $creds = $request->validated();
 
-        $check_user = Users::where(
+        $check_user = User::where(
             [ 'name' => $creds['username']]
         )->first();
 
