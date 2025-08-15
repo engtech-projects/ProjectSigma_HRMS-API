@@ -92,7 +92,6 @@ enum AccessibilityHrms: string
     case HRMS_EMPLOYEE_PAN_FORM_TERMINATION = "hrms:employee_pan_form_termination";
     case HRMS_EMPLOYEE_PAN_FORM_BULKTRANSFER = "hrms:employee_pan_form_bulk transfer";
     case HRMS_EMPLOYEE_PAN_FORM_MEMO = "hrms:employee_pan_form_memo";
-    // case HRMS_EMPLOYEE_PAN_MYREQUESTS = "hrms:employee_pan_my request";
     case HRMS_EMPLOYEE_PAN_ALLREQUESTS = "hrms:employee_pan_all request";
     case HRMS_EMPLOYEE_PAN_MYAPPROVALS = "hrms:employee_pan_approval";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_ALLREQUESTS = "hrms:employee_manpower request_all request";
@@ -101,7 +100,6 @@ enum AccessibilityHrms: string
     case HRMS_EMPLOYEE_MANPOWERREQUEST_OPEN_POSITIONS = "hrms:employee_manpower request_open positions";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICATION_FORM = "hrms:employee_job applicants_application form";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICANTS_JOB = "hrms:employee_job applicants_job applicants";
-    // case HRMS_LOANSANDADVANCES_CASHADVANCE = "hrms:loans and advances_cash advance";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_FORM = "hrms:loans and advances_cash advance_forms and my requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_ALLREQUESTS = "hrms:loans and advances_cash advance_all requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_MYAPPROVALS = "hrms:loans and advances_cash advance_my approvals";
@@ -111,9 +109,12 @@ enum AccessibilityHrms: string
     case HRMS_LOANSANDADVANCES_LOANS_PAID = "hrms:loans and advances_loans_paid list";
     case HRMS_LOANSANDADVANCES_LOANS_PAYMENTS = "hrms:loans and advances_loans_payments list";
     case HRMS_LOANSANDADVANCES_LOANS_MAKEPAYMENTS = "hrms:loans and advances_loans_make payments";
-    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS = "hrms:loans and advances_other deductions"; // TO DELETE
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_FORMS = "hrms:loans and advances_other deductions_forms";
-    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALLREQUESTS = "hrms:loans and advances_other deductions_list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALL = "hrms:loans and advances_other deductions_all list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ONGOING = "hrms:loans and advances_other deductions_ongoing list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_PAID = "hrms:loans and advances_other deductions_paid list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_PAYMENTS = "hrms:loans and advances_other deductions_payments list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_MAKEPAYMENT = "hrms:loans and advances_other deductions_make payment";
     case HRMS_ATTENDANCE_ATTENDANCELOGS = "hrms:attendance_attendance logs";
     case HRMS_ATTENDANCE_ATTENDANCELOGSDELETE = "hrms:attendance_attendance logs delete";
     case HRMS_LNOTNTO_LEAVE_FORM = "hrms:leaves and overtime_leave_form";
