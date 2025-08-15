@@ -6,6 +6,7 @@ use App\Enums\AccessibilityHrms;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Accounting;
 
 class AccessibilitiesSeederHrms extends Seeder
 {
@@ -187,7 +188,7 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 26,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS->value,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_FORMS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -236,8 +237,8 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 33,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_ALL->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
@@ -271,15 +272,15 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 38,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_ONGOING->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 39,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_PAID->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
@@ -362,15 +363,15 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 51,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_PAYMENTS->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 52,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_LOANS_MAKEPAYMENTS->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],

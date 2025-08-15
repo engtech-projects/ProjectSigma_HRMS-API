@@ -105,10 +105,12 @@ enum AccessibilityHrms: string
     case HRMS_LOANSANDADVANCES_CASHADVANCE_FORM = "hrms:loans and advances_cash advance_forms and my requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_ALLREQUESTS = "hrms:loans and advances_cash advance_all requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_MYAPPROVALS = "hrms:loans and advances_cash advance_my approvals";
-    case HRMS_LOANSANDADVANCES_LOANS = "hrms:loans and advances_loans"; // TO DELETE
     case HRMS_LOANSANDADVANCES_LOANS_FORMS = "hrms:loans and advances_loans_forms";
-    case HRMS_LOANSANDADVANCES_LOANS_ALLREQUESTS = "hrms:loans and advances_loans_list";
-    case HRMS_LOANSANDADVANCES_LOANS_PAYMENTS = "hrms:loans and advances_loans_payments";
+    case HRMS_LOANSANDADVANCES_LOANS_ALL = "hrms:loans and advances_loans_all list";
+    case HRMS_LOANSANDADVANCES_LOANS_ONGOING = "hrms:loans and advances_loans_ongoing list";
+    case HRMS_LOANSANDADVANCES_LOANS_PAID = "hrms:loans and advances_loans_paid list";
+    case HRMS_LOANSANDADVANCES_LOANS_PAYMENTS = "hrms:loans and advances_loans_payments list";
+    case HRMS_LOANSANDADVANCES_LOANS_MAKEPAYMENTS = "hrms:loans and advances_loans_make payments";
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS = "hrms:loans and advances_other deductions"; // TO DELETE
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_FORMS = "hrms:loans and advances_other deductions_forms";
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALLREQUESTS = "hrms:loans and advances_other deductions_list";
