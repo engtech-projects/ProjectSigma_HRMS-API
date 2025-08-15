@@ -544,8 +544,8 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 77,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_MANPOWERREQUEST_FORM->value,
-                    'deleted_at' => null,
+                    'accessibilities_name' => "",
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
@@ -565,8 +565,8 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 80,
-                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_MANPOWERREQUEST_MYREQUESTS->value,
-                    'deleted_at' => null,
+                    'accessibilities_name' => "",
+                    'deleted_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
