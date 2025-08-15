@@ -6,7 +6,6 @@ use App\Enums\AccessibilityHrms;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Accounting;
 
 class AccessibilitiesSeederHrms extends Seeder
 {
