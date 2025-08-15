@@ -2,8 +2,11 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\EnumHelper;
+
 enum AccessibilityHrms: string
 {
+    use EnumHelper;
     case HRMS_DASHBOARD = "hrms:dashboard";
     case HRMS_ANNOUNCEMENT = "hrms:announcement";
     case HRMS_ATTENDANCE_ATTENDANCEPORTAL = "hrms:attendance_attendance portal";
@@ -15,9 +18,6 @@ enum AccessibilityHrms: string
     case HRMS_ATTENDANCE_ATTENDANCE_QR = "hrms:attendance_attendance QR";
     case HRMS_EVENTCALENDAR = "hrms:event calendar";
     case HRMS_EMPLOYEE_201_EDIT = "hrms:employee_201_edit";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
     case HRMS_SETUP_USERACCOUNT = "hrms:setup_user account";
     case HRMS_SETUP_DEPARTMENT = "hrms:setup_department";
     case HRMS_SETUP_APPROVALS = "hrms:setup_approvals";
@@ -43,7 +43,10 @@ enum AccessibilityHrms: string
     case HRMS_PAYROLL_13THMONTH_ALLREQUESTS = "hrms:payroll_13th month_all requests";
     case HRMS_PAYROLL_13THMONTH_MYAPPROVALS = "hrms:payroll_13th month_my approvals";
     case HRMS_PAYROLL_13THMONTH_SUMMARY = "hrms:payroll_13th month_summary";
-    case HRMS_PAYROLL_ALLOWANCE = "hrms:payroll_allowance";
+    case HRMS_PAYROLL_ALLOWANCE_FORMANDMYREQUEST = "hrms:payroll_allowance_form and my requests";
+    case HRMS_PAYROLL_ALLOWANCE_ALLREQUESTS = "hrms:payroll_allowance_all requests";
+    case HRMS_PAYROLL_ALLOWANCE_MYAPPROVALS = "hrms:payroll_allowance_my approvals";
+    case HRMS_PAYROLL_ALLOWANCE_ALLOWANCERECORD = "hrms:payroll_allowance_allowance records";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_FORM = "hrms:payroll_salary disbursement_form and my requests";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_AllREQUESTS = "hrms:payroll_salary disbursement_all requests";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_MYAPPROVALS = "hrms:payroll_salary disbursement_my approvals";
@@ -128,23 +131,4 @@ enum AccessibilityHrms: string
     case HRMS_LNOTNTO_TRAVELORDER_ALLREQUESTS = "hrms:leaves and overtime_travel order_list";
     case HRMS_LNOTNTO_TRAVELORDER_MYREQUESTS = "hrms:leaves and overtime_travel order_my request";
     case HRMS_LNOTNTO_TRAVELORDER_MYAPPROVALS = "hrms:leaves and overtime_travel order_my approvals";
-    // case HRMS_ = "hrms:attendance_biometrics";
-
-    public static function toArray(): array
-    {
-        $array = [];
-        foreach (self::cases() as $case) {
-            $array[$case->name] = $case->value;
-        }
-        return $array;
-    }
-
-    public static function toArraySwapped(): array
-    {
-        $array = [];
-        foreach (self::cases() as $case) {
-            $array[$case->value] = $case->name;
-        }
-        return $array;
-    }
 }
