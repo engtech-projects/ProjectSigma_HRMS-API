@@ -14,13 +14,6 @@ class TravelOrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user = $this->when('user', function () {
-            return [
-                    "name" => $this->user->employee?->fullname_last,
-                    "type" => $this->user->type,
-            ];
-        });
-
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -40,7 +33,10 @@ class TravelOrderResource extends JsonResource
             "approvals" => ApprovalAttributeResource::collection($this->approvals),
             "next_approval" => $this->getNextPendingApproval(),
             "department" => $this->department,
-            "requested_by" => $user,
+            "requested_by" => [
+                "name" => $this->created_by_user_name,
+                "id" => $this->created_by_user->type,
+            ],
             "request_status" => $this->request_status,
             "charging_designation" => $this->charging_designation,
             "created_by" => $this->created_by,

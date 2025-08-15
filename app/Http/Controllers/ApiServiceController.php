@@ -14,7 +14,7 @@ use App\Http\Resources\UserEmployeeSummaryResource;
 use App\Models\Accessibilities;
 use App\Models\Department;
 use App\Models\Employee;
-use App\Models\Users;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class ApiServiceController extends Controller
@@ -40,7 +40,7 @@ class ApiServiceController extends Controller
     public function getUserEmployees(FormatUserEmployeesRequest $request)
     {
         $validatedData = $request->validated();
-        $users = Users::whereIn('id', $validatedData['user_ids'])->get();
+        $users = User::whereIn('id', $validatedData['user_ids'])->get();
         return response()->json([
             "message" => "Successfully fetched users.",
             "data" => UserEmployeeSummaryResource::collection($users),
@@ -70,7 +70,7 @@ class ApiServiceController extends Controller
     }
     public function getUserList()
     {
-        $users = Users::withTrashed()
+        $users = User::withTrashed()
         ->with("employee")
         ->get();
         return response()->json([

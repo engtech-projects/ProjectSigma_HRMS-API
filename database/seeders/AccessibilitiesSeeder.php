@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\AccessibilityHrms;
+use App\Enums\AccessibilitySigma;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -89,7 +89,7 @@ class AccessibilitiesSeeder extends Seeder
                 ],
                 [
                     'id' => 9999,
-                    'accessibilities_name' => AccessibilityHrms::SUPERADMIN->value,
+                    'accessibilities_name' => AccessibilitySigma::SUPERADMIN->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

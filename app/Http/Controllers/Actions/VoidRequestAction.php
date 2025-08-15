@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\VoidRequest;
 use App\Models\Approvals;
 use App\Models\RequestVoid;
-use App\Models\Users;
 use App\Notifications\VoidRequestForApproval;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -57,9 +56,7 @@ class VoidRequestAction extends Controller
         if (!$createData) {
             return new JsonResponse(["success" => false, "message" => "Failed to save Void Request."], JsonResponse::HTTP_BAD_REQUEST);
         }
-        if ($model->getNextPendingApproval()) {
-            Users::find($model->getNextPendingApproval()['user_id'])->notify(new VoidRequestForApproval($model));
-        }
+        $model->notifyNextApprover(VoidRequestForApproval::class);
         return new JsonResponse(["success" => true, "message" => "Successfully submitted Void Request."], JsonResponse::HTTP_CREATED);
     }
 }

@@ -4,7 +4,6 @@ namespace App\Http\Services;
 
 use App\Http\Traits\UploadFileTrait;
 use App\Models\ManpowerRequest;
-use App\Models\Users;
 use App\Notifications\ManpowerRequestForApproval;
 use App\Enums\FillStatuses;
 use App\Enums\RequestStatuses;
@@ -25,7 +24,7 @@ class ManpowerServices
     public function getAll($filter = [])
     {
         return $this->manpowerRequest
-        ->with("position", "user.employee")
+        ->with("position")
         ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
             $query->where('date_required', $filter["date_required"]);
         })
@@ -126,9 +125,7 @@ class ManpowerServices
         $main->job_description_attachment = $this->uploadFile($attributes['job_description_attachment'], ManpowerRequest::JDA_DIR);
 
         if ($main->save()) {
-            if ($main->getNextPendingApproval()) {
-                Users::find($main->getNextPendingApproval()['user_id'])->notify(new ManpowerRequestForApproval($main));
-            }
+            $main->notifyNextApprover(ManpowerRequestForApproval::class);
             return true;
         }
         return false;
@@ -143,7 +140,7 @@ class ManpowerServices
     public function getOpenPositions($filter = [])
     {
         return $this->manpowerRequest
-            ->with("position", "user.employee")
+            ->with("position")
             ->where('fill_status', FillStatuses::OPEN->value)
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);
@@ -163,7 +160,7 @@ class ManpowerServices
     public function getApprovedPositions($filter = [])
     {
         return $this->manpowerRequest
-            ->with("position", "user.employee")
+            ->with("position")
             ->where('request_status', RequestStatuses::APPROVED->value)
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);

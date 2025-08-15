@@ -12,7 +12,6 @@ use App\Http\Resources\Request13thMonthListingResource;
 use App\Http\Services\Payroll\Payroll13thMonthService;
 use App\Models\Request13thMonthDetailAmounts;
 use App\Models\Request13thMonthDetails;
-use App\Models\Users;
 use App\Notifications\Request13thMonthForApproval;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -68,9 +67,7 @@ class Request13thMonthController extends Controller
             }
             $generatedRequest->load("details.amounts");
             $generatedRequest->refresh();
-            if ($generatedRequest->getNextPendingApproval()) {
-                Users::find($generatedRequest->getNextPendingApproval()['user_id'])->notify(new Request13thMonthForApproval($generatedRequest));
-            }
+            $generatedRequest->notifyNextApprover(Request13thMonthForApproval::class);
         });
         return response()->json(
             [

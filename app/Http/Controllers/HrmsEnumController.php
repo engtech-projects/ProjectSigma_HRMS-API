@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enums\UserTypes;
 use App\Http\Resources\UserEmployeeResource;
-use App\Models\Users;
+use App\Models\User;
 
 class HrmsEnumController extends Controller
 {
     //
     public function employeeHeads()
     {
-        $users = Users::where('type', UserTypes::EMPLOYEE)
+        $users = User::where('type', UserTypes::EMPLOYEE)
         ->whereHas("employee.current_employment.position", function ($query) {
             $query->where("position_type", "head");
         })
@@ -31,7 +31,7 @@ class HrmsEnumController extends Controller
 
     public function approvalUsers()
     {
-        $users = Users::where('type', UserTypes::EMPLOYEE)
+        $users = User::where('type', UserTypes::EMPLOYEE)
         ->where("id", "!=", auth()->user()->id)
         ->whereHas("employee", function ($query) {
             $query->isActive();
@@ -51,7 +51,7 @@ class HrmsEnumController extends Controller
     }
     public function approvalHeads()
     {
-        $users = Users::where('type', UserTypes::EMPLOYEE)
+        $users = User::where('type', UserTypes::EMPLOYEE)
         ->whereHas("employee", function ($query) {
             $query->isActive();
         })

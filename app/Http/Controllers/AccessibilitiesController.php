@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccessibilityHrms;
+use App\Enums\AccessibilitySigma;
 use App\Enums\SetupSettingsEnums;
 use App\Enums\UserTypes;
 use App\Models\Accessibilities;
@@ -35,7 +36,7 @@ class AccessibilitiesController extends Controller
             $builder->where("accessibilities_name", "!=", AccessibilityHrms::HRMS_EMPLOYEE_201_EDIT->value);
         })
         ->when(!$showSuperAdmin, function (Builder $builder) {
-            $builder->where("accessibilities_name", "!=", AccessibilityHrms::SUPERADMIN->value);
+            $builder->where("accessibilities_name", "!=", AccessibilitySigma::SUPERADMIN->value);
         })
         ->orderBy("accessibilities_name")->get();
         return response()->json([

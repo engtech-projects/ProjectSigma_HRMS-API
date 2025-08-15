@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ApiNotificationRequest;
 use App\Http\Resources\NotificationResource;
 use App\Models\User;
-use App\Models\Users;
 use App\Notifications\CustomApiRequestStatusUpdate;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -47,7 +46,7 @@ class NotificationsController extends Controller
             $broadcastCount = 0;
             while (true) {
                 // Users:find to get UPDATED user data
-                $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
+                $unreadNotifications = User::find(Auth::user()->id)->unreadNotifications;
                 $newLength = sizeof($unreadNotifications);
                 $notification = NotificationResource::collection($unreadNotifications->take(10)); // Show 10 at a time
                 $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
@@ -95,7 +94,7 @@ class NotificationsController extends Controller
         return new StreamedResponse(
             function () use (&$broadcastCount) {
                 // Send notifications to the client using SSE
-                $unreadNotifications = Users::find(Auth::user()->id)->unreadNotifications;
+                $unreadNotifications = User::find(Auth::user()->id)->unreadNotifications;
                 $notification = NotificationResource::collection($unreadNotifications->take(10)); // Show 10 at a time
                 $notification->additional(['unread_notifications_count' => $unreadNotifications->count()]);
                 $notificationsJsonData = json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
@@ -130,7 +129,7 @@ class NotificationsController extends Controller
         Auth::user()->notifications->find($notif)?->markAsUnread();
     }
 
-    public function addNotification(ApiNotificationRequest $request, Users $user)
+    public function addNotification(ApiNotificationRequest $request, User $user)
     {
         $validData = $request->validated();
         $user->notify(new CustomApiRequestStatusUpdate($validData["module"], $validData["action"], $validData["message"], $validData["request_id"], $validData["request_type"]));
