@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SetupSettingsEnums;
 use App\Enums\UpdateTypesOnUser;
 use App\Enums\UserTypes;
-use App\Models\Users;
 use App\Http\Requests\StoreUsersRequest;
 use App\Http\Requests\UpdateUserCredentialRequest;
 use App\Http\Requests\UpdateUsersRequest;
 use App\Http\Resources\UserEmployeeResource;
+use App\Models\Settings;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,7 +21,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = Users::paginate(config("app.pagination_per_page"));
+        $users = User::paginate(config("app.pagination_per_page"));
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -32,7 +34,7 @@ class UsersController extends Controller
      */
     public function get()
     {
-        $users = Users::where('type', UserTypes::EMPLOYEE)
+        $users = User::where('type', UserTypes::EMPLOYEE)
         ->with("employee")
         ->get();
         $usersCollection = UserEmployeeResource::collection($users)
@@ -47,7 +49,7 @@ class UsersController extends Controller
     }
     public function getUserAccountByEmployeeId($id)
     {
-        $users = Users::where('employee_id', $id)->with("employee")->first();
+        $users = User::where('employee_id', $id)->with("employee")->first();
         $data = json_decode('{}');
         $data->message = "Successfully fetch.";
         $data->success = true;
@@ -58,7 +60,7 @@ class UsersController extends Controller
     {
         $data = json_decode('{}');
         $id = auth()->user()->id;
-        $users = Users::find($id);
+        $users = User::find($id);
 
         if (!$users || !password_verify($request->current_password, $users->password)) {
             return response()->json(['message' => 'Invalid Password'], 401);
@@ -81,7 +83,8 @@ class UsersController extends Controller
             $data->success = true;
             $data->data = $users;
             // Logout Other Devices
-            if (config("app.logout_change_password")) {
+            $logoutOnChangepassword = boolval(Settings::getSettingValue(SetupSettingsEnums::LOGOUT_CHANGE_PASSWORD));
+            if ($logoutOnChangepassword) {
                 $request->user()->tokens()->where('id', '!=', $request->user()->currentAccessToken()->id)->delete();
             }
             return response()->json($data);
@@ -101,7 +104,7 @@ class UsersController extends Controller
         $validatedData["type"] = UserTypes::EMPLOYEE;
         $validatedData["password"] = Hash::make($validatedData["password"]);
         $validatedData["email_verified_at"] = Carbon::now();
-        $user = Users::create($validatedData);
+        $user = User::create($validatedData);
         $data = json_decode('{}');
 
         if (!$user->save()) {
@@ -120,7 +123,7 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $users = Users::find($id);
+        $users = User::find($id);
         $data = json_decode('{}');
         if (!is_null($users)) {
             $data->message = "Successfully fetch.";
@@ -136,7 +139,7 @@ class UsersController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Users $users)
+    public function edit(User $users)
     {
         //
     }
@@ -144,7 +147,7 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUsersRequest $request, Users $user)
+    public function update(UpdateUsersRequest $request, User $user)
     {
         $data = json_decode('{}');
         if (!is_null($user)) {
@@ -170,7 +173,7 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        $users = Users::find($id);
+        $users = User::find($id);
         $data = json_decode('{}');
         if (!is_null($users)) {
             if ($users->delete()) {

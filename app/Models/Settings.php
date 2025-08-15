@@ -20,4 +20,23 @@ class Settings extends Model
         'setting_name',
         'value',
     ];
+    /**
+     *
+     * DYNAMIC SCOPES
+     *
+     */
+    public function scopeSettingName($query, $name)
+    {
+        return $query->where('setting_name', $name);
+    }
+    /**
+     *
+     * MODEL FUNCTIONS
+     *
+     */
+
+    public static function getSettingValue($name)
+    {
+        return self::settingName($name)->first()?->value;
+    }
 }

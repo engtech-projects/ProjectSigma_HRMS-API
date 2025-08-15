@@ -4,7 +4,6 @@ namespace App\Http\Services;
 
 use App\Enums\RequestStatuses;
 use App\Models\EmployeePanRequest;
-use App\Models\Users;
 use App\Notifications\PanRequestForApproval;
 
 class EmployeePanRequestService
@@ -30,9 +29,7 @@ class EmployeePanRequestService
         $main->projects()->sync($attributes['projects']);
         $main->save();
         $main->refresh();
-        if ($main->getNextPendingApproval()) {
-            Users::find($main->getNextPendingApproval()['user_id'])->notify(new PanRequestForApproval($main));
-        }
+        $main->notifyNextApprover(PanRequestForApproval::class);
         return $main;
     }
     public function getMyRequests()

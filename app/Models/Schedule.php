@@ -55,6 +55,15 @@ class Schedule extends Model
         'end_time_human',
     ];
 
+    private $systemSettingLoginEarly;
+    private $systemSettingLogoutLate;
+
+    public function __construct()
+    {
+        $this->systemSettingLoginEarly = intval(config("app.login_early", 2));
+        $this->systemSettingLogoutLate = intval(config("app.logout_late", 2));
+    }
+
     public function department(): HasOne
     {
         return $this->hasOne(Department::class, "id", "department_id");
@@ -88,22 +97,22 @@ class Schedule extends Model
     public function getBufferTimeStartEarlyAttribute()
     {
         $time = Carbon::parse($this->startTime);
-        $newTime = $time->copy()->subHour((int)config("app.login_early"));
+        $newTime = $time->copy()->subHour($this->systemSettingLoginEarly);
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->startOfDay();
         }
         return $newTime->format("H:i:s");
-        // return Carbon::parse($this->startTime)->subHour((int)config("app.login_early"));
+        // return Carbon::parse($this->startTime)->subHour($this->systemSettingLoginEarly);
     }
     public function getBufferTimeEndLateAttribute()
     {
         $time = Carbon::parse($this->endTime);
-        $newTime = $time->copy()->addHour((int)config("app.logout_late"));
+        $newTime = $time->copy()->addHour($this->systemSettingLogoutLate);
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->endOfDay();
         }
         return $newTime->format("H:i:s");
-        // return Carbon::parse($this->endTime)->addHour((int)config("app.logout_late"));
+        // return Carbon::parse($this->endTime)->addHour($this->systemSettingLogoutLate);
     }
     public function getAttendanceLogInsAttribute()
     {

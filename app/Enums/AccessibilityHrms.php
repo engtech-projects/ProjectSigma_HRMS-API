@@ -2,9 +2,11 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\EnumHelper;
+
 enum AccessibilityHrms: string
 {
-    case SUPERADMIN = "project sigma:super admin";
+    use EnumHelper;
     case HRMS_DASHBOARD = "hrms:dashboard";
     case HRMS_ANNOUNCEMENT = "hrms:announcement";
     case HRMS_ATTENDANCE_ATTENDANCEPORTAL = "hrms:attendance_attendance portal";
@@ -16,9 +18,6 @@ enum AccessibilityHrms: string
     case HRMS_ATTENDANCE_ATTENDANCE_QR = "hrms:attendance_attendance QR";
     case HRMS_EVENTCALENDAR = "hrms:event calendar";
     case HRMS_EMPLOYEE_201_EDIT = "hrms:employee_201_edit";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
-    // case HRMS_ = "";
     case HRMS_SETUP_USERACCOUNT = "hrms:setup_user account";
     case HRMS_SETUP_DEPARTMENT = "hrms:setup_department";
     case HRMS_SETUP_APPROVALS = "hrms:setup_approvals";
@@ -44,7 +43,10 @@ enum AccessibilityHrms: string
     case HRMS_PAYROLL_13THMONTH_ALLREQUESTS = "hrms:payroll_13th month_all requests";
     case HRMS_PAYROLL_13THMONTH_MYAPPROVALS = "hrms:payroll_13th month_my approvals";
     case HRMS_PAYROLL_13THMONTH_SUMMARY = "hrms:payroll_13th month_summary";
-    case HRMS_PAYROLL_ALLOWANCE = "hrms:payroll_allowance";
+    case HRMS_PAYROLL_ALLOWANCE_FORMANDMYREQUEST = "hrms:payroll_allowance_form and my requests";
+    case HRMS_PAYROLL_ALLOWANCE_ALLREQUESTS = "hrms:payroll_allowance_all requests";
+    case HRMS_PAYROLL_ALLOWANCE_MYAPPROVALS = "hrms:payroll_allowance_my approvals";
+    case HRMS_PAYROLL_ALLOWANCE_ALLOWANCERECORD = "hrms:payroll_allowance_allowance records";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_FORM = "hrms:payroll_salary disbursement_form and my requests";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_AllREQUESTS = "hrms:payroll_salary disbursement_all requests";
     case HRMS_PAYROLL_SALARYDISBURSEMENT_MYAPPROVALS = "hrms:payroll_salary disbursement_my approvals";
@@ -93,29 +95,29 @@ enum AccessibilityHrms: string
     case HRMS_EMPLOYEE_PAN_FORM_TERMINATION = "hrms:employee_pan_form_termination";
     case HRMS_EMPLOYEE_PAN_FORM_BULKTRANSFER = "hrms:employee_pan_form_bulk transfer";
     case HRMS_EMPLOYEE_PAN_FORM_MEMO = "hrms:employee_pan_form_memo";
-    // case HRMS_EMPLOYEE_PAN_MYREQUESTS = "hrms:employee_pan_my request";
     case HRMS_EMPLOYEE_PAN_ALLREQUESTS = "hrms:employee_pan_all request";
     case HRMS_EMPLOYEE_PAN_MYAPPROVALS = "hrms:employee_pan_approval";
-    case HRMS_EMPLOYEE_MANPOWERREQUEST_FORM = "hrms:employee_manpower request_form";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_ALLREQUESTS = "hrms:employee_manpower request_all request";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_MYAPPROVALS = "hrms:employee_manpower request_approval";
-    case HRMS_EMPLOYEE_MANPOWERREQUEST_MYREQUESTS = "hrms:employee_manpower request_my request";
-
     case HRMS_EMPLOYEE_MANPOWERREQUEST_FORM_REQUESTS = "hrms:employee_manpower request_form and my requests";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_OPEN_POSITIONS = "hrms:employee_manpower request_open positions";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICATION_FORM = "hrms:employee_job applicants_application form";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_APPLICANTS_JOB = "hrms:employee_job applicants_job applicants";
-    // case HRMS_LOANSANDADVANCES_CASHADVANCE = "hrms:loans and advances_cash advance";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_FORM = "hrms:loans and advances_cash advance_forms and my requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_ALLREQUESTS = "hrms:loans and advances_cash advance_all requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_MYAPPROVALS = "hrms:loans and advances_cash advance_my approvals";
-    case HRMS_LOANSANDADVANCES_LOANS = "hrms:loans and advances_loans"; // TO DELETE
     case HRMS_LOANSANDADVANCES_LOANS_FORMS = "hrms:loans and advances_loans_forms";
-    case HRMS_LOANSANDADVANCES_LOANS_ALLREQUESTS = "hrms:loans and advances_loans_list";
-    case HRMS_LOANSANDADVANCES_LOANS_PAYMENTS = "hrms:loans and advances_loans_payments";
-    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS = "hrms:loans and advances_other deductions"; // TO DELETE
+    case HRMS_LOANSANDADVANCES_LOANS_ALL = "hrms:loans and advances_loans_all list";
+    case HRMS_LOANSANDADVANCES_LOANS_ONGOING = "hrms:loans and advances_loans_ongoing list";
+    case HRMS_LOANSANDADVANCES_LOANS_PAID = "hrms:loans and advances_loans_paid list";
+    case HRMS_LOANSANDADVANCES_LOANS_PAYMENTS = "hrms:loans and advances_loans_payments list";
+    case HRMS_LOANSANDADVANCES_LOANS_MAKEPAYMENTS = "hrms:loans and advances_loans_make payments";
     case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_FORMS = "hrms:loans and advances_other deductions_forms";
-    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALLREQUESTS = "hrms:loans and advances_other deductions_list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ALL = "hrms:loans and advances_other deductions_all list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_ONGOING = "hrms:loans and advances_other deductions_ongoing list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_PAID = "hrms:loans and advances_other deductions_paid list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_PAYMENTS = "hrms:loans and advances_other deductions_payments list";
+    case HRMS_LOANSANDADVANCES_OTHERDEDUCTIONS_MAKEPAYMENT = "hrms:loans and advances_other deductions_make payment";
     case HRMS_ATTENDANCE_ATTENDANCELOGS = "hrms:attendance_attendance logs";
     case HRMS_ATTENDANCE_ATTENDANCELOGSDELETE = "hrms:attendance_attendance logs delete";
     case HRMS_LNOTNTO_LEAVE_FORM = "hrms:leaves and overtime_leave_form";
@@ -129,24 +131,4 @@ enum AccessibilityHrms: string
     case HRMS_LNOTNTO_TRAVELORDER_ALLREQUESTS = "hrms:leaves and overtime_travel order_list";
     case HRMS_LNOTNTO_TRAVELORDER_MYREQUESTS = "hrms:leaves and overtime_travel order_my request";
     case HRMS_LNOTNTO_TRAVELORDER_MYAPPROVALS = "hrms:leaves and overtime_travel order_my approvals";
-    case HRMS_EMPLOYEE_JOBAPPLICANT = "hrms:employee_job applicant";
-    // case HRMS_ = "hrms:attendance_biometrics";
-
-    public static function toArray(): array
-    {
-        $array = [];
-        foreach (self::cases() as $case) {
-            $array[$case->name] = $case->value;
-        }
-        return $array;
-    }
-
-    public static function toArraySwapped(): array
-    {
-        $array = [];
-        foreach (self::cases() as $case) {
-            $array[$case->value] = $case->name;
-        }
-        return $array;
-    }
 }

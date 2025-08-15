@@ -11,7 +11,6 @@ use App\Http\Requests\StoreOvertimeRequest;
 use App\Http\Requests\UpdateOvertimeRequest;
 use App\Http\Resources\OvertimeResource;
 use App\Http\Services\OvertimeService;
-use App\Models\Users;
 use App\Notifications\OvertimeRequestForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -61,9 +60,7 @@ class OvertimeController extends Controller
                 $main->save();
                 $main->employees()->attach($validData["employees"]);
                 $main->refresh();
-                if ($main->getNextPendingApproval()) {
-                    Users::find($main->getNextPendingApproval()['user_id'])->notify(new OvertimeRequestForApproval($main));
-                }
+                $main->notifyNextApprover(OvertimeRequestForApproval::class);
             });
             return new JsonResponse([
                 'success' => true,

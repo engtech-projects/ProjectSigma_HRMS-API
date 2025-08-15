@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -87,11 +86,6 @@ class TravelOrder extends Model
     public function travelOrders(): HasMany
     {
         return $this->hasMany(TravelOrderMembers::class, "id", "travel_order_id");
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function getTimeOfTravelHumanAttribute()

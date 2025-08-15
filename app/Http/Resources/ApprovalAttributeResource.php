@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\ApprovalStatus;
-use App\Models\Users;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,7 +17,7 @@ class ApprovalAttributeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user = Users::with('employee')->find($this["user_id"]);
+        $user = User::with('employee')->find($this["user_id"]);
         return [
             "type" => $this["type"],
             "status" => $this["status"] ?? null,

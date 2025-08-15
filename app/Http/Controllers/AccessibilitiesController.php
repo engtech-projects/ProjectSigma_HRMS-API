@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccessibilityHrms;
+use App\Enums\AccessibilitySigma;
+use App\Enums\SetupSettingsEnums;
 use App\Enums\UserTypes;
 use App\Models\Accessibilities;
 use App\Http\Requests\StoreAccessibilitiesRequest;
 use App\Http\Requests\UpdateAccessibilitiesRequest;
 use App\Http\Traits\CheckAccessibility;
+use App\Models\Settings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -20,8 +23,12 @@ class AccessibilitiesController extends Controller
     public function index(Request $request)
     {
         $showSuperAdmin = $this->checkUserAccess([]);
-        $showSetupSalary = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.salary_grade_setter'));
-        $showEdit201 = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, config('app.201_editor'));
+        $salaryGradeSetterSettings = Settings::getSettingValue(SetupSettingsEnums::USER_SALARY_GRADE_SETTER);
+        $salaryGradeSetterIds = array_map('intval', explode(',', $salaryGradeSetterSettings));
+        $edit201SetterSettings = Settings::getSettingValue(SetupSettingsEnums::USER_201_EDITOR);
+        $edit201SetterIds = array_map('intval', explode(',', $edit201SetterSettings));
+        $showSetupSalary = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, $salaryGradeSetterIds);
+        $showEdit201 = $request->user()->type == UserTypes::ADMINISTRATOR->value || in_array($request->user()->id, $edit201SetterIds);
         $access = Accessibilities::when(!$showSetupSalary, function (Builder $builder) {
             $builder->where("accessibilities_name", "!=", AccessibilityHrms::HRMS_SETUP_SALARY_GRADE->value);
         })
@@ -29,7 +36,7 @@ class AccessibilitiesController extends Controller
             $builder->where("accessibilities_name", "!=", AccessibilityHrms::HRMS_EMPLOYEE_201_EDIT->value);
         })
         ->when(!$showSuperAdmin, function (Builder $builder) {
-            $builder->where("accessibilities_name", "!=", AccessibilityHrms::SUPERADMIN->value);
+            $builder->where("accessibilities_name", "!=", AccessibilitySigma::SUPERADMIN->value);
         })
         ->orderBy("accessibilities_name")->get();
         return response()->json([

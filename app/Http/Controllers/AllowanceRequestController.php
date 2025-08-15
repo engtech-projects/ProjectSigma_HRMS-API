@@ -13,7 +13,6 @@ use App\Http\Services\Attendance\AttendanceService;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Project;
-use App\Models\Users;
 use App\Notifications\AllowanceRequestForApproval;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -110,9 +109,7 @@ class AllowanceRequestController extends Controller
                 $allowanceReq->employee_allowances()->attach($employeeAllowance['employee_id'], $employeeAllowance);
             }
             DB::commit();
-            if ($allowanceReq->getNextPendingApproval()) {
-                Users::find($allowanceReq->getNextPendingApproval()['user_id'])->notify(new AllowanceRequestForApproval($allowanceReq));
-            }
+            $allowanceReq->notifyNextApprover(AllowanceRequestForApproval::class);
         } catch (\Throwable $th) {
             return new JsonResponse([
                 'success' => false,

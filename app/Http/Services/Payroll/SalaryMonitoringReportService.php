@@ -15,7 +15,6 @@ class SalaryMonitoringReportService
         return PayrollDetail::whereIn("payroll_record_id", $payrollIds)
         ->with(['payroll_record', 'otherDeductionPayments.deduction.otherdeduction', 'loanPayments.deduction.loan'])
         ->orderBy("created_at", "DESC")
-        ->take(2)
         ->get()
         ->append([
             'total_basic_pays',
@@ -167,17 +166,17 @@ class SalaryMonitoringReportService
 
     public static function getPayrollSummary($payrollRecordsIds, $allowanceRequest, $withDepartment, $withProject)
     {
-        $payrollDetails = SalaryMonitoringReportService::getPayrollDetails($payrollRecordsIds);
+        $payrollDetails = self::getPayrollDetails($payrollRecordsIds);
         $payrollDetailsIds = $payrollDetails->pluck("id");
         $uniqueGroup = $payrollDetails->groupBy('payroll_record.charging_name');
 
         $chargings = PayrollDetailsCharging::whereIn("payroll_details_id", $payrollDetailsIds)
         ->with("payroll_details")
         ->when($withDepartment, function ($query) {
-            return $query->where('charge_type', SalaryMonitoringReportService::DEPARTMENT);
+            return $query->where('charge_type', self::DEPARTMENT);
         })
         ->when($withProject, function ($query) {
-            return $query->where('charge_type', SalaryMonitoringReportService::PROJECT);
+            return $query->where('charge_type', self::PROJECT);
         })
         ->get()
         ->append(["charging_name"]);
@@ -185,8 +184,8 @@ class SalaryMonitoringReportService
         $uniqueAllowances = $allowanceRequest->groupBy(['charging_name']);
         $uniqueSalaries = $chargings->groupBy(['charging_name']);
 
-        $formattedAllowances = SalaryMonitoringReportService::formatAllowances($uniqueAllowances);
-        $formattedSalaries = SalaryMonitoringReportService::formatSalaries($uniqueSalaries);
+        $formattedAllowances = self::formatAllowances($uniqueAllowances);
+        $formattedSalaries = self::formatSalaries($uniqueSalaries);
 
         $allChargings = array_merge($formattedSalaries, $formattedAllowances);
 

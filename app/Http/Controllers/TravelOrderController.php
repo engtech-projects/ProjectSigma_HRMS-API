@@ -14,7 +14,6 @@ use App\Http\Requests\StoreTravelOrderRequest;
 use App\Http\Requests\UpdateTravelOrderRequest;
 use App\Http\Resources\TravelOrderResource;
 use App\Http\Services\TravelOrderService;
-use App\Models\Users;
 use App\Notifications\TravelRequestForApproval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +37,6 @@ class TravelOrderController extends Controller
         ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
             return $query->whereDate('date_of_travel', $validatedData['date_filter']);
         })
-        ->with(["user.employee"])
         ->orderBy("created_at", "DESC")
         ->paginate(config("app.pagination_per_page", 10));
         return TravelOrderResource::collection($data)
@@ -67,9 +65,7 @@ class TravelOrderController extends Controller
                 $main->save();
                 $main->employees()->attach($validatedData["employee_ids"]);
                 $main->refresh();
-                if ($main->getNextPendingApproval()) {
-                    Users::find($main->getNextPendingApproval()['user_id'])->notify(new TravelRequestForApproval($main));
-                }
+                $main->notifyNextApprover(TravelRequestForApproval::class);
             });
             return new JsonResponse([
                 'success' => true,
@@ -148,7 +144,6 @@ class TravelOrderController extends Controller
         ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
             return $query->whereDate('date_of_travel', $validatedData['date_filter']);
         })
-        ->with(['user.employee'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
         ->paginate(config("app.pagination_per_page", 10));
@@ -170,7 +165,6 @@ class TravelOrderController extends Controller
         ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
             return $query->whereDate('date_of_travel', $validatedData['date_filter']);
         })
-        ->with(['user.employee'])
         ->myApprovals()
         ->orderBy("created_at", "DESC")
         ->paginate(config("app.pagination_per_page", 10));

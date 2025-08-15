@@ -184,6 +184,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 250,
+                    'form' => "Request Canvass Summary",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::INVENTORY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [
                 'id'
