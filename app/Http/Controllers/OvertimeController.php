@@ -147,7 +147,6 @@ class OvertimeController extends Controller
         ->when($request->has('date_filter') && $validatedData['date_filter'] != '', function ($query) use ($validatedData) {
             return $query->whereDate('overtime_date', $validatedData['date_filter']);
         })
-        ->with(['user.employee'])
         ->myRequests()
         ->orderBy("created_at", "DESC")
         ->paginate(config("app.pagination_per_page", 10));
