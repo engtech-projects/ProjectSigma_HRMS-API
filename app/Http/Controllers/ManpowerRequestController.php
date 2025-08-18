@@ -179,11 +179,10 @@ class ManpowerRequestController extends Controller
      */
     public function show(ManpowerRequest $resource)
     {
-        $newManpowerRequest = $resource->load('user.employee');
         return new JsonResponse([
             'success' => true,
             'message' => 'Manpower request fetched.',
-            'data' => new ManpowerRequestResource($newManpowerRequest)
+            'data' => new ManpowerRequestResource($resource)
         ]);
     }
 

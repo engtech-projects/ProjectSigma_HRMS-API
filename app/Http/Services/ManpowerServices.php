@@ -43,7 +43,7 @@ class ManpowerServices
     public function getAllForHiring($filter = [])
     {
         return $this->manpowerRequest
-            ->with('job_applicants', 'user.employee')
+            ->with('job_applicants')
             ->forHiring()
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);
@@ -64,7 +64,7 @@ class ManpowerServices
     {
         $userId = auth()->user()->id;
         return ManpowerRequest::requestStatusPending()
-            ->with(['user.employee', "position"])
+            ->with(["position"])
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);
             })
@@ -83,7 +83,6 @@ class ManpowerServices
     public function getMyRequest($filter = [])
     {
         return ManpowerRequest::myRequests()
-            ->with('user.employee')
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);
             })
@@ -102,7 +101,7 @@ class ManpowerServices
     {
         $userId = auth()->user()->id;
         return ManpowerRequest::requestStatusPending()
-            ->with(['user.employee', "position"])
+            ->with(["position"])
             ->when(isset($filter["date_required"]) && $filter["date_required"], function ($query) use ($filter) {
                 $query->where('date_required', $filter["date_required"]);
             })
