@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class PayrollDetailsCharging extends Model
@@ -15,7 +14,6 @@ class PayrollDetailsCharging extends Model
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasApiTokens;
 
     public const BASIC_PAY_NAMES = [
         "Salary Regular Regular",

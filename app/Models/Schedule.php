@@ -6,7 +6,6 @@ use App\Enums\AttendanceLogType;
 use App\Enums\ScheduleGroupType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,10 +15,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Schedule extends Model
 {
-    use HasApiTokens;
+    use SoftDeletes;
     use HasFactory;
     use Notifiable;
-    use SoftDeletes;
 
     public const TYPE_REGULAR = 'Regular';
     public const TYPE_IRREGULAR = 'Irregular';
@@ -55,15 +53,6 @@ class Schedule extends Model
         'end_time_human',
     ];
 
-    private $systemSettingLoginEarly;
-    private $systemSettingLogoutLate;
-
-    public function __construct()
-    {
-        $this->systemSettingLoginEarly = intval(config("app.login_early", 2));
-        $this->systemSettingLogoutLate = intval(config("app.logout_late", 2));
-    }
-
     public function department(): HasOne
     {
         return $this->hasOne(Department::class, "id", "department_id");
@@ -97,22 +86,20 @@ class Schedule extends Model
     public function getBufferTimeStartEarlyAttribute()
     {
         $time = Carbon::parse($this->startTime);
-        $newTime = $time->copy()->subHour($this->systemSettingLoginEarly);
+        $newTime = $time->copy()->subHour(intval(config("app.login_early", 2)));
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->startOfDay();
         }
         return $newTime->format("H:i:s");
-        // return Carbon::parse($this->startTime)->subHour($this->systemSettingLoginEarly);
     }
     public function getBufferTimeEndLateAttribute()
     {
         $time = Carbon::parse($this->endTime);
-        $newTime = $time->copy()->addHour($this->systemSettingLogoutLate);
+        $newTime = $time->copy()->addHour(intval(config("app.logout_late", 2)));
         if ($newTime->day !== $time->day) {
             $newTime = $time->copy()->endOfDay();
         }
         return $newTime->format("H:i:s");
-        // return Carbon::parse($this->endTime)->addHour($this->systemSettingLogoutLate);
     }
     public function getAttendanceLogInsAttribute()
     {

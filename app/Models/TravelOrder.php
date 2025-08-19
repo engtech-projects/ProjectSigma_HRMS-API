@@ -7,7 +7,6 @@ use App\Traits\HasApproval;
 use App\Traits\HasUser;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -19,7 +18,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TravelOrder extends Model
 {
-    use HasApiTokens;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;

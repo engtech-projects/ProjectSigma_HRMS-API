@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\EmployeeAddressType;
 use Carbon\Carbon;
 use App\Enums\EmployeeUploadType;
-use Laravel\Sanctum\HasApiTokens;
 use App\Enums\EmployeeStudiesType;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
@@ -25,7 +24,6 @@ use Illuminate\Support\Facades\DB;
 
 class Employee extends Model
 {
-    use HasApiTokens;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
