@@ -9,11 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
 
 class JobApplicants extends Model
 {
-    use HasApiTokens;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;

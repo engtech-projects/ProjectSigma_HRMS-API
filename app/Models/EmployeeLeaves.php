@@ -15,11 +15,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Sanctum\HasApiTokens;
 
 class EmployeeLeaves extends Model
 {
-    use HasApiTokens;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;

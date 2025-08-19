@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\EmployeeAddressType;
 use App\Traits\HasUser;
 use App\Traits\HasApproval;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\EmployeeRelatedPersonType;
 use App\Enums\JobApplicationStatusEnums;
@@ -29,7 +28,6 @@ use Illuminate\Support\Facades\Log;
 
 class EmployeePanRequest extends Model
 {
-    use HasApiTokens;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;

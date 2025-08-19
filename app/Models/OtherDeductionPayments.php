@@ -10,14 +10,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class OtherDeductionPayments extends Model
 {
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasApiTokens;
 
     protected $fillable = [
         'id',

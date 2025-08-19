@@ -12,14 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class OtherDeduction extends Model
 {
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasApiTokens;
 
     protected $casts = [
         "deduction_date_start" => "date:Y-m-d",

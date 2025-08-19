@@ -8,7 +8,6 @@ use App\Traits\HasApproval;
 use App\Traits\ModelHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,7 +16,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ManpowerRequest extends Model
 {
-    use HasApiTokens;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
