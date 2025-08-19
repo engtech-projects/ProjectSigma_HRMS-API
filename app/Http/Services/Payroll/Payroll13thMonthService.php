@@ -32,8 +32,8 @@ class Payroll13thMonthService
         // Company policy steps for computing the 13th month payroll:
         // 1. Fetch employee's payroll records within the specified date range.
         // 2. Filter out payrolls that are not approved.
-        // 3. Get all salary per charging.
-        // 4. separated by regular salary, regular holiday salary, special holiday salary.
+        // 3. Get all salary per charging. // CHANGED TO GET WORK HOURS and Recompute Salary
+        // 4. separated by regular salary, (omitted)regular holiday salary, special holiday salary.
         // 5. Each Salary is computed by dividing the total salary by 12.
         $this->payrollsIncluded = PayrollDetail::with([
             'payroll_record',
@@ -51,33 +51,36 @@ class Payroll13thMonthService
         ->get();
         $payrollIds = $this->payrollsIncluded->pluck('payroll_record.id')->unique();
         $payrollDetails = $this->payrollsIncluded->groupBy("employee_id")->map(function ($data) use ($advancedDays, $chargingType, $chargingId) {
-            $chargeAmounts = $data->flatMap(function ($item) {
-                return $item->charges;
-            })->groupBy("charging_name")
-            ->map(function ($charges) {
-                $payrollTotalRegularSalary = $charges->where("name", "Salary Regular Regular")->sum("amount");
-                $payrollTotalRegularHolidaySalary = $charges->where("name", "Salary RegularHoliday Regular")->sum("amount");
-                $payrollTotalSpecialHolidaySalary = $charges->where("name", "Salary SpecialHoliday Regular")->sum("amount");
-                $payrollTotalAmount = $payrollTotalRegularSalary + $payrollTotalRegularHolidaySalary + $payrollTotalSpecialHolidaySalary;
+            $chargeAmounts = $data->groupBy("payroll_record.charging_name")
+            ->map(function ($item) {
+                $employeeHourlyRate = $item->first()->employee->current_employment->employee_salarygrade->dailyRate / 8;
+                $payrollTotalRegularSalary = $item->sum("regular_hours") * $employeeHourlyRate;
+                $payrollTotalSpecialHolidaySalary = $item->sum("special_holiday_hours") * $employeeHourlyRate;
+                $payrollTotalAmount = $payrollTotalRegularSalary + $payrollTotalSpecialHolidaySalary;
                 $result13thMonthRegularSalary = round($payrollTotalRegularSalary / 12, 2);
-                $result13thMonthRegularHolidaySalary = round($payrollTotalRegularHolidaySalary / 12, 2);
                 $result13thMonthSpecialHolidaySalary = round($payrollTotalSpecialHolidaySalary / 12, 2);
-                $result13thMonthTotalAmount = $result13thMonthRegularSalary + $result13thMonthRegularHolidaySalary + $result13thMonthSpecialHolidaySalary;
+                $result13thMonthTotalAmount = $result13thMonthRegularSalary + $result13thMonthSpecialHolidaySalary;
+                $chargeType = (string) Project::class;
+                $chargeId = $item->first()->payroll_record->project_id;
+                if ($item->first()->payroll_record->department_id) {
+                    $chargeType = (string) Department::class;
+                    $chargeId = $item->first()->payroll_record->department_id;
+                }
                 return [
-                    "charge_type" => $charges->first()->charge_type,
-                    "charge_id" => $charges->first()->charge_id,
+                    "charge_type" => $chargeType,
+                    "charge_id" => $chargeId,
                     "total_payroll" => $payrollTotalAmount,
                     "amount" => $result13thMonthTotalAmount,
                     "metadata" => [
                         "type" => "Salary",
-                        "name" => $charges->first()->charging_name,
+                        "name" => $item->first()->payroll_record->charging_name,
                         "payroll_total_amount" => $payrollTotalAmount,
                         "payroll_total_regular_salary" => $payrollTotalRegularSalary,
-                        "payroll_total_regular_holiday_salary" => $payrollTotalRegularHolidaySalary,
+                        "payroll_total_regular_holiday_salary" => 0,
                         "payroll_total_special_holiday_salary" => $payrollTotalSpecialHolidaySalary,
                         "total_amount" => $result13thMonthTotalAmount,
                         "regular_salary" => $result13thMonthRegularSalary,
-                        "regular_holiday_salary" => $result13thMonthRegularHolidaySalary,
+                        "regular_holiday_salary" => 0,
                         "special_holiday_salary" => $result13thMonthSpecialHolidaySalary,
                     ],
                 ];
