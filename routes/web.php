@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json(['version' => app()->version()]);
 });
+Route::get('/login', function () {
+    abort(401);
+})->name('login');
 // Route::get('/', function () {
 //     $data = JobApplicants::findOrFail(1);
 //     return view('reports.docs.application_form', ["application" => $data]);
