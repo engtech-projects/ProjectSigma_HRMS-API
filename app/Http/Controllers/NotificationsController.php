@@ -39,7 +39,7 @@ class NotificationsController extends Controller
     public function getUnreadNotificationsStream()
     {
         // COMMENTED because i'm not sure it will change back to the default value if removed will remove after testing
-        // ini_set('max_execution_time', '999999');
+        ini_set('max_execution_time', '120');
         return response()->stream(function () {
             $lastLength = 0;
             $lastRequestSent = null;
