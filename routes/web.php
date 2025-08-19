@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\PayslipController;
-use App\Models\JobApplicants;
 use Illuminate\Support\Facades\Route;
 
 /*
