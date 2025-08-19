@@ -119,6 +119,14 @@ class SettingsSeeder extends Seeder
                     'updated_at' => now(),
                     'deleted_at' => null,
                 ],
+                [
+                    'id' => 14,
+                    'setting_name' => SetupSettingsEnums::PAYROLL_5TH_LOCKUP_SCHEDULE_TIME_OF_DAY->value,
+                    'value' => '10:00',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'deleted_at' => null,
+                ],
             ],
             [
                 'id'
