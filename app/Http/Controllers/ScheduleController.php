@@ -18,15 +18,19 @@ class ScheduleController extends Controller
     public function index(ScheduleFilterRequest $request)
     {
         $validatedData = $request->validated();
-        $startDate = $request->has('start_date') ? Carbon::parse($validatedData['start_date']) : Carbon::now()->subMonth()->startOfMonth()->startOfDay();
-        $endDate = $request->has('end_date') ? Carbon::parse($validatedData['end_date']) : Carbon::now()->addMonth()->endOfMonth()->endOfDay();
-        $data = Schedule::when($request->has('department_id'), function ($query) use ($validatedData) {
+        $startDate = $request->filled('start_date')
+            ? Carbon::parse($validatedData['start_date'])->startOfDay()
+            : Carbon::now()->subMonth()->startOfMonth()->startOfDay();
+        $endDate = $request->filled('end_date')
+            ? Carbon::parse($validatedData['end_date'])->startOfDay()
+            : Carbon::now()->addMonth()->endOfMonth()->endOfDay();
+        $data = Schedule::when($request->filled('department_id'), function ($query) use ($validatedData) {
                 return $query->where('department_id', $validatedData['department_id'])->with('department');
             })
-            ->when($request->has('employee_id'), function ($query) use ($validatedData) {
+            ->when($request->filled('employee_id'), function ($query) use ($validatedData) {
                 return $query->where('employee_id', $validatedData['employee_id'])->with('employee');
             })
-            ->when($request->has('project_id'), function ($query) use ($validatedData) {
+            ->when($request->filled('project_id'), function ($query) use ($validatedData) {
                 return $query->where('project_id', $validatedData['project_id'])->with('project');
             })
             ->betweenDates($startDate, $endDate)
