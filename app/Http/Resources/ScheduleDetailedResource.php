@@ -31,9 +31,9 @@ class ScheduleDetailedResource extends JsonResource
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "deleted_at" => $this->deleted_at,
-            "department" => new SyncListDepartmentResource($this->whenLoaded('department')),
-            "employee" => new EmployeeSummaryResource($this->whenLoaded('employee')),
-            "project" => new ProjectResource($this->whenLoaded('project')),
+            "department" => SyncListDepartmentResource::make($this->whenLoaded('department')),
+            "employee" => EmployeeSummaryResource::make($this->whenLoaded('employee')),
+            "project" => ProjectResource::make($this->whenLoaded('project')),
             "start_time_human" => $this->start_time_human,
             "end_time_human" => $this->end_time_human,
         ];
