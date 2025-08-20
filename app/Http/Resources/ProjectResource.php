@@ -21,6 +21,5 @@ class ProjectResource extends JsonResource
                 return EmployeeUserResource::collection($value);
             }),
         ];
-        //return parent::toArray($request);
     }
 }

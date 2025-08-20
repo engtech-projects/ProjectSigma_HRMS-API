@@ -44,6 +44,7 @@ class ScheduleFilterRequest extends FormRequest
             'end_date' => [
                 'nullable',
                 'date_format:Y-m-d',
+                'after_or_equal:start_date',
             ],
         ];
     }
