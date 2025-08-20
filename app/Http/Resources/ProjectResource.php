@@ -17,9 +17,6 @@ class ProjectResource extends JsonResource
         return [
             'id' => $this->id,
             'project_code' => $this->project_code,
-            'project_members' => $this->whenLoaded('project_has_employees', function ($value) {
-                return EmployeeUserResource::collection($value);
-            }),
         ];
     }
 }
