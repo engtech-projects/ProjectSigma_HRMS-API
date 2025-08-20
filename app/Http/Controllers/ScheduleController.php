@@ -25,8 +25,8 @@ class ScheduleController extends Controller
             ? Carbon::parse($validatedData['end_date'])->startOfDay()
             : Carbon::now()->addMonth()->endOfMonth()->endOfDay();
         $data = Schedule::when($request->filled('department_id'), function ($query) use ($validatedData) {
-                return $query->where('department_id', $validatedData['department_id'])->with('department');
-            })
+            return $query->where('department_id', $validatedData['department_id'])->with('department');
+        })
             ->when($request->filled('employee_id'), function ($query) use ($validatedData) {
                 return $query->where('employee_id', $validatedData['employee_id'])->with('employee');
             })
