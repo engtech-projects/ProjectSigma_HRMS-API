@@ -9,6 +9,7 @@ use App\Http\Requests\StoreScheduleRequest;
 use App\Http\Requests\UpdateScheduleRequest;
 use App\Http\Resources\ScheduleDetailedResource;
 use Carbon\Carbon;
+use Illuminate\Http\Response;
 
 class ScheduleController extends Controller
 {
@@ -67,19 +68,14 @@ class ScheduleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Schedule $schedule)
     {
-        $main = Schedule::with("department", "employee")->find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $data->message = "Successfully fetch.";
-            $data->success = true;
-            $data->data = $main;
-            return response()->json($data);
-        }
-        $data->message = "No data found.";
-        $data->success = false;
-        return response()->json($data, 404);
+        $schedule->load("department", "employee");
+        return response()->json([
+            'message' => 'Successfully fetch.',
+            'success' => true,
+            'data' => $schedule
+        ]);
     }
 
     /**
@@ -103,26 +99,24 @@ class ScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateScheduleRequest $request, $id)
+    public function update(UpdateScheduleRequest $request, Schedule $schedule)
     {
-        $main = Schedule::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $main->fill($request->validated());
-            if ($main->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
-            }
-            $data->message = "Update failed.";
-            $data->success = false;
-            return response()->json($data, 400);
+        $validatedData = $request->validated();
+        if ($validatedData['scheduleType'] == Schedule::TYPE_IRREGULAR) {
+            $validatedData['endRecur'] = Carbon::parse($validatedData['startRecur'])->addDay();
         }
-
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404);
+        $schedule->fill($validatedData);
+        if ($schedule->save()) {
+            return response()->json([
+                'message' => 'Successfully update.',
+                'success' => true,
+                'data' => $schedule
+            ]);
+        }
+        return response()->json([
+            'message' => 'Failed update.',
+            'success' => false,
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
