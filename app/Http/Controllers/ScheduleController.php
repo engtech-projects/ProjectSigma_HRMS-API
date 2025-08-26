@@ -109,8 +109,12 @@ class ScheduleController extends Controller
     public function update(UpdateScheduleRequest $request, Schedule $schedule)
     {
         $validatedData = $request->validated();
-        if ($validatedData['scheduleType'] == Schedule::TYPE_IRREGULAR) {
-            $validatedData['endRecur'] = Carbon::parse($validatedData['startRecur'])->addDay();
+        $effectiveType = $validatedData['scheduleType'] ?? $schedule->scheduleType;
+        if ($effectiveType === Schedule::TYPE_IRREGULAR) {
+            $startRecur = $validatedData['startRecur'] ?? $schedule->startRecur;
+            if ($startRecur) {
+                $validatedData['endRecur'] = Carbon::parse($startRecur)->addDay()->toDateString();
+            }
         }
         $schedule->fill($validatedData);
         if ($schedule->save()) {
