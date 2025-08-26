@@ -118,11 +118,11 @@ class ScheduleController extends Controller
         }
         $schedule->fill($validatedData);
         if ($schedule->save()) {
-            return response()->json([
-                'message' => 'Successfully update.',
-                'success' => true,
-                'data' => $schedule
-            ]);
+            return ScheduleDetailedResource::make($schedule->fresh(["department", "employee", "project"]))
+                ->additional([
+                    'message' => 'Successfully updated schedule.',
+                    'success' => true,
+                ]);
         }
         return response()->json([
             'message' => 'Failed update.',
