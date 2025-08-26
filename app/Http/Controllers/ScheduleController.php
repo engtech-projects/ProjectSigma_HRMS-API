@@ -77,12 +77,12 @@ class ScheduleController extends Controller
      */
     public function show(Schedule $schedule)
     {
-        $schedule->load("department", "employee");
-        return response()->json([
-            'message' => 'Successfully fetch.',
-            'success' => true,
-            'data' => $schedule
-        ]);
+        $schedule->loadMissing("department", "employee", "project");
+        return ScheduleDetailedResource::make($schedule)
+            ->additional([
+                'message' => 'Successfully fetched schedule.',
+                'success' => true,
+            ]);
     }
 
     /**
