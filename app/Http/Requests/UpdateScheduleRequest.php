@@ -75,11 +75,11 @@ class UpdateScheduleRequest extends FormRequest
             ],
             'startTime' => [
                 "nullable",
-                "date_format:H:i:s",
+                "date_format:H:i",
             ],
             'endTime' => [
                 "nullable",
-                "date_format:H:i:s",
+                "date_format:H:i",
                 "after:startTime",
             ],
             'startRecur' => [
@@ -89,7 +89,7 @@ class UpdateScheduleRequest extends FormRequest
             'endRecur' => [
                 "nullable",
                 "date_format:Y-m-d",
-                "after_or_equal:startRecur"
+                "after_or_equal:startRecur",
             ],
         ];
     }

@@ -3,23 +3,50 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FilterByScheduleGroupType;
+use App\Http\Requests\ScheduleFilterRequest;
 use App\Models\Schedule;
 use App\Http\Requests\StoreScheduleRequest;
 use App\Http\Requests\UpdateScheduleRequest;
+use App\Http\Resources\ScheduleDetailedResource;
+use Carbon\Carbon;
+use Illuminate\Http\Response;
 
 class ScheduleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ScheduleFilterRequest $request)
     {
-        $main = Schedule::with("department", "employee")->get();
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        $validatedData = $request->validated();
+        $startDate = $request->filled('start_date')
+            ? Carbon::parse($validatedData['start_date'])->startOfDay()
+            : Carbon::now()->subMonth()->startOfMonth()->startOfDay();
+        $endDate = $request->filled('end_date')
+            ? Carbon::parse($validatedData['end_date'])->endOfDay()
+            : Carbon::now()->addMonth()->endOfMonth()->endOfDay();
+        $relations = [
+            $request->filled('department_id') ? 'department' : null,
+            $request->filled('employee_id') ? 'employee' : null,
+            $request->filled('project_id') ? 'project' : null
+        ];
+        $data = Schedule::when($request->filled('department_id'), function ($query) use ($validatedData) {
+            $query->where('department_id', $validatedData['department_id']);
+        })
+        ->when($request->filled('employee_id'), function ($query) use ($validatedData) {
+            $query->where('employee_id', $validatedData['employee_id']);
+        })
+        ->when($request->filled('project_id'), function ($query) use ($validatedData) {
+            $query->where('project_id', $validatedData['project_id']);
+        })
+        ->with($relations)
+        ->betweenDates($startDate, $endDate)
+        ->get();
+        return ScheduleDetailedResource::collection($data)->additional([
+            'message' => 'Successfully fetched schedules.',
+            'success' => true,
+            'filter_used' => $validatedData,
+        ]);
     }
 
     /**
@@ -28,7 +55,11 @@ class ScheduleController extends Controller
     public function store(StoreScheduleRequest $request)
     {
         $main = new Schedule();
-        $main->fill($request->validated());
+        $validatedData = $request->validated();
+        if ($validatedData['scheduleType'] === Schedule::TYPE_IRREGULAR) {
+            $validatedData['endRecur'] = Carbon::parse($validatedData['startRecur'])->addDay()->toDateString();
+        }
+        $main->fill($validatedData);
         $data = json_decode('{}');
         if (!$main->save()) {
             $data->message = "Save failed.";
@@ -44,19 +75,14 @@ class ScheduleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Schedule $schedule)
     {
-        $main = Schedule::with("department", "employee")->find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $data->message = "Successfully fetch.";
-            $data->success = true;
-            $data->data = $main;
-            return response()->json($data);
-        }
-        $data->message = "No data found.";
-        $data->success = false;
-        return response()->json($data, 404);
+        $schedule->loadMissing("department", "employee", "project");
+        return ScheduleDetailedResource::make($schedule)
+            ->additional([
+                'message' => 'Successfully fetched schedule.',
+                'success' => true,
+            ]);
     }
 
     /**
@@ -80,26 +106,28 @@ class ScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateScheduleRequest $request, $id)
+    public function update(UpdateScheduleRequest $request, Schedule $schedule)
     {
-        $main = Schedule::find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $main->fill($request->validated());
-            if ($main->save()) {
-                $data->message = "Successfully update.";
-                $data->success = true;
-                $data->data = $main;
-                return response()->json($data);
+        $validatedData = $request->validated();
+        $effectiveType = $validatedData['scheduleType'] ?? $schedule->scheduleType;
+        if ($effectiveType === Schedule::TYPE_IRREGULAR) {
+            $startRecur = $validatedData['startRecur'] ?? $schedule->startRecur;
+            if ($startRecur) {
+                $validatedData['endRecur'] = Carbon::parse($startRecur)->addDay()->toDateString();
             }
-            $data->message = "Update failed.";
-            $data->success = false;
-            return response()->json($data, 400);
         }
-
-        $data->message = "Failed update.";
-        $data->success = false;
-        return response()->json($data, 404);
+        $schedule->fill($validatedData);
+        if ($schedule->save()) {
+            return ScheduleDetailedResource::make($schedule->fresh(["department", "employee", "project"]))
+                ->additional([
+                    'message' => 'Successfully updated schedule.',
+                    'success' => true,
+                ]);
+        }
+        return response()->json([
+            'message' => 'Failed update.',
+            'success' => false,
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
