@@ -31,17 +31,17 @@ class ScheduleController extends Controller
             $request->filled('project_id') ? 'project' : null
         ];
         $data = Schedule::when($request->filled('department_id'), function ($query) use ($validatedData) {
-                $query->where('department_id', $validatedData['department_id']);
-            })
-            ->when($request->filled('employee_id'), function ($query) use ($validatedData) {
-                $query->where('employee_id', $validatedData['employee_id']);
-            })
-            ->when($request->filled('project_id'), function ($query) use ($validatedData) {
-                $query->where('project_id', $validatedData['project_id']);
-            })
-            ->with($relations)
-            ->betweenDates($startDate, $endDate)
-           ->get();
+            $query->where('department_id', $validatedData['department_id']);
+        })
+        ->when($request->filled('employee_id'), function ($query) use ($validatedData) {
+            $query->where('employee_id', $validatedData['employee_id']);
+        })
+        ->when($request->filled('project_id'), function ($query) use ($validatedData) {
+            $query->where('project_id', $validatedData['project_id']);
+        })
+        ->with($relations)
+        ->betweenDates($startDate, $endDate)
+        ->get();
         return ScheduleDetailedResource::collection($data)->additional([
             'message' => 'Successfully fetched schedules.',
             'success' => true,
