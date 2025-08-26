@@ -45,6 +45,7 @@ class ScheduleController extends Controller
         return ScheduleDetailedResource::collection($data)->additional([
             'message' => 'Successfully fetched schedules.',
             'success' => true,
+            'filter_used' => $validatedData,
         ]);
     }
 
