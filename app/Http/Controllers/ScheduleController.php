@@ -56,8 +56,8 @@ class ScheduleController extends Controller
     {
         $main = new Schedule();
         $validatedData = $request->validated();
-        if ($validatedData['scheduleType'] == Schedule::TYPE_IRREGULAR) {
-            $validatedData['endRecur'] = Carbon::parse($validatedData['startRecur'])->addDay();
+        if ($validatedData['scheduleType'] === Schedule::TYPE_IRREGULAR) {
+            $validatedData['endRecur'] = Carbon::parse($validatedData['startRecur'])->addDay()->toDateString();
         }
         $main->fill($validatedData);
         $data = json_decode('{}');
