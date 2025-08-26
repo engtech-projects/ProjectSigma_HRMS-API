@@ -25,15 +25,21 @@ class ScheduleController extends Controller
         $endDate = $request->filled('end_date')
             ? Carbon::parse($validatedData['end_date'])->endOfDay()
             : Carbon::now()->addMonth()->endOfMonth()->endOfDay();
+        $relations = [
+            $request->filled('department_id') ? 'department' : null,
+            $request->filled('employee_id') ? 'employee' : null,
+            $request->filled('project_id') ? 'project' : null
+        ];
         $data = Schedule::when($request->filled('department_id'), function ($query) use ($validatedData) {
-            return $query->where('department_id', $validatedData['department_id'])->with('department');
-        })
+                $query->where('department_id', $validatedData['department_id']);
+            })
             ->when($request->filled('employee_id'), function ($query) use ($validatedData) {
-                return $query->where('employee_id', $validatedData['employee_id'])->with('employee');
+                $query->where('employee_id', $validatedData['employee_id']);
             })
             ->when($request->filled('project_id'), function ($query) use ($validatedData) {
-                return $query->where('project_id', $validatedData['project_id'])->with('project');
+                $query->where('project_id', $validatedData['project_id']);
             })
+            ->with($relations)
             ->betweenDates($startDate, $endDate)
            ->get();
         return ScheduleDetailedResource::collection($data)->additional([
