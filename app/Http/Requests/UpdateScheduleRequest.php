@@ -90,8 +90,6 @@ class UpdateScheduleRequest extends FormRequest
                 "nullable",
                 "date_format:Y-m-d",
                 "after_or_equal:startRecur",
-                "required_if:scheduleType,==,Regular",
-                "exclude_if:scheduleType,==,Irregular"
             ],
         ];
     }
