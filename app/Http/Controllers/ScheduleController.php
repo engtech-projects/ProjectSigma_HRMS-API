@@ -30,6 +30,7 @@ class ScheduleController extends Controller
             $request->filled('employee_id') ? 'employee' : null,
             $request->filled('project_id') ? 'project' : null
         ];
+        $relations = array_filter($relations);
         $data = Schedule::when($request->filled('department_id'), function ($query) use ($validatedData) {
             $query->where('department_id', $validatedData['department_id']);
         })
