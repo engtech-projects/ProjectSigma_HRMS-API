@@ -37,6 +37,12 @@ class VoidRequestAction extends Controller
         }
         $attribute = $request->validated();
         $approvals = Approvals::where("form", "Void Requests")->first();
+        if (!$approvals || !$approvals->approvals || count($approvals->approvals) == 0) {
+            return new JsonResponse(["success" => false, "message" => "No approval flow found for Void Requests. Please contact the administrator."], JsonResponse::HTTP_BAD_REQUEST);
+        }
+        if (collect($approvals->approvals)->whereNull("user_id")->count() >= 0) {
+            return new JsonResponse(["success" => false, "message" => "Approval flow not set up properly. Please contact the administrator."], JsonResponse::HTTP_BAD_REQUEST);
+        }
         $approvalModels = ApprovalModels::toArray();
         if (RequestVoid::where("request_id", $model->id)->where("request_type", $approvalModels[$modelType])->whereIn("request_status", [RequestStatuses::APPROVED, RequestStatuses::PENDING])->exists()) {
             return new JsonResponse(["success" => false, "message" => "Void Request already exists."], JsonResponse::HTTP_BAD_REQUEST);
