@@ -17,7 +17,7 @@ class UserAccessibilityReportResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->employee->fullname_last,
-            'accessibilities' => implode(', ', $this->accessibility_names),
+            'accessibilities' => implode(', ', $this->accessibility_names->toArray()),
         ];
     }
 }
