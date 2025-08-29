@@ -55,9 +55,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Resources\CompressedImageResource;
+use App\Http\Resources\UserAccessibilityReportResource;
 use App\Http\Services\Payroll\SalaryMonitoringReportService;
 use App\Models\EmployeeLeaves;
 use App\Models\EmployeePanRequest;
+use App\Models\User;
 
 class ReportService
 {
@@ -2068,6 +2070,25 @@ class ReportService
         foreach ($reportData as $row) {
             $excel->addRow($row);
         }
+        $excel->close();
+        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+    public static function userAccessibilityReport()
+    {
+        $data = User::whereHas('employee', function ($query) {
+            $query->isActive();
+        })
+        ->with(['employee'])
+        ->get();
+        return $data;
+    }
+    public static function userAccessibilityExport()
+    {
+        $data = self::userAccessibilityReport();
+        $fileName = "storage/temp-report-generations/UserAccessibilityReportList-" . now()->format('YmdHis');
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addRows(UserAccessibilityReportResource::collection($data)->resolve());
         $excel->close();
         Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
