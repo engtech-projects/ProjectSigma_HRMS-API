@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class () extends Migration {
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('sss_contributions', function (Blueprint $table) {
+            $table->float('employee_contribution');
+            $table->float('employer_contribution');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('sss_contributions', function (Blueprint $table) {
+            $table->dropColumn('employee_contribution');
+            $table->dropColumn('employer_contribution');
+        });
+    }
+};
