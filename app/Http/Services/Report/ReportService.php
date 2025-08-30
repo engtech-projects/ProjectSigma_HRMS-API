@@ -2080,7 +2080,8 @@ class ReportService
             $query->isActive();
         })
         ->with(['employee'])
-        ->get();
+        ->get()
+        ->sortBy('employee.fullname_last', SORT_NATURAL);
         return $data;
     }
     public static function userAccessibilityExport()
