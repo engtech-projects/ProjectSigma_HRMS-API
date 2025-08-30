@@ -51,13 +51,15 @@ use App\Models\FailureToLog;
 use App\Models\ManpowerRequest;
 use App\Models\AttendanceLog;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Resources\CompressedImageResource;
+use App\Http\Resources\UserAccessibilityReportResource;
 use App\Http\Services\Payroll\SalaryMonitoringReportService;
+use App\Jobs\DeleteTempFileAfterDelay;
 use App\Models\EmployeeLeaves;
 use App\Models\EmployeePanRequest;
+use App\Models\User;
 
 class ReportService
 {
@@ -1060,7 +1062,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1085,7 +1087,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1111,7 +1113,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1166,7 +1168,7 @@ class ReportService
             "=SUM(C{$lastIndex}:N{$lastIndex})"
         ]);
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1184,7 +1186,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
     public static function failureToLogMonitoringSummaryListExport($validate)
@@ -1201,7 +1203,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1264,7 +1266,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1282,7 +1284,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1309,7 +1311,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1327,7 +1329,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1359,7 +1361,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1388,7 +1390,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1408,7 +1410,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -1877,7 +1879,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -2017,7 +2019,7 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 
@@ -2069,7 +2071,28 @@ class ReportService
             $excel->addRow($row);
         }
         $excel->close();
-        Storage::disk('public')->delete($fileName . '.xlsx', now()->addMinutes(5));
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
+        return '/' . $fileName . '.xlsx';
+    }
+    public static function userAccessibilityReport()
+    {
+        $data = User::whereHas('employee', function ($query) {
+            $query->isActive();
+        })
+        ->with(['employee'])
+        ->get()
+        ->sortBy('employee.fullname_last', SORT_NATURAL);
+        return $data;
+    }
+    public static function userAccessibilityExport()
+    {
+        $data = self::userAccessibilityReport();
+        $fileName = "storage/temp-report-generations/UserAccessibilityReportList-" . now()->format('YmdHis');
+        $excel = SimpleExcelWriter::create($fileName . ".xlsx");
+        $excel->addHeader(["Employee Name", "Accessibility"]);
+        $excel->addRows(UserAccessibilityReportResource::collection($data)->resolve());
+        $excel->close();
+        DeleteTempFileAfterDelay::dispatch(str_replace("storage/", "", $fileName) . ".xlsx")->delay(now()->addMinutes(5));
         return '/' . $fileName . '.xlsx';
     }
 }

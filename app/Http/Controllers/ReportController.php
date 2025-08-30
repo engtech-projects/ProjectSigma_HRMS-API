@@ -37,6 +37,7 @@ use App\Http\Resources\Reports\OtherDeductionDefaultEmployee;
 use App\Http\Resources\Reports\OtherDeductionDefaultSummary;
 use App\Http\Resources\Reports\OtherDeductionMP2Employee;
 use App\Http\Resources\Reports\OtherDeductionMP2Summary;
+use App\Http\Resources\UserAccessibilityReportResource;
 use App\Http\Services\Report\ReportService;
 use Illuminate\Http\JsonResponse;
 
@@ -538,5 +539,25 @@ class ReportController extends Controller
                     );
             }
         }
+    }
+    public function userAccessibilityReportsList()
+    {
+        $reportData = ReportService::userAccessibilityReport();
+        return UserAccessibilityReportResource::collection($reportData)
+        ->additional([
+            'success' => true,
+            'message' => 'Successfully fetched.'
+        ]);
+    }
+    public function userAccessibilityExportReports()
+    {
+        $downloadUrl = ReportService::userAccessibilityExport();
+        return response()->json(
+            [
+                "success" => true,
+                'url' => url($downloadUrl),
+                'message' => "Successfully Download."
+            ]
+        );
     }
 }
