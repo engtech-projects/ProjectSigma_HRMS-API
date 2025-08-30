@@ -949,7 +949,7 @@ class AccessibilitiesSeederHrms extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
-                    'id' => 400,
+                    'id' => 420,
                     'accessibilities_name' => AccessibilityHrms::HRMS_REPORTS_USERACCESSIBILITY->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
