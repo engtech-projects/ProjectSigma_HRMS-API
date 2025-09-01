@@ -78,6 +78,7 @@ enum AccessibilityHrms: string
     case HRMS_REPORTS_PORTALMONITORING_PANPROMOTIONMONITORING = "hrms:reports_portal monitoring_pan promotion monitoring";
     case HRMS_REPORTS_PORTALMONITORING_ATTENDANCELOGMONITORING = "hrms:reports_portal monitoring_attendance log monitoring";
     case HRMS_REPORTS_PORTALMONITORING_ATTENDANCELOGMONITORINGSUMMARY = "hrms:reports_portal monitoring_attendance log monitoring summary";
+    case HRMS_REPORTS_USERACCESSIBILITY = "hrms:reports_user accessibility";
     case HRMS_SCHEDULE_DEPARTMENT = "hrms:schedule_department";
     case HRMS_SCHEDULE_EMPLOYEE = "hrms:schedule_employee";
     case HRMS_SCHEDULE_PROJECT = "hrms:schedule_project";

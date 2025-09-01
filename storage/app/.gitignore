@@ -1,3 +1,5 @@
 *
 !public/
 !.gitignore
+!public/temp-report-generations/
+!public/temp-report-generations/.gitignore
