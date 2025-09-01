@@ -15,8 +15,10 @@ class UserAccessibilityReportResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this->employee->fullname_last,
-            'accessibilities' => implode(",\r\n", $this->accessibility_names->sortBy('name')->toArray()),
+            'name' => $this->employee?->fullname_last,
+            'accessibilities' => collect($this->accessibility_names ?? [])
+            ->sort(SORT_NATURAL, SORT_FLAG_CASE)
+            ->implode(",\r\n"),
         ];
     }
 }
