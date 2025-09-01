@@ -40,7 +40,7 @@ class VoidRequestAction extends Controller
         if (!$approvals || !$approvals->approvals || count($approvals->approvals) == 0) {
             return new JsonResponse(["success" => false, "message" => "No approval flow found for Void Requests. Please contact the administrator."], JsonResponse::HTTP_BAD_REQUEST);
         }
-        if (collect($approvals->approvals)->whereNull("user_id")->count() >= 0) {
+        if (collect($approvals->approvals)->whereNull("user_id")->count() > 0) {
             return new JsonResponse(["success" => false, "message" => "Approval flow not set up properly. Please contact the administrator."], JsonResponse::HTTP_BAD_REQUEST);
         }
         $approvalModels = ApprovalModels::toArray();
