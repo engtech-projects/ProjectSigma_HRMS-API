@@ -33,7 +33,9 @@ class NotificationsController extends Controller
 
     public function getUnreadNotificationsStream()
     {
-        if (function_exists('set_time_limit')) { @set_time_limit(65); }
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(65);
+        }
         return response()->stream(function () {
             $lastLength = 0;
             $lastRequestSent = null;
