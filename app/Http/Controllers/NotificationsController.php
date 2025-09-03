@@ -9,7 +9,6 @@ use App\Notifications\CustomApiRequestStatusUpdate;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Utils\PaginateResourceCollection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NotificationsController extends Controller
@@ -25,25 +24,23 @@ class NotificationsController extends Controller
 
     public function getNotifications()
     {
-        $unreadNotifications = Auth::user()->unreadNotifications ?? collect([]);
-        $readNotifications = Auth::user()->readNotifications ?? collect([]);
-        $notifications = $unreadNotifications->merge($readNotifications);
-        $collection = NotificationResource::collection($notifications)->collect();
-        return new JsonResponse([
-            'success' => false,
+        $notifications = Auth::user()->notifications()->paginate();
+        return NotificationResource::collection($notifications)
+        ->additional([
+            'success' => true,
             'message' => 'Fetched all notifications.',
-            'data' => PaginateResourceCollection::paginate($collection, 15)
-        ], JsonResponse::HTTP_OK);
+        ]);
     }
 
     public function getUnreadNotificationsStream()
     {
         // COMMENTED because i'm not sure it will change back to the default value if removed will remove after testing
-        ini_set('max_execution_time', '120');
+        ini_set('max_execution_time', '65');
         return response()->stream(function () {
             $lastLength = 0;
             $lastRequestSent = null;
             $broadcastCount = 0;
+            $start = Carbon::now();
             while (true) {
                 // Users:find to get UPDATED user data
                 $unreadNotifications = User::find(Auth::user()->id)->unreadNotifications;
@@ -74,8 +71,8 @@ class NotificationsController extends Controller
                     flush();
                     $lastRequestSent = Carbon::now();
                 }
-                // usleep(500000); // usleep 1 sec = 1000000
-                if (connection_aborted()) {
+                // Check if the client has closed the connection or if the request has been running for more than 50 seconds(to avoid execution time limit) and stop the loop
+                if (connection_aborted() || $start->diffInSeconds(Carbon::now()) >= 60) {
                     break;
                 }
                 sleep(1); // Will check for updates every second
