@@ -6,7 +6,6 @@ use App\Http\Requests\ApiNotificationRequest;
 use App\Http\Resources\NotificationResource;
 use App\Models\User;
 use App\Notifications\CustomApiRequestStatusUpdate;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -24,7 +23,7 @@ class NotificationsController extends Controller
 
     public function getNotifications()
     {
-        $notifications = Auth::user()->notifications()->paginate();
+        $notifications = Auth::user()->notifications()->latest()->paginate();
         return NotificationResource::collection($notifications)
         ->additional([
             'success' => true,
@@ -34,13 +33,12 @@ class NotificationsController extends Controller
 
     public function getUnreadNotificationsStream()
     {
-        // COMMENTED because i'm not sure it will change back to the default value if removed will remove after testing
-        ini_set('max_execution_time', '65');
+        if (function_exists('set_time_limit')) { @set_time_limit(65); }
         return response()->stream(function () {
             $lastLength = 0;
             $lastRequestSent = null;
             $broadcastCount = 0;
-            $start = Carbon::now();
+            $start = now();
             while (true) {
                 // Users:find to get UPDATED user data
                 $unreadNotifications = User::find(Auth::user()->id)->unreadNotifications;
@@ -59,9 +57,9 @@ class NotificationsController extends Controller
                         ob_flush();
                     }
                     flush();
-                    $lastRequestSent = Carbon::now();
+                    $lastRequestSent = now();
                 } else { // no changes submit every 13 seconds
-                    if ($lastRequestSent && $lastRequestSent->diffInSeconds(Carbon::now()) <= 13) {
+                    if ($lastRequestSent && $lastRequestSent->diffInSeconds(now()) <= 13) {
                         continue;
                     }
                     echo "id: " . (++$broadcastCount) . "\ndata: " . $notifications . "\n\n";
@@ -69,10 +67,10 @@ class NotificationsController extends Controller
                         ob_flush();
                     }
                     flush();
-                    $lastRequestSent = Carbon::now();
+                    $lastRequestSent = now();
                 }
-                // Check if the client has closed the connection or if the request has been running for more than 50 seconds(to avoid execution time limit) and stop the loop
-                if (connection_aborted() || $start->diffInSeconds(Carbon::now()) >= 60) {
+                // Stop if the client closed the connection or runtime >= 60s (avoid execution time limit)
+                if (connection_aborted() || $start->diffInSeconds(now()) >= 60) {
                     echo "\n\n\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
