@@ -73,6 +73,10 @@ class NotificationsController extends Controller
                 }
                 // Check if the client has closed the connection or if the request has been running for more than 50 seconds(to avoid execution time limit) and stop the loop
                 if (connection_aborted() || $start->diffInSeconds(Carbon::now()) >= 60) {
+                    echo "\n\n\n\n";
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
                     break;
                 }
                 sleep(1); // Will check for updates every second
