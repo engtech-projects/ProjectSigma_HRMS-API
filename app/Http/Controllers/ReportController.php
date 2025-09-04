@@ -278,7 +278,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -384,7 +384,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -394,7 +394,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -404,7 +404,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -414,7 +414,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -424,7 +424,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -434,7 +434,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -444,7 +444,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -454,7 +454,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -464,7 +464,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -474,7 +474,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -484,7 +484,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -494,7 +494,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -504,7 +504,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -514,7 +514,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
@@ -524,7 +524,7 @@ class ReportController extends Controller
                     return response()->json(
                         [
                             "success" => true,
-                            'url' => $downloadUrl,
+                            'url' => url($downloadUrl),
                             'message' => "Successfully Download."
                         ]
                     );
