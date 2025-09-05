@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
                 AccessibilitiesSeederHrms::class,
                 AccessibilitiesSeederInventory::class,
                 AccessibilitiesSeederProjects::class,
-                ApprovalsSeeder::class
+                ApprovalsSeeder::class,
+                ApprovalsSeederProject::class,
             ]
         );
     }
