@@ -73,7 +73,7 @@ class NotificationsController extends Controller
                 }
                 // Stop if the client closed the connection or runtime >= 60s (avoid execution time limit)
                 if (connection_aborted() || $start->diffInSeconds(now()) >= 60) {
-                    echo "\n\n\n\n";
+                    echo "event: close\ndata: " . json_encode(["message" => "Closing connection."]) . "\n\n\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
