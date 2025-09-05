@@ -270,6 +270,5 @@ class ApprovalsSeeder extends Seeder
                 'deleted_at',
             ]
         );
-
     }
 }
