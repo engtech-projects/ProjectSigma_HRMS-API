@@ -62,6 +62,7 @@ class NotificationsController extends Controller
                     $lastRequestSent = now();
                 } else { // no changes submit every 13 seconds
                     if ($lastRequestSent && $lastRequestSent->diffInSeconds(now()) <= 13) {
+                        sleep(1);
                         continue;
                     }
                     echo "id: " . (++$broadcastCount) . "\ndata: " . $notifications . "\n\n";
