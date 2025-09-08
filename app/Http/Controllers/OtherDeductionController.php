@@ -9,7 +9,6 @@ use App\Models\OtherDeduction;
 use App\Http\Requests\StoreOtherDeductionRequest;
 use App\Http\Requests\UpdateOtherDeductionRequest;
 use App\Http\Resources\OtherDeductionResource;
-use App\Utils\PaginateResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -106,19 +105,13 @@ class OtherDeductionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(OtherDeduction $resource)
     {
-        $main = OtherDeduction::with('employee')->find($id);
-        $data = json_decode('{}');
-        if (!is_null($main)) {
-            $data->message = "Successfully fetch.";
-            $data->success = true;
-            $data->data = PaginateResourceCollection::paginate(OtherDeductionResource::collection($main)->collect());
-            return response()->json($data);
-        }
-        $data->message = "No data found.";
-        $data->success = false;
-        return response()->json($data, 404);
+        return OtherDeductionResource::make($resource)
+        ->additional([
+            'success' => true,
+            'message' => 'Other Deduction fetched.',
+        ]);
     }
 
     /**

@@ -193,6 +193,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 260,
+                    'form' => "Request NCPO",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::INVENTORY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [
                 'id'
@@ -247,28 +256,6 @@ class ApprovalsSeeder extends Seeder
                     'form' => "Payment Request Form (PAYROLL)",
                     'approvals' => "[]",
                     'module' => ApprovalModules::ACCOUNTING->value,
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-            ],
-            [
-                'id'
-            ],
-            [
-                'form',
-                'module',
-                'deleted_at',
-            ]
-        );
-        // PROJECTS
-        DB::table('approvals')->upsert(
-            [
-                [
-                    'id' => 3010,
-                    'form' => "Project Award Request",
-                    'approvals' => "[]",
-                    'module' => ApprovalModules::PROJECT->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
