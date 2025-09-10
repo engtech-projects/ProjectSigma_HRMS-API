@@ -252,7 +252,7 @@ class Schedule extends Model
 
     public function scopePayrollSchedule(Builder $query, array $filters = [])
     {
-        $query->whereBetween('startRecur', array($filters['cutoff_start'], $filters['cutoff_end']))
+        $query->whereBetween('startRecur', [$filters['cutoff_start'], $filters['cutoff_end']])
             ->where(function ($query) use ($filters) {
                 if (array_key_exists('department_id', $filters)) {
                     return $query->where('department_id', $filters['department_id']);

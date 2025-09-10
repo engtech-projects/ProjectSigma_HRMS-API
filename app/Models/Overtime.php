@@ -100,7 +100,7 @@ class Overtime extends Model
 
     public function scopePayrollOvertime(Builder $query, array $filters = [])
     {
-        $query->whereBetween('overtime_date', array($filters['cutoff_start'], $filters['cutoff_end']))
+        $query->whereBetween('overtime_date', [$filters['cutoff_start'], $filters['cutoff_end']])
             ->where(function ($query) use ($filters) {
                 if (array_key_exists('department_id', $filters)) {
                     return $query->where('department_id', $filters['department_id']);

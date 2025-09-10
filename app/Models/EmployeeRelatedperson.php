@@ -52,7 +52,7 @@ class EmployeeRelatedperson extends Model
     }
     protected function getAddressAttribute()
     {
-        return implode(", ", array($this->street, $this->brgy, $this->city, $this->zip, $this->province));
+        return implode(", ", [$this->street, $this->brgy, $this->city, $this->zip, $this->province]);
     }
     protected function getNameBdayAttribute()
     {
@@ -62,6 +62,6 @@ class EmployeeRelatedperson extends Model
         } else {
             $bday = "Birthday N/A";
         }
-        return implode(" - ", array($this->name, $bday));
+        return implode(" - ", [$this->name, $bday]);
     }
 }
