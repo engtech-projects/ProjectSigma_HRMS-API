@@ -24,8 +24,8 @@ class FailureToLog extends Model
     use HasApproval;
     use ModelHelpers;
 
-    public const DEPARTMENT = "App\Models\Department";
-    public const PROJECT = "App\Models\Project";
+    public const DEPARTMENT = \App\Models\Department::class;
+    public const PROJECT = \App\Models\Project::class;
 
     protected $fillable = [
         'date',

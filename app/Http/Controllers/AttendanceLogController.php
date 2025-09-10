@@ -26,8 +26,8 @@ class AttendanceLogController extends Controller
 {
     use CheckAccessibility;
     protected $attendanceLogService;
-    public const DEPARTMENT = "App\Models\Department";
-    public const PROJECT = "App\Models\Project";
+    public const DEPARTMENT = \App\Models\Department::class;
+    public const PROJECT = \App\Models\Project::class;
 
     public function __construct(AttendanceLogService $attendanceLogService)
     {

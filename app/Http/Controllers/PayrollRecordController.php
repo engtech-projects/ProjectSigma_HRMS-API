@@ -31,9 +31,9 @@ use Illuminate\Support\Facades\Log;
 class PayrollRecordController extends Controller
 {
     // 'Cash Advance','Loan','Other Deduction','Others'
-    public const CASHADVANCE = "App\Models\CashAdvance";
-    public const LOANS = "App\Models\Loans";
-    public const OTHERDEDUCTION = "App\Models\OtherDeduction";
+    public const CASHADVANCE = \App\Models\CashAdvance::class;
+    public const LOANS = \App\Models\Loans::class;
+    public const OTHERDEDUCTION = \App\Models\OtherDeduction::class;
     public const CASHADVANCE_PAYMENT = CashAdvancePayments::class;
     public const LOANS_PAYMENT = LoanPayments::class;
     public const OTHERDEDUCTION_PAYMENT = OtherDeductionPayments::class;

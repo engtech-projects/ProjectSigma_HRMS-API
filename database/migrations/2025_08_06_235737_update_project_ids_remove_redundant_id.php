@@ -59,35 +59,35 @@ return new class () extends Migration {
                         ->update(['project_id' => $newId]);
                     // INDIRECT PROJECT IDS
                     DB::table('allowance_request')
-                        ->where('charge_assignment_type', 'App\\Models\\Project')
+                        ->where('charge_assignment_type', \App\Models\Project::class)
                         ->where('charge_assignment_id', $originalId)
                         ->update(['charge_assignment_id' => $newId]);
                     DB::table('att_port_assigns')
-                        ->where('assignment_type', 'App\\Models\\Project')
+                        ->where('assignment_type', \App\Models\Project::class)
                         ->where('assignment_id', $originalId)
                         ->update(['assignment_id' => $newId]);
                     DB::table('attendance_portals')
-                        ->where('assignment_type', 'App\\Models\\Project')
+                        ->where('assignment_type', \App\Models\Project::class)
                         ->where('assignment_id', $originalId)
                         ->update(['assignment_id' => $newId]);
                     DB::table('failure_to_logs')
-                        ->where('charging_type', 'App\\Models\\Project')
+                        ->where('charging_type', \App\Models\Project::class)
                         ->where('charging_id', $originalId)
                         ->update(['charging_id' => $newId]);
                     DB::table('payroll_details_charging')
-                        ->where('charge_type', 'App\\Models\\Project')
+                        ->where('charge_type', \App\Models\Project::class)
                         ->where('charge_id', $originalId)
                         ->update(['charge_id' => $newId]);
                     DB::table('request_13th_month_detail_amt')
-                        ->where('charge_type', 'App\\Models\\Project')
+                        ->where('charge_type', \App\Models\Project::class)
                         ->where('charge_id', $originalId)
                         ->update(['charge_id' => $newId]);
                     DB::table('request_13th_months')
-                        ->where('charging_type', 'App\\Models\\Project')
+                        ->where('charging_type', \App\Models\Project::class)
                         ->where('charging_id', $originalId)
                         ->update(['charging_id' => $newId]);
                     DB::table('travel_orders')
-                        ->where('charge_type', 'App\\Models\\Project')
+                        ->where('charge_type', \App\Models\Project::class)
                         ->where('charge_id', $originalId)
                         ->update(['charge_id' => $newId]);
                 }

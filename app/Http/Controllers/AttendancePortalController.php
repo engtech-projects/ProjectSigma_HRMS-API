@@ -17,8 +17,8 @@ use Illuminate\Support\Str;
 
 class AttendancePortalController extends Controller
 {
-    public const DEPARTMENT = "App\Models\Department";
-    public const PROJECT = "App\Models\Project";
+    public const DEPARTMENT = \App\Models\Department::class;
+    public const PROJECT = \App\Models\Project::class;
     /**
      * Display a listing of the resource.
      */

@@ -7,8 +7,8 @@ use App\Models\PayrollDetailsCharging;
 
 class SalaryMonitoringReportService
 {
-    public const DEPARTMENT = "App\Models\Department";
-    public const PROJECT = "App\Models\Project";
+    public const DEPARTMENT = \App\Models\Department::class;
+    public const PROJECT = \App\Models\Project::class;
 
     public static function getPayrollDetails($payrollIds)
     {

@@ -78,31 +78,31 @@ return new class () extends Migration {
             foreach ($projects as $project) {
                 // Process each $project
                 DB::table('allowance_request')
-                    ->where('charge_assignment_type', "App\Models\Project")
+                    ->where('charge_assignment_type', \App\Models\Project::class)
                     ->where('charge_assignment_id', $project->id)
                     ->update([
                         'charge_assignment_id' => $project->project_monitoring_id,
                     ]);
                 DB::table('att_port_assigns')
-                    ->where('assignment_type', "App\Models\Project")
+                    ->where('assignment_type', \App\Models\Project::class)
                     ->where('assignment_id', $project->id)
                     ->update([
                         'assignment_id' => $project->project_monitoring_id,
                     ]);
                 DB::table('failure_to_logs')
-                    ->where('charging_type', "App\Models\Project")
+                    ->where('charging_type', \App\Models\Project::class)
                     ->where('charging_id', $project->id)
                     ->update([
                         'charging_id' => $project->project_monitoring_id,
                     ]);
                 DB::table('payroll_details_charging')
-                    ->where('charge_type', "App\Models\Project")
+                    ->where('charge_type', \App\Models\Project::class)
                     ->where('charge_id', $project->id)
                     ->update([
                         'charge_id' => $project->project_monitoring_id,
                     ]);
                 DB::table('travel_orders')
-                    ->where('charge_type', "App\Models\Project")
+                    ->where('charge_type', \App\Models\Project::class)
                     ->where('charge_id', $project->id)
                     ->update([
                         'charge_id' => $project->project_monitoring_id,

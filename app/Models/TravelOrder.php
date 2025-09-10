@@ -25,8 +25,8 @@ class TravelOrder extends Model
     use HasUser;
     use ModelHelpers;
 
-    public const DEPARTMENT = "App\Models\Department";
-    public const PROJECT = "App\Models\Project";
+    public const DEPARTMENT = \App\Models\Department::class;
+    public const PROJECT = \App\Models\Project::class;
 
     protected $casts = [
         "approvals" => "array",

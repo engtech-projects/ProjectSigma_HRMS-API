@@ -426,7 +426,7 @@ class EmployeeService
                         "name" => $name,
                         "charge_type" => $type,
                         "charge_id" => $id,
-                        "charging_name" => $type === "App\\Models\\Department" ? Department::find($id)->department_name : Project::find($id)->project_code,
+                        "charging_name" => $type === \App\Models\Department::class ? Department::find($id)->department_name : Project::find($id)->project_code,
                         "hrs_worked" => $hrsWorked,
                         "amount" => PayrollService::getSalaryByRateHour($chargings->first()["day_type"], $chargings->first()["salary_type"], $dailyRate, $hrsWorked),
                         "daily_rate" => $dailyRate,

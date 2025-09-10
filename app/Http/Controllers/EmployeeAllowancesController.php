@@ -18,8 +18,8 @@ use Carbon\Carbon;
 
 class EmployeeAllowancesController extends Controller
 {
-    public const DEPARTMENT = "App\Models\Department";
-    public const PROJECT = "App\Models\Project";
+    public const DEPARTMENT = \App\Models\Department::class;
+    public const PROJECT = \App\Models\Project::class;
 
     protected $employeeAllowanceService;
     protected $employeeAllowanceRequestType = null;
