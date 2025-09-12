@@ -1,0 +1,4 @@
+API CONCERNS - TO FIX IN THE FUTURE (Or never)
+ALL API ROUTES
+    when getting data, php allocated memory gets exhausted because of how data is collected
+    query should be paginated during query processing not within php
