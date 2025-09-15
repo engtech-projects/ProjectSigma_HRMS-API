@@ -430,6 +430,13 @@ class AccessibilitiesSeederInventory extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 2510,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_GROUP->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]

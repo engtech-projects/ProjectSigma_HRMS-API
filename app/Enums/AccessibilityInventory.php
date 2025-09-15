@@ -57,6 +57,7 @@ enum AccessibilityInventory: string
 
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_CANVASSSUMMARY = "inventory:procurement_procurement request_canvass summary_create and view";
 
+    case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_GROUP = "inventory:procurement_purchase order_group";
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_ALLLIST = "inventory:procurement_purchase order_all list";
 
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_CREATENCPO = "inventory:procurement_purchase order_create ncpo";
