@@ -14,8 +14,8 @@ class NotificationsController extends Controller
 {
     public function getUnreadNotifications()
     {
-        $unreadNotifications = Auth::user()->unreadNotifications;
-        $count = $unreadNotifications->count();
+        $unreadNotifications = Auth::user()->unreadNotifications()->latest()->limit(10)->get();
+        $count = Auth::user()->unreadNotifications()->count();
         return NotificationResource::collection($unreadNotifications->take(10))
         ->additional([
             'success' => true,
