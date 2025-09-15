@@ -14,11 +14,14 @@ class NotificationsController extends Controller
 {
     public function getUnreadNotifications()
     {
-        return new JsonResponse([
-            'success' => false,
+        $unreadNotifications = Auth::user()->unreadNotifications()->latest()->limit(10)->get();
+        $count = Auth::user()->unreadNotifications()->count();
+        return NotificationResource::collection($unreadNotifications->take(10))
+        ->additional([
+            'success' => true,
             'message' => 'Fetched unread notifications.',
-            'data' => NotificationResource::collection(Auth::user()->unreadNotifications),
-        ], JsonResponse::HTTP_OK);
+            'total_notifications' => $count,
+        ]);
     }
 
     public function getNotifications()
