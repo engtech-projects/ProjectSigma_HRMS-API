@@ -186,7 +186,10 @@ class AttendanceLogController extends Controller
     }
     public function facialAttendanceList()
     {
-        $main = EmployeePattern::get();
+        $main = EmployeePattern::whereHas("employee", function ($q) {
+            $q->wherehas("current_employment");
+        })
+        ->get();
         if ($main) {
             return new JsonResponse([
                 "success" => true,
