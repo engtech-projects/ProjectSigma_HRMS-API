@@ -100,61 +100,55 @@ class AttendanceLogController extends Controller
                 "message" => "Already Logged " . $lastLogSame->log_type . " on " . $lastLogSame->time_human,
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
-        if ($val) {
-            $mainsave = new AttendanceLog();
-            $mainsave->fill($val);
-            $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
-            $mainsave->portal_id = $main->id;
-            $type = $val["assignment_type"];
-            $portalDepartmentId = $main->departments()->first()?->id;
-            $portalProjectId = $main->projects()->first()?->id;
-            $employee = Employee::with('employee_schedule', 'profile_photo', )->find($val["employee_id"]);
-            // WHEN TYPE IS PROJECT THE SPECIFIED project_id WILL BE REQUIRED AND LOGGED IN THE ATTENDANCE AS CHARGED
-            // WHEN TYPE IS DEPARTMENT THE SPECIFIED department_id WILL BE A PLACEHOLDER AS A LAST RESORT INCASE THE EMPLOYEE DOESN'T HAVE A DEPARTMENT OR PROJECT
-            switch ($type) {
-                case AssignTypes::DEPARTMENT->value:
-                    $type = AssignTypes::DEPARTMENT->value;
-                    $latest_project = $employee->current_employment?->projects()->orderBy('id', 'desc')->first();
-                    if ($employee->current_employment?->work_location == WorkLocation::OFFICE->value) {
-                        $mainsave->department_id = $employee->current_employment->department_id;
-                    } elseif ($employee->current_employment?->work_location == WorkLocation::PROJECT->value && $latest_project?->id) {
-                        $mainsave->project_id = $latest_project->id;
-                    } else {
-                        $mainsave->department_id = $portalDepartmentId;
-                    }
-                    break;
-                case AssignTypes::PROJECT->value:
-                    $type = AssignTypes::PROJECT->value;
-                    if ($val["project_id"]) {
-                        $mainsave->project_id = $val["project_id"];
-                    } else {
-                        $mainsave->project_id = $portalProjectId;
-                    }
-                    break;
-            }
-            $mainsave->date = $dateNow;
-            $mainsave->time = $timeNow;
-            $mainsave->attendance_type = AttendanceType::FACIAL->value;
-            if ($mainsave->save()) {
-                $return = [];
-                $return['log_saved'] = $mainsave;
-                $return['schedule'] = $employee->applied_schedule_with_attendance($dateNow);
-                $return['employee'] = $employee;
-                return new JsonResponse([
-                    "success" => true,
-                    "message" => "Successfully save.",
-                    "data" => $return,
-                ], JsonResponse::HTTP_OK);
-            }
+        $mainsave = new AttendanceLog();
+        $mainsave->fill($val);
+        $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
+        $mainsave->portal_id = $main->id;
+        $type = $val["assignment_type"];
+        $portalDepartmentId = $main->departments()->first()?->id;
+        $portalProjectId = $main->projects()->first()?->id;
+        $employee = Employee::with('employee_schedule', 'profile_photo', 'current_employment.projects', 'current_employment.department' )->find($val["employee_id"]);
+        // WHEN TYPE IS PROJECT THE SPECIFIED project_id WILL BE REQUIRED AND LOGGED IN THE ATTENDANCE AS CHARGED
+        // WHEN TYPE IS DEPARTMENT THE SPECIFIED department_id WILL BE A PLACEHOLDER AS A LAST RESORT INCASE THE EMPLOYEE DOESN'T HAVE A DEPARTMENT OR PROJECT
+        switch ($type) {
+            case AssignTypes::DEPARTMENT->value:
+                $type = AssignTypes::DEPARTMENT->value;
+                $latest_project = $employee->current_employment?->projects()->orderBy('id', 'desc')->first();
+                if ($employee->current_employment?->work_location == WorkLocation::OFFICE->value) {
+                    $mainsave->department_id = $employee->current_employment->department_id;
+                } elseif ($employee->current_employment?->work_location == WorkLocation::PROJECT->value && $latest_project?->id) {
+                    $mainsave->project_id = $latest_project->id;
+                } else {
+                    $mainsave->department_id = $portalDepartmentId;
+                }
+                break;
+            case AssignTypes::PROJECT->value:
+                $type = AssignTypes::PROJECT->value;
+                if ($val["project_id"]) {
+                    $mainsave->project_id = $val["project_id"];
+                } else {
+                    $mainsave->project_id = $portalProjectId;
+                }
+                break;
+        }
+        $mainsave->date = $dateNow;
+        $mainsave->time = $timeNow;
+        $mainsave->attendance_type = AttendanceType::FACIAL->value;
+        if (!$mainsave->save()) {
             return new JsonResponse([
                 "success" => false,
                 "message" => "Failed save.",
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
         return new JsonResponse([
-            "success" => false,
-            "message" => "Failed save.",
-        ], JsonResponse::HTTP_EXPECTATION_FAILED);
+            "success" => true,
+            "message" => "Successfully save.",
+            "data" => [
+                "log_saved" => $mainsave,
+                "schedule" => $employee->applied_schedule_with_attendance($dateNow),
+                "employee" => $employee
+            ],
+        ], JsonResponse::HTTP_OK);
     }
     public function qrAttendance(StoreQrAttendanceLog $request)
     {
