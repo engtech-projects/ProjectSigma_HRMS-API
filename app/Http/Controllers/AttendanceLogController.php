@@ -107,7 +107,7 @@ class AttendanceLogController extends Controller
         $type = $val["assignment_type"];
         $portalDepartmentId = $main->departments()->first()?->id;
         $portalProjectId = $main->projects()->first()?->id;
-        $employee = Employee::with('employee_schedule', 'profile_photo', 'current_employment.projects', 'current_employment.department' )->find($val["employee_id"]);
+        $employee = Employee::with('employee_schedule', 'profile_photo', 'current_employment.projects', 'current_employment.department')->find($val["employee_id"]);
         // WHEN TYPE IS PROJECT THE SPECIFIED project_id WILL BE REQUIRED AND LOGGED IN THE ATTENDANCE AS CHARGED
         // WHEN TYPE IS DEPARTMENT THE SPECIFIED department_id WILL BE A PLACEHOLDER AS A LAST RESORT INCASE THE EMPLOYEE DOESN'T HAVE A DEPARTMENT OR PROJECT
         switch ($type) {
