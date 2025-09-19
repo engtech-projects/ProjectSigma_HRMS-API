@@ -16,6 +16,7 @@ use App\Http\Resources\AttendanceLogResource;
 use App\Http\Requests\StoreAttendanceLogRequest;
 use App\Http\Requests\StoreFacialAttendanceLog;
 use App\Http\Requests\UpdateAttendanceLogRequest;
+use App\Http\Resources\EmployeeSummaryCphotoResource;
 use App\Http\Traits\CheckAccessibility;
 use App\Models\AttendancePortal;
 use App\Models\Employee;
@@ -82,7 +83,8 @@ class AttendanceLogController extends Controller
     {
         $logAttendance = config('app.log_attendance');
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Facial Attendance Log Attempt', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Attempt', ['request' => $request->all()]);
+            $startTime = microtime(true);
         }
         $portalToken = $request->header("Portal_token", $request->bearerToken());
         $now = Carbon::now();
@@ -106,12 +108,14 @@ class AttendanceLogController extends Controller
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Facial Attendance Log Validated', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Validated', ['request' => $request->all(), "time" => microtime(true) - $startTime]);
+            $startTime = microtime(true);
         }
         $mainsave = new AttendanceLog();
         $mainsave->fill($val);
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Facial Attendance Log Filled', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Filled', ['request' => $request->all(), "time" => microtime(true) - $startTime]);
+            $startTime = microtime(true);
         }
         $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
         $mainsave->portal_id = $main->id;
@@ -119,11 +123,21 @@ class AttendanceLogController extends Controller
         $portalDepartmentId = $main->departments()->first()?->id;
         $portalProjectId = $main->projects()->first()?->id;
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Facial Attendance Log Portal Fetched', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Portal Fetched', ['request' => $request->all(), "time" => microtime(true) - $startTime]);
+            $startTime = microtime(true);
         }
-        $employee = Employee::with('employee_schedule', 'profile_photo', 'current_employment.projects', 'current_employment.department')->find($val["employee_id"]);
+        $employee = Employee::with([
+            'employee_schedule',
+            'profile_photo',
+            'employee_internal.projects.project_schedule',
+            'employee_internal.department.schedule',
+            'current_employment.projects',
+            'current_employment.department',
+        ])
+        ->find($val["employee_id"]);
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Facial Attendance Log Employee Fetched', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Employee Fetched', ['request' => $request->all(), "time" => microtime(true) - $startTime]);
+            $startTime = microtime(true);
         }
         // WHEN TYPE IS PROJECT THE SPECIFIED project_id WILL BE REQUIRED AND LOGGED IN THE ATTENDANCE AS CHARGED
         // WHEN TYPE IS DEPARTMENT THE SPECIFIED department_id WILL BE A PLACEHOLDER AS A LAST RESORT INCASE THE EMPLOYEE DOESN'T HAVE A DEPARTMENT OR PROJECT
@@ -147,14 +161,16 @@ class AttendanceLogController extends Controller
                 break;
         }
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Facial Attendance Log Charging Location Fetched', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Charging Location Fetched', ['request' => $request->all(), "time" => microtime(true) - $startTime]);
+            $startTime = microtime(true);
         }
         $mainsave->date = $dateNow;
         $mainsave->time = $timeNow;
         $mainsave->attendance_type = AttendanceType::FACIAL->value;
         $saved = $mainsave->save();
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Facial Attendance Log Before Save', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Before Save', ['request' => $request->all(), "time" => microtime(true) - $startTime]);
+            $startTime = microtime(true);
         }
         if (!$saved) {
             return new JsonResponse([
@@ -164,11 +180,12 @@ class AttendanceLogController extends Controller
         }
         $responseData = [
             "log_saved" => $mainsave,
-            "schedule" => $employee->applied_schedule_with_attendance($dateNow),
-            "employee" => $employee
+            "employee" => EmployeeSummaryCphotoResource::make($employee),
+            "logs_today" => AttendanceLog::where('employee_id', $employee->id)->where('date', $dateNow)->get(),
         ];
         if ($logAttendance) {
-            Log::channel('attendance_log')->info('Prepared Response', ['request' => $request->all(), "time" => microtime(true)]);
+            Log::channel('attendance_log')->info('Prepared Response', ['request' => $request->all(), "time" => microtime(true) - $startTime]);
+            $startTime = microtime(true);
         }
         return new JsonResponse([
             "success" => true,
