@@ -72,6 +72,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'attendance_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/attendance/laravel.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'replace_placeholders' => true,
+        ],
+
         'project_monitoring' => [
             'driver' => 'daily',
             'path' => storage_path('logs/project_monitoring/laravel.log'),

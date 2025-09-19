@@ -21,6 +21,7 @@ use App\Models\AttendancePortal;
 use App\Models\Employee;
 use App\Models\EmployeePattern;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceLogController extends Controller
 {
@@ -79,6 +80,10 @@ class AttendanceLogController extends Controller
 
     public function facialAttendance(StoreFacialAttendanceLog $request)
     {
+        $logAttendance = config('app.log_attendance');
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Facial Attendance Log Attempt', ['request' => $request->all(), "time" => microtime(true)]);
+        }
         $portalToken = $request->header("Portal_token", $request->bearerToken());
         $now = Carbon::now();
         $dateNow = $now->copy()->format('Y-m-d');
@@ -100,19 +105,30 @@ class AttendanceLogController extends Controller
                 "message" => "Already Logged " . $lastLogSame->log_type . " on " . $lastLogSame->time_human,
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Facial Attendance Log Validated', ['request' => $request->all(), "time" => microtime(true)]);
+        }
         $mainsave = new AttendanceLog();
         $mainsave->fill($val);
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Facial Attendance Log Filled', ['request' => $request->all(), "time" => microtime(true)]);
+        }
         $main = AttendancePortal::with('assignment')->where('portal_token', $portalToken)->first();
         $mainsave->portal_id = $main->id;
         $type = $val["assignment_type"];
         $portalDepartmentId = $main->departments()->first()?->id;
         $portalProjectId = $main->projects()->first()?->id;
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Facial Attendance Log Portal Fetched', ['request' => $request->all(), "time" => microtime(true)]);
+        }
         $employee = Employee::with('employee_schedule', 'profile_photo', 'current_employment.projects', 'current_employment.department')->find($val["employee_id"]);
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Facial Attendance Log Employee Fetched', ['request' => $request->all(), "time" => microtime(true)]);
+        }
         // WHEN TYPE IS PROJECT THE SPECIFIED project_id WILL BE REQUIRED AND LOGGED IN THE ATTENDANCE AS CHARGED
         // WHEN TYPE IS DEPARTMENT THE SPECIFIED department_id WILL BE A PLACEHOLDER AS A LAST RESORT INCASE THE EMPLOYEE DOESN'T HAVE A DEPARTMENT OR PROJECT
         switch ($type) {
             case AssignTypes::DEPARTMENT->value:
-                $type = AssignTypes::DEPARTMENT->value;
                 $latest_project = $employee->current_employment?->projects()->orderBy('id', 'desc')->first();
                 if ($employee->current_employment?->work_location == WorkLocation::OFFICE->value) {
                     $mainsave->department_id = $employee->current_employment->department_id;
@@ -123,7 +139,6 @@ class AttendanceLogController extends Controller
                 }
                 break;
             case AssignTypes::PROJECT->value:
-                $type = AssignTypes::PROJECT->value;
                 if ($val["project_id"]) {
                     $mainsave->project_id = $val["project_id"];
                 } else {
@@ -131,23 +146,34 @@ class AttendanceLogController extends Controller
                 }
                 break;
         }
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Facial Attendance Log Charging Location Fetched', ['request' => $request->all(), "time" => microtime(true)]);
+        }
         $mainsave->date = $dateNow;
         $mainsave->time = $timeNow;
         $mainsave->attendance_type = AttendanceType::FACIAL->value;
-        if (!$mainsave->save()) {
+        $saved = $mainsave->save();
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Facial Attendance Log Before Save', ['request' => $request->all(), "time" => microtime(true)]);
+        }
+        if (!$saved) {
             return new JsonResponse([
                 "success" => false,
                 "message" => "Failed save.",
             ], JsonResponse::HTTP_EXPECTATION_FAILED);
         }
+        $responseData = [
+            "log_saved" => $mainsave,
+            "schedule" => $employee->applied_schedule_with_attendance($dateNow),
+            "employee" => $employee
+        ];
+        if ($logAttendance) {
+            Log::channel('attendance_log')->info('Prepared Response', ['request' => $request->all(), "time" => microtime(true)]);
+        }
         return new JsonResponse([
             "success" => true,
             "message" => "Successfully save.",
-            "data" => [
-                "log_saved" => $mainsave,
-                "schedule" => $employee->applied_schedule_with_attendance($dateNow),
-                "employee" => $employee
-            ],
+            "data" => $responseData
         ], JsonResponse::HTTP_OK);
     }
     public function qrAttendance(StoreQrAttendanceLog $request)
