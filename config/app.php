@@ -22,6 +22,7 @@ return [
 
     'artisan' => (bool) env('ENABLE_ARTISAN_ROUTES', false),
     'pagination_per_page' => env('PAGINATION_PER_PAGE', 10),
+    'log_attendance' => (bool) env('LOG_ATTENDANCE', false),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
