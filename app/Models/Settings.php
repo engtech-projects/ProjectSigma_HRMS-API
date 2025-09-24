@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Settings extends Model
 {
@@ -35,6 +36,6 @@ class Settings extends Model
 
     public static function getSettingValue($name)
     {
-        return self::settingName($name)->first()?->value;
+        return Cache::rememberForever('settings_'.$name, fn () => self::settingName($name)->first()?->value);
     }
 }

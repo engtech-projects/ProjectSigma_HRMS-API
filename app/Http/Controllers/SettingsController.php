@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Settings;
 use App\Http\Requests\UpdatesettingsRequest;
+use Illuminate\Support\Facades\Cache;
 
 class SettingsController extends Controller
 {
@@ -26,6 +27,10 @@ class SettingsController extends Controller
         $validatedData = $request->validated();
         $setting->value = $validatedData['value'];
         $setting->save();
+        Cache::forget('settings_'.$setting->setting_name);
+        Cache::rememberForever('settings_'.$setting->setting_name, function () use ($setting) {
+            return $setting->value;
+        });
         return response()->json([
             'success' => true,
             'data' => $setting,
