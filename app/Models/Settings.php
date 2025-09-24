@@ -36,6 +36,6 @@ class Settings extends Model
 
     public static function getSettingValue($name)
     {
-        return Cache::rememberForever('settings_'.$name, fn () => self::settingName($name)->first()?->value);
+        return Cache::rememberForever('settings_'.$name->value, fn () => self::settingName($name)->first()?->value);
     }
 }
