@@ -59,7 +59,6 @@ class WitholdingTaxContributionController extends Controller
         return response()->json($data, 404);
     }
 
-
     /**
      * Update the specified resource in storage.
      */
