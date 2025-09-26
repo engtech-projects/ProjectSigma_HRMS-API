@@ -6,6 +6,7 @@ use App\Models\Allowance;
 use App\Models\Position;
 use App\Http\Requests\StoreallowanceRequest;
 use App\Http\Requests\UpdateallowanceRequest;
+use App\Http\Resources\TempAllData;
 
 class AllowanceController extends Controller
 {
@@ -15,11 +16,10 @@ class AllowanceController extends Controller
     public function index()
     {
         $main = Allowance::paginate(config("app.pagination_per_page"));
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $main;
-        return response()->json($data);
+        return TempAllData::collection($main)->additional([
+            'success' => true,
+            'message' => 'Allowance fetched.',
+        ]);
     }
 
     public function get()

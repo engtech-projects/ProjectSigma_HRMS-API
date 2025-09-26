@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PhilhealthContribution;
 use App\Http\Requests\StorePhilhealthContributionRequest;
 use App\Http\Requests\UpdatePhilhealthContributionRequest;
+use App\Http\Resources\TempAllData;
 
 class PhilhealthContributionController extends Controller
 {
@@ -14,11 +15,10 @@ class PhilhealthContributionController extends Controller
     public function index()
     {
         $sss = PhilhealthContribution::paginate(config("app.pagination_per_page"));
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $sss;
-        return response()->json($data);
+        return TempAllData::collection($sss)->additional([
+            'success' => true,
+            'message' => 'Philhealth Contribution fetched.',
+        ]);
     }
 
     /**

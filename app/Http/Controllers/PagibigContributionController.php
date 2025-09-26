@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PagibigContribution;
 use App\Http\Requests\StorePagibigContributionRequest;
 use App\Http\Requests\UpdatePagibigContributionRequest;
+use App\Http\Resources\TempAllData;
 
 class PagibigContributionController extends Controller
 {
@@ -15,19 +16,10 @@ class PagibigContributionController extends Controller
     {
         //
         $pagibig = PagibigContribution::paginate(config("app.pagination_per_page"));
-        $data = json_decode('{}');
-        $data->message = "successfully fetch all";
-        $data->success = true;
-        $data->data = $pagibig;
-        return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return TempAllData::collection($pagibig)->additional([
+            'success' => true,
+            'message' => 'Pagibig Contribution fetched.',
+        ]);
     }
 
     /**
@@ -67,14 +59,6 @@ class PagibigContributionController extends Controller
         $data->message = "No data found.";
         $data->success = false;
         return response()->json($data, 404);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PagibigContribution $pagibigContribution)
-    {
-        //
     }
 
     /**

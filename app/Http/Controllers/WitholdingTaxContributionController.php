@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\WitholdingTaxContribution;
 use App\Http\Requests\StoreWitholdingTaxContributionRequest;
 use App\Http\Requests\UpdateWitholdingTaxContributionRequest;
+use App\Http\Resources\TempAllData;
 
 class WitholdingTaxContributionController extends Controller
 {
@@ -14,19 +15,10 @@ class WitholdingTaxContributionController extends Controller
     public function index()
     {
         $witholdingtax = WitholdingTaxContribution::paginate(config("app.pagination_per_page"));
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $witholdingtax;
-        return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return TempAllData::collection($witholdingtax)->additional([
+            'success' => true,
+            'message' => 'Witholding Tax Contribution fetched.',
+        ]);
     }
 
     /**
@@ -67,13 +59,6 @@ class WitholdingTaxContributionController extends Controller
         return response()->json($data, 404);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(WitholdingTaxContribution $witholdingTaxContribution)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

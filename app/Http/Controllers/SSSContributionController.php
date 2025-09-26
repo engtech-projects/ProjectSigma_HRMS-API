@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SSSContribution;
 use App\Http\Requests\StoreSSSContributionRequest;
 use App\Http\Requests\UpdateSSSContributionRequest;
+use App\Http\Resources\TempAllData;
 
 class SSSContributionController extends Controller
 {
@@ -14,19 +15,10 @@ class SSSContributionController extends Controller
     public function index()
     {
         $sss = SSSContribution::paginate(config("app.pagination_per_page"));
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $sss;
-        return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return TempAllData::collection($sss)->additional([
+            'success' => true,
+            'message' => 'SSS Contribution fetched.',
+        ]);
     }
 
     /**

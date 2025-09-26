@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Leave;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Http\Requests\UpdateLeaveRequest;
+use App\Http\Resources\TempAllData;
 
 class LeaveController extends Controller
 {
@@ -14,11 +15,10 @@ class LeaveController extends Controller
     public function index()
     {
         $leave = Leave::paginate(config("app.pagination_per_page"));
-        $data = json_decode('{}');
-        $data->message = "Successfully fetch.";
-        $data->success = true;
-        $data->data = $leave;
-        return response()->json($data);
+        return TempAllData::collection($leave)->additional([
+            'success' => true,
+            'message' => 'Leave fetched.',
+        ]);
     }
 
     /**
