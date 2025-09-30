@@ -166,21 +166,21 @@ class AccessibilitiesSeederProjects extends Seeder
                 ],
                 [
                     'id' => 3039,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING_BILL_OF_QUANTITIES->value,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING_BILLOFQUANTITIES->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 3040,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING_SUMMARY_OF_RATES->value,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING_SUMMARYOFRATES->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 3041,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING_SUMMARY_OF_BID->value,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING_SUMMARYOFBID->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -208,14 +208,14 @@ class AccessibilitiesSeederProjects extends Seeder
                 ],
                 [
                     'id' => 3051,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_LIVE_PROJECTS->value,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_LIVEPROJECTS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
                 [
                     'id' => 3052,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_BILLS_OF_MATERIALS->value,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_BILLSOFMATERIALS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -236,7 +236,7 @@ class AccessibilitiesSeederProjects extends Seeder
                 ],
                 [
                     'id' => 3055,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_PROJECT_DETAILS->value,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_PROJECTDETAILS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -291,8 +291,8 @@ class AccessibilitiesSeederProjects extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
             ],
-            [ "id" ],
-            [ "accessibilities_name", "deleted_at"]
+            ["id"],
+            ["accessibilities_name", "deleted_at"]
         );
     }
 }
