@@ -215,7 +215,7 @@ class AccessibilitiesSeederProjects extends Seeder
                 ],
                 [
                     'id' => 3052,
-                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_BILLSOFMATERIALS->value,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_BILLOFMATERIALS->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
