@@ -22,7 +22,7 @@ enum AccessibilityProjects: string
     case PROJECTMONITORING_MARKETING_ATTACHMENT = "project monitoring:marketing_attachment";
     case PROJECTMONITORING_TSS = "project monitoring:tss";
     case PROJECTMONITORING_TSS_LIVEPROJECTS = "project monitoring:tss_live projects";
-    case PROJECTMONITORING_TSS_BILLSOFMATERIALS = "project monitoring:tss_bills of materials";
+    case PROJECTMONITORING_TSS_BILLOFMATERIALS = "project monitoring:tss_bill of materials";
     case PROJECTMONITORING_TSS_DUPA = "project monitoring:tss_dupa";
     case PROJECTMONITORING_TSS_CASHFLOW = "project monitoring:tss_cashflow";
     case PROJECTMONITORING_TSS_PROJECTDETAILS = "project monitoring:tss_project details";
