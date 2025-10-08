@@ -50,6 +50,7 @@ class ApiServiceController extends Controller
     public function getEmployeeList()
     {
         $employeeList = Employee::withTrashed()
+        ->with(["current_employment.position", "digital_signature"])
         ->orderBy('family_name')
         ->get();
         return new JsonResponse([

@@ -34,6 +34,8 @@ class SyncListEmployeeResource extends JsonResource
             'religion' => $this->religion,
             'weight' => $this->weight,
             'height' => $this->height,
+            'current_position' => $this->current_position_name,
+            'digital_signature' => $this->digital_signature?->base64,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
             'deleted_at' => $this->deleted_at?->format('Y-m-d H:i:s'),
