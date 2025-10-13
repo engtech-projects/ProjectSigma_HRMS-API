@@ -26,6 +26,7 @@ class AllowanceRequestController extends Controller
     public function index()
     {
         $main = AllowanceRequest::orderBy('created_at', 'desc')
+        ->latest()
         ->paginate(config("app.pagination_per_page", 10));
         return AllowanceRequestResource::collection($main)
         ->additional([
@@ -150,15 +151,9 @@ class AllowanceRequestController extends Controller
     public function myRequest()
     {
         $myRequest = AllowanceRequest::with(['employee_allowances','charge_assignment'])
-            ->myRequests()
-            ->orderBy("created_at", "DESC")
-            ->paginate(config("app.pagination_per_page", 10));
-        if ($myRequest->isEmpty()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No data found.',
-            ], JsonResponse::HTTP_OK);
-        }
+        ->myRequests()
+        ->latest()
+        ->paginate(config("app.pagination_per_page", 10));
         return AllowanceRequestResource::collection($myRequest)
         ->additional([
             'success' => true,
@@ -173,7 +168,7 @@ class AllowanceRequestController extends Controller
     {
         $result = AllowanceRequest::with(['employee_allowances', 'charge_assignment'])
         ->myApprovals()
-        ->orderBy("created_at", "DESC")
+        ->latest()
         ->paginate(config("app.pagination_per_page", 10));
         return AllowanceRequestResource::collection($result)
         ->additional([
