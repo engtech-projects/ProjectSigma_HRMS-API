@@ -96,6 +96,7 @@ enum AccessibilityHrms: string
     case HRMS_EMPLOYEE_PAN_FORM_TERMINATION = "hrms:employee_pan_form_termination";
     case HRMS_EMPLOYEE_PAN_FORM_BULKTRANSFER = "hrms:employee_pan_form_bulk transfer";
     case HRMS_EMPLOYEE_PAN_FORM_MEMO = "hrms:employee_pan_form_memo";
+    case HRMS_EMPLOYEE_PAN_FORM_REHIRE = "hrms:employee_pan_form_rehire";
     case HRMS_EMPLOYEE_PAN_ALLREQUESTS = "hrms:employee_pan_all request";
     case HRMS_EMPLOYEE_PAN_MYAPPROVALS = "hrms:employee_pan_approval";
     case HRMS_EMPLOYEE_MANPOWERREQUEST_ALLREQUESTS = "hrms:employee_manpower request_all request";

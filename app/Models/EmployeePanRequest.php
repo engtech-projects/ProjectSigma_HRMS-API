@@ -40,6 +40,7 @@ class EmployeePanRequest extends Model
     public const TRANSFER = "Transfer";
     public const PROMOTION = "Promotion";
     public const TERMINATION = "Termination";
+    public const REHIRE = "Rehire";
 
     public const EMPLOYEE_WORK_ASSIGNMENT = 'App\Model\EmployeeWorkAssignment';
     protected $appends = [
@@ -216,6 +217,9 @@ class EmployeePanRequest extends Model
                 break;
             case EmployeePanRequest::TERMINATION:
                 $this->terminationRequest();
+                break;
+            case EmployeePanRequest::REHIRE:
+                $this->rehire();
                 break;
         }
         $this->request_status = RequestStatuses::APPROVED->value;
@@ -497,7 +501,28 @@ class EmployeePanRequest extends Model
     }
     public function rehire()
     {
-        // JUST A PLACEHOLDER WILL PROBABLY BE USED SOON
+        $employeeInternalWork = $this->employee->employee_internal()->create([
+            "status" => EmployeeInternalWorkExperiencesStatus::CURRENT,
+            'actual_salary' => $this->salarygrade->monthly_salary_amount,
+            "position_id" => $this->designation_position,
+            "employment_status" => $this->employment_status,
+            'immediate_supervisor' => $jobApplicant->immediate_supervisor ?? "N/A",
+            'date_from' => $this->date_of_effictivity,
+            'work_location' => $this->work_location,
+            'hire_source' => $this->hire_source,
+            'salary_type' => $this->salary_type,
+            'salary_grades' => $this->salary_grades,
+        ]);
+        if ($this->work_location === WorkLocation::PROJECT->value) {
+            $employeeInternalWork->projects()->attach($this->project_ids);
+        } else {
+            $employeeInternalWork->department_id = $this->section_department_id;
+            $employeeInternalWork->save();
+        }
+        $this->employee->company_employments()->update([
+            "date_hired" => $this->date_of_effictivity,
+            "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
+        ]);
     }
 
     public function getDaysDelayedFilingAttribute()

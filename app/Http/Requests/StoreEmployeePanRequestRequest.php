@@ -114,6 +114,9 @@ class StoreEmployeePanRequestRequest extends FormRequest
         if ($this->work_location === WorkLocation::OFFICE->value && $this->projects === []) {
             $this->merge(['projects' => null]);
         }
+        // if ($this->work_location === WorkLocation::PROJECT->value) {
+        //     $this->merge(['section_department_id' => null]);
+        // }
     }
 
     /**
@@ -131,7 +134,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'type' => [
                 "required",
                 "string",
-                'in:New Hire,Termination,Transfer,Promotion'
+                'in:New Hire,Rehire,Termination,Transfer,Promotion'
             ],
             'pan_job_applicant_id' => [
                 "nullable",
@@ -148,7 +151,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                'required_if:type,==,Transfer,Promotion,Termination',
+                'required_if:type,==,Rehire,Transfer,Promotion,Termination',
                 function ($attribute, $value, $fail) {
                     if ($this->pendingEmployee($value)) {
                         $fail("This EMPLOYEE has a pending PAN request");
@@ -158,42 +161,42 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'company_id_num' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire',
+                'required_if:type,==,New Hire,Rehire',
             ],
             'hire_source' => [
                 "nullable",
                 "string",
                 new Enum(HireSourceType::class),
-                'required_if:type,==,New Hire',
+                'required_if:type,==,New Hire,Rehire',
             ],
             'employment_status' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire,Promotion',
+                'required_if:type,==,New Hire,Rehire,Promotion',
                 new Enum(EmploymentStatus::class)
             ],
             'salary_type' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire,Transfer,Promotion',
+                'required_if:type,==,New Hire,Rehire,Transfer,Promotion',
                 new Enum(SalaryRequestType::class)
             ],
             'designation_position' => [
                 "nullable",
                 "integer",
                 "exists:positions,id",
-                'required_if:type,==,New Hire,Transfer,Promotion',
+                'required_if:type,==,New Hire,Rehire,Transfer,Promotion',
             ],
             'salary_grades' => [
                 "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
-                'required_if:type,==,New Hire,Promotion',
+                'required_if:type,==,New Hire,Rehire,Promotion',
             ],
             'work_location' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire,Transfer',
+                'required_if:type,==,New Hire,Rehire,Transfer',
                 "max:250",
             ],
             'section_department_id' => [
@@ -201,6 +204,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "integer",
                 "exists:departments,id",
                 'required_if:work_location,==,'.WorkLocation::OFFICE->value,
+                'exclude_if:work_location,==,'.WorkLocation::PROJECT->value,
             ],
             'projects' => [
                 "nullable",
