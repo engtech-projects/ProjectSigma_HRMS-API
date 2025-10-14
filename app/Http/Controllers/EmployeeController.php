@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EmployeeCompanyEmploymentsStatus;
 use App\Enums\RequestStatuses;
 use App\Models\Employee;
 use App\Enums\SearchTypes;
@@ -41,6 +42,7 @@ class EmployeeController extends Controller
         $searchKey = $validatedData["key"];
         $noAccounts = $validatedData["type"] == SearchTypes::NOACCOUNTS->value;
         $withAccounts = $validatedData["type"] == SearchTypes::WITHACCOUNTS->value;
+        $inactive = $validatedData["type"] == SearchTypes::INACTIVE->value;
         $main = Employee::select("id", "first_name", "middle_name", "family_name")
             ->where(function ($q) use ($searchKey) {
                 $q->orWhere('first_name', 'like', "%{$searchKey}%")
@@ -63,6 +65,11 @@ class EmployeeController extends Controller
             ->when($withAccounts, function (Builder $builder) {
                 $builder->whereHas("account");
             })
+            ->when($inactive, function (Builder $builder) {
+                $builder->whereHas("company_employments", function ($query) {
+                    $query->where("status", EmployeeCompanyEmploymentsStatus::INACTIVE->value);
+                });
+            })
             ->with("account")
             ->limit(25)
             ->orderBy('family_name')
@@ -77,7 +84,6 @@ class EmployeeController extends Controller
     public function get()
     {
         $employeeList = Employee::with(['current_employment.position', 'current_employment.projects', "company_employments"])->orderBy('family_name')->get();
-
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
@@ -93,7 +99,6 @@ class EmployeeController extends Controller
         $main = new Employee();
         $main->fill($request->validated());
         $data = json_decode('{}');
-
         if (!$main->save()) {
             $data->message = "Save failed.";
             $data->success = false;
@@ -183,7 +188,6 @@ class EmployeeController extends Controller
             $data->success = false;
             return response()->json($data, 400);
         }
-
         $data->message = "Failed update.";
         $data->success = false;
         return response()->json($data, 404);
@@ -221,7 +225,6 @@ class EmployeeController extends Controller
         if (!array_key_exists("end_date", $main)) {
             $main["end_date"] = "";
         }
-
         $getemployeeschedule = $req->scheduleEmployeeDateFilter($req, $main["start_date"], $main["end_date"]);
         $lateEmployeeData = [];
 
