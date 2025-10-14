@@ -506,7 +506,7 @@ class EmployeePanRequest extends Model
             'actual_salary' => $this->salarygrade->monthly_salary_amount,
             "position_id" => $this->designation_position,
             "employment_status" => $this->employment_status,
-            'immediate_supervisor' => $jobApplicant->immediate_supervisor ?? "N/A",
+            'immediate_supervisor' => "N/A",
             'date_from' => $this->date_of_effictivity,
             'work_location' => $this->work_location,
             'hire_source' => $this->hire_source,
@@ -521,7 +521,7 @@ class EmployeePanRequest extends Model
         }
         $this->employee->company_employments()->update([
             "date_hired" => $this->date_of_effictivity,
-            "status" => EmployeeCompanyEmploymentsStatus::ACTIVE,
+            "status" => EmployeeCompanyEmploymentsStatus::ACTIVE->value,
         ]);
     }
 
