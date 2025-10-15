@@ -51,7 +51,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
         // $this->merge(['eligible_for_rehire' => null]);
         // $this->merge(['last_day_worked' => null]);
         $this->prepareApprovalValidation();
-        if (['New Hire', 'Rehire'].contains($this->type)) {
+        if (in_array($this->type, ['New Hire', 'Rehire'])) {
             // REMOVE TERMINATION EXCLUSIVE FIELDS
             $this->merge(['type_of_termination' => null]);
             $this->merge(['reasons_for_termination' => null]);
