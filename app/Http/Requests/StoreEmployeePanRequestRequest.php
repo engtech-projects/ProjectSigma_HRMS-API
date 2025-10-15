@@ -51,7 +51,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
         // $this->merge(['eligible_for_rehire' => null]);
         // $this->merge(['last_day_worked' => null]);
         $this->prepareApprovalValidation();
-        if (in_array($this->type, ['New Hire', 'Rehire'])) {
+        if ($this->type === 'New Hire') {
             // REMOVE TERMINATION EXCLUSIVE FIELDS
             $this->merge(['type_of_termination' => null]);
             $this->merge(['reasons_for_termination' => null]);
@@ -59,8 +59,13 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['last_day_worked' => null]);
             // REMOVE TRANSFER/PROMOTION/TERMINATION FIELDS
             $this->merge(['employee_id' => null]);
-        }
-        if ($this->type === 'Transfer') {
+        } elseif ($this->type === 'Rehire') {
+            // REMOVE TERMINATION EXCLUSIVE FIELDS
+            $this->merge(['type_of_termination' => null]);
+            $this->merge(['reasons_for_termination' => null]);
+            $this->merge(['eligible_for_rehire' => null]);
+            $this->merge(['last_day_worked' => null]);
+        } elseif ($this->type === 'Transfer') {
             // REMOVE NEWHIRE EXCLUSIVE FIELDS
             $this->merge(['pan_job_applicant_id' => null]);
             $this->merge(['company_id_num' => null]);
@@ -73,8 +78,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['reasons_for_termination' => null]);
             $this->merge(['eligible_for_rehire' => null]);
             $this->merge(['last_day_worked' => null]);
-        }
-        if ($this->type === 'Promotion') {
+        } elseif ($this->type === 'Promotion') {
             // REMOVE NEWHIRE EXCLUSIVE FIELDS
             $this->merge(['pan_job_applicant_id' => null]);
             $this->merge(['company_id_num' => null]);
@@ -88,8 +92,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['reasons_for_termination' => null]);
             $this->merge(['eligible_for_rehire' => null]);
             $this->merge(['last_day_worked' => null]);
-        }
-        if ($this->type === 'Termination') {
+        } elseif ($this->type === 'Termination') {
             // REMOVE NEWHIRE EXCLUSIVE FIELDS
             $this->merge(['pan_job_applicant_id' => null]);
             $this->merge(['company_id_num' => null]);
@@ -104,6 +107,12 @@ class StoreEmployeePanRequestRequest extends FormRequest
             // REMOVE NEWHIRE/TRANSFER/PROMOTION FIELDS
             $this->merge(['salary_type' => null]);
             $this->merge(['designation_position' => null]);
+        } elseif ($this->type === 'Rehire') {
+            // REMOVE TERMINATION EXCLUSIVE FIELDS
+            $this->merge(['type_of_termination' => null]);
+            $this->merge(['reasons_for_termination' => null]);
+            $this->merge(['eligible_for_rehire' => null]);
+            $this->merge(['last_day_worked' => null]);
         }
         if ($this->work_location === WorkLocation::OFFICE->value && $this->projects === []) {
             $this->merge(['projects' => null]);
