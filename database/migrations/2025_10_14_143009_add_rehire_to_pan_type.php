@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('employee_pan_requests', function (Blueprint $table) {
-            $table->enum('type', ['New Hire', 'Transfer', 'Promotion', 'Termination', 'Rehire'])->required()->change();
+            $table->enum('type', ['New Hire', 'Transfer', 'Promotion', 'Termination', 'Rehire'])->change();
         });
         Schema::useNativeSchemaOperationsIfPossible(false);
     }
@@ -24,7 +24,7 @@ return new class () extends Migration {
     {
         Schema::useNativeSchemaOperationsIfPossible();
         Schema::table('employee_pan_requests', function (Blueprint $table) {
-            $table->enum('type', ['New Hire', 'Transfer', 'Promotion', 'Termination'])->required()->change();
+            $table->enum('type', ['New Hire', 'Transfer', 'Promotion', 'Termination'])->change();
         });
         Schema::useNativeSchemaOperationsIfPossible(false);
     }

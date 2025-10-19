@@ -277,13 +277,6 @@ class AccessibilitiesSeederProjects extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
-                    'id' => 3080,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-                [
                     'id' => 3090,
                     'accessibilities_name' => "",
                     'deleted_at' => Carbon::now(),
