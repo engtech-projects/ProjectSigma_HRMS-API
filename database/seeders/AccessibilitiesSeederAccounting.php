@@ -458,6 +458,13 @@ class AccessibilitiesSeederAccounting extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 1258,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_SETUP_REPORTGROUP->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [ "id" ],
             [ "accessibilities_name", "deleted_at"]

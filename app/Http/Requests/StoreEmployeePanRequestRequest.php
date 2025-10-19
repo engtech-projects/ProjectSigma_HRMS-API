@@ -29,7 +29,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
         // $this->merge(['date_of_effictivity' => null]);
         // $this->merge(['type' => null]);
         // $this->merge(['comments' => null]);
-        // NEWHIRE EXCLUSIVE FIELDS
+        // NEWHIRE/REHIRE EXCLUSIVE FIELDS
         // $this->merge(['pan_job_applicant_id' => null]);
         // $this->merge(['company_id_num' => null]);
         // $this->merge(['hire_source' => null]);
@@ -59,8 +59,13 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['last_day_worked' => null]);
             // REMOVE TRANSFER/PROMOTION/TERMINATION FIELDS
             $this->merge(['employee_id' => null]);
-        }
-        if ($this->type === 'Transfer') {
+        } elseif ($this->type === 'Rehire') {
+            // REMOVE TERMINATION EXCLUSIVE FIELDS
+            $this->merge(['type_of_termination' => null]);
+            $this->merge(['reasons_for_termination' => null]);
+            $this->merge(['eligible_for_rehire' => null]);
+            $this->merge(['last_day_worked' => null]);
+        } elseif ($this->type === 'Transfer') {
             // REMOVE NEWHIRE EXCLUSIVE FIELDS
             $this->merge(['pan_job_applicant_id' => null]);
             $this->merge(['company_id_num' => null]);
@@ -73,8 +78,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['reasons_for_termination' => null]);
             $this->merge(['eligible_for_rehire' => null]);
             $this->merge(['last_day_worked' => null]);
-        }
-        if ($this->type === 'Promotion') {
+        } elseif ($this->type === 'Promotion') {
             // REMOVE NEWHIRE EXCLUSIVE FIELDS
             $this->merge(['pan_job_applicant_id' => null]);
             $this->merge(['company_id_num' => null]);
@@ -88,8 +92,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['reasons_for_termination' => null]);
             $this->merge(['eligible_for_rehire' => null]);
             $this->merge(['last_day_worked' => null]);
-        }
-        if ($this->type === 'Termination') {
+        } elseif ($this->type === 'Termination') {
             // REMOVE NEWHIRE EXCLUSIVE FIELDS
             $this->merge(['pan_job_applicant_id' => null]);
             $this->merge(['company_id_num' => null]);
@@ -105,12 +108,6 @@ class StoreEmployeePanRequestRequest extends FormRequest
             $this->merge(['salary_type' => null]);
             $this->merge(['designation_position' => null]);
         }
-        // if ($this->type === 'Rehire') {
-        //     $this->merge(['projects' => null]);
-        // }
-        // if ($this->type === 'Memo') {
-        //     $this->merge(['projects' => null]);
-        // }
         if ($this->work_location === WorkLocation::OFFICE->value && $this->projects === []) {
             $this->merge(['projects' => null]);
         }
@@ -131,13 +128,13 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'type' => [
                 "required",
                 "string",
-                'in:New Hire,Termination,Transfer,Promotion'
+                'in:New Hire,Rehire,Termination,Transfer,Promotion'
             ],
             'pan_job_applicant_id' => [
                 "nullable",
                 "integer",
                 "exists:job_applicants,id",
-                'required_if:type,==,New Hire',
+                'required_if:type,New Hire',
                 function ($attribute, $value, $fail) {
                     if ($this->pendingNewHire($value)) {
                         $fail("This NEW HIRE has a pending PAN request");
@@ -148,7 +145,7 @@ class StoreEmployeePanRequestRequest extends FormRequest
                 "nullable",
                 "integer",
                 "exists:employees,id",
-                'required_if:type,==,Transfer,Promotion,Termination',
+                'required_if:type,Rehire,Transfer,Promotion,Termination',
                 function ($attribute, $value, $fail) {
                     if ($this->pendingEmployee($value)) {
                         $fail("This EMPLOYEE has a pending PAN request");
@@ -158,84 +155,85 @@ class StoreEmployeePanRequestRequest extends FormRequest
             'company_id_num' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire',
+                'required_if:type,New Hire,Rehire',
             ],
             'hire_source' => [
                 "nullable",
                 "string",
                 new Enum(HireSourceType::class),
-                'required_if:type,==,New Hire',
+                'required_if:type,New Hire,Rehire',
             ],
             'employment_status' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire,Promotion',
+                'required_if:type,New Hire,Rehire,Promotion',
                 new Enum(EmploymentStatus::class)
             ],
             'salary_type' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire,Transfer,Promotion',
+                'required_if:type,New Hire,Rehire,Transfer,Promotion',
                 new Enum(SalaryRequestType::class)
             ],
             'designation_position' => [
                 "nullable",
                 "integer",
                 "exists:positions,id",
-                'required_if:type,==,New Hire,Transfer,Promotion',
+                'required_if:type,New Hire,Rehire,Transfer,Promotion',
             ],
             'salary_grades' => [
                 "nullable",
                 "integer",
                 "exists:salary_grade_steps,id",
-                'required_if:type,==,New Hire,Promotion',
+                'required_if:type,New Hire,Rehire,Promotion',
             ],
             'work_location' => [
                 "nullable",
                 "string",
-                'required_if:type,==,New Hire,Transfer',
+                'required_if:type,New Hire,Rehire,Transfer',
                 "max:250",
             ],
             'section_department_id' => [
                 "nullable",
                 "integer",
                 "exists:departments,id",
-                'required_if:work_location,==,'.WorkLocation::OFFICE->value,
+                'required_if:work_location,'.WorkLocation::OFFICE->value,
+                'exclude_if:work_location,'.WorkLocation::PROJECT->value,
             ],
             'projects' => [
                 "nullable",
                 "array",
                 "min:1",
-                'required_if:work_location,==,'.WorkLocation::PROJECT->value,
+                'required_if:work_location,'.WorkLocation::PROJECT->value,
             ],
             'projects.*' => [
                 "nullable",
                 "integer",
                 "exists:projects,id",
-                'required_if:work_location,==,'.WorkLocation::PROJECT->value,
+                'required_if:work_location,'.WorkLocation::PROJECT->value,
             ],
             'type_of_termination' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination',
+                'required_if:type,Termination',
                 "max:250",
             ],
             'reasons_for_termination' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination',
+                'required_if:type,Termination',
                 "max:250",
             ],
             'eligible_for_rehire' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination',
+                'required_if:type,Termination',
                 "max:250",
             ],
             'last_day_worked' => [
                 "nullable",
                 "string",
-                'required_if:type,==,Termination',
+                'required_if:type,Termination',
                 "max:250",
             ],
             'comments' => [

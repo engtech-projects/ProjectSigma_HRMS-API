@@ -621,8 +621,8 @@ class AccessibilitiesSeederHrms extends Seeder
                 ],
                 [
                     'id' => 88,
-                    'accessibilities_name' => "",
-                    'deleted_at' => Carbon::now(),
+                    'accessibilities_name' => AccessibilityHrms::HRMS_EMPLOYEE_PAN_FORM_REHIRE->value,
+                    'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
