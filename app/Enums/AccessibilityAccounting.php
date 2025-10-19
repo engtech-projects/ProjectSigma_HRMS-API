@@ -18,6 +18,7 @@ enum AccessibilityAccounting: string
     case ACCOUNTING_SETUP_SYNCHRONIZATION = "accounting:setup_synchronization";
     case ACCOUNTING_SETUP_PARTICULAR_GROUP = "accounting:setup_particular group";
     case ACCOUNTING_SETUP_REPORTGROUP = "accounting:setup_report group";
+    case ACCOUNTING_SETUP_SUBGROUP = "accounting:setup_sub group";
     case ACCOUNTING_SETUP_WITHHOLDING_TAX  = "accounting:setup_withholding tax";
     case ACCOUNTING_SETUP_TERMS = "accounting:setup_terms";
     //Accounting Request
