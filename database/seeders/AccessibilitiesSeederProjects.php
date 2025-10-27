@@ -200,6 +200,13 @@ class AccessibilitiesSeederProjects extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
+                    'id' => 3044,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_MARKETING_PROJECTDETAILS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
                     'id' => 3050,
                     'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS->value,
                     'deleted_at' => null,
@@ -237,6 +244,34 @@ class AccessibilitiesSeederProjects extends Seeder
                 [
                     'id' => 3055,
                     'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_PROJECTDETAILS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3056,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_MYREQUEST->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3057,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_MYAPPROVAL->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3058,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_ALLREQUEST->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 3059,
+                    'accessibilities_name' => AccessibilityProjects::PROJECTMONITORING_TSS_APPROVEDIRECTCOSTLIST->value,
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
