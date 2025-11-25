@@ -211,6 +211,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 280,
+                    'form' => "Request Turnover Slip",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::INVENTORY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [
                 'id'
