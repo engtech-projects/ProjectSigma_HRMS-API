@@ -251,12 +251,21 @@ class ReportController extends Controller
                     $reportData = ReportService::employeeLeaves($validated);
                     break;
                 case AdministrativeReport::EMPLOYEE_ABSENCES->value:
+                    if (function_exists('set_time_limit')) {
+                        @set_time_limit(65);
+                    }
                     $reportData = ReportService::employeeAbsences($validated);
                     break;
                 case AdministrativeReport::EMPLOYEE_LATES->value:
+                    if (function_exists('set_time_limit')) {
+                        @set_time_limit(65);
+                    }
                     $reportData = ReportService::employeeAbsences($validated);
                     break;
                 case AdministrativeReport::EMPLOYEE_ATTENDANCE->value:
+                    if (function_exists('set_time_limit')) {
+                        @set_time_limit(65);
+                    }
                     $reportData = ReportService::employeeAbsences($validated);
                     break;
             }
