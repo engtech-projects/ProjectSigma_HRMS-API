@@ -1,0 +1,187 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\LoanPaymentPostingStatusType;
+use App\Traits\HasApproval;
+use App\Enums\LoanPaymentsType;
+use App\Enums\PostingStatusType;
+use App\Models\Traits\StatusScope;
+use App\Traits\ModelHelpers;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class CashAdvance extends Model
+{
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+    use HasApproval;
+    use StatusScope;
+    use ModelHelpers;
+
+    protected $casts = [
+        'approvals' => 'array',
+        "deduction_date_start" => "date:Y-m-d",
+    ];
+
+    protected $fillable = [
+        'id',
+        'employee_id',
+        'department_id',
+        'project_id',
+        'terms_of_payment', // Not Sure but Removable. deduct every payroll
+        'installment_deduction',
+        'amount',
+        'deduction_date_start',
+        'purpose',
+        'remarks',
+        'approvals',
+        'request_status',
+        'created_by',
+    ];
+
+    protected $appends = [
+        "total_paid",
+        "balance",
+    ];
+
+    /**
+    * ==================================================
+    * MODEL RELATIONSHIPS
+    * ==================================================
+    */
+
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class, "id", "employee_id");
+    }
+
+    public function department(): HasOne
+    {
+        return $this->hasOne(Department::class, "id", "department_id");
+    }
+
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class, "id", "project_id");
+    }
+
+    public function cashAdvancePayments(): HasMany
+    {
+        return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id');
+    }
+
+    public function cashAdvancePaymentsPosted(): HasMany
+    {
+        return $this->hasMany(CashAdvancePayments::class, 'cashadvance_id', 'id')->isPosted();
+    }
+    public function payroll_detail_deduction(): MorphOne
+    {
+        return $this->morphOne(PayrollDetailDeduction::class, 'deduction');
+    }
+
+    public function payroll_details_charging(): MorphOne
+    {
+        return $this->morphOne(PayrollDetailDeduction::class, 'charge');
+    }
+    /**
+    * ==================================================
+    * MODEL ATTRIBUTES
+    * ==================================================
+    */
+    public function getBalanceAttribute()
+    {
+        return round($this->amount - $this->totalPaid, 2);
+    }
+
+    public function getTotalPaidAttribute()
+    {
+        return round($this->cashAdvancePaymentsPosted()->sum("amount_paid"), 2);
+    }
+
+    public function isFullyPaidAttribute()
+    {
+        $totalpaid = $this->cashAdvancePaymentsPosted()->sum("amount_paid");
+        if ($this->amount <= $totalpaid) {
+            return true;
+        }
+        return false;
+    }
+    /**
+    * ==================================================
+    * STATIC SCOPES
+    * ==================================================
+    */
+    public static function scopeIsOngoing($query)
+    {
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from cash_advance_payments where cashadvance_id = cash_advances.id and posting_status = ?) , 0) < amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+    public static function scopeIsPaid($query)
+    {
+        return $query->whereRaw(
+            "coalesce((select sum(amount_paid) from cash_advance_payments where cashadvance_id = cash_advances.id and posting_status = ?) , 0) >= amount",
+            [PostingStatusType::POSTED->value]
+        );
+    }
+    /**
+    * ==================================================
+    * DYNAMIC SCOPES
+    * ==================================================
+    */
+    /**
+    * ==================================================
+    * MODEL FUNCTIONS
+    * ==================================================
+    */
+    public function paymentWillOverpay($amount)
+    {
+        // $totalpaid = $this->loanPayments()->sum('amount_paid');
+        $totalpaid = $this->cashAdvancePaymentsPosted()->sum('amount_paid');
+
+        if ($this->amount < $totalpaid + $amount) {
+            return true;
+        }
+        return false;
+    }
+
+    public function cashAdvance($paymentAmount, $type)
+    {
+        if ($this->is_fully_paid) {
+            return false;
+        }
+
+        if ($this->paymentWillOverpay($paymentAmount)) {
+            return false;
+        }
+
+        if ($type == LoanPaymentsType::MANUAL->value) {
+            $this->cashAdvancePayments()->create([
+                'cashadvance_id' => $this->id,
+                'amount_paid' => $paymentAmount,
+                'date_paid' => Carbon::now(),
+                'payment_type' => LoanPaymentsType::MANUAL,
+                'posting_status' => LoanPaymentPostingStatusType::POSTED
+            ]);
+        } else {
+            $this->cashAdvancePayments()->create([
+                'cashadvance_id' => $this->id,
+                'amount_paid' => $paymentAmount,
+                'date_paid' => Carbon::now(),
+                'payment_type' => LoanPaymentsType::MANUAL,
+                'posting_status' => LoanPaymentPostingStatusType::NOTPOSTED
+            ]);
+        }
+
+        return true;
+    }
+}
