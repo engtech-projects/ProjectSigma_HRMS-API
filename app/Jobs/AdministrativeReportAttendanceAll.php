@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class AdministrativeReportAttendanceAll implements ShouldQueue, ShouldBeUnique
 {
@@ -28,9 +29,14 @@ class AdministrativeReportAttendanceAll implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        $cacheKey = 'employee-absences-' . $this->validated['group_type'] . '-' . $this->validated['date_from'] . '-' . $this->validated['date_to'];
+        // GENERATE REPORT DATA
         $reportData = ReportService::employeeAbsences($this->validated);
-        cache()->put($cacheKey, $reportData, now()->addDay());
+        // STORE REPORT DATA IN FILE IN CACHE AND SCHEDULE DELETION
+        $cacheKey = $this->validated['group_type'] . '-' . $this->validated['group_type'] . '-' . $this->validated['date_from'] . '-' . $this->validated['date_to'];
+        $path = 'public/reports/'. $cacheKey . '.json';
+        $storedPath = Storage::put($path, json_encode($reportData));
+        DeleteTempFileAfterDelay::dispatch($storedPath)->delay(now()->addDay());
+        cache()->put($cacheKey, $storedPath, now()->addDay());
     }
     public function uniqueId(): string
     {
