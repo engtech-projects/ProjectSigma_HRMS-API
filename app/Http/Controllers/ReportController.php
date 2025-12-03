@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\GroupType;
 use App\Enums\Reports\LoanReports;
 use App\Enums\Reports\AdministrativeReport;
 use App\Enums\Reports\PortalMonitoringReport;
@@ -39,7 +40,10 @@ use App\Http\Resources\Reports\OtherDeductionMP2Employee;
 use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Resources\UserAccessibilityReportResource;
 use App\Http\Services\Report\ReportService;
+use App\Jobs\AdministrativeReportAttendanceAll;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
+use Spatie\FlareClient\Report;
 
 class ReportController extends Controller
 {
@@ -251,20 +255,41 @@ class ReportController extends Controller
                     $reportData = ReportService::employeeLeaves($validated);
                     break;
                 case AdministrativeReport::EMPLOYEE_ABSENCES->value:
-                    if (function_exists('set_time_limit')) {
-                        @set_time_limit(600);
+                    if ($validated['group_type'] == GroupType::ALL->value) {
+                        $cacheKey = 'employee-absences-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
+                        if (cache()->has($cacheKey)) {
+                            $reportData = cache()->get($cacheKey);
+                            break;
+                        }
+                        AdministrativeReportAttendanceAll::dispatch($validated);
+                        $reportData = "GENERATING IN BACKGROUND. PLEASE TRY AGAIN LATER.";
+                        break;
                     }
                     $reportData = ReportService::employeeAbsences($validated);
                     break;
                 case AdministrativeReport::EMPLOYEE_LATES->value:
-                    if (function_exists('set_time_limit')) {
-                        @set_time_limit(600);
+                    if ($validated['group_type'] == GroupType::ALL->value) {
+                        $cacheKey = 'employee-absences-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
+                        if (cache()->has($cacheKey)) {
+                            $reportData = cache()->get($cacheKey);
+                            break;
+                        }
+                        AdministrativeReportAttendanceAll::dispatch($validated);
+                        $reportData = "GENERATING IN BACKGROUND. PLEASE TRY AGAIN LATER.";
+                        break;
                     }
                     $reportData = ReportService::employeeAbsences($validated);
                     break;
                 case AdministrativeReport::EMPLOYEE_ATTENDANCE->value:
-                    if (function_exists('set_time_limit')) {
-                        @set_time_limit(600);
+                    if ($validated['group_type'] == GroupType::ALL->value) {
+                        $cacheKey = 'employee-absences-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
+                        if (cache()->has($cacheKey)) {
+                            $reportData = cache()->get($cacheKey);
+                            break;
+                        }
+                        AdministrativeReportAttendanceAll::dispatch($validated);
+                        $reportData = "GENERATING IN BACKGROUND. PLEASE TRY AGAIN LATER.";
+                        break;
                     }
                     $reportData = ReportService::employeeAbsences($validated);
                     break;
@@ -272,8 +297,8 @@ class ReportController extends Controller
         }
         return new JsonResponse([
             "success" => true,
-            "message" => "Successfully fetched.",
-            "data" => $reportData
+            "message" => $reportData == "GENERATING IN BACKGROUND. PLEASE TRY AGAIN LATER." ? "Generating Data in background. Please try again later." : "Successfully fetched.",
+            "data" => $reportData == "GENERATING IN BACKGROUND. PLEASE TRY AGAIN LATER." ? [] : $reportData
         ]);
     }
 
