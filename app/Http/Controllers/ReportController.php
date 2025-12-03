@@ -41,10 +41,8 @@ use App\Http\Resources\Reports\OtherDeductionMP2Summary;
 use App\Http\Resources\UserAccessibilityReportResource;
 use App\Http\Services\Report\ReportService;
 use App\Jobs\AdministrativeReportAttendanceAll;
-use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
-use Spatie\FlareClient\Report;
+use Illuminate\Support\Facades\Cache;
 
 class ReportController extends Controller
 {
@@ -257,10 +255,9 @@ class ReportController extends Controller
                     break;
                 case AdministrativeReport::EMPLOYEE_ABSENCES->value:
                     if ($validated['group_type'] == GroupType::ALL->value) {
-                        $cacheKey = $validated['report_type']. '-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
-                        if (cache()->has($cacheKey)) {
-                            $reportLocation = cache()->get($cacheKey);
-                            $reportData = json_decode(Storage::get($reportLocation), true);
+                        $cacheKey = $validated['report_type'] . '-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
+                        if (Cache::has($cacheKey)) {
+                            $reportData = Cache::get($cacheKey);
                             break;
                         }
                         AdministrativeReportAttendanceAll::dispatch($validated);
@@ -271,10 +268,9 @@ class ReportController extends Controller
                     break;
                 case AdministrativeReport::EMPLOYEE_LATES->value:
                     if ($validated['group_type'] == GroupType::ALL->value) {
-                        $cacheKey = $validated['report_type']. '-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
-                        if (cache()->has($cacheKey)) {
-                            $reportLocation = cache()->get($cacheKey);
-                            $reportData = json_decode(Storage::get($reportLocation), true);
+                        $cacheKey = $validated['report_type'] . '-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
+                        if (Cache::has($cacheKey)) {
+                            $reportData = Cache::get($cacheKey);
                             break;
                         }
                         AdministrativeReportAttendanceAll::dispatch($validated);
@@ -285,10 +281,9 @@ class ReportController extends Controller
                     break;
                 case AdministrativeReport::EMPLOYEE_ATTENDANCE->value:
                     if ($validated['group_type'] == GroupType::ALL->value) {
-                        $cacheKey = $validated['report_type']. '-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
-                        if (cache()->has($cacheKey)) {
-                            $reportLocation = cache()->get($cacheKey);
-                            $reportData = json_decode(Storage::get($reportLocation), true);
+                        $cacheKey = $validated['report_type'] . '-' . $validated['group_type'] . '-' . $validated['date_from'] . '-' . $validated['date_to'];
+                        if (Cache::has($cacheKey)) {
+                            $reportData = Cache::get($cacheKey);
                             break;
                         }
                         AdministrativeReportAttendanceAll::dispatch($validated);

@@ -9,11 +9,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class AdministrativeReportAttendanceAll implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public $validated;
     /**
@@ -31,12 +36,15 @@ class AdministrativeReportAttendanceAll implements ShouldQueue, ShouldBeUnique
     {
         // GENERATE REPORT DATA
         $reportData = ReportService::employeeAbsences($this->validated);
-        // STORE REPORT DATA IN FILE IN CACHE AND SCHEDULE DELETION
-        $cacheKey = $this->validated['group_type'] . '-' . $this->validated['group_type'] . '-' . $this->validated['date_from'] . '-' . $this->validated['date_to'];
-        $path = 'storage/temp-report-generations/'. $cacheKey . '.json';
-        $storedPath = Storage::put($path, json_encode($reportData));
-        DeleteTempFileAfterDelay::dispatch($storedPath)->delay(now()->addDay());
-        cache()->put($cacheKey, $storedPath, now()->addDay());
+        // Log::info('Generated report data for: ' . $this->uniqueId());
+        $cacheKey = $this->validated['report_type'] . '-' . $this->validated['group_type'] . '-' . $this->validated['date_from'] . '-' . $this->validated['date_to'];
+        Cache::put($cacheKey, $reportData, now()->addDay());
+        // // STORE REPORT DATA IN FILE IN CACHE AND SCHEDULE DELETION
+        // $path = 'temp-report-generations/'. $cacheKey . '.json';
+        // $storedPath = Storage::disk("public")->put($path, json_encode($reportData));
+        // Log::info('Storing report at: ' . $storedPath);
+        // DeleteTempFileAfterDelay::dispatch($storedPath)->delay(now()->addDay());
+        // cache()->put($cacheKey, $storedPath, now()->addDay());
     }
     public function uniqueId(): string
     {

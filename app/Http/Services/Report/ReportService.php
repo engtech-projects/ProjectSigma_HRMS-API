@@ -1463,7 +1463,8 @@ class ReportService
         $dateTo = Carbon::parse($validate["date_to"]);
         $employeeDtr = AttendanceReportService::getEmployeeDtr($dateFrom, $dateTo, $validate);
         $events = AttendanceReportService::getEvents($dateFrom, $dateTo);
-        $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events) {
+        $showImage = $validate["lates-absence"] ?? false;
+        $reportData = $employeeDtr->map(function ($employee) use ($dateFrom, $dateTo, $events, $showImage) {
             $employeeDatas = [
                 "employee" => $employee,
                 "internals" => $employee->employee_internal,
@@ -1488,7 +1489,7 @@ class ReportService
                 "total_absents" => $employeeAttendance["absenceCount"],
                 "total_attendance" => $employeeAttendance["attendanceCount"],
                 "total_lates" => $employeeAttendance["lateCount"],
-                "profile_photo" => $employee->profile_photo ? new CompressedImageResource($employee->profile_photo) : null,
+                "profile_photo" => $showImage && $employee->profile_photo ? new CompressedImageResource($employee->profile_photo) : null,
             ];
         });
         return $reportData;
