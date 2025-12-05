@@ -284,6 +284,13 @@ class AccessibilitiesSeederInventory extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
+                    'id' => 2295,
+                    'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_STOCKTRANSFER_MYAPPROVALS->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
                     'id' => 2300,
                     'accessibilities_name' => AccessibilityInventory::INVENTORY_WAREHOUSE_TURNOVER_FORM->value,
                     'deleted_at' => null,
