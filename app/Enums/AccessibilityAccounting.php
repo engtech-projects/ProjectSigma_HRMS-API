@@ -28,6 +28,7 @@ enum AccessibilityAccounting: string
     case ACCOUNTING_REQUEST_NON_PURCHASE_ORDER_MY_REQUEST = "accounting:request_npo_my request";
     case ACCOUNTING_REQUEST_NON_PURCHASE_ORDER_MY_APPROVAL = "accounting:request_npo_my approval";
     case ACCOUNTING_REQUEST_PRE_PAYROLL_AUDIT = "accounting:request_pre payroll audit";
+    case ACCOUNTING_REQUEST_LIQUIDATION = "accounting:request_liquidation";
 
     //Accounting Voucher
     case ACCOUNTING_VOUCHER_DISBURSEMENT = "accounting:voucher_disbursement";
