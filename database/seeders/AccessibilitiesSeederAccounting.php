@@ -200,6 +200,13 @@ class AccessibilitiesSeederAccounting extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
+                    'id' => 1168,
+                    'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REQUEST_LIQUIDATION->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
                     'id' => 1169,
                     'accessibilities_name' => AccessibilityAccounting::ACCOUNTING_REQUEST_NON_PURCHASE_ORDER_MY_REQUEST->value,
                     'deleted_at' => null,
