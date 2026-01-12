@@ -65,6 +65,8 @@ enum AccessibilityInventory: string
     case INVENTORY_PROCUREMENT_PROCUREMENTREQUESTS_PURCHASEORDER_CREATENCPO = "inventory:procurement_purchase order_create ncpo";
     case INVENTORY_CONSOLIDATEDREQUEST_FORM = "inventory:consolidated request_form";
     case INVENTORY_CONSOLIDATEDREQUEST_LISTS = "inventory:consolidated request_lists";
+    case INVENTORY_CONSOLIDATEDREQUEST_ALLREQUESTS = "inventory:consolidated request_all requests";
+    case INVENTORY_CONSOLIDATEDREQUEST_MYAPPROVALS = "inventory:consolidated request_my approvals";
 
     public static function toArray(): array
     {
