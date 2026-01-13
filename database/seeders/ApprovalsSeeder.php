@@ -229,6 +229,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 300,
+                    'form' => "Borrower's Logbook",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::INVENTORY->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [
                 'id'
