@@ -24,8 +24,17 @@ class PayrollDetailDeduction extends Model
         'amount',
     ];
 
+    protected $appends = [
+        'amount_formatted',
+    ];
+
     public function deduction(): MorphTo
     {
         return $this->morphTo("deduction");
+    }
+
+    public function getAmountFormattedAttribute()
+    {
+        return number_format($this->amount, 2, '.', ',');
     }
 }
