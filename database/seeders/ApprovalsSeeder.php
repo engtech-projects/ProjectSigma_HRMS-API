@@ -296,6 +296,15 @@ class ApprovalsSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ],
+                [
+                    'id' => 2060,
+                    'form' => "Book Balance Report",
+                    'approvals' => "[]",
+                    'module' => ApprovalModules::ACCOUNTING->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
             ],
             [
                 'id'
