@@ -108,6 +108,9 @@ enum AccessibilityHrms: string
     case HRMS_LOANSANDADVANCES_CASHADVANCE_FORM = "hrms:loans and advances_cash advance_forms and my requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_ALLREQUESTS = "hrms:loans and advances_cash advance_all requests";
     case HRMS_LOANSANDADVANCES_CASHADVANCE_MYAPPROVALS = "hrms:loans and advances_cash advance_my approvals";
+    case HRMS_LOANSANDADVANCES_CASHADVANCE_ONGOING_CASHADVANCE = "hrms:loans and advances_cash advance_ongoing cash advance";
+    case HRMS_LOANSANDADVANCES_CASHADVANCE_PAID_CASHADVANCE = "hrms:loans and advances_cash advance_paid cash advance   ";
+    case HRMS_LOANSANDADVANCES_CASHADVANCE_PAYMENTS_LIST = "hrms:loans and advances_cash advance_payments list";
     case HRMS_LOANSANDADVANCES_LOANS_FORMS = "hrms:loans and advances_loans_forms";
     case HRMS_LOANSANDADVANCES_LOANS_ALL = "hrms:loans and advances_loans_all list";
     case HRMS_LOANSANDADVANCES_LOANS_ONGOING = "hrms:loans and advances_loans_ongoing list";
