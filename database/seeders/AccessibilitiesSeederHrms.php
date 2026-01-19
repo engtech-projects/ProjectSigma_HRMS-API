@@ -585,6 +585,27 @@ class AccessibilitiesSeederHrms extends Seeder
                     'updated_at' => Carbon::now(),
                 ],
                 [
+                    'id' => 432,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_CASHADVANCE_ONGOING_CASHADVANCE->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 430,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_CASHADVANCE_PAID_CASHADVANCE->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'id' => 431,
+                    'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_CASHADVANCE_PAYMENTS_LIST->value,
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
                     'id' => 83,
                     'accessibilities_name' => AccessibilityHrms::HRMS_LOANSANDADVANCES_CASHADVANCE_MYAPPROVALS->value,
                     'deleted_at' => null,
