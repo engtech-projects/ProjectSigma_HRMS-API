@@ -67,6 +67,10 @@ enum AccessibilityInventory: string
     case INVENTORY_CONSOLIDATEDREQUEST_LISTS = "inventory:consolidated request_lists";
     case INVENTORY_CONSOLIDATEDREQUEST_ALLREQUESTS = "inventory:consolidated request_all requests";
     case INVENTORY_CONSOLIDATEDREQUEST_MYAPPROVALS = "inventory:consolidated request_my approvals";
+    case INVENTORY_BORROWERLOGBOOK_FORMSANDMYREQUESTS = "inventory:borrower's logbook_form and my requests";
+    case INVENTORY_BORROWERLOGBOOK_LISTS = "inventory:borrower's logbook_lists";
+    case INVENTORY_BORROWERLOGBOOK_ALLREQUESTS = "inventory:borrower's logbook_all requests";
+    case INVENTORY_BORROWERLOGBOOK_MYAPPROVALS = "inventory:borrower's logbook_my approvals";
 
     public static function toArray(): array
     {
