@@ -108,7 +108,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     // AUTH
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/session', [AuthController::class, 'session']);
+    Route::get('/session', [AuthController::class, 'session'])->middleware('throttle:auth');
     Route::put('update-user', [UsersController::class, 'updateUserCredential']);
     Route::resource('users', UsersController::class);
     Route::get('user-account-by-employee-id/{id}', [UsersController::class, 'getUserAccountByEmployeeId']);
