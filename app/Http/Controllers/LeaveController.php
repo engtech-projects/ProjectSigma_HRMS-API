@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Leave;
+use App\Http\Requests\StoreLeaveRequest;
+use App\Http\Requests\UpdateLeaveRequest;
+use App\Http\Resources\TempAllData;
+
+class LeaveController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $leave = Leave::paginate(config("app.pagination_per_page"));
+        return TempAllData::collection($leave)->additional([
+            'success' => true,
+            'message' => 'Leave fetched.',
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreLeaveRequest $request)
+    {
+        $leave = new Leave();
+        $valData = $request->validated();
+
+        $data = json_decode('{}');
+        if ($valData) {
+            $leave->fill($valData);
+            if ($leave->save()) {
+                $data->message = "Successfully save.";
+                $data->success = true;
+                $data->data = $leave;
+                return response()->json($data);
+            }
+            $data->message = "Save failed.";
+            $data->success = false;
+            return response()->json($data, 400);
+        }
+        $data->message = "Save failed.";
+        $data->success = false;
+        return response()->json($data, 400);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $leave = Leave::find($id);
+        $data = json_decode('{}');
+        if (!is_null($leave)) {
+            $data->message = "Successfully fetch.";
+            $data->success = true;
+            $data->data = $leave;
+            return response()->json($data);
+        }
+        $data->message = "No data found.";
+        $data->success = false;
+        return response()->json($data, 404);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateLeaveRequest $request, $id)
+    {
+        $leave = Leave::find($id);
+        $data = json_decode('{}');
+        if (!is_null($leave)) {
+            $valData = $request->validated();
+            if ($valData) {
+                $leave->fill($valData);
+                if ($leave->save()) {
+                    $data->message = "Successfully update.";
+                    $data->success = true;
+                    $data->data = $leave;
+                    return response()->json($data);
+                }
+                $data->message = "Failed update.";
+                $data->success = false;
+                return response()->json($data, 400);
+            }
+        }
+        $data->message = "Failed update.";
+        $data->success = false;
+        return response()->json($data, 404);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $leave = Leave::find($id);
+        $data = json_decode('{}');
+        if (!is_null($leave)) {
+            if ($leave->delete()) {
+                $data->message = "Successfully delete.";
+                $data->success = true;
+                $data->data = $leave;
+                return response()->json($data);
+            }
+            $data->message = "Failed delete.";
+            $data->success = false;
+            return response()->json($data, 400);
+        }
+        $data->message = "Failed delete.";
+        $data->success = false;
+        return response()->json($data, 404);
+    }
+}

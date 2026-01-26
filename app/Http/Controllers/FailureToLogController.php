@@ -1,0 +1,150 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\AssignTypes;
+use App\Enums\RequestStatuses;
+use App\Http\Requests\FailToLogRequest;
+use App\Models\FailureToLog;
+use Illuminate\Http\JsonResponse;
+use App\Http\Services\FailureToLogService;
+use App\Http\Resources\FailureToLogResource;
+use App\Exceptions\TransactionFailedException;
+use App\Http\Requests\StoreFailureToLogRequest;
+use App\Http\Requests\UpdateFailureToLogRequest;
+use App\Models\Department;
+use App\Models\Project;
+use App\Notifications\FailureToLogRequestForApproval;
+use Illuminate\Support\Facades\Log;
+
+class FailureToLogController extends Controller
+{
+    protected $failedLogService;
+
+    public function __construct(FailureToLogService $failedLogService)
+    {
+        $this->failedLogService = $failedLogService;
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(FailToLogRequest $request)
+    {
+        $validatedData = $request->validated();
+        $data = FailureToLog::when($request->has('employee_id'), function ($query) use ($validatedData) {
+            return $query->whereHas('employee', function ($query2) use ($validatedData) {
+                $query2->where('employee_id', $validatedData["employee_id"]);
+            });
+        })
+        ->with("employee")
+        ->orderBy("created_at", "DESC")
+        ->paginate(config("app.pagination_per_page", 10));
+        return FailureToLogResource::collection($data)
+        ->additional([
+            'success' => true,
+            'message' => 'Failure to Log Request fetched.',
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreFailureToLogRequest $request)
+    {
+        try {
+            $validatedData = $request->validated();
+            $validatedData["request_status"] = RequestStatuses::PENDING->value;
+            $validatedData["created_by"] = auth()->user()->id;
+            $validatedData["charging_id"] = $request->validated();
+            if ($validatedData["charging_type"] == AssignTypes::DEPARTMENT->value) {
+                $validatedData["charging_id"] = $validatedData["department_id"];
+                $validatedData["charging_type"] = Department::class;
+            } else {
+                $validatedData["charging_id"] = $validatedData["project_id"];
+                $validatedData["charging_type"] = Project::class;
+            }
+            if ($validatedData) {
+                $main = FailureToLog::create($validatedData);
+                $main->refresh();
+                $main->notifyNextApprover(FailureToLogRequestForApproval::class);
+            }
+        } catch (\Exception $e) {
+            Log::error($e);
+            return new JsonResponse([
+                "success" => true,
+                "message" => "Failed to save.",
+            ], JsonResponse::HTTP_BAD_REQUEST);
+            // throw new TransactionFailedException("Transaction failed.", 500, $e);
+        }
+
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully created.",
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(FailureToLog $failedLog)
+    {
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully fetch.",
+            "data" => new FailureToLogResource($failedLog->load('employee')),
+        ], JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateFailureToLogRequest $request, FailureToLog $failedLog)
+    {
+        try {
+            $failedLog->update($request->validated());
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Transaction failed.", 500, $e);
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully updated.",
+        ], JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(FailureToLog $failedLogs)
+    {
+        try {
+            $failedLogs->delete();
+        } catch (\Exception $e) {
+            throw new TransactionFailedException("Transaction failed.", 500, $e);
+        }
+        return new JsonResponse([
+            "success" => true,
+            "message" => "Successfully deleted.",
+        ], JsonResponse::HTTP_OK);
+    }
+
+    public function myRequests()
+    {
+        $failedLog = $this->failedLogService->getMyRequests();
+
+        return FailureToLogResource::collection($failedLog)
+        ->additional([
+            'success' => true,
+            'message' => 'Failure to Log Request fetched.',
+        ]);
+    }
+    public function myApprovals()
+    {
+        $failedLog = $this->failedLogService->getMyApprovals();
+
+        return FailureToLogResource::collection($failedLog)
+        ->additional([
+            'success' => true,
+            'message' => 'Failure to Log Request fetched.',
+        ]);
+    }
+}

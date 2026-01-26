@@ -1,0 +1,509 @@
+<?php
+
+namespace App\Http\Services;
+
+use App\Enums\AssignTypes;
+use App\Enums\SalaryRequestType;
+use App\Exceptions\TransactionFailedException;
+use App\Http\Services\Attendance\AttendanceService;
+use App\Http\Services\Payroll\PayrollService;
+use App\Models\Department;
+use App\Models\Project;
+use Illuminate\Support\Facades\Log;
+
+class EmployeeService
+{
+    public const OVERTIME = "Overtime";
+    public const DEPARTMENT = "Department";
+    public const PROJECT = "Project";
+    public const SPECIALHOLIDAY = "Special Holiday";
+
+    public function employeeDTR($employee, $date)
+    {
+        $schedules_attendances = $employee->applied_schedule_with_attendance($date);
+        $events = $employee->events_dtr($date);
+        $travelOrders = $employee->travel_order_dtr($date);
+        $overtime = $employee->applied_overtime_with_attendance($date);
+
+        $leave = $employee->leave_dtr($date);
+
+        $collection = [
+            "schedules_attendances" => $schedules_attendances,
+            "events" => $events,
+            "overtime" => $overtime,
+            "travel_orders" => $travelOrders,
+            "leave" => $leave
+        ];
+
+        return [
+            "schedules_attendances" => $schedules_attendances,
+            "travel_order" => array_values($travelOrders->toArray()),
+            "overtime" => $overtime,
+            "leave" => $leave,
+            "events" => $events,
+            "metadata" => $employee->getMetaData($collection, $date),
+        ];
+    }
+
+    public function generatePayroll(array $period, array $filters, $employee)
+    {
+        if (!$employee->current_employment) {
+            throw new TransactionFailedException("Employee ".$employee->fullname_first." is not Employed.", 500);
+        }
+        if (!$employee->current_employment->employee_salarygrade) {
+            throw new TransactionFailedException("Employee ".$employee->fullname_first." has no Salary Grade Set.", 500);
+        }
+        $payrollCharging = [
+            "id" => 4,  // Default HR Department (temporary static data, need to be variable/env)
+            "type" => Department::class,
+            "charging_name" => Department::find(4)->department_name,
+        ];
+        $salary = 0;
+        // Setting Payroll Request Project/Department Charging
+        switch (strtolower($filters["group_type"])) {
+            case strtolower(AssignTypes::DEPARTMENT->value):
+                $payrollCharging["id"] = $filters["department_id"];
+                $payrollCharging["type"] = Department::class;
+                $payrollCharging["charging_name"] = Department::find($filters["department_id"])->department_name;
+                break;
+            case strtolower(AssignTypes::PROJECT->value):
+                $payrollCharging["id"] = $filters["project_id"];
+                $payrollCharging["type"] = Project::class;
+                $payrollCharging["charging_name"] = Project::find($filters["project_id"])->project_code;
+                break;
+        }
+        $dtr = AttendanceService::generateDtr($employee->id, $filters["cutoff_start"], $filters['cutoff_end'], $payrollCharging);
+        $dtr = $dtr['dtr']->map(function ($dtrData) use ($employee) {
+            $dtrData["grosspay"] = $employee->salary_gross_pay($dtrData["metadata"]);
+            return $dtrData;
+        });
+        $dtrValues = $dtr->values();
+        $totalHoursWorked = $this->aggregateTotalHoursWorked($dtrValues);
+        $advanceAmount = 0;
+        $advanceCharging = [];
+        $monthlySalary = $employee->current_employment->employee_salarygrade->monthly_salary_amount;
+        $fixedSalary = PayrollService::getPayrollTypeValue($filters["payroll_type"], $monthlySalary);
+        if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
+            $salary = $fixedSalary;
+            $grossSalaries = collect([...$this->aggregateTotalGrossPays(collect([]))]);
+        } else {
+            $dtrChargings = $this->aggregateDTRCharging($dtrValues, $employee->current_employment->employee_salarygrade->dailyRate);
+            $salary = round($dtrChargings->values()->sum("amount"), 2);
+            $grossSalaries = [...$this->aggregateTotalGrossPays($dtrChargings)];
+            if ($filters["advance_days"] > 0) {
+                $advanceAmount = $filters["advance_days"] * $employee->current_employment->employee_salarygrade->dailyRate; // Advance Amount used for Advance Pay Deduction for next payroll
+                $advanceCharging[] = [
+                    "name" => "Salary Regular Regular",
+                    "charging_name" => $payrollCharging["charging_name"],
+                    "charge_type" => $payrollCharging["type"],
+                    "charge_id" => $payrollCharging["id"],
+                    "amount" => $advanceAmount
+                ];
+                Log::info($grossSalaries);
+                $grossSalaries['regular']['regular'] += $advanceAmount;
+            }
+            $grossSalaries = collect($grossSalaries);
+        }
+        // Getting Employee Adjustments from Payroll Request
+        $adjustments = [];
+        if (isset($filters["adjustments"])) {
+            $adjustments = $this->collectEmployeeAdjustments($filters["adjustments"], $employee->id);
+        }
+        // Group Together Incomes
+        $grossPays = collect([
+            ...$grossSalaries,
+            ...["adjustments" => $adjustments->values()->all()],
+        ]);
+        // Get Salary Deductions (Loans, Cash Advances, Other Deductions, SSS, Philhealth, Pagibig, Wtax)
+        $salaryDeductions = $this->getSalaryDeduction($employee, $filters, $salary);
+        // Get Chargings
+        $chargings = [
+            ...$this->aggregateAdjustmentCharging($adjustments, $payrollCharging), // Adjustments
+            ...$this->aggregateSalaryDeductionEmployersCharging($salaryDeductions, $payrollCharging), // Employer Deductions (SSS, Philhealth, Pagibig)
+        ];
+        // Salary Chargings
+        if ($employee->current_employment->salary_type == SalaryRequestType::SALARY_TYPE_FIXED_RATE->value) {
+            $chargings = collect([
+                ...$chargings,
+                [
+                    "name" => "Salary Regular Regular",
+                    "charging_name" => $payrollCharging["charging_name"],
+                    "charge_type" => $payrollCharging["type"],
+                    "charge_id" => $payrollCharging["id"],
+                    "amount" => $fixedSalary
+                ]
+            ]);
+        } else {
+            $chargings = collect([
+                ...$dtrChargings,
+                ...$chargings,
+                ...$advanceCharging,
+            ]);
+        }
+        $result["dtr"] = $dtr;
+        $result["advance_amount"] = $advanceAmount;
+        $result["adjustments"] = $adjustments->values()->all();
+        $result["gross_pays"] = $grossPays;
+        $result["salary_deduction"] = $salaryDeductions;
+        $result["hours_worked"] = $totalHoursWorked;
+        $totalAdjustment =  $adjustments->sum('adjustment_amount');
+        $totalGrossPay = $salary + $totalAdjustment + $advanceAmount;
+        $totalSalaryDeduction = $this->getTotalSalaryDeduction($salaryDeductions);
+        $totalNetPay = $totalGrossPay - $totalSalaryDeduction;
+        $result["chargings"] = $chargings;
+        $result["total_gross_pay"] = round($totalGrossPay, 2);
+        $result["total_salary_deduction"] = round($totalSalaryDeduction, 2);
+        $result["total_net_pay"] = round($totalNetPay, 2);
+        return $result;
+    }
+
+    public function appendCollection($collection, $maincollection, $type)
+    {
+        foreach ($collection as $key) {
+            $maincollection->push((object)[
+                "id" => $key["id"],
+                "name" => $type,
+                "designation" => $key["designation"],
+                "amt" => $key["amt"],
+                "reg_hrs" => $key["reg_hrs"],
+            ]);
+        }
+        return $maincollection;
+    }
+
+    public static function govNumberIsValid($govNumber)
+    {
+        if (empty($govNumber)) {
+            return false;
+        }
+        if (strtolower($govNumber) == "n/a") {
+            return false;
+        }
+        if (strtolower($govNumber) == "na") {
+            return false;
+        }
+        return true;
+    }
+
+    public function getSalaryDeduction($employee, $filters, $actualSalary = 0)
+    {
+        $salaryGrade = $employee->current_employment?->employee_salarygrade;
+        $monthlySalary = $salaryGrade ? $salaryGrade->monthly_salary_amount : 0;
+        $sss = $employee->sss_deduction($monthlySalary, $filters["payroll_type"]);
+        $philhealth = $employee->philhealth_deduction($monthlySalary, $filters["payroll_type"]);
+        $pagibig = $employee->pagibig_deduction($monthlySalary, $filters["payroll_type"]);
+        $ssExempt =  self::govNumberIsValid($employee->company_employments->sss_number) ? ($sss['employee_contribution'] + $sss['employee_compensation'] + $sss['employee_wisp']) : 0;
+        $philhealthExempt = self::govNumberIsValid($employee->company_employments->phic_number) ? $philhealth['employee_contribution'] : 0;
+        $pagibigExempt = self::govNumberIsValid($employee->company_employments->pagibig_number) ? $pagibig['employee_contribution'] : 0;
+        $monthlyTaxExempt = $ssExempt + $philhealthExempt + $pagibigExempt;
+        $taxableMonthlySalary = $monthlySalary - $monthlyTaxExempt;
+        // $taxableMonthlySalary = $actualSalary /* Actual Salary already based on payroll type */ - $monthlyTaxExempt;
+        $wtax = $employee->with_holding_tax_deduction($taxableMonthlySalary, $filters["payroll_type"]);
+        $result = [
+            "sss" => ($filters["deduct_sss"] && self::govNumberIsValid($employee->company_employments->sss_number)) ? $sss : [],
+            "phic" => ($filters["deduct_philhealth"] && self::govNumberIsValid($employee->company_employments->phic_number)) ? $philhealth : [],
+            "hmdf" => ($filters["deduct_pagibig"] && self::govNumberIsValid($employee->company_employments->pagibig_number)) ? $pagibig : [],
+            "ewtc" => $wtax,
+            "loan" => $employee->loan_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
+            "cash_advance" => $employee->cash_advance_deduction($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
+            "other_deductions" => $employee->other_deductions($monthlySalary, $filters["payroll_type"], $filters["payroll_date"]),
+        ];
+
+        return $result;
+    }
+
+    public function getTotalSalaryDeduction($deductions)
+    {
+        $sss = 0;
+        $phic = 0;
+        $ewtc = 0;
+        $hmdf = 0;
+        $loan = 0;
+        $cashAdvance = 0;
+        $otherDeduction = 0;
+        $hmo = 0;
+        if ($deductions["sss"]) {
+            $sss = $deductions["sss"]["employee_contribution"] + $deductions["sss"]["employee_compensation"] + $deductions["sss"]["employee_wisp"];
+        }
+        if ($deductions["phic"]) {
+            $phic = $deductions["phic"]["employee_contribution"];
+        }
+        if ($deductions["hmdf"]) {
+            $hmdf = $deductions["hmdf"]["employee_contribution"];
+        }
+        if ($deductions["ewtc"]) {
+            $ewtc = $deductions["ewtc"];
+        }
+        if ($deductions["loan"]) {
+            $loan = $deductions["loan"]['total_paid'];
+        }
+        if ($deductions["cash_advance"]) {
+            $cashAdvance = $deductions["cash_advance"]['total_paid'];
+        }
+        if ($deductions["other_deductions"]) {
+            $otherDeduction = $deductions["other_deductions"]['total_paid'];
+        }
+        // if ($deductions["hmo"]) {
+        //     $hmo = $deductions["hmo"]['total_paid'];
+        // }
+        return $sss + $phic + $hmdf + $ewtc + $loan + $cashAdvance + $otherDeduction + $hmo;
+    }
+
+    public function collectEmployeeAdjustments($adjustments, $employeeId)
+    {
+        return collect($adjustments)
+        ->where("employee_id", $employeeId)
+        // ->groupBy("employee_id")
+        ->map(function ($data, $index) {
+            return[
+                "employee_id" => $index,
+                "adjustment_name" => $data["adjustment_name"],
+                "adjustment_amount" => $data['adjustment_amount'],
+            ];
+        });
+    }
+
+    public function aggregateTotalHoursWorked($dtrs)
+    {
+        return [
+            "regular" => [
+                "reg_hrs" => round($dtrs->sum("metadata.regular.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.regular.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.regular.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.regular.undertime"), 2),
+            ],
+            "rest" => [
+                "reg_hrs" => round($dtrs->sum("metadata.rest.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.rest.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.rest.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.rest.undertime"), 2),
+            ],
+            "regular_holidays" => [
+                "reg_hrs" => round($dtrs->sum("metadata.regular_holidays.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.regular_holidays.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.regular_holidays.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.regular_holidays.undertime"), 2),
+            ],
+            "special_holidays" => [
+                "reg_hrs" => round($dtrs->sum("metadata.special_holidays.reg_hrs"), 2),
+                "overtime" => round($dtrs->sum("metadata.special_holidays.overtime"), 2),
+                "late" => round($dtrs->sum("metadata.special_holidays.late"), 2),
+                "undertime" => round($dtrs->sum("metadata.special_holidays.undertime"), 2),
+            ]
+        ];
+    }
+
+    public function aggregateTotalGrossPays($chargingSalaries)
+    {
+        return [
+            "regular" => [
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Regular Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Regular Overtime";
+                })->sum("amount"), 2),
+            ],
+            "rest" => [
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Rest Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary Rest Overtime";
+                })->sum("amount"), 2),
+            ],
+            "regular_holidays" => [
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary RegularHoliday Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary RegularHoliday Overtime";
+                })->sum("amount"), 2),
+            ],
+            "special_holidays" => [
+                "regular" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary SpecialHoliday Regular";
+                })->sum("amount"), 2),
+                "overtime" => round($chargingSalaries->filter(function ($chargingSalary) {
+                    return $chargingSalary['name'] === "Salary SpecialHoliday Overtime";
+                })->sum("amount"), 2),
+            ],
+        ];
+    }
+
+    public function aggregateDTRCharging($dtrs, $dailyRate)
+    {
+        return $dtrs->flatMap(function ($dtr) use ($dailyRate) {
+            return [
+                ...collect($dtr["metadata"]["charging"]["regular"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "regular",
+                        "salary_type" => "reg_hrs",
+                        "name" => "Salary Regular Regular",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+                ...collect($dtr["metadata"]["charging"]["regular"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "regular",
+                        "salary_type" => "overtime",
+                        "name" => "Salary Regular Overtime",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+                ...collect($dtr["metadata"]["charging"]["rest"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "rest",
+                        "salary_type" => "reg_hrs",
+                        "name" => "Salary Rest Regular",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+                ...collect($dtr["metadata"]["charging"]["rest"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "rest",
+                        "salary_type" => "overtime",
+                        "name" => "Salary Rest Overtime",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+                ...collect($dtr["metadata"]["charging"]["regular_holidays"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "regular_holidays",
+                        "salary_type" => "reg_hrs",
+                        "name" => "Salary RegularHoliday Regular",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+                ...collect($dtr["metadata"]["charging"]["regular_holidays"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "regular_holidays",
+                        "salary_type" => "overtime",
+                        "name" => "Salary RegularHoliday Overtime",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+                ...collect($dtr["metadata"]["charging"]["special_holidays"]["reg_hrs"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "special_holidays",
+                        "salary_type" => "reg_hrs",
+                        "name" => "Salary SpecialHoliday Regular",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+                ...collect($dtr["metadata"]["charging"]["special_holidays"]["overtime"])->map(function ($dtr2) use ($dailyRate) {
+                    return [
+                        "day_type" => "special_holidays",
+                        "salary_type" => "overtime",
+                        "name" => "Salary SpecialHoliday Overtime",
+                        "charge_type" => $dtr2["model"],
+                        "charge_id" => $dtr2["id"],
+                        "hrs_worked" => $dtr2["hrs_worked"],
+                    ];
+                }),
+            ];
+        })
+        ->groupBy(["name", "charge_type", "charge_id"])
+        ->flatMap(function ($types, $name) use ($dailyRate) {
+            return $types->flatMap(function ($ids, $type) use ($name, $dailyRate) {
+                return $ids->map(function ($chargings, $id) use ($name, $type, $dailyRate) {
+                    $hrsWorked = round($chargings->sum("hrs_worked"), 2);
+                    return [
+                        "name" => $name,
+                        "charge_type" => $type,
+                        "charge_id" => $id,
+                        "charging_name" => $type === "App\\Models\\Department" ? Department::find($id)->department_name : Project::find($id)->project_code,
+                        "hrs_worked" => $hrsWorked,
+                        "amount" => PayrollService::getSalaryByRateHour($chargings->first()["day_type"], $chargings->first()["salary_type"], $dailyRate, $hrsWorked),
+                        "daily_rate" => $dailyRate,
+                    ];
+                });
+            });
+        });
+    }
+
+    public function aggregateAdjustmentCharging($adjustments, $charging)
+    {
+        $total = collect($adjustments)->sum("adjustment_amount");
+        if ($total > 0) {
+            return [
+                [
+                    "name" => "Salary Adjustment", // Adjustment
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => collect($adjustments)->sum("adjustment_amount"),
+                ],
+            ];
+        }
+        return [];
+    }
+
+    public function aggregateSalaryDeductionEmployersCharging($salaryDeductions, $charging)
+    {
+        return [
+            ...$this->prepareSssDeductionCharging($salaryDeductions, $charging),
+            ...$this->preparePhilhealthDeductionCharging($salaryDeductions, $charging),
+            ...$this->preparePagibigDeductionCharging($salaryDeductions, $charging),
+        ];
+    }
+    public function prepareSssDeductionCharging($salaryDeductions, $charging)
+    {
+        if ($salaryDeductions["sss"]) {
+            return [
+                [
+                    "name" => "SSS Employer",
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => $salaryDeductions["sss"]["employer_contribution"] + $salaryDeductions["sss"]["employer_compensation"] + $salaryDeductions["sss"]["employer_wisp"],
+                ],
+            ];
+        }
+        return [];
+    }
+    public function preparePhilhealthDeductionCharging($salaryDeductions, $charging)
+    {
+        if ($salaryDeductions["phic"]) {
+            return [
+                [
+                    "name" => "Philhealth Employer",
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => $salaryDeductions["phic"]["employer_contribution"],
+                ],
+            ];
+        }
+        return [];
+    }
+    public function preparePagibigDeductionCharging($salaryDeductions, $charging)
+    {
+        if ($salaryDeductions["hmdf"]) {
+            return [
+                [
+                    "name" => "Pagibig Employer",
+                    "charge_type" => $charging["type"],
+                    "charge_id" => $charging["id"],
+                    "charging_name" => $charging["charging_name"],
+                    "amount" => $salaryDeductions["hmdf"]["employer_contribution"],
+                ],
+            ];
+        }
+        return [];
+    }
+}
